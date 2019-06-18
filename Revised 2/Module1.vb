@@ -5,10 +5,10 @@ Module Module1
 
     Sub Main()
 
-        Console.CursorVisible = False
-        SetColour(ConsoleColor.White)
-        Dim MenuOptions() As String = {"Recursive Backtracker", "Hunt and Kill", "Aldous-Broder", "Prim's", "Extra Option 1", "Extra Option 2", "Extra Option 3", "Extra Option 4", "Extra Option 5", "Extra Option 6", "Extra Option 7", "Extra Option 8", "Extra Option 9", "Extra Option 10", "Exit"}
-        Menu(MenuOptions)
+        'Console.CursorVisible = False
+        'SetColour(ConsoleColor.White)
+        'Dim MenuOptions() As String = {"Recursive Backtracker", "Hunt and Kill", "Aldous-Broder", "Prim's", "Extra Option 1", "Extra Option 2", "Extra Option 3", "Extra Option 4", "Extra Option 5", "Extra Option 6", "Extra Option 7", "Extra Option 8", "Extra Option 9", "Extra Option 10", "Exit"}
+        'Menu(MenuOptions)
 
 
 
@@ -21,21 +21,20 @@ Module Module1
 
 
 
-        Console.SetWindowSize(174, 42)
         Console.ReadKey()
-        Console.WriteLine(Console.WindowWidth)
-        Console.WriteLine(Console.WindowHeight)
-        Console.ReadKey()
-        Dim Limits() As Integer = {5, 2, Console.WindowWidth - 6, Console.WindowHeight - 3}
-        For x = Limits(0) + 3 To Limits(2) + 1 Step 2
-            For y = Limits(1) To Limits(3) Step 1
-                Console.SetCursorPosition(x, y)
-                Console.Write("X")
-            Next
-        Next
-        Dim path As List(Of Node) = RecursiveBacktracker(Limits, 10)
-        Console.ReadKey()
-        astar(path)
+        Dim Limits() As Integer = {5, 2, Console.WindowWidth / 2, Console.WindowHeight / 2}
+        Dim path As List(Of Node) = HuntAndKill(Limits)
+
+
+        'For x = Limits(0) + 3 To Limits(2) + 1 Step 2
+        '    For y = Limits(1) To Limits(3) Step 1
+        '        Console.SetCursorPosition(x, y)
+        '        Console.Write("X")
+        '    Next
+        'Next
+        'Dim path As List(Of Node) = RecursiveBacktracker(Limits, 10)
+        'Console.ReadKey()
+        'astar(path)
         Console.ReadKey()
     End Sub
     Sub SetBackGroundColour(ByVal colour As ConsoleColor)
@@ -140,9 +139,6 @@ Module Module1
             MsgColour($"> {arr(y)}", ConsoleColor.Green)
         End While
     End Sub
-
-
-
     Sub astar(ByRef availiblepath As List(Of Node))
         Console.ForegroundColor = ConsoleColor.White
         Console.BackgroundColor = ConsoleColor.Black
@@ -240,53 +236,73 @@ Module Module1
         Dim CurrentCell As New Cell(Limits(0) + 3, Limits(1) + 2)
         Dim VisitedList, Stack As New List(Of Cell)
         Dim ReturnablePath As New List(Of Node)
-        Dim CurrentCol, CurrentRow As Integer
-        CurrentCol = Limits(1)
         Dim Width As Integer = Limits(2) - Limits(0)
         Dim Height As Integer = Limits(3) - Limits(1)
         While True
             Console.BackgroundColor = ConsoleColor.White
+            If IsNothing(CurrentCell) Then Exit While
             If NeighboursAvailable(CurrentCell, VisitedList, Limits) Then
                 Dim TemporaryCell As Cell = Neighbour(CurrentCell, VisitedList, Limits)
                 If Not TemporaryCell.Usable Then
                     ReturnablePath.Add(New Node(TemporaryCell.X, TemporaryCell.Y))
                     VisitedList.Add(New Cell(TemporaryCell.X, TemporaryCell.Y))
-                    Stack.Add(New Cell(TemporaryCell.X, TemporaryCell.Y))
                     Dim WallCell As Cell = MidPoint(CurrentCell, TemporaryCell)
                     CurrentCell = TemporaryCell
                     ReturnablePath.Add(New Node(WallCell.X, WallCell.Y))
                     TemporaryCell.Print("██")
                     WallCell.Print("██")
-                    Threading.Thread.Sleep(4)
+                    Threading.Thread.Sleep(10)
                 End If
+            ElseIf CurrentCell Is Nothing Then
+                Exit While
             Else
+                Dim xCount, yCount As Integer
+                xCount = 0
+                yCount = 0
+                Dim list As New List(Of Cell)
                 Console.BackgroundColor = ConsoleColor.Green
-                For i = 5 To Console.WindowWidth - 6 Step 4
-                    For j = 2 To Console.WindowHeight - 3
-                        Dim newcell As New Cell(i + 3, j)
-                        newcell.Print("AA")
-                        'Threading.Thread.Sleep(50)
-                        If Not newcell.IsPresent(VisitedList) Then
-                            CurrentCell = newcell
+                Dim ContinueFor As Boolean = True
+                For y = Limits(1) To Limits(3) Step 2
+                    For x = Limits(0) + 3 To Limits(2) + 1 Step 4
+                        Dim newcell As New Cell(x, y)
+
+
+                        'Console.ForegroundColor = ConsoleColor.Cyan
+                        'Console.SetCursorPosition(x, y)
+                        'Console.Write("██")
+                        'Console.SetCursorPosition(x + 2, y) : Console.Write("██")
+
+                        Console.ForegroundColor = ConsoleColor.White
+                        Dim AdjancencyList As Integer() = AdjacentCheck(newcell, VisitedList)
+                        CurrentCell = PickAdjancentCell(newcell, AdjancencyList)
+                        If CurrentCell IsNot Nothing Then
+                            Dim WallCell As Cell = MidPoint(newcell, CurrentCell)
+                            ReturnablePath.Add(New Node(WallCell.X, WallCell.Y))
+                            ReturnablePath.Add(New Node(CurrentCell.X, CurrentCell.Y))
+                            WallCell.Print("██")
+                            CurrentCell.Print("██")
+                            ContinueFor = False
                             Exit For
-                        ElseIf i + 3 = Console.WindowWidth And j = Console.WindowHeight Then
                         End If
+                        xCount += 1
                     Next
+                    If ContinueFor = False Then Exit For
+                    yCount += 1
                 Next
 
-
-                'For i = Limits(0) To Width + 2 Step 4
-                '    For j = 2 To Height Step 2
-                '        Dim newcell As New Cell(i + 3, j)
-                '        Console.BackgroundColor = ConsoleColor.Green
-                '        newcell.Print("AA")
-                '        If Not newcell.IsPresent(VisitedList) Then
-                '            CurrentCell = newcell
-                '            Exit For
+                'For j = Limits(1) To yCount Step 1
+                '    For i = Limits(0) To xCount Step 2
+                '        Dim tempcell As New Cell(i, j)
+                '        If tempcell.IsPresent(VisitedList) Then
+                '            Console.SetCursorPosition(i, j)
+                '            Console.Write("  ")
+                '        Else
+                '            Console.SetCursorPosition(i, j)
+                '            Console.Write("██")
                 '        End If
-
                 '    Next
                 'Next
+
             End If
         End While
         ReturnablePath.Add(New Node(Limits(0) + 3, Limits(1) - 1))
@@ -295,6 +311,94 @@ Module Module1
         'ReturnablePath.Add(New Node(If(Console.WindowWidth Mod 2 = 0, Limits(2), Limits(2) + 1), If(Console.WindowHeight Mod 2 = 0, Limits(3) - 1, Limits(3)+1)))
         ReturnablePath(ReturnablePath.Count - 1).Print("██")
         Return ReturnablePath
+    End Function
+    Function PickAdjancentCell(ByVal cell As Cell, ByVal adjancencylist() As Integer)
+        Dim ReturnCell As Cell
+        Dim Neighbours As New List(Of Cell)
+        Dim Count As Integer
+
+        If adjancencylist(0) = 1 Then
+            Neighbours.Add(New Cell(cell.X, cell.Y - 1 * 2))
+        End If
+        If adjancencylist(1) = 1 Then
+            Neighbours.Add(New Cell(cell.X + 1 * 4, cell.Y))
+        End If
+        If adjancencylist(2) = 1 Then
+            Neighbours.Add(New Cell(cell.X, cell.Y + 1 * 2))
+        End If
+        If adjancencylist(3) = 1 Then
+            Neighbours.Add(New Cell(cell.X - 1 * 4, cell.Y))
+        End If
+
+
+
+        'For Each Element In adjancencylist
+        '    If Element = 1 And Count = 0 Then
+        '        Neighbours.Add(New Cell(cell.X, cell.Y - 1 * 2))
+        '    End If
+        '    If Element = 1 And Count = 1 Then
+        '        Neighbours.Add(New Cell(cell.X + 1 * 4, cell.Y))
+        '    End If
+        '    If Element = 1 And Count = 2 Then
+        '        Neighbours.Add(New Cell(cell.X, cell.Y + 1 * 2))
+        '    End If
+        '    If Element = 1 And Count = 3 Then
+        '        Neighbours.Add(New Cell(cell.X - 1 * 4, cell.Y))
+        '    End If
+        '    Count += 1
+        'Next
+        Dim R As New Random
+        If Neighbours.Count > 0 Then
+            ReturnCell = Neighbours(R.Next(0, Neighbours.Count))
+        End If
+        Return ReturnCell
+    End Function
+
+    Function AdjacentCheck(ByVal cell As Cell, ByVal visitedcells As List(Of Cell))
+        Dim Adjancent() As Integer = {0, 0, 0, 0}
+        '0 = Top
+        '1 = Right
+        '2 = Bottom
+        '3 = Left
+        Dim Neighbours As New List(Of Cell)
+
+
+        Dim TempCell1 As New Cell(cell.X, cell.Y - 2)
+        If TempCell1.IsPresent(visitedcells) And Not cell.IsPresent(visitedcells) Then Adjancent(0) = 1
+
+
+        Dim TempCell2 As New Cell(cell.X + 4, cell.Y)
+        If TempCell2.IsPresent(visitedcells) And Not cell.IsPresent(visitedcells) Then Adjancent(1) = 1
+
+
+        Dim TempCell3 As New Cell(cell.X, cell.Y + 2)
+        If TempCell3.IsPresent(visitedcells) And Not cell.IsPresent(visitedcells) Then Adjancent(2) = 1
+
+
+        Dim TempCell4 As New Cell(cell.X - 4, cell.Y)
+        If TempCell4.IsPresent(visitedcells) And Not cell.IsPresent(visitedcells) Then Adjancent(3) = 1
+
+
+
+
+
+        Neighbours.Add(New Cell(cell.X - 1 * 4, cell.Y))
+
+        'For Each CellInList In visitedcells
+        '    If cell.X = CellInList.X And cell.Y = CellInList.Y Then ' Top
+        '        Adjancent(0) = 1
+        '    End If
+        '    If cell.X = CellInList.X And cell.Y = CellInList.Y Then ' right
+        '        Adjancent(1) = 1
+        '    End If
+        '    If cell.X = CellInList.X And cell.Y = CellInList.Y Then ' bottom
+        '        Adjancent(2) = 1
+        '    End If
+        '    If cell.X = CellInList.X And cell.Y = CellInList.Y Then ' Left
+        '        Adjancent(3) = 1
+        '    End If
+        'Next
+        Return Adjancent
     End Function
     Function RecursiveBacktracker(ByVal Limits() As Integer, ByVal Delay As Integer)
         Console.BackgroundColor = ConsoleColor.White
@@ -442,7 +546,7 @@ Module Module1
             Next
         Next
         Return False
-    End Function
+    End Function 'TODO: simplify
     Sub Remove(ByRef list As List(Of Node), ByVal node As Node)
         If list.FindIndex(Function(p) p.xcord = node.X And p.ycord = node.Y) <> -1 Then list.RemoveAt(list.FindIndex(Function(p) p.xcord = node.X And p.ycord = node.Y))
     End Sub
