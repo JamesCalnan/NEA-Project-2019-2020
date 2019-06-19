@@ -7,16 +7,8 @@ Module Module1
 
         Console.CursorVisible = False
         SetColour(ConsoleColor.White)
-        Dim MenuOptions() As String = {"Recursive Backtracker", "Hunt and Kill", "Aldous-Broder", "Prim's", "Extra Option 1", "Extra Option 2", "Extra Option 3", "Extra Option 4", "Extra Option 5", "Extra Option 6", "Extra Option 7", "Extra Option 8", "Extra Option 9", "Extra Option 10", "Exit"}
+        Dim MenuOptions() As String = {"Recursive Backtracker", "Hunt and Kill", "Aldous-Broder", "Prim's", "Exit"}
         Menu(MenuOptions)
-
-
-
-        'Console.Write("What do you want to width and height of the maze to be")
-        'Console.WriteLine("(  ,  )")
-
-
-
 
 
 
@@ -26,15 +18,6 @@ Module Module1
         Dim path As List(Of Node) = HuntAndKill(Limits, 20)
 
 
-        'For x = Limits(0) + 3 To Limits(2) + 1 Step 2
-        '    For y = Limits(1) To Limits(3) Step 1
-        '        Console.SetCursorPosition(x, y)
-        '        Console.Write("X")
-        '    Next
-        'Next
-        'Dim path As List(Of Node) = RecursiveBacktracker(Limits, 10)
-        'Console.ReadKey()
-        'astar(path)
         Console.ReadKey()
     End Sub
     Sub SetBackGroundColour(ByVal colour As ConsoleColor)
@@ -56,10 +39,10 @@ Module Module1
     End Function
     Sub GetMazeInfo(ByRef Width As Integer, ByRef Height As Integer, ByRef DelayMS As Integer, ByRef Limits() As Integer)
         Console.Clear()
-        DelayMS = GetIntInput("Delay when making the Maze: ")
-        Width = GetIntInput("Width of the Maze: ")
+        DelayMS = GetIntInputArrowKeys("Delay when making the Maze: ")
+        Width = GetIntInputArrowKeys("Width of the Maze: ")
         If Width Mod 2 = 0 Then Width += 1
-        Height = GetIntInput("Height of the Maze: ")
+        Height = GetIntInputArrowKeys("Height of the Maze: ")
         If Height Mod 2 = 0 Then Height += 1
         Limits = {1, 2, Width, Height}
         Console.Clear()
@@ -68,6 +51,40 @@ Module Module1
         SetColour(Colour)
         Console.WriteLine(Msg)
         SetColour(ConsoleColor.White)
+    End Sub
+    Function GetIntInputArrowKeys(ByVal message As String)
+        Console.Write(message)
+        SetColour(ConsoleColor.Yellow)
+        Dim cursorleft, cursortop As Integer
+        cursorleft = Console.CursorLeft
+        cursortop = Console.CursorTop
+        Console.SetCursorPosition(cursorleft, cursortop)
+        Console.Write("0")
+        Dim current As Integer = 0
+        While 1
+            Dim key = Console.ReadKey
+            Select Case key.Key.ToString
+                Case "UpArrow"
+                    current += 1
+                Case "DownArrow"
+                    current -= 1
+                    If current < 0 Then current = 0
+                Case "Enter"
+                    Exit While
+            End Select
+            Console.SetCursorPosition(cursorleft, cursortop)
+            Console.Write("   ")
+            Console.SetCursorPosition(cursorleft, cursortop)
+            Console.Write(current)
+        End While
+        Console.SetCursorPosition(0, cursortop + 1)
+        SetColour(ConsoleColor.White)
+        Return current
+    End Function
+    Sub DisplayAvailablePositions(ByVal count As Integer)
+        Dim mess As String = $"There are {count} available positions in the maze"
+        Console.SetCursorPosition((Console.WindowWidth / 2) - (mess.Count / 2), 0)
+        Console.Write(mess)
     End Sub
     Sub Menu(ByVal arr() As String)
         Console.Clear()
@@ -96,10 +113,7 @@ Module Module1
                         Dim AvailablePath As List(Of Node) = RecursiveBacktracker(Limits, DelayMS)
                         SetBackGroundColour(ConsoleColor.Black)
                         Dim YPosAfterMaze As Integer = Console.CursorTop
-                        Dim mess As String = $"There are {AvailablePath.Count} available positions in the maze"
-                        Console.SetCursorPosition((Console.WindowWidth / 2) - (mess.Count / 2), 0)
-                        Console.Write(mess)
-
+                        DisplayAvailablePositions(AvailablePath.Count)
                         Console.SetCursorPosition(0, YPosAfterMaze + 2)
                         Console.CursorVisible = True
                         Console.Write("Do you want to use A: A* or B: Dijstras ")
@@ -107,6 +121,7 @@ Module Module1
                         Dim input As String = Console.ReadLine.ToUpper
                         If input = "A" Then
                             astar(AvailablePath)
+                            Console.ReadKey()
                         Else
                             Console.Clear()
                             Console.Write("Option not read yet")
@@ -117,9 +132,7 @@ Module Module1
                         Dim AvailablePath As List(Of Node) = HuntAndKill(Limits, DelayMS)
                         SetBackGroundColour(ConsoleColor.Black)
                         Dim YPosAfterMaze As Integer = Console.CursorTop
-                        Dim mess As String = $"There are {AvailablePath.Count} available positions in the maze"
-                        Console.SetCursorPosition((Console.WindowWidth / 2) - (mess.Count / 2), 0)
-                        Console.Write(mess)
+                        DisplayAvailablePositions(AvailablePath.Count)
                         Console.SetCursorPosition(0, YPosAfterMaze + 2)
                         Console.CursorVisible = True
                         Console.Write("Do you want to use A: A* or B: Dijstras ")
@@ -127,6 +140,7 @@ Module Module1
                         Dim input As String = Console.ReadLine.ToUpper
                         If input = "A" Then
                             astar(AvailablePath)
+                            Console.ReadKey()
                         Else
                             Console.Clear()
                             Console.Write("Option not read yet")
@@ -139,7 +153,7 @@ Module Module1
                         Console.ReadKey()
                         Console.Clear()
                     End If
-                    Console.ReadKey()
+
                     Console.Clear()
                     MsgColour("What Maze Generation Algorithm do you want to use: ", ConsoleColor.Yellow)
             End Select
@@ -231,24 +245,27 @@ Module Module1
         End If
     End Function
     Sub RetracePath(ByVal startnode As Node, ByVal endnode As Node, ByVal timetaken As String)
-        Console.BackgroundColor = ConsoleColor.Green
-        Console.ForegroundColor = ConsoleColor.Green
+
         Dim path As New List(Of Node)
         Dim current As Node = endnode
         While Not (current.X = startnode.X And current.Y = startnode.Y)
             path.Add(current)
             current = current.parent
         End While
+        Dim mess As String = ($"Path length:{path.Count - 1}   {timetaken}")
+        Console.ForegroundColor = ConsoleColor.Yellow
+        Console.BackgroundColor = ConsoleColor.Black
+        Console.SetCursorPosition(Console.WindowWidth / 2 - mess.Count / 2, Console.WindowHeight - 1)
+        Console.Write(mess)
+        Console.BackgroundColor = ConsoleColor.Green
+        Console.ForegroundColor = ConsoleColor.Green
         path.Reverse()
         For Each node In path
             node.Print("██")
-            'Threading.Thread.Sleep(2)
+            Threading.Thread.Sleep(2)
         Next
         Console.BackgroundColor = ConsoleColor.Black
-        Dim mess As String = ($"Path length:{path.Count - 1}   {timetaken}")
-        Console.ForegroundColor = ConsoleColor.Yellow
-        Console.SetCursorPosition(Console.WindowWidth / 2 - mess.Count / 2, Console.WindowHeight - 1)
-        Console.Write(mess)
+
     End Sub
     Function HuntAndKill(ByVal Limits() As Integer, ByVal delay As Integer)
         Console.BackgroundColor = ConsoleColor.White
@@ -322,7 +339,7 @@ Module Module1
         End While
         ReturnablePath.Add(New Node(Limits(0) + 3, Limits(1) - 1))
         ReturnablePath(ReturnablePath.Count - 1).Print("██")
-        ReturnablePath.Add(New Node(Limits(2) - 3, Limits(3)))
+        ReturnablePath.Add(New Node(Limits(2) - 1, Limits(3)))
         ReturnablePath(ReturnablePath.Count - 1).Print("██")
         Return ReturnablePath
     End Function
@@ -496,19 +513,48 @@ Module Module1
         Return neighbours(r.Next(0, neighbours.Count))
     End Function
     Function NeighboursAvailable(ByVal current As Cell, ByVal visited As List(Of Cell), ByVal Limits() As Integer)
-        For X1 = -1 To 1
-            For Y1 = -1 To 1
-                If X1 = 0 And Y1 = 0 Or X1 = -1 And Y1 = -1 Or X1 = 1 And Y1 = -1 Or X1 = -1 And Y1 = 1 Or X1 = 1 And Y1 = 1 Then Continue For
-                Dim checkx As Integer = current.X + X1 + X1 + X1 + X1
-                Dim checky As Integer = current.Y + Y1 + Y1
-                Dim newpoint As New Cell(checkx, checky)
-                If checkx >= Limits(0) And checkx <= Limits(2) And checky >= Limits(1) And checky <= Limits(3) Then
-                    If Not newpoint.IsPresent(visited) Then
-                        Return True
-                    End If
-                End If
-            Next
-        Next
+
+
+        Dim newpoint As New Cell(current.X - 4, current.Y)
+        Dim checkx As Integer = current.X - 4
+        Dim checky As Integer = current.Y
+        If checkx >= Limits(0) And checkx <= Limits(2) And checky >= Limits(1) And checky <= Limits(3) Then
+            If Not newpoint.IsPresent(visited) Then
+                Return True
+            End If
+        End If
+
+        Dim newpoint1 As New Cell(current.X, current.Y - 2)
+        checkx = current.X
+        checky = current.Y - 2
+        If checkx >= Limits(0) And checkx <= Limits(2) And checky >= Limits(1) And checky <= Limits(3) Then
+            If Not newpoint1.IsPresent(visited) Then
+                Return True
+            End If
+        End If
+
+        Dim newpoint2 As New Cell(current.X, current.Y + 2)
+        checkx = current.X
+        checky = current.Y + 2
+        If checkx >= Limits(0) And checkx <= Limits(2) And checky >= Limits(1) And checky <= Limits(3) Then
+            If Not newpoint2.IsPresent(visited) Then
+                Return True
+            End If
+        End If
+
+
+        Dim newpoint3 As New Cell(current.X + 4, current.Y)
+        checkx = current.X + 4
+        checky = current.Y
+        If checkx >= Limits(0) And checkx <= Limits(2) And checky >= Limits(1) And checky <= Limits(3) Then
+            If Not newpoint3.IsPresent(visited) Then
+                Return True
+            End If
+        End If
+
+
+
+
         Return False
     End Function 'TODO: simplify
     Sub Remove(ByRef list As List(Of Node), ByVal node As Node)
