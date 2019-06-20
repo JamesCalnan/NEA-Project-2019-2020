@@ -7,15 +7,16 @@ Module Module1
 
         Console.CursorVisible = False
         SetColour(ConsoleColor.White)
-        Dim MenuOptions() As String = {"Recursive Backtracker", "Hunt and Kill", "Prim's Algorithm", "Aldous-Broder", "Exit"}
+        Dim MenuOptions() As String = {"Recursive Backtracker", "Hunt and Kill", "Prim's Algorithm", "Aldous-Broder", "Sidewinder Algorithm", "Exit"}
         Menu(MenuOptions)
+
 
 
 
 
         Console.ReadKey()
         Dim Limits() As Integer = {5, 2, Console.WindowWidth - 5, Console.WindowHeight - 2}
-        Dim path As List(Of Node) = Prims(Limits, 5)
+        Dim path As List(Of Node) = AldousBroder(Limits, 5)
         For Each node In path
             node.Print("X")
         Next
@@ -40,20 +41,23 @@ Module Module1
     End Function
     Sub GetMazeInfo(ByRef Width As Integer, ByRef Height As Integer, ByRef DelayMS As Integer, ByRef Limits() As Integer)
         Console.Clear()
-        DelayMS = GetIntInputArrowKeys("Delay when making the Maze: ")
-        Width = GetIntInputArrowKeys($"Width of the Maze (must be less than {Console.WindowWidth - 5}): ")
+        DelayMS = GetIntInputArrowKeys("Delay when making the Maze (MS): ", 50)
+        Width = GetIntInputArrowKeys($"Width of the Maze: ", Console.WindowWidth - 5)
         If Width Mod 2 = 0 Then Width += 1
-        Height = GetIntInputArrowKeys($"Height of the Maze (must be less than {Console.WindowHeight - 2}): ")
+        Height = GetIntInputArrowKeys($"Height of the Maze: ", Console.WindowHeight - 5)
         If Height Mod 2 = 0 Then Height += 1
+        Console.WriteLine($"Width: {Width}      Height: {Height}")
+        Console.ReadKey()
         Limits = {5, 3, Width, Height}
         Console.Clear()
     End Sub
+
     Sub MsgColour(ByVal Msg As String, ByVal Colour As ConsoleColor)
         SetColour(Colour)
         Console.WriteLine(Msg)
         SetColour(ConsoleColor.White)
     End Sub
-    Function GetIntInputArrowKeys(ByVal message As String)
+    Function GetIntInputArrowKeys(ByVal message As String, ByVal NumLimit As Integer)
         Console.Write(message)
         SetColour(ConsoleColor.Yellow)
         Dim cursorleft, cursortop As Integer
@@ -67,11 +71,13 @@ Module Module1
             Select Case key.Key.ToString
                 Case "RightArrow"
                     current += 5
+                    If current > NumLimit Then current = NumLimit
                 Case "LeftArrow"
                     current -= 5
                     If current < 5 Then current = 5
                 Case "UpArrow"
                     current += 1
+                    If current > NumLimit Then current = NumLimit
                 Case "DownArrow"
                     current -= 1
                     If current < 5 Then current = 5
@@ -170,6 +176,25 @@ Module Module1
                             Console.Clear()
                             Console.Write("Option not read yet")
                         End If
+                    ElseIf y = 3 Then
+                        Dim Width, Height, DelayMS, Limits() As Integer
+                        GetMazeInfo(Width, Height, DelayMS, Limits)
+                        Dim AvailablePath As List(Of Node) = AldousBroder(Limits, DelayMS)
+                        SetBackGroundColour(ConsoleColor.Black)
+                        Dim YPosAfterMaze As Integer = Console.CursorTop
+                        DisplayAvailablePositions(AvailablePath.Count)
+                        Console.SetCursorPosition(0, YPosAfterMaze + 2)
+                        Console.CursorVisible = True
+                        Console.Write("Do you want to use A: A* or B: Dijstras ")
+                        Console.CursorVisible = False
+                        Dim input As String = Console.ReadLine.ToUpper
+                        If input = "A" Then
+                            astar(AvailablePath)
+                            Console.ReadKey()
+                        Else
+                            Console.Clear()
+                            Console.Write("Option not read yet")
+                        End If
                     ElseIf y = arr.Count - 1 Then
                         End
                     Else
@@ -224,11 +249,11 @@ Module Module1
         Dim stopwatch As Stopwatch = Stopwatch.StartNew()
         While openSet.Count > 0
             current = openSet(0)
-            For i = 1 To openSet.Count - 1
-                If openSet(i).fCost() <= current.fCost() Or openSet(i).hCost = current.hCost Then
-                    If openSet(i).hCost < current.hCost Then current = openSet(i)
-                End If
-            Next 'finding node with the lowest fcost in the openset
+            'For i = 1 To openSet.Count - 1
+            '    If openSet(i).fCost() <= current.fCost() Or openSet(i).hCost = current.hCost Then
+            '        If openSet(i).hCost < current.hCost Then current = openSet(i)
+            '    End If
+            'Next 'finding node with the lowest fcost in the openset
             openSet.Remove(current)
             closedSet.Add(current)
             Console.BackgroundColor = ConsoleColor.Red
@@ -238,17 +263,6 @@ Module Module1
             Console.ForegroundColor = ConsoleColor.Yellow
             If current.X = target.X And current.Y = target.Y Then
                 Dim Time As String = $"Time Taken to solve: {stopwatch.Elapsed.TotalSeconds} seconds"
-                Console.BackgroundColor = ConsoleColor.White
-                Console.ForegroundColor = ConsoleColor.White
-                For x = 2 To Console.WindowWidth - 2
-                    For y = 2 To Console.WindowHeight - 2
-                        Dim temp As New Node(x, y)
-                        If temp.IsPresent(availablepath) Then temp.Print("██")
-                    Next
-                Next
-                'For Each node In mazepath
-                '    node.Print("██")
-                'Next
                 RetracePath(start, current, Time)
                 pathfound = True
                 Exit While
@@ -260,16 +274,16 @@ Module Module1
                     neighbour.gCost = newmovementcost
                     neighbour.hCost = GetDistance(neighbour, target)
                     neighbour.parent = current
-                    If neighbour.IsPresent(availablepath) Then
-                        neighbour.Print("██")
-                        'Threading.Thread.Sleep(5)
-                    End If
+                    'If neighbour.IsPresent(availablepath) Then
+                    '    neighbour.Print("██")
+                    '    'Threading.Thread.Sleep(5)
+                    'End If
                     If Not neighbour.IsPresent(openSet) Then
                         openSet.Add(neighbour)
                     End If
                 End If
             Next
-            'Remove(availablepath, current)
+            Remove(availablepath, current)
         End While
         If pathfound = False Then
             Dim mess As String = "No Path Availible"
@@ -311,7 +325,66 @@ Module Module1
         Console.BackgroundColor = ConsoleColor.Black
 
     End Sub
+
+
+    Function AldousBroder(ByVal Limits() As Integer, ByVal delay As Integer)
+        Dim TotalCellCount As Integer
+        Dim R As New Random
+        Dim availablepath As New List(Of Cell)
+        Dim grid As New nGrid
+        Dim VisitedList, FrontierSet As New List(Of Cell)
+        Dim CurrentCell As New Cell(Limits(0) + 3, Limits(1) + 2)
+        Dim PrevCell As New Cell(Limits(0) + 3, Limits(1) + 2)
+        Dim PreviousCell As Cell = CurrentCell
+        Dim WallCell As Cell
+        Dim ReturnablePath As New List(Of Node)
+
+        Dim c As Integer
+        For y = Limits(1) To Limits(3) Step 2
+            For x = Limits(0) + 3 To Limits(2) - 1 Step 4
+                TotalCellCount += 1
+            Next
+        Next
+        While VisitedList.Count <> TotalCellCount
+            Console.BackgroundColor = ConsoleColor.White
+            Console.ForegroundColor = ConsoleColor.White
+            If NeighboursAvailable(CurrentCell, VisitedList, Limits) Then
+                Dim TemporaryCell As Cell = Neighbour(CurrentCell, VisitedList, Limits, True)
+                ReturnablePath.Add(New Node(TemporaryCell.X, TemporaryCell.Y))
+                VisitedList.Add(New Cell(TemporaryCell.X, TemporaryCell.Y))
+                WallCell = MidPoint(CurrentCell, TemporaryCell)
+                CurrentCell = TemporaryCell
+                ReturnablePath.Add(New Node(WallCell.X, WallCell.Y))
+                Console.BackgroundColor = ConsoleColor.White
+                Console.ForegroundColor = ConsoleColor.White
+                PrevCell.Print("██")
+                WallCell.Print("██")
+                TemporaryCell.Print("██")
+            Else
+                Dim AdjancencyList As Integer() = AdjacentCheck1(CurrentCell, VisitedList)
+                CurrentCell = PickAdjancentCell(CurrentCell, AdjancencyList)
+                If CurrentCell IsNot Nothing Then
+                    WallCell = MidPoint(CurrentCell, CurrentCell)
+                    ReturnablePath.Add(New Node(WallCell.X, WallCell.Y))
+                    ReturnablePath.Add(New Node(CurrentCell.X, CurrentCell.Y))
+                    WallCell.Print("██")
+                    CurrentCell.Print("██")
+                    Console.BackgroundColor = ConsoleColor.Black
+                End If
+            End If
+            Threading.Thread.Sleep(delay)
+        End While
+
+        ReturnablePath.Add(New Node(Limits(0) + 3, Limits(1) - 1))
+        ReturnablePath(ReturnablePath.Count - 1).Print("██")
+        ReturnablePath.Add(New Node(Limits(2) - 1, Limits(3) + 1))
+        ReturnablePath(ReturnablePath.Count - 1).Print("██")
+        Return ReturnablePath
+    End Function
+
+
     Function Prims(ByVal Limits() As Integer, ByVal delay As Integer)
+
         Dim R As New Random
         Dim availablepath As New List(Of Cell)
         Dim grid As New nGrid
@@ -344,11 +417,21 @@ Module Module1
             CurrentCell.RemoveWhere(FrontierSet)
             ReturnablePath.Add(New Node(WallCell.X, WallCell.Y))
             ReturnablePath.Add(New Node(CurrentCell.X, CurrentCell.Y))
+            Threading.Thread.Sleep(delay)
         End While
+
+
         ReturnablePath.Add(New Node(Limits(0) + 3, Limits(1) - 1))
         ReturnablePath(ReturnablePath.Count - 1).Print("██")
         ReturnablePath.Add(New Node(Limits(2) - 1, Limits(3) + 1))
         ReturnablePath(ReturnablePath.Count - 1).Print("██")
+
+
+
+        Dim width As Integer = (Limits(2) - 1) - (Limits(0) + 3)
+        Dim height As Integer = (Limits(1) - 1) - (Limits(3) + 3)
+
+
         Return ReturnablePath
     End Function
 
@@ -428,7 +511,7 @@ Module Module1
         End While
         ReturnablePath.Add(New Node(Limits(0) + 3, Limits(1) - 1))
         ReturnablePath(ReturnablePath.Count - 1).Print("██")
-        ReturnablePath.Add(New Node(Limits(2) - 1, Limits(3)))
+        ReturnablePath.Add(New Node(Limits(2) - 1, Limits(3) + 1))
         ReturnablePath(ReturnablePath.Count - 1).Print("██")
         Return ReturnablePath
     End Function
@@ -490,6 +573,23 @@ Module Module1
             ReturnCell = Neighbours(R.Next(0, Neighbours.Count))
         End If
         Return ReturnCell
+    End Function
+    Function AdjacentCheck1(ByVal cell As Cell, ByVal visitedcells As List(Of Cell))
+        Dim Adjancent() As Integer = {0, 0, 0, 0}
+        '0 = Top
+        '1 = Right
+        '2 = Bottom
+        '3 = Left
+        Dim Neighbours As New List(Of Cell)
+        Dim TempCell1 As New Cell(cell.X, cell.Y - 2)
+        If TempCell1.IsPresent(visitedcells) Then Adjancent(0) = 1
+        Dim TempCell2 As New Cell(cell.X + 4, cell.Y)
+        If TempCell2.IsPresent(visitedcells) Then Adjancent(1) = 1
+        Dim TempCell3 As New Cell(cell.X, cell.Y + 2)
+        If TempCell3.IsPresent(visitedcells) Then Adjancent(2) = 1
+        Dim TempCell4 As New Cell(cell.X - 4, cell.Y)
+        If TempCell4.IsPresent(visitedcells) Then Adjancent(3) = 1
+        Return Adjancent
     End Function
     Function AdjacentCheck(ByVal cell As Cell, ByVal visitedcells As List(Of Cell))
         Dim Adjancent() As Integer = {0, 0, 0, 0}
@@ -579,7 +679,7 @@ Module Module1
         WallPrev.Print("██")
         ReturnablePath.Add(New Node(Limits(0) + 3, Limits(1) - 1))
         ReturnablePath(ReturnablePath.Count - 1).Print("██")
-        ReturnablePath.Add(New Node(Limits(2) - 1, Limits(3)))
+        ReturnablePath.Add(New Node(Limits(2) - 3, Limits(3) + 1))
         ReturnablePath(ReturnablePath.Count - 1).Print("██")
         Return ReturnablePath
     End Function
