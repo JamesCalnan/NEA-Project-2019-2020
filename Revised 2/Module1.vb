@@ -2,7 +2,7 @@
 Imports Revised_2
 
 Module Module1
-    'TODO: clean up neighbours function, end point bug, check .usable relevancy, prims solving fix
+    'TODO: clean up neighbours function, end point bug, check .usable relevancy
     Sub Main()
 
         Console.CursorVisible = False
@@ -16,7 +16,9 @@ Module Module1
         Console.ReadKey()
         Dim Limits() As Integer = {5, 2, Console.WindowWidth - 5, Console.WindowHeight - 2}
         Dim path As List(Of Node) = Prims(Limits, 5)
-
+        For Each node In path
+            node.Print("X")
+        Next
         Console.ReadKey()
     End Sub
     Sub SetBackGroundColour(ByVal colour As ConsoleColor)
@@ -43,7 +45,7 @@ Module Module1
         If Width Mod 2 = 0 Then Width += 1
         Height = GetIntInputArrowKeys($"Height of the Maze (must be less than {Console.WindowHeight - 2}): ")
         If Height Mod 2 = 0 Then Height += 1
-        Limits = {1, 2, Width, Height}
+        Limits = {5, 3, Width, Height}
         Console.Clear()
     End Sub
     Sub MsgColour(ByVal Msg As String, ByVal Colour As ConsoleColor)
@@ -310,6 +312,7 @@ Module Module1
 
     End Sub
     Function Prims(ByVal Limits() As Integer, ByVal delay As Integer)
+        Dim R As New Random
         Dim availablepath As New List(Of Cell)
         Dim grid As New nGrid
         Dim VisistedList, FrontierSet As New List(Of Cell)
@@ -319,6 +322,7 @@ Module Module1
         Dim ReturnablePath As New List(Of Node)
         VisistedList.Add(CurrentCell)
         CurrentCell.Print("██")
+        ReturnablePath.Add(New Node(CurrentCell.X, CurrentCell.Y))
         While True
             Console.ForegroundColor = ConsoleColor.Yellow
             Console.BackgroundColor = ConsoleColor.Yellow
@@ -326,19 +330,14 @@ Module Module1
                 If Not cell.IsPresent(FrontierSet) Then FrontierSet.Add(cell)
                 cell.Print("██")
             Next
-            Dim R As New Random
             Dim Index As Integer = R.Next(0, FrontierSet.Count)
-            'Console.ForegroundColor = ConsoleColor.Red
-            'Console.BackgroundColor = ConsoleColor.Red
             If FrontierSet.Count = 0 Then Exit While
             CurrentCell = FrontierSet(Index)
-            'CurrentCell.Print("██")
             Dim AdjancencyList() As Integer = AdjacentCheck(CurrentCell, VisistedList)
             PreviousCell = PickAdjancentCell(CurrentCell, AdjancencyList)
             WallCell = MidPoint(CurrentCell, PreviousCell)
             Console.ForegroundColor = ConsoleColor.White
             Console.BackgroundColor = ConsoleColor.White
-
             WallCell.Print("██")
             CurrentCell.Print("██")
             VisistedList.Add(CurrentCell)
@@ -348,7 +347,7 @@ Module Module1
         End While
         ReturnablePath.Add(New Node(Limits(0) + 3, Limits(1) - 1))
         ReturnablePath(ReturnablePath.Count - 1).Print("██")
-        ReturnablePath.Add(New Node(Limits(2) - 1, Limits(3)))
+        ReturnablePath.Add(New Node(Limits(2) - 1, Limits(3) + 1))
         ReturnablePath(ReturnablePath.Count - 1).Print("██")
         Return ReturnablePath
     End Function
