@@ -2,7 +2,8 @@
 Imports Revised_2
 
 Module Module1
-    'TODO: end point bug, clean up adjacentcell function
+    'TODO: end point bug, clean up adjacentcell function, make growing tree algorithm work:
+    'Make growing tree function recreate recursive backtracker
     Sub Main()
 
         'Console.CursorVisible = False
