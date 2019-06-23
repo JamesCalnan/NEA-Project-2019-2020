@@ -2,12 +2,13 @@
 Imports Revised_2
 
 Module Module1
-    'TODO: end point bug
+    'TODO: end point bug, clean up adjacentcell function
     Sub Main()
-        Console.CursorVisible = False
-        SetColour(ConsoleColor.White)
-        Dim MenuOptions() As String = {"Recursive Backtracker", "Hunt and Kill", "Prim's Algorithm", "Aldous-Broder", "Sidewinder Algorithm", "Growing Tree Algorithm", "Binary Tree Algorithm", "Exit"}
-        Menu(MenuOptions)
+
+        'Console.CursorVisible = False
+        'SetColour(ConsoleColor.White)
+        'Dim MenuOptions() As String = {"Recursive Backtracker", "Hunt and Kill", "Prim's Algorithm", "Aldous-Broder", "Sidewinder Algorithm", "Growing Tree Algorithm", "Binary Tree Algorithm", "Exit"}
+        'Menu(MenuOptions)
 
 
 
@@ -15,12 +16,16 @@ Module Module1
 
         Console.ReadKey()
         Dim Limits() As Integer = {5, 2, Console.WindowWidth - 5, Console.WindowHeight - 2}
-        Dim path As List(Of Node) = AldousBroder(Limits, 5)
-        For Each node In path
-            node.Print("X")
-        Next
+        Dim path As List(Of Node) = GrowingTree(Limits, 5)
+        AStar(path)
+        'For Each node In path
+        '    node.Print("X")
+
+        'Next
+
         Console.ReadKey()
     End Sub
+
     Sub SetBackGroundColour(ByVal colour As ConsoleColor)
         Console.BackgroundColor = colour
     End Sub
@@ -40,10 +45,10 @@ Module Module1
     End Function
     Sub GetMazeInfo(ByRef Width As Integer, ByRef Height As Integer, ByRef DelayMS As Integer, ByRef Limits() As Integer)
         Console.Clear()
-        DelayMS = GetIntInputArrowKeys("Delay when making the Maze (MS): ", 50)
-        Width = GetIntInputArrowKeys($"Width of the Maze: ", Console.WindowWidth - 5)
+        DelayMS = GetIntInputArrowKeys("Delay when making the Maze (MS): ", 50, 5)
+        Width = GetIntInputArrowKeys($"Width of the Maze: ", Console.WindowWidth - 6, 20)
         If Width Mod 2 = 0 Then Width += 1
-        Height = GetIntInputArrowKeys($"Height of the Maze: ", Console.WindowHeight - 5)
+        Height = GetIntInputArrowKeys($"Height of the Maze: ", Console.WindowHeight - 5, 10)
         If Height Mod 2 = 0 Then Height += 1
         Console.WriteLine($"Width: {Width}      Height: {Height}")
         Console.ReadKey()
@@ -56,30 +61,30 @@ Module Module1
         Console.WriteLine(Msg)
         SetColour(ConsoleColor.White)
     End Sub
-    Function GetIntInputArrowKeys(ByVal message As String, ByVal NumLimit As Integer)
+    Function GetIntInputArrowKeys(ByVal message As String, ByVal NumMax As Integer, ByVal NumMin As Integer)
         Console.Write(message)
         SetColour(ConsoleColor.Yellow)
         Dim cursorleft, cursortop As Integer
         cursorleft = Console.CursorLeft
         cursortop = Console.CursorTop
         Console.SetCursorPosition(cursorleft, cursortop)
-        Dim current As Integer = 5
+        Dim current As Integer = NumMin
         Console.Write(current)
         While 1
             Dim key = Console.ReadKey
             Select Case key.Key.ToString
                 Case "RightArrow"
                     current += 5
-                    If current > NumLimit Then current = NumLimit
+                    If current > NumMax Then current = NumMax
                 Case "LeftArrow"
                     current -= 5
-                    If current < 5 Then current = 5
+                    If current < NumMin Then current = NumMin
                 Case "UpArrow"
                     current += 1
-                    If current > NumLimit Then current = NumLimit
+                    If current > NumMax Then current = NumMax
                 Case "DownArrow"
                     current -= 1
-                    If current < 5 Then current = 5
+                    If current < NumMin Then current = NumMin
                 Case "Enter"
                     Exit While
             End Select
@@ -125,17 +130,12 @@ Module Module1
                         SetBackGroundColour(ConsoleColor.Black)
                         Dim YPosAfterMaze As Integer = Console.CursorTop
                         DisplayAvailablePositions(AvailablePath.Count)
-                        Console.SetCursorPosition(0, YPosAfterMaze + 2)
-                        Console.CursorVisible = True
-                        Console.Write("Do you want to use A: A* or B: Dijstras ")
-                        Console.CursorVisible = False
-                        Dim input As String = Console.ReadLine.ToUpper
-                        If input = "A" Then
-                            astar(AvailablePath)
+                        Dim input As String = SolvingMenu(YPosAfterMaze + 2)
+                        If input = "astar" Then
+                            AStar(AvailablePath)
                             Console.ReadKey()
                         Else
-                            Console.Clear()
-                            Console.Write("Option not read yet")
+                            OptionNotReady()
                         End If
                     ElseIf y = 1 Then
                         Dim Width, Height, DelayMS, Limits() As Integer
@@ -144,17 +144,12 @@ Module Module1
                         SetBackGroundColour(ConsoleColor.Black)
                         Dim YPosAfterMaze As Integer = Console.CursorTop
                         DisplayAvailablePositions(AvailablePath.Count)
-                        Console.SetCursorPosition(0, YPosAfterMaze + 2)
-                        Console.CursorVisible = True
-                        Console.Write("Do you want to use A: A* or B: Dijstras ")
-                        Console.CursorVisible = False
-                        Dim input As String = Console.ReadLine.ToUpper
-                        If input = "A" Then
-                            astar(AvailablePath)
+                        Dim input As String = SolvingMenu(YPosAfterMaze + 2)
+                        If input = "astar" Then
+                            AStar(AvailablePath)
                             Console.ReadKey()
                         Else
-                            Console.Clear()
-                            Console.Write("Option not read yet")
+                            OptionNotReady()
                         End If
                     ElseIf y = 2 Then
                         Dim Width, Height, DelayMS, Limits() As Integer
@@ -163,17 +158,12 @@ Module Module1
                         SetBackGroundColour(ConsoleColor.Black)
                         Dim YPosAfterMaze As Integer = Console.CursorTop
                         DisplayAvailablePositions(AvailablePath.Count)
-                        Console.SetCursorPosition(0, YPosAfterMaze + 2)
-                        Console.CursorVisible = True
-                        Console.Write("Do you want to use A: A* or B: Dijstras ")
-                        Console.CursorVisible = False
-                        Dim input As String = Console.ReadLine.ToUpper
-                        If input = "A" Then
-                            astar(AvailablePath)
+                        Dim input As String = SolvingMenu(YPosAfterMaze + 2)
+                        If input = "astar" Then
+                            AStar(AvailablePath)
                             Console.ReadKey()
                         Else
-                            Console.Clear()
-                            Console.Write("Option not read yet")
+                            OptionNotReady()
                         End If
                     ElseIf y = 3 Then
                         Dim Width, Height, DelayMS, Limits() As Integer
@@ -183,26 +173,18 @@ Module Module1
                         Dim YPosAfterMaze As Integer = Console.CursorTop
                         DisplayAvailablePositions(AvailablePath.Count)
                         Console.SetCursorPosition(0, YPosAfterMaze + 2)
-                        Console.CursorVisible = True
-                        Console.Write("Do you want to use A: A* or B: Dijstras ")
-                        Console.CursorVisible = False
-                        Dim input As String = Console.ReadLine.ToUpper
-                        If input = "A" Then
-                            astar(AvailablePath)
+                        Dim input As String = SolvingMenu(YPosAfterMaze + 2)
+                        If input = "astar" Then
+                            AStar(AvailablePath)
                             Console.ReadKey()
                         Else
-                            Console.Clear()
-                            Console.Write("Option not read yet")
+                            OptionNotReady()
                         End If
                     ElseIf y = arr.Count - 1 Then
                         End
                     Else
-                        Console.Clear()
-                        Console.WriteLine("Option not Ready Yet")
-                        Console.ReadKey()
-                        Console.Clear()
+                        OptionNotReady()
                     End If
-
                     Console.Clear()
                     MsgColour("What Maze Generation Algorithm do you want to use: ", ConsoleColor.Yellow)
             End Select
@@ -221,7 +203,55 @@ Module Module1
             MsgColour($"> {arr(y)}", ConsoleColor.Green)
         End While
     End Sub
-    Sub astar(ByRef availablepath As List(Of Node))
+    Sub OptionNotReady()
+        Console.Clear()
+        Console.WriteLine("Option not Ready Yet")
+        Console.ReadKey()
+        Console.Clear()
+    End Sub
+    Function SolvingMenu(ByVal ColumnPosition As Integer)
+        SetColour(ConsoleColor.White)
+        Dim AStarOption As Boolean = True
+        Dim x, y As Integer
+        y = ColumnPosition
+        Console.SetCursorPosition(x, y)
+        Console.Write("Do you want to use ")
+        MsgColour("> A*", ConsoleColor.Green)
+        Console.SetCursorPosition(23, y)
+        Console.Write(" Or Dijkstras to solve the maze")
+        While 1
+            Dim key = Console.ReadKey
+            Select Case key.Key.ToString
+                Case "RightArrow"
+                    If AStarOption Then AStarOption = False
+                Case "LeftArrow"
+                    If Not AStarOption Then AStarOption = True
+                Case "Enter"
+                    If AStarOption Then
+                        Return "astar"
+                    Else
+                        Return "dijkstras"
+                    End If
+            End Select
+            Console.SetCursorPosition(0, y)
+            Console.Write("Do you want to use A* Or Dijkstras to solve the maze")
+            If AStarOption Then
+                Console.SetCursorPosition(19, y)
+                MsgColour("> A*", ConsoleColor.Green)
+                Console.SetCursorPosition(23, y)
+                Console.Write(" Or Dijkstras to solve the maze")
+            Else
+                Console.SetCursorPosition(25, y)
+                Console.Write("                             ")
+                Console.SetCursorPosition(25, y)
+                MsgColour("> Dijkstras", ConsoleColor.Green)
+                Console.SetCursorPosition(37, y)
+                Console.Write("to solve the maze")
+            End If
+        End While
+        Return Nothing
+    End Function
+    Sub AStar(ByRef availablepath As List(Of Node))
         SetBoth(ConsoleColor.White)
         Dim start As New Node(availablepath(availablepath.Count - 2).X, availablepath(availablepath.Count - 2).Y)
         Dim target As New Node(availablepath(availablepath.Count - 1).X, availablepath(availablepath.Count - 1).Y)
@@ -317,6 +347,69 @@ Module Module1
         Console.BackgroundColor = ConsoleColor.Black
 
     End Sub
+    Function GrowingTree(ByVal Limits() As Integer, ByVal delay As Integer)
+
+        Dim R As New Random
+        Dim availablepath As New List(Of Cell)
+        Dim grid As New nGrid
+        Dim VisistedList, FrontierSet, RecentFrontierSet As New List(Of Cell)
+        Dim CurrentCell As New Cell(Limits(0) + 3, Limits(1) + 2)
+        Dim PreviousCell As Cell = CurrentCell
+        Dim WallCell As Cell
+        Dim Index As Integer
+        Dim ReturnablePath As New List(Of Node)
+        VisistedList.Add(CurrentCell)
+        CurrentCell.Print("██")
+        ReturnablePath.Add(New Node(CurrentCell.X, CurrentCell.Y))
+        Dim c As Integer
+        ReturnablePath.Add(New Node(Limits(0) + 3, Limits(1) - 1))
+        ReturnablePath(ReturnablePath.Count - 1).Print("██")
+        ReturnablePath.Add(New Node(Limits(2) - 1, Limits(3) + 1))
+        ReturnablePath(ReturnablePath.Count - 1).Print("██")
+        Console.ReadKey()
+
+        While True
+            SetBoth(ConsoleColor.Yellow)
+            For Each cell As Cell In NeighbourPrims(CurrentCell, VisistedList, FrontierSet, Limits, False)
+                If Not FrontierSet.Contains(cell) Then FrontierSet.Add(cell)
+                'End If
+                RecentFrontierSet.Add(cell)
+                'cell.Print("██")
+                'Exit For
+            Next
+            If RecentFrontierSet.Count > 0 Then
+                Index = R.Next(0, RecentFrontierSet.Count)
+                CurrentCell = RecentFrontierSet(Index)
+                SetBoth(ConsoleColor.Red)
+                CurrentCell.Print("██")
+            Else
+                If FrontierSet.Count = 0 Then Exit While
+                Index = FrontierSet.Count - 1 'R.Next(0, FrontierSet.Count)
+                CurrentCell = FrontierSet(Index)
+                SetBoth(ConsoleColor.Red)
+                CurrentCell.Print("██")
+            End If
+
+            Dim AdjancencyList() As Integer = AdjacentCheck(CurrentCell, VisistedList)
+            PreviousCell = PickAdjancentCell(CurrentCell, AdjancencyList)
+
+            WallCell = MidPoint(CurrentCell, PreviousCell)
+            SetBoth(ConsoleColor.White)
+            WallCell.Print("██")
+            CurrentCell.Print("██")
+            VisistedList.Add(CurrentCell)
+            FrontierSet.Remove(CurrentCell)
+            ReturnablePath.Add(New Node(WallCell.X, WallCell.Y))
+            ReturnablePath.Add(New Node(CurrentCell.X, CurrentCell.Y))
+            Threading.Thread.Sleep(delay - 5)
+            RecentFrontierSet.Clear()
+        End While
+        ReturnablePath.Add(New Node(Limits(0) + 3, Limits(1) - 1))
+        ReturnablePath(ReturnablePath.Count - 1).Print("██")
+        ReturnablePath.Add(New Node(Limits(2) - 1, Limits(3) + 1))
+        ReturnablePath(ReturnablePath.Count - 1).Print("██")
+        Return ReturnablePath
+    End Function
 
     Function AldousBroder(ByVal Limits() As Integer, ByVal delay As Integer)
         Dim TotalCellCount As Integer
@@ -387,6 +480,7 @@ Module Module1
             For Each cell As Cell In NeighbourPrims(CurrentCell, VisistedList, FrontierSet, Limits, False)
                 If Not FrontierSet.Contains(cell) Then FrontierSet.Add(cell)
                 cell.Print("██")
+                'Exit For
             Next
             If FrontierSet.Count = 0 Then Exit While
             Dim Index As Integer = R.Next(0, FrontierSet.Count)
@@ -398,7 +492,7 @@ Module Module1
             WallCell.Print("██")
             CurrentCell.Print("██")
             VisistedList.Add(CurrentCell)
-            CurrentCell.RemoveWhere(FrontierSet)
+            FrontierSet.Remove(CurrentCell)
             ReturnablePath.Add(New Node(WallCell.X, WallCell.Y))
             ReturnablePath.Add(New Node(CurrentCell.X, CurrentCell.Y))
             Threading.Thread.Sleep(delay - 5)
@@ -534,34 +628,42 @@ Module Module1
         ReturnablePath(ReturnablePath.Count - 1).Print("██")
         Return ReturnablePath
     End Function
-
+    'cleanup
     Function AdjacentCheck(ByVal cell As Cell, ByVal visitedcells As List(Of Cell))
         Dim Adjancent() As Integer = {0, 0, 0, 0}
         Dim Neighbours As New List(Of Cell)
         Dim TempCell1 As New Cell(cell.X, cell.Y - 2)
         If visitedcells.Contains(TempCell1) And Not visitedcells.Contains(cell) Then Adjancent(0) = 1
+        'up
         Dim TempCell2 As New Cell(cell.X + 4, cell.Y)
         If visitedcells.Contains(TempCell2) And Not visitedcells.Contains(cell) Then Adjancent(1) = 1
+        'right
         Dim TempCell3 As New Cell(cell.X, cell.Y + 2)
         If visitedcells.Contains(TempCell3) And Not visitedcells.Contains(cell) Then Adjancent(2) = 1
+        'down
         Dim TempCell4 As New Cell(cell.X - 4, cell.Y)
         If visitedcells.Contains(TempCell4) And Not visitedcells.Contains(cell) Then Adjancent(3) = 1
+        'left
         Return Adjancent
-    End Function 'GOOD
+    End Function
 
 
     Function PickAdjancentCell(ByVal cell As Cell, ByVal adjancencylist() As Integer)
         Dim ReturnCell As Cell
         Dim Neighbours As New List(Of Cell)
+        'up
         If adjancencylist(0) = 1 Then
             Neighbours.Add(New Cell(cell.X, cell.Y - 1 * 2))
         End If
+        'right
         If adjancencylist(1) = 1 Then
             Neighbours.Add(New Cell(cell.X + 1 * 4, cell.Y))
         End If
+        'down
         If adjancencylist(2) = 1 Then
             Neighbours.Add(New Cell(cell.X, cell.Y + 1 * 2))
         End If
+        'left
         If adjancencylist(3) = 1 Then
             Neighbours.Add(New Cell(cell.X - 1 * 4, cell.Y))
         End If
@@ -582,42 +684,33 @@ Module Module1
         Return newpoint
     End Function
     Function NeighbourPrims(ByVal current As Cell, ByVal visited As List(Of Cell), ByVal frontier As List(Of Cell), ByVal Limits() As Integer, ByVal bool As Boolean)
-        bool = False
         Dim neighbours As New List(Of Cell)
         'left
-        Dim checkx As Integer = current.X + -1 * 4
-        Dim checky As Integer = current.Y + 0 * 2
-        Dim newPoint As New Cell(checkx, checky)
-        If checkx >= Limits(0) And checkx <= Limits(2) And checky >= Limits(1) And checky <= Limits(3) Then
+        Dim newPoint As New Cell(current.X - 4, current.Y)
+        If newPoint.X >= Limits(0) And newPoint.X <= Limits(2) And newPoint.Y >= Limits(1) And newPoint.Y <= Limits(3) Then
             If Not visited.Contains(newPoint) And Not frontier.Contains(newPoint) Then
-                neighbours.Add(New Cell(checkx, checky))
+                neighbours.Add(New Cell(newPoint.X, newPoint.Y))
             End If
         End If
         'up
-        checkx = current.X + 0 * 4
-        checky = current.Y + -1 * 2
-        Dim newPoint2 As New Cell(checkx, checky)
-        If checkx >= Limits(0) And checkx <= Limits(2) And checky >= Limits(1) And checky <= Limits(3) Then
-            If Not visited.Contains(newPoint2) And Not frontier.Contains(newPoint2) Then
-                neighbours.Add(New Cell(checkx, checky))
+        newPoint.Update(current.X, current.Y - 2)
+        If newPoint.X >= Limits(0) And newPoint.X <= Limits(2) And newPoint.Y >= Limits(1) And newPoint.Y <= Limits(3) Then
+            If Not visited.Contains(newPoint) And Not frontier.Contains(newPoint) Then
+                neighbours.Add(New Cell(newPoint.X, newPoint.Y))
             End If
         End If
         'down
-        checkx = current.X + 0 * 4
-        checky = current.Y + 1 * 2
-        Dim newPoint3 As New Cell(checkx, checky)
-        If checkx >= Limits(0) And checkx <= Limits(2) And checky >= Limits(1) And checky <= Limits(3) Then
-            If Not visited.Contains(newPoint3) And Not frontier.Contains(newPoint3) Then
-                neighbours.Add(New Cell(checkx, checky))
+        newPoint.Update(current.X, current.Y + 2)
+        If newPoint.X >= Limits(0) And newPoint.X <= Limits(2) And newPoint.Y >= Limits(1) And newPoint.Y <= Limits(3) Then
+            If Not visited.Contains(newPoint) And Not frontier.Contains(newPoint) Then
+                neighbours.Add(New Cell(newPoint.X, newPoint.Y))
             End If
         End If
         'right
-        checkx = current.X + 1 * 4
-        checky = current.Y + 0 * 2
-        Dim newPoint4 As New Cell(checkx, checky)
-        If checkx >= Limits(0) And checkx <= Limits(2) And checky >= Limits(1) And checky <= Limits(3) Then
-            If Not visited.Contains(newPoint4) And Not frontier.Contains(newPoint4) Then
-                neighbours.Add(New Cell(checkx, checky))
+        newPoint.Update(current.X + 4, current.Y)
+        If newPoint.X >= Limits(0) And newPoint.X <= Limits(2) And newPoint.Y >= Limits(1) And newPoint.Y <= Limits(3) Then
+            If Not visited.Contains(newPoint) And Not frontier.Contains(newPoint) Then
+                neighbours.Add(New Cell(newPoint.X, newPoint.Y))
             End If
         End If
         Dim r As New Random
@@ -627,30 +720,26 @@ Module Module1
     Function RanNeighbour(ByVal current As Cell, ByVal visited As List(Of Cell), ByVal Limits() As Integer, ByVal bool As Boolean)
         Dim neighbours As New List(Of Cell)
         'left
-        Dim checkx As Integer = current.X + -1 * 4
-        Dim checky As Integer = current.Y + 0 * 2
-        Dim newPoint As New Cell(checkx, checky)
+        Dim checkx As Integer = current.X - 4
+        Dim checky As Integer = current.Y
         If checkx >= Limits(0) And checkx <= Limits(2) And checky >= Limits(1) And checky <= Limits(3) Then
             neighbours.Add(New Cell(checkx, checky))
         End If
         'up
-        checkx = current.X + 0 * 4
-        checky = current.Y + -1 * 2
-        Dim newPoint2 As New Cell(checkx, checky)
+        checkx = current.X
+        checky = current.Y - 2
         If checkx >= Limits(0) And checkx <= Limits(2) And checky >= Limits(1) And checky <= Limits(3) Then
             neighbours.Add(New Cell(checkx, checky))
         End If
         'down
-        checkx = current.X + 0 * 4
-        checky = current.Y + 1 * 2
-        Dim newPoint3 As New Cell(checkx, checky)
+        checkx = current.X
+        checky = current.Y + 2
         If checkx >= Limits(0) And checkx <= Limits(2) And checky >= Limits(1) And checky <= Limits(3) Then
             neighbours.Add(New Cell(checkx, checky))
         End If
         'right
-        checkx = current.X + 1 * 4
-        checky = current.Y + 0 * 2
-        Dim newPoint4 As New Cell(checkx, checky)
+        checkx = current.X + 4
+        checky = current.Y
         If checkx >= Limits(0) And checkx <= Limits(2) And checky >= Limits(1) And checky <= Limits(3) Then
             neighbours.Add(New Cell(checkx, checky))
         End If
@@ -661,39 +750,31 @@ Module Module1
     Function Neighbour(ByVal current As Cell, ByVal visited As List(Of Cell), ByVal Limits() As Integer, ByVal bool As Boolean)
         Dim neighbours As New List(Of Cell)
         'left
-        Dim checkx As Integer = current.X + -1 * 4
-        Dim checky As Integer = current.Y + 0 * 2
-        Dim newPoint As New Cell(checkx, checky)
-        If checkx >= Limits(0) And checkx <= Limits(2) And checky >= Limits(1) And checky <= Limits(3) Then
+        Dim newPoint As New Cell(current.X - 4, current.Y)
+        If newPoint.X >= Limits(0) And newPoint.X <= Limits(2) And newPoint.Y >= Limits(1) And newPoint.Y <= Limits(3) Then
             If Not visited.Contains(newPoint) Then
-                neighbours.Add(New Cell(checkx, checky))
+                neighbours.Add(New Cell(newPoint.X, newPoint.Y))
             End If
         End If
         'up
-        checkx = current.X + 0 * 4
-        checky = current.Y + -1 * 2
-        Dim newPoint2 As New Cell(checkx, checky)
-        If checkx >= Limits(0) And checkx <= Limits(2) And checky >= Limits(1) And checky <= Limits(3) Then
-            If Not visited.Contains(newPoint2) Then
-                neighbours.Add(New Cell(checkx, checky))
+        newPoint.Update(current.X, current.Y - 2)
+        If newPoint.X >= Limits(0) And newPoint.X <= Limits(2) And newPoint.Y >= Limits(1) And newPoint.Y <= Limits(3) Then
+            If Not visited.Contains(newPoint) Then
+                neighbours.Add(New Cell(newPoint.X, newPoint.Y))
             End If
         End If
         'down
-        checkx = current.X + 0 * 4
-        checky = current.Y + 1 * 2
-        Dim newPoint3 As New Cell(checkx, checky)
-        If checkx >= Limits(0) And checkx <= Limits(2) And checky >= Limits(1) And checky <= Limits(3) Then
-            If Not visited.Contains(newPoint3) Then
-                neighbours.Add(New Cell(checkx, checky))
+        newPoint.Update(current.X, current.Y + 2)
+        If newPoint.X >= Limits(0) And newPoint.X <= Limits(2) And newPoint.Y >= Limits(1) And newPoint.Y <= Limits(3) Then
+            If Not visited.Contains(newPoint) Then
+                neighbours.Add(New Cell(newPoint.X, newPoint.Y))
             End If
         End If
         'right
-        checkx = current.X + 1 * 4
-        checky = current.Y + 0 * 2
-        Dim newPoint4 As New Cell(checkx, checky)
-        If checkx >= Limits(0) And checkx <= Limits(2) And checky >= Limits(1) And checky <= Limits(3) Then
-            If Not visited.Contains(newPoint4) Then
-                neighbours.Add(New Cell(checkx, checky))
+        newPoint.Update(current.X + 4, current.Y)
+        If newPoint.X >= Limits(0) And newPoint.X <= Limits(2) And newPoint.Y >= Limits(1) And newPoint.Y <= Limits(3) Then
+            If Not visited.Contains(newPoint) Then
+                neighbours.Add(New Cell(newPoint.X, newPoint.Y))
             End If
         End If
         Dim r As New Random
