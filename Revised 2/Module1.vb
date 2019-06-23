@@ -2,9 +2,8 @@
 Imports Revised_2
 
 Module Module1
-    'TODO: clean up neighbours function, end point bug, check .usable relevancy
+    'TODO: end point bug
     Sub Main()
-
         Console.CursorVisible = False
         SetColour(ConsoleColor.White)
         Dim MenuOptions() As String = {"Recursive Backtracker", "Hunt and Kill", "Prim's Algorithm", "Aldous-Broder", "Sidewinder Algorithm", "Growing Tree Algorithm", "Binary Tree Algorithm", "Exit"}
@@ -222,30 +221,20 @@ Module Module1
             MsgColour($"> {arr(y)}", ConsoleColor.Green)
         End While
     End Sub
-
-
     Sub astar(ByRef availablepath As List(Of Node))
-        Console.ForegroundColor = ConsoleColor.White
-        Console.BackgroundColor = ConsoleColor.Black
-        Console.SetCursorPosition(20, 0)
-
-        Console.ForegroundColor = ConsoleColor.Red
+        SetBoth(ConsoleColor.White)
         Dim start As New Node(availablepath(availablepath.Count - 2).X, availablepath(availablepath.Count - 2).Y)
         Dim target As New Node(availablepath(availablepath.Count - 1).X, availablepath(availablepath.Count - 1).Y)
-        Console.BackgroundColor = ConsoleColor.Red
-        Console.ForegroundColor = ConsoleColor.Red
+        SetBoth(ConsoleColor.Red)
         target.Print("██")
         Dim pathfound As Boolean = False
-        Console.BackgroundColor = ConsoleColor.Green
-        Console.ForegroundColor = ConsoleColor.Green
+        SetBoth(ConsoleColor.Green)
         start.Print("██")
         Dim openSet, closedSet, mazepath As New List(Of Node)
-        mazepath = availablepath
         Dim current As New Node(start.X, start.Y)
         Dim grid As New nGrid
         openSet.Add(current)
-        Console.BackgroundColor = ConsoleColor.Yellow
-        Console.ForegroundColor = ConsoleColor.Yellow
+        SetBoth(ConsoleColor.Yellow)
         Dim stopwatch As Stopwatch = Stopwatch.StartNew()
         While openSet.Count > 0
             current = openSet(0)
@@ -256,11 +245,11 @@ Module Module1
             Next 'finding node with the lowest fcost in the openset
             openSet.Remove(current)
             closedSet.Add(current)
-            Console.BackgroundColor = ConsoleColor.Red
-            Console.ForegroundColor = ConsoleColor.Red
-            If closedSet(closedSet.Count - 1).IsPresent(availablepath) Then closedSet(closedSet.Count - 1).Print("██")
-            Console.BackgroundColor = ConsoleColor.Yellow
-            Console.ForegroundColor = ConsoleColor.Yellow
+            SetBoth(ConsoleColor.Red)
+            If availablepath.Contains(closedSet(closedSet.Count - 1)) Then
+                closedSet(closedSet.Count - 1).Print("██")
+            End If
+            SetBoth(ConsoleColor.Yellow)
             If current.X = target.X And current.Y = target.Y Then
                 Dim Time As String = $"Time Taken to solve: {stopwatch.Elapsed.TotalSeconds} seconds"
                 RetracePath(start, current, Time)
@@ -268,30 +257,33 @@ Module Module1
                 Exit While
             End If
             For Each neighbour As Node In grid.GetNeighbours(current, availablepath, False)
-                If Not neighbour.Walkable Or neighbour.IsPresent(closedSet) Then Continue For
+                If Not neighbour.Walkable Or closedSet.Contains(neighbour) Then Continue For
                 Dim newmovementcost As Single = current.gCost + GetDistance(current, neighbour)
-                If newmovementcost < neighbour.gCost Or Not neighbour.IsPresent(openSet) Then
+                If newmovementcost < neighbour.gCost Or Not openSet.Contains(neighbour) Then
                     neighbour.gCost = newmovementcost
                     neighbour.hCost = GetDistance(neighbour, target)
                     neighbour.parent = current
-                    If neighbour.IsPresent(availablepath) Then
+                    If availablepath.Contains(neighbour) Then
                         neighbour.Print("██")
                         'Threading.Thread.Sleep(5)
                     End If
-                    If Not neighbour.IsPresent(openSet) Then
+                    If Not openSet.Contains(neighbour) Then
                         openSet.Add(neighbour)
                     End If
                 End If
             Next
-            Remove(availablepath, current)
         End While
         If pathfound = False Then
             Dim mess As String = "No Path Availible"
-            Console.ForegroundColor = ConsoleColor.Red
-            Console.BackgroundColor = ConsoleColor.Black
+            SetColour(ConsoleColor.Red)
+            SetBackGroundColour(ConsoleColor.Black)
             Console.SetCursorPosition((Console.WindowWidth / 2) - (mess.Count / 2), 0)
             Console.Write(mess)
         End If
+    End Sub
+    Sub SetBoth(ByVal colour As ConsoleColor)
+        SetColour(colour)
+        SetBackGroundColour(colour)
     End Sub
     Function GetDistance(ByVal nodea As Node, ByVal nodeb As Node)
         Dim dstX As Single = Math.Abs(nodea.X - nodeb.X)
@@ -325,10 +317,7 @@ Module Module1
         Console.BackgroundColor = ConsoleColor.Black
 
     End Sub
-    Sub SetBoth(ByVal colour As ConsoleColor)
-        SetColour(colour)
-        SetBackGroundColour(colour)
-    End Sub
+
     Function AldousBroder(ByVal Limits() As Integer, ByVal delay As Integer)
         Dim TotalCellCount As Integer
         Dim R As New Random
@@ -340,21 +329,17 @@ Module Module1
         Dim PreviousCell As Cell = CurrentCell
         Dim WallCell As Cell
         Dim ReturnablePath As New List(Of Node)
-
-        Dim c As Integer
         For y = Limits(1) To Limits(3) Step 2
             For x = Limits(0) + 3 To Limits(2) - 1 Step 4
                 TotalCellCount += 1
             Next
         Next
         While VisitedList.Count <> TotalCellCount
-            Console.BackgroundColor = ConsoleColor.White
-            Console.ForegroundColor = ConsoleColor.White
-            'If NeighboursAvailable(CurrentCell, VisitedList, Limits) Then
+            SetBoth(ConsoleColor.White)
             Dim TemporaryCell As Cell = RanNeighbour(CurrentCell, VisitedList, Limits, True)
             Dim TempNodeCell As New Node(TemporaryCell.X, TemporaryCell.Y)
-            If Not TempNodeCell.IsPresent(ReturnablePath) Then ReturnablePath.Add(New Node(TemporaryCell.X, TemporaryCell.Y))
-            If Not TemporaryCell.IsPresent(VisitedList) Then
+            If Not ReturnablePath.Contains(TempNodeCell) Then ReturnablePath.Add(New Node(TemporaryCell.X, TemporaryCell.Y))
+            If Not VisitedList.Contains(TemporaryCell) Then
                 VisitedList.Add(New Cell(TemporaryCell.X, TemporaryCell.Y))
                 WallCell = MidPoint(CurrentCell, TemporaryCell)
                 CurrentCell = TemporaryCell
@@ -365,7 +350,6 @@ Module Module1
                 SetBoth(ConsoleColor.Blue)
                 TemporaryCell.Print("██")
                 PrevCell = CurrentCell
-                WallPrev = WallCell
             Else
                 CurrentCell = TemporaryCell
                 SetBoth(ConsoleColor.White)
@@ -378,8 +362,6 @@ Module Module1
         End While
         SetBoth(ConsoleColor.White)
         PrevCell.Print("██")
-
-
         ReturnablePath.Add(New Node(Limits(0) + 3, Limits(1) - 1))
         ReturnablePath(ReturnablePath.Count - 1).Print("██")
         ReturnablePath.Add(New Node(Limits(2) - 1, Limits(3) + 1))
@@ -389,7 +371,6 @@ Module Module1
         Return ReturnablePath
     End Function
     Function Prims(ByVal Limits() As Integer, ByVal delay As Integer)
-
         Dim R As New Random
         Dim availablepath As New List(Of Cell)
         Dim grid As New nGrid
@@ -402,45 +383,34 @@ Module Module1
         CurrentCell.Print("██")
         ReturnablePath.Add(New Node(CurrentCell.X, CurrentCell.Y))
         While True
-            Console.ForegroundColor = ConsoleColor.Yellow
-            Console.BackgroundColor = ConsoleColor.Yellow
+            SetBoth(ConsoleColor.Yellow)
             For Each cell As Cell In NeighbourPrims(CurrentCell, VisistedList, FrontierSet, Limits, False)
-                If Not cell.IsPresent(FrontierSet) Then FrontierSet.Add(cell)
+                If Not FrontierSet.Contains(cell) Then FrontierSet.Add(cell)
                 cell.Print("██")
             Next
-            Dim Index As Integer = R.Next(0, FrontierSet.Count)
             If FrontierSet.Count = 0 Then Exit While
+            Dim Index As Integer = R.Next(0, FrontierSet.Count)
             CurrentCell = FrontierSet(Index)
             Dim AdjancencyList() As Integer = AdjacentCheck(CurrentCell, VisistedList)
             PreviousCell = PickAdjancentCell(CurrentCell, AdjancencyList)
             WallCell = MidPoint(CurrentCell, PreviousCell)
-            Console.ForegroundColor = ConsoleColor.White
-            Console.BackgroundColor = ConsoleColor.White
+            SetBoth(ConsoleColor.White)
             WallCell.Print("██")
             CurrentCell.Print("██")
             VisistedList.Add(CurrentCell)
             CurrentCell.RemoveWhere(FrontierSet)
             ReturnablePath.Add(New Node(WallCell.X, WallCell.Y))
             ReturnablePath.Add(New Node(CurrentCell.X, CurrentCell.Y))
-            Threading.Thread.Sleep(delay)
+            Threading.Thread.Sleep(delay - 5)
         End While
-
-
         ReturnablePath.Add(New Node(Limits(0) + 3, Limits(1) - 1))
         ReturnablePath(ReturnablePath.Count - 1).Print("██")
         ReturnablePath.Add(New Node(Limits(2) - 1, Limits(3) + 1))
         ReturnablePath(ReturnablePath.Count - 1).Print("██")
-
-
-
-        Dim width As Integer = (Limits(2) - 1) - (Limits(0) + 3)
-        Dim height As Integer = (Limits(1) - 1) - (Limits(3) + 3)
-
-
         Return ReturnablePath
     End Function
     Function HuntAndKill(ByVal Limits() As Integer, ByVal delay As Integer)
-        Console.BackgroundColor = ConsoleColor.White
+        SetBackGroundColour(ConsoleColor.White)
         Dim CurrentCell As New Cell(Limits(0) + 3, Limits(1) + 2)
         Dim VisitedList, Stack, VisitedListAndWall As New List(Of Cell)
         Dim ReturnablePath As New List(Of Node)
@@ -448,22 +418,20 @@ Module Module1
         Dim Height As Integer = Limits(3) - Limits(1)
         Dim xCount As Integer
         While True
-            Console.BackgroundColor = ConsoleColor.White
+            SetBackGroundColour(ConsoleColor.White)
             If IsNothing(CurrentCell) Then Exit While
-            If NeighboursAvailable(CurrentCell, VisitedList, Limits) Then
+            If Neighbour(CurrentCell, VisitedList, Limits, False) Then
                 Dim TemporaryCell As Cell = Neighbour(CurrentCell, VisitedList, Limits, True)
-                If Not TemporaryCell.Usable Then
-                    ReturnablePath.Add(New Node(TemporaryCell.X, TemporaryCell.Y))
-                    VisitedListAndWall.Add(New Cell(TemporaryCell.X, TemporaryCell.Y))
-                    VisitedList.Add(New Cell(TemporaryCell.X, TemporaryCell.Y))
-                    Dim WallCell As Cell = MidPoint(CurrentCell, TemporaryCell)
-                    CurrentCell = TemporaryCell
-                    ReturnablePath.Add(New Node(WallCell.X, WallCell.Y))
-                    VisitedListAndWall.Add(New Cell(WallCell.X, WallCell.Y))
-                    TemporaryCell.Print("██")
-                    WallCell.Print("██")
-                    Threading.Thread.Sleep(delay)
-                End If
+                ReturnablePath.Add(New Node(TemporaryCell.X, TemporaryCell.Y))
+                VisitedListAndWall.Add(New Cell(TemporaryCell.X, TemporaryCell.Y))
+                VisitedList.Add(New Cell(TemporaryCell.X, TemporaryCell.Y))
+                Dim WallCell As Cell = MidPoint(CurrentCell, TemporaryCell)
+                CurrentCell = TemporaryCell
+                ReturnablePath.Add(New Node(WallCell.X, WallCell.Y))
+                VisitedListAndWall.Add(New Cell(WallCell.X, WallCell.Y))
+                TemporaryCell.Print("██")
+                WallCell.Print("██")
+                Threading.Thread.Sleep(delay)
             ElseIf CurrentCell Is Nothing Then
                 Exit While
             Else
@@ -499,7 +467,7 @@ Module Module1
                     If ContinueFor = False Then Exit For
                     For i = Limits(0) + 3 To xCount Step 2
                         Dim tempcell As New Cell(i, y)
-                        If Not tempcell.IsPresent(VisitedListAndWall) Then
+                        If Not VisitedListAndWall.Contains(tempcell) Then
                             Console.ForegroundColor = ConsoleColor.Black
                             Console.BackgroundColor = ConsoleColor.Black
                             tempcell.Print("  ")
@@ -519,44 +487,69 @@ Module Module1
         ReturnablePath(ReturnablePath.Count - 1).Print("██")
         Return ReturnablePath
     End Function
-    Function AdjacentCheckNotInList(ByVal cell As Cell, ByVal visitedcells As List(Of Cell))
+    Function RecursiveBacktracker(ByVal Limits() As Integer, ByVal Delay As Integer)
+        SetBoth(ConsoleColor.White)
+        Dim CurrentCell As New Cell(Limits(0) + 3, Limits(1) + 2)
+        Dim PrevCell, WallPrev As New Cell(Limits(0) + 3, Limits(1) + 2)
+        Dim VisitedList, Stack As New List(Of Cell)
+        Dim ReturnablePath As New List(Of Node)
+        While True
+            SetBoth(ConsoleColor.White)
+            PrevCell.Print("██")
+            If Neighbour(CurrentCell, VisitedList, Limits, False) Then
+                Dim TemporaryCell As Cell = Neighbour(CurrentCell, VisitedList, Limits, True)
+                'If Not TemporaryCell.Usable Then
+                ReturnablePath.Add(New Node(TemporaryCell.X, TemporaryCell.Y))
+                VisitedList.Add(New Cell(TemporaryCell.X, TemporaryCell.Y))
+                Stack.Add(New Cell(TemporaryCell.X, TemporaryCell.Y))
+                Dim WallCell As Cell = MidPoint(CurrentCell, TemporaryCell)
+                CurrentCell = TemporaryCell
+                ReturnablePath.Add(New Node(WallCell.X, WallCell.Y))
+                SetBoth(ConsoleColor.White)
+                PrevCell.Print("██")
+                WallCell.Print("██")
+                SetBoth(ConsoleColor.Blue)
+                TemporaryCell.Print("██")
+                PrevCell = CurrentCell
+                WallPrev = WallCell
+            ElseIf Stack.Count > 1 Then
+                CurrentCell = CurrentCell.Pop(Stack)
+                SetBoth(ConsoleColor.White)
+                PrevCell.Print("██")
+                SetBoth(ConsoleColor.Blue)
+                CurrentCell.Print("██")
+                SetBoth(ConsoleColor.White)
+                PrevCell = CurrentCell
+            Else
+                Exit While
+            End If
+            Threading.Thread.Sleep(Delay)
+        End While
+        SetBoth(ConsoleColor.White)
+        PrevCell.Print("██")
+        WallPrev.Print("██")
+        ReturnablePath.Add(New Node(Limits(0) + 3, Limits(1) - 1))
+        ReturnablePath(ReturnablePath.Count - 1).Print("██")
+        ReturnablePath.Add(New Node(Limits(2) - 3, Limits(3) + 1))
+        ReturnablePath(ReturnablePath.Count - 1).Print("██")
+        Return ReturnablePath
+    End Function
+
+    Function AdjacentCheck(ByVal cell As Cell, ByVal visitedcells As List(Of Cell))
         Dim Adjancent() As Integer = {0, 0, 0, 0}
-        '0 = Top
-        '1 = Right
-        '2 = Bottom
-        '3 = Left
         Dim Neighbours As New List(Of Cell)
         Dim TempCell1 As New Cell(cell.X, cell.Y - 2)
-        If Not TempCell1.IsPresent(visitedcells) Then Adjancent(0) = 1
+        If visitedcells.Contains(TempCell1) And Not visitedcells.Contains(cell) Then Adjancent(0) = 1
         Dim TempCell2 As New Cell(cell.X + 4, cell.Y)
-        If Not TempCell2.IsPresent(visitedcells) Then Adjancent(1) = 1
+        If visitedcells.Contains(TempCell2) And Not visitedcells.Contains(cell) Then Adjancent(1) = 1
         Dim TempCell3 As New Cell(cell.X, cell.Y + 2)
-        If Not TempCell3.IsPresent(visitedcells) Then Adjancent(2) = 1
+        If visitedcells.Contains(TempCell3) And Not visitedcells.Contains(cell) Then Adjancent(2) = 1
         Dim TempCell4 As New Cell(cell.X - 4, cell.Y)
-        If Not TempCell4.IsPresent(visitedcells) Then Adjancent(3) = 1
+        If visitedcells.Contains(TempCell4) And Not visitedcells.Contains(cell) Then Adjancent(3) = 1
         Return Adjancent
-    End Function
-    Function PickAdjancentCells(ByVal cell As Cell, ByVal adjancencylist() As Integer)
-        Dim ReturnCell As Cell
-        Dim Neighbours As New List(Of Cell)
-        If adjancencylist(0) = 1 Then
-            Neighbours.Add(New Cell(cell.X, cell.Y - 1 * 2))
-        End If
-        If adjancencylist(1) = 1 Then
-            Neighbours.Add(New Cell(cell.X + 1 * 4, cell.Y))
-        End If
-        If adjancencylist(2) = 1 Then
-            Neighbours.Add(New Cell(cell.X, cell.Y + 1 * 2))
-        End If
-        If adjancencylist(3) = 1 Then
-            Neighbours.Add(New Cell(cell.X - 1 * 4, cell.Y))
-        End If
-        Dim R As New Random
-        'If Neighbours.Count > 0 Then
-        '    ReturnCell = Neighbours(R.Next(0, Neighbours.Count))
-        'End If
-        Return Neighbours
-    End Function
+    End Function 'GOOD
+
+
     Function PickAdjancentCell(ByVal cell As Cell, ByVal adjancencylist() As Integer)
         Dim ReturnCell As Cell
         Dim Neighbours As New List(Of Cell)
@@ -578,115 +571,9 @@ Module Module1
         End If
         Return ReturnCell
     End Function
-    Function AdjacentCheck1(ByVal cell As Cell, ByVal visitedcells As List(Of Cell))
-        Dim Adjancent() As Integer = {0, 0, 0, 0}
-        '0 = Top
-        '1 = Right
-        '2 = Bottom
-        '3 = Left
-        Dim Neighbours As New List(Of Cell)
-        Dim TempCell1 As New Cell(cell.X, cell.Y - 2)
-        If TempCell1.IsPresent(visitedcells) Then Adjancent(0) = 1
-        Dim TempCell2 As New Cell(cell.X + 4, cell.Y)
-        If TempCell2.IsPresent(visitedcells) Then Adjancent(1) = 1
-        Dim TempCell3 As New Cell(cell.X, cell.Y + 2)
-        If TempCell3.IsPresent(visitedcells) Then Adjancent(2) = 1
-        Dim TempCell4 As New Cell(cell.X - 4, cell.Y)
-        If TempCell4.IsPresent(visitedcells) Then Adjancent(3) = 1
-        Return Adjancent
-    End Function
-    Function AdjacentCheck(ByVal cell As Cell, ByVal visitedcells As List(Of Cell))
-        Dim Adjancent() As Integer = {0, 0, 0, 0}
-        '0 = Top
-        '1 = Right
-        '2 = Bottom
-        '3 = Left
-        Dim Neighbours As New List(Of Cell)
-        Dim TempCell1 As New Cell(cell.X, cell.Y - 2)
-        If TempCell1.IsPresent(visitedcells) And Not cell.IsPresent(visitedcells) Then Adjancent(0) = 1
-        Dim TempCell2 As New Cell(cell.X + 4, cell.Y)
-        If TempCell2.IsPresent(visitedcells) And Not cell.IsPresent(visitedcells) Then Adjancent(1) = 1
-        Dim TempCell3 As New Cell(cell.X, cell.Y + 2)
-        If TempCell3.IsPresent(visitedcells) And Not cell.IsPresent(visitedcells) Then Adjancent(2) = 1
-        Dim TempCell4 As New Cell(cell.X - 4, cell.Y)
-        If TempCell4.IsPresent(visitedcells) And Not cell.IsPresent(visitedcells) Then Adjancent(3) = 1
-        Return Adjancent
-    End Function
-    Function RecursiveBacktracker(ByVal Limits() As Integer, ByVal Delay As Integer)
-        Console.BackgroundColor = ConsoleColor.White
-        Dim CurrentCell As New Cell(Limits(0) + 3, Limits(1) + 2)
-
-        Dim PrevCell, WallPrev As New Cell(Limits(0) + 3, Limits(1) + 2)
-
-        Dim VisitedList, Stack As New List(Of Cell)
-        Dim ReturnablePath As New List(Of Node)
-        While True
-            Console.BackgroundColor = ConsoleColor.White
-            Console.ForegroundColor = ConsoleColor.White
-
-            PrevCell.Print("██")
-            If NeighboursAvailable(CurrentCell, VisitedList, Limits) Then
-
-                Dim TemporaryCell As Cell = Neighbour(CurrentCell, VisitedList, Limits, True)
-                If Not TemporaryCell.Usable Then
-                    ReturnablePath.Add(New Node(TemporaryCell.X, TemporaryCell.Y))
-
-                    VisitedList.Add(New Cell(TemporaryCell.X, TemporaryCell.Y))
-
-                    Stack.Add(New Cell(TemporaryCell.X, TemporaryCell.Y))
-
-                    Dim WallCell As Cell = MidPoint(CurrentCell, TemporaryCell)
-
-                    CurrentCell = TemporaryCell
-                    ReturnablePath.Add(New Node(WallCell.X, WallCell.Y))
-
-
-                    Console.BackgroundColor = ConsoleColor.White
-                    Console.ForegroundColor = ConsoleColor.White
-
-                    PrevCell.Print("██")
-                    WallCell.Print("██")
-
-
-                    Console.BackgroundColor = ConsoleColor.Blue
-                    Console.ForegroundColor = ConsoleColor.Blue
-                    TemporaryCell.Print("██")
 
 
 
-                    PrevCell = CurrentCell
-                    WallPrev = WallCell
-
-
-                End If
-            ElseIf Stack.Count > 1 Then
-                CurrentCell = CurrentCell.Pop(Stack)
-                Console.BackgroundColor = ConsoleColor.White
-                Console.ForegroundColor = ConsoleColor.White
-                PrevCell.Print("██")
-                Console.BackgroundColor = ConsoleColor.Blue
-                Console.ForegroundColor = ConsoleColor.Blue
-
-                CurrentCell.Print("██")
-                Console.ForegroundColor = ConsoleColor.White
-                PrevCell = CurrentCell
-            Else
-                Exit While
-            End If
-
-            Threading.Thread.Sleep(Delay)
-        End While
-        Console.BackgroundColor = ConsoleColor.White
-        Console.ForegroundColor = ConsoleColor.White
-
-        PrevCell.Print("██")
-        WallPrev.Print("██")
-        ReturnablePath.Add(New Node(Limits(0) + 3, Limits(1) - 1))
-        ReturnablePath(ReturnablePath.Count - 1).Print("██")
-        ReturnablePath.Add(New Node(Limits(2) - 3, Limits(3) + 1))
-        ReturnablePath(ReturnablePath.Count - 1).Print("██")
-        Return ReturnablePath
-    End Function
     Function MidPoint(ByVal cell1 As Cell, ByVal cell2 As Cell)
         Dim x, y As Integer
         x = (cell1.X + cell2.X) / 2
@@ -702,7 +589,7 @@ Module Module1
         Dim checky As Integer = current.Y + 0 * 2
         Dim newPoint As New Cell(checkx, checky)
         If checkx >= Limits(0) And checkx <= Limits(2) And checky >= Limits(1) And checky <= Limits(3) Then
-            If Not newPoint.IsPresent(visited) And Not newPoint.IsPresent(frontier) Then
+            If Not visited.Contains(newPoint) And Not frontier.Contains(newPoint) Then
                 neighbours.Add(New Cell(checkx, checky))
             End If
         End If
@@ -711,7 +598,7 @@ Module Module1
         checky = current.Y + -1 * 2
         Dim newPoint2 As New Cell(checkx, checky)
         If checkx >= Limits(0) And checkx <= Limits(2) And checky >= Limits(1) And checky <= Limits(3) Then
-            If Not newPoint2.IsPresent(visited) And Not newPoint2.IsPresent(frontier) Then
+            If Not visited.Contains(newPoint2) And Not frontier.Contains(newPoint2) Then
                 neighbours.Add(New Cell(checkx, checky))
             End If
         End If
@@ -720,7 +607,7 @@ Module Module1
         checky = current.Y + 1 * 2
         Dim newPoint3 As New Cell(checkx, checky)
         If checkx >= Limits(0) And checkx <= Limits(2) And checky >= Limits(1) And checky <= Limits(3) Then
-            If Not newPoint3.IsPresent(visited) And Not newPoint3.IsPresent(frontier) Then
+            If Not visited.Contains(newPoint3) And Not frontier.Contains(newPoint3) Then
                 neighbours.Add(New Cell(checkx, checky))
             End If
         End If
@@ -729,16 +616,11 @@ Module Module1
         checky = current.Y + 0 * 2
         Dim newPoint4 As New Cell(checkx, checky)
         If checkx >= Limits(0) And checkx <= Limits(2) And checky >= Limits(1) And checky <= Limits(3) Then
-            If Not newPoint4.IsPresent(visited) And Not newPoint4.IsPresent(frontier) Then
+            If Not visited.Contains(newPoint4) And Not frontier.Contains(newPoint4) Then
                 neighbours.Add(New Cell(checkx, checky))
             End If
         End If
-        'x: -1   Y: 0   LEFT
-        'x: 0    Y: -1  UP
-        'x: 0    Y: 1   DOWN
-        'x: 1    Y: 0   RIGHT
         Dim r As New Random
-        Randomize()
         If bool Then Return neighbours(r.Next(0, neighbours.Count))
         Return neighbours
     End Function
@@ -772,12 +654,7 @@ Module Module1
         If checkx >= Limits(0) And checkx <= Limits(2) And checky >= Limits(1) And checky <= Limits(3) Then
             neighbours.Add(New Cell(checkx, checky))
         End If
-        'x: -1   Y: 0   LEFT
-        'x: 0    Y: -1  UP
-        'x: 0    Y: 1   DOWN
-        'x: 1    Y: 0   RIGHT
         Dim r As New Random
-        Randomize()
         If bool Then Return neighbours(r.Next(0, neighbours.Count))
         Return neighbours
     End Function
@@ -788,7 +665,7 @@ Module Module1
         Dim checky As Integer = current.Y + 0 * 2
         Dim newPoint As New Cell(checkx, checky)
         If checkx >= Limits(0) And checkx <= Limits(2) And checky >= Limits(1) And checky <= Limits(3) Then
-            If Not newPoint.IsPresent(visited) Then
+            If Not visited.Contains(newPoint) Then
                 neighbours.Add(New Cell(checkx, checky))
             End If
         End If
@@ -797,7 +674,7 @@ Module Module1
         checky = current.Y + -1 * 2
         Dim newPoint2 As New Cell(checkx, checky)
         If checkx >= Limits(0) And checkx <= Limits(2) And checky >= Limits(1) And checky <= Limits(3) Then
-            If Not newPoint2.IsPresent(visited) Then
+            If Not visited.Contains(newPoint2) Then
                 neighbours.Add(New Cell(checkx, checky))
             End If
         End If
@@ -806,7 +683,7 @@ Module Module1
         checky = current.Y + 1 * 2
         Dim newPoint3 As New Cell(checkx, checky)
         If checkx >= Limits(0) And checkx <= Limits(2) And checky >= Limits(1) And checky <= Limits(3) Then
-            If Not newPoint3.IsPresent(visited) Then
+            If Not visited.Contains(newPoint3) Then
                 neighbours.Add(New Cell(checkx, checky))
             End If
         End If
@@ -815,69 +692,25 @@ Module Module1
         checky = current.Y + 0 * 2
         Dim newPoint4 As New Cell(checkx, checky)
         If checkx >= Limits(0) And checkx <= Limits(2) And checky >= Limits(1) And checky <= Limits(3) Then
-            If Not newPoint4.IsPresent(visited) Then
+            If Not visited.Contains(newPoint4) Then
                 neighbours.Add(New Cell(checkx, checky))
             End If
         End If
-        'x: -1   Y: 0   LEFT
-        'x: 0    Y: -1  UP
-        'x: 0    Y: 1   DOWN
-        'x: 1    Y: 0   RIGHT
         Dim r As New Random
-        Randomize()
-        If bool Then Return neighbours(r.Next(0, neighbours.Count))
+        If bool Then
+            Return neighbours(r.Next(0, neighbours.Count))
+        Else
+            If neighbours.Count > 0 Then
+                Return True
+            Else
+                Return False
+            End If
+        End If
         Return neighbours
     End Function
-    Function NeighboursAvailable(ByVal current As Cell, ByVal visited As List(Of Cell), ByVal Limits() As Integer)
 
-
-        Dim newpoint As New Cell(current.X - 4, current.Y)
-        Dim checkx As Integer = current.X - 4
-        Dim checky As Integer = current.Y
-        If checkx >= Limits(0) And checkx <= Limits(2) And checky >= Limits(1) And checky <= Limits(3) Then
-            If Not newpoint.IsPresent(visited) Then
-                Return True
-            End If
-        End If
-
-        Dim newpoint1 As New Cell(current.X, current.Y - 2)
-        checkx = current.X
-        checky = current.Y - 2
-        If checkx >= Limits(0) And checkx <= Limits(2) And checky >= Limits(1) And checky <= Limits(3) Then
-            If Not newpoint1.IsPresent(visited) Then
-                Return True
-            End If
-        End If
-
-        Dim newpoint2 As New Cell(current.X, current.Y + 2)
-        checkx = current.X
-        checky = current.Y + 2
-        If checkx >= Limits(0) And checkx <= Limits(2) And checky >= Limits(1) And checky <= Limits(3) Then
-            If Not newpoint2.IsPresent(visited) Then
-                Return True
-            End If
-        End If
-
-
-        Dim newpoint3 As New Cell(current.X + 4, current.Y)
-        checkx = current.X + 4
-        checky = current.Y
-        If checkx >= Limits(0) And checkx <= Limits(2) And checky >= Limits(1) And checky <= Limits(3) Then
-            If Not newpoint3.IsPresent(visited) Then
-                Return True
-            End If
-        End If
-
-
-
-
-        Return False
-    End Function 'TODO: simplify
-    Sub Remove(ByRef list As List(Of Node), ByVal node As Node)
-        If list.FindIndex(Function(p) p.xcord = node.X And p.ycord = node.Y) <> -1 Then list.RemoveAt(list.FindIndex(Function(p) p.xcord = node.X And p.ycord = node.Y))
-    End Sub
     Sub Check(ByVal neighbours As List(Of Node), ByVal current As Node, ByVal availablepath As List(Of Node), ByVal currentiteration As Integer)
-        If current.IsPresent(availablepath) Then
+        If availablepath.Contains(current) Then
             neighbours(currentiteration).Walkable = True
         Else
             neighbours(currentiteration).Walkable = False
@@ -897,8 +730,7 @@ Module Module1
     End Function
 End Module
 Class Cell
-    Dim xcord, ycord As Integer
-    Public Usable As Boolean
+    Private xcord, ycord As Integer
     Public Sub New(ByVal xpoint As Integer, ByVal ypoint As Integer)
         xcord = xpoint
         ycord = ypoint
@@ -913,10 +745,6 @@ Class Cell
         xcord = x
         ycord = y
     End Sub
-    Public Function IsPresent(ByVal list As List(Of Cell))
-        If list.Find(Function(p) p.xcord = Me.X And p.ycord = Me.Y) IsNot Nothing Then Return True
-        Return False
-    End Function
     Public Function Pop(ByVal list As List(Of Cell))
         Dim val As Cell
         val = list(list.Count - 1)
@@ -925,13 +753,26 @@ Class Cell
     End Function
 
     Public Sub Print(ByVal str As String)
-        'Console.ForegroundColor = Colour
         Console.SetCursorPosition(Me.X, Me.Y)
         Console.Write(str)
     End Sub
     Public Sub RemoveWhere(ByRef list As List(Of Cell))
         list.RemoveAt(list.FindIndex(Function(p) p.xcord = Me.X And p.ycord = Me.Y))
     End Sub
+
+    Public Overrides Function Equals(obj As Object) As Boolean
+        Dim cell = TryCast(obj, Cell)
+        Return cell IsNot Nothing AndAlso
+               xcord = cell.xcord AndAlso
+               ycord = cell.ycord
+    End Function
+
+    Public Overrides Function GetHashCode() As Integer
+        Dim hashCode As Long = 1855483287
+        hashCode = (hashCode * -1521134295 + xcord.GetHashCode()).GetHashCode()
+        hashCode = (hashCode * -1521134295 + ycord.GetHashCode()).GetHashCode()
+        Return hashCode
+    End Function
 End Class
 Public Class nGrid
     Function GetNeighbours(ByVal current As Node, ByRef availablepath As List(Of Node), ByVal something As Boolean)
@@ -946,10 +787,6 @@ Public Class Node
         Console.SetCursorPosition(Me.xcord, Me.ycord)
         Console.Write(letter)
     End Sub
-    Public Function IsPresent(ByVal list As List(Of Node))
-        If list.Find(Function(p) p.xcord = Me.X And p.ycord = Me.Y) IsNot Nothing Then Return True
-        Return False
-    End Function
 
     Public Sub New(ByVal xpoint As Integer, ByVal ypoint As Integer)
         xcord = xpoint
@@ -970,5 +807,19 @@ Public Class Node
     End Function
     Public Sub RemoveWhere(ByRef list As List(Of Node))
         list.RemoveAt(list.FindIndex(Function(p) p.xcord = Me.X And p.ycord = Me.Y))
+
     End Sub
+    Public Overrides Function Equals(obj As Object) As Boolean
+        Dim node = TryCast(obj, Node)
+        Return node IsNot Nothing AndAlso
+               xcord = node.xcord AndAlso
+               ycord = node.ycord
+    End Function
+
+    Public Overrides Function GetHashCode() As Integer
+        Dim hashCode As Long = 1855483287
+        hashCode = (hashCode * -1521134295 + xcord.GetHashCode()).GetHashCode()
+        hashCode = (hashCode * -1521134295 + ycord.GetHashCode()).GetHashCode()
+        Return hashCode
+    End Function
 End Class
