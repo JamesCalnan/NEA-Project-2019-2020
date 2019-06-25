@@ -3,12 +3,12 @@ Imports System.IO
 Imports Revised_2
 
 Module Module1
-    'TODO:  make sure that file reading is correct and previous maze is correctly defined
+    'TODO:  fix when loading the previous maze twice
     Sub Main()
 
         Console.CursorVisible = False
         SetColour(ConsoleColor.White)
-        Dim MenuOptions() As String = {"Recursive Backtracker Algorithm", "Hunt and Kill Algorithm", "Prim's Algorithm", "Aldous-Broder Algorithm", "Growing Tree Algorithm", "Custom Algorithm", "Sidewinder Algorithm", "Binary Tree Algorithm", "Load the last Maze", "Save the last maze", "Load a saved maze", "Exit"}
+        Dim MenuOptions() As String = {"Recursive Backtracker Algorithm", "Hunt and Kill Algorithm", "Prim's Algorithm", "Aldous-Broder Algorithm", "Growing Tree Algorithm", "Custom Algorithm", "Sidewinder Algorithm", "Binary Tree Algorithm", "Load the previously generated maze", "Save the previously generated maze", "Load a saved maze", "Exit"}
         Menu(MenuOptions)
         Console.ReadKey()
     End Sub
@@ -115,8 +115,6 @@ Module Module1
                         Return {0, 0, 0, 0, 0, 0, 0, 1, 0}
                     ElseIf y = 8 Then
                         Return {0, 0, 0, 0, 0, 0, 0, 0, 1}
-                    ElseIf y = arr.Count - 1 Then
-                        End
                     Else
                         OptionNotReady()
                     End If
@@ -171,6 +169,7 @@ Module Module1
                             DisplayAvailablePositions(AvailablePath.Count)
                             Console.SetCursorPosition(0, YPosAfterMaze + 2)
                             Dim input As String = SolvingMenu(YPosAfterMaze + 2)
+                            PreviousMaze.Clear()
                             For Each node In AvailablePath
                                 PreviousMaze.Add(New Node(node.X, node.Y))
                             Next
@@ -190,6 +189,7 @@ Module Module1
                             DisplayAvailablePositions(AvailablePath.Count)
                             Console.SetCursorPosition(0, YPosAfterMaze + 2)
                             Dim input As String = SolvingMenu(YPosAfterMaze + 2)
+                            PreviousMaze.Clear()
                             For Each node In AvailablePath
                                 PreviousMaze.Add(New Node(node.X, node.Y))
                             Next
@@ -209,6 +209,7 @@ Module Module1
                             DisplayAvailablePositions(AvailablePath.Count)
                             Console.SetCursorPosition(0, YPosAfterMaze + 2)
                             Dim input As String = SolvingMenu(YPosAfterMaze + 2)
+                            PreviousMaze.Clear()
                             For Each node In AvailablePath
                                 PreviousMaze.Add(New Node(node.X, node.Y))
                             Next
@@ -228,6 +229,7 @@ Module Module1
                             DisplayAvailablePositions(AvailablePath.Count)
                             Console.SetCursorPosition(0, YPosAfterMaze + 2)
                             Dim input As String = SolvingMenu(YPosAfterMaze + 2)
+                            PreviousMaze.Clear()
                             For Each node In AvailablePath
                                 PreviousMaze.Add(New Node(node.X, node.Y))
                             Next
@@ -240,8 +242,8 @@ Module Module1
                     ElseIf y = 4 Then
                         Dim Width, Height, DelayMS, Limits() As Integer
                         GetMazeInfo(Width, Height, DelayMS, Limits)
-                        Dim ArrOptions() As String = {"Newest (Recursive Backtracker)", "Random (Prim's)", "Newest/Random, 75/25 split", "Newest/Random, 50/50 split", "Newest/Random, 25/75 split", "Oldest", "Middle", "Newest/Oldest, 50/50 split", "Oldest/Random, 50/50 split", "Back to the Main Menu"}
-                        Dim CellSelectionMethod() As Integer = GrowingTreeMenu(ArrOptions) '{0, 0, 0, 0, 0, 0, 0, 0, 0}
+                        Dim ArrOptions() As String = {"Newest (Recursive Backtracker)", "Random (Prim's)", "Newest/Random, 75/25 split", "Newest/Random, 50/50 split", "Newest/Random, 25/75 split", "Oldest", "Middle", "Newest/Oldest, 50/50 split", "Oldest/Random, 50/50 split"}
+                        Dim CellSelectionMethod() As Integer = GrowingTreeMenu(ArrOptions)
                         Dim AvailablePath As List(Of Node) = GrowingTree(Limits, DelayMS, CellSelectionMethod)
                         If AvailablePath IsNot Nothing Then
                             SetBackGroundColour(ConsoleColor.Black)
@@ -249,6 +251,7 @@ Module Module1
                             DisplayAvailablePositions(AvailablePath.Count)
                             Console.SetCursorPosition(0, YPosAfterMaze + 2)
                             Dim input As String = SolvingMenu(YPosAfterMaze + 2)
+                            PreviousMaze.Clear()
                             For Each node In AvailablePath
                                 PreviousMaze.Add(New Node(node.X, node.Y))
                             Next
@@ -268,6 +271,7 @@ Module Module1
                             DisplayAvailablePositions(AvailablePath.Count)
                             Console.SetCursorPosition(0, YPosAfterMaze + 2)
                             Dim input As String = SolvingMenu(YPosAfterMaze + 2)
+                            PreviousMaze.Clear()
                             For Each node In AvailablePath
                                 PreviousMaze.Add(New Node(node.X, node.Y))
                             Next
@@ -279,6 +283,7 @@ Module Module1
                             End If
                         End If
                     ElseIf y = 8 Then
+                        'Load previous maze
                         If PreviousMaze.Count > 1 Then
                             Console.Clear()
                             SetBoth(ConsoleColor.White)
@@ -295,77 +300,103 @@ Module Module1
                             Else
                                 OptionNotReady()
                             End If
-                            PreviousMaze.Clear()
                         Else
                             Console.Clear()
                             MsgColour("No previous maze available", ConsoleColor.Red)
                             Console.ReadKey()
                         End If
                     ElseIf y = 9 Then
-                        Console.Clear()
-                        Dim filename As String
-                        Do
-                            Console.Write("File Name (don't include .txt): ")
-                            filename = Console.ReadLine
-                            filename += ".txt"
-                            If System.IO.File.Exists(filename) Then
-                                MsgColour("Invalid filename", ConsoleColor.Red)
-                            End If
-                        Loop Until Not System.IO.File.Exists(filename)
-
-                        Using writer As StreamWriter = New StreamWriter(filename, True)
-                            For i = 0 To PreviousMaze.Count - 1
-                                writer.WriteLine(PreviousMaze(i).X)
-                                writer.WriteLine(PreviousMaze(i).Y)
-                            Next
-                        End Using
-                        Console.ReadKey()
-                    ElseIf y = 10 Then
-                        LoadedMaze.Clear()
-                        Console.Clear()
-                        Dim _x, _y As Integer
-                        Console.Write("File Name of the maze to load (don't include .txt): ")
-                        Dim filename As String = Console.ReadLine
-                        filename += ".txt"
-                        If System.IO.File.Exists(filename) Then
-                            Dim c As Integer = 0
+                        If PreviousMaze.Count > 1 Then
                             Console.Clear()
-                            Using reader As StreamReader = New StreamReader(filename)
-                                Do Until reader.EndOfStream
-                                    If c = 0 Then
-                                        _x = Int(reader.ReadLine)
-                                    ElseIf c = 1 Then
-                                        _y = Int(reader.ReadLine)
-                                    End If
-                                    c += 1
-                                    If c = 2 Then
-                                        Console.WriteLine($"({_x}, {_y})")
-                                        LoadedMaze.Add(New Node(_x, _y))
-                                        c = 0
-                                    End If
-                                Loop
+                            Dim filename As String
+                            Do
+                                Console.Write("File Name (don't include .txt): ")
+                                filename = Console.ReadLine
+                                filename += ".txt"
+                                If System.IO.File.Exists(filename) Then
+                                    MsgColour("Invalid filename", ConsoleColor.Red)
+                                End If
+                            Loop Until Not System.IO.File.Exists(filename)
+                            Using writer As StreamWriter = New StreamWriter(filename, True)
+                                For i = 0 To PreviousMaze.Count - 1
+                                    writer.WriteLine(PreviousMaze(i).X)
+                                    writer.WriteLine(PreviousMaze(i).Y)
+                                Next
                             End Using
-                            MsgColour($"Finished loading maze positions, total maze positions: {LoadedMaze.Count}", ConsoleColor.Green)
-                            Console.ReadKey()
-                            Console.Clear()
-                            For Each node In LoadedMaze
-                                node.Print("██")
-                            Next
-                            Dim YPosAfterMaze As Integer = Console.CursorTop
-                            DisplayAvailablePositions(LoadedMaze.Count)
-                            Console.SetCursorPosition(0, YPosAfterMaze + 2)
-                            Dim input As String = SolvingMenu(YPosAfterMaze + 2)
-                            If input = "astar" Then
-                                AStar(LoadedMaze)
-                            Else
-                                OptionNotReady()
-                            End If
                         Else
                             Console.Clear()
-                            MsgColour("File doesn't exist", ConsoleColor.Red)
+                            MsgColour("No previous maze available", ConsoleColor.Red)
                             Console.ReadKey()
                         End If
-                    ElseIf y = arr.Count - 1 Then
+                        Console.ReadKey()
+                        ElseIf y = 10 Then
+                            Dim ValidMaze, XMax, YMax As Integer
+                            ValidMaze = 1
+                            XMax = Console.WindowWidth - 6
+                            YMax = Console.WindowHeight - 6
+                            LoadedMaze.Clear()
+                            Console.Clear()
+                            Dim _x, _y As Integer
+                            Console.Write("File Name of the maze to load (don't include .txt): ")
+                            Dim filename As String = Console.ReadLine
+                            filename += ".txt"
+                            If System.IO.File.Exists(filename) Then
+                                Dim c As Integer = 0
+                                Console.Clear()
+                                Using reader As StreamReader = New StreamReader(filename)
+                                    Do Until reader.EndOfStream
+                                        If c = 0 Then
+                                            _x = Int(reader.ReadLine)
+                                            If _x > XMax Then
+                                                ValidMaze = 0
+                                                Exit Do
+                                            End If
+                                        ElseIf c = 1 Then
+                                            _y = Int(reader.ReadLine)
+                                            If _y > YMax Then
+                                                ValidMaze = 0
+                                                Exit Do
+                                            End If
+                                        End If
+                                        c += 1
+                                        If c = 2 Then
+                                            Console.WriteLine($"({_x}, {_y})")
+                                            LoadedMaze.Add(New Node(_x, _y))
+                                            c = 0
+                                        End If
+                                    Loop
+                                End Using
+                                If ValidMaze = 1 Then
+                                    MsgColour($"Finished loading maze positions, total maze positions: {LoadedMaze.Count}", ConsoleColor.Green)
+                                    Console.ReadKey()
+                                    Console.Clear()
+                                    For Each node In LoadedMaze
+                                        node.Print("██")
+                                    Next
+                                    Dim YPosAfterMaze As Integer = Console.CursorTop
+                                    DisplayAvailablePositions(LoadedMaze.Count)
+                                    Console.SetCursorPosition(0, YPosAfterMaze + 2)
+                                Dim input As String = SolvingMenu(YPosAfterMaze + 2)
+                                PreviousMaze.Clear()
+                                For Each node In LoadedMaze
+                                    PreviousMaze.Add(New Node(node.X, node.Y))
+                                Next
+                                If input = "astar" Then
+                                        AStar(LoadedMaze)
+                                    Else
+                                        OptionNotReady()
+                                    End If
+                                Else
+                                    Console.Clear()
+                                    MsgColour("Maze is too big for the screen, please decrease font size and try again", ConsoleColor.Red)
+                                    Console.ReadKey()
+                                End If
+                            Else
+                                Console.Clear()
+                                MsgColour("File doesn't exist", ConsoleColor.Red)
+                                Console.ReadKey()
+                            End If
+                        ElseIf y = arr.Count - 1 Then
                             End
                         Else
                             OptionNotReady()
@@ -446,7 +477,7 @@ Module Module1
             End Select
         End If
     End Function
-    Sub AStar(ByRef availablepath As List(Of Node))
+    Sub AStar(ByVal availablepath As List(Of Node))
         Dim startamount As Integer = availablepath.Count - 1
         Dim ExtraPath As List(Of Node) = availablepath
         SetBoth(ConsoleColor.White)
@@ -475,9 +506,6 @@ Module Module1
                 End If
             Next 'finding node with the lowest fcost in the openset
             openSet.Remove(current)
-            If closedSet.Contains(current) Then
-                Console.ReadKey()
-            End If
             closedSet.Add(current)
             SetBoth(ConsoleColor.Red)
             If availablepath.Contains(closedSet(closedSet.Count - 1)) Then
@@ -526,7 +554,7 @@ Module Module1
         Console.SetCursorPosition((Console.WindowWidth / 2) - ((mess.Count / 2) + 3), 1)
         Console.Write(mess)
         Dim mess2 As String = $"{100 - Percent}%"
-        Console.SetCursorPosition(((Console.WindowWidth / 2) - (mess.Count / 2)) + mess.Count - 3, 1)
+        Console.SetCursorPosition(((Console.WindowWidth / 2) - (mess.Count / 2)) + mess.Count - 2, 1)
         MsgColour($"{100 - Percent}%", ConsoleColor.Yellow)
     End Sub
     Sub SetBoth(ByVal colour As ConsoleColor)
