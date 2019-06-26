@@ -329,77 +329,77 @@ Module Module1
                             Console.ReadKey()
                         End If
                         Console.ReadKey()
-                        ElseIf y = 10 Then
-                            Dim ValidMaze, XMax, YMax As Integer
-                            ValidMaze = 1
-                            XMax = Console.WindowWidth - 6
-                            YMax = Console.WindowHeight - 6
-                            LoadedMaze.Clear()
+                    ElseIf y = 10 Then
+                        Dim ValidMaze, XMax, YMax As Integer
+                        ValidMaze = 1
+                        XMax = Console.WindowWidth - 6
+                        YMax = Console.WindowHeight - 6
+                        LoadedMaze.Clear()
+                        Console.Clear()
+                        Dim _x, _y As Integer
+                        Console.Write("File Name of the maze to load (don't include .txt): ")
+                        Dim filename As String = Console.ReadLine
+                        filename += ".txt"
+                        If System.IO.File.Exists(filename) Then
+                            Dim c As Integer = 0
                             Console.Clear()
-                            Dim _x, _y As Integer
-                            Console.Write("File Name of the maze to load (don't include .txt): ")
-                            Dim filename As String = Console.ReadLine
-                            filename += ".txt"
-                            If System.IO.File.Exists(filename) Then
-                                Dim c As Integer = 0
+                            Using reader As StreamReader = New StreamReader(filename)
+                                Do Until reader.EndOfStream
+                                    If c = 0 Then
+                                        _x = Int(reader.ReadLine)
+                                        If _x > XMax Then
+                                            ValidMaze = 0
+                                            Exit Do
+                                        End If
+                                    ElseIf c = 1 Then
+                                        _y = Int(reader.ReadLine)
+                                        If _y > YMax Then
+                                            ValidMaze = 0
+                                            Exit Do
+                                        End If
+                                    End If
+                                    c += 1
+                                    If c = 2 Then
+                                        Console.WriteLine($"({_x}, {_y})")
+                                        LoadedMaze.Add(New Node(_x, _y))
+                                        c = 0
+                                    End If
+                                Loop
+                            End Using
+                            If ValidMaze = 1 Then
+                                MsgColour($"Finished loading maze positions, total maze positions: {LoadedMaze.Count}", ConsoleColor.Green)
+                                Console.ReadKey()
                                 Console.Clear()
-                                Using reader As StreamReader = New StreamReader(filename)
-                                    Do Until reader.EndOfStream
-                                        If c = 0 Then
-                                            _x = Int(reader.ReadLine)
-                                            If _x > XMax Then
-                                                ValidMaze = 0
-                                                Exit Do
-                                            End If
-                                        ElseIf c = 1 Then
-                                            _y = Int(reader.ReadLine)
-                                            If _y > YMax Then
-                                                ValidMaze = 0
-                                                Exit Do
-                                            End If
-                                        End If
-                                        c += 1
-                                        If c = 2 Then
-                                            Console.WriteLine($"({_x}, {_y})")
-                                            LoadedMaze.Add(New Node(_x, _y))
-                                            c = 0
-                                        End If
-                                    Loop
-                                End Using
-                                If ValidMaze = 1 Then
-                                    MsgColour($"Finished loading maze positions, total maze positions: {LoadedMaze.Count}", ConsoleColor.Green)
-                                    Console.ReadKey()
-                                    Console.Clear()
-                                    For Each node In LoadedMaze
-                                        node.Print("██")
-                                    Next
-                                    Dim YPosAfterMaze As Integer = Console.CursorTop
-                                    DisplayAvailablePositions(LoadedMaze.Count)
-                                    Console.SetCursorPosition(0, YPosAfterMaze + 2)
+                                For Each node In LoadedMaze
+                                    node.Print("██")
+                                Next
+                                Dim YPosAfterMaze As Integer = Console.CursorTop
+                                DisplayAvailablePositions(LoadedMaze.Count)
+                                Console.SetCursorPosition(0, YPosAfterMaze + 2)
                                 Dim input As String = SolvingMenu(YPosAfterMaze + 2)
                                 PreviousMaze.Clear()
                                 For Each node In LoadedMaze
                                     PreviousMaze.Add(New Node(node.X, node.Y))
                                 Next
                                 If input = "astar" Then
-                                        AStar(LoadedMaze)
-                                    Else
-                                        OptionNotReady()
-                                    End If
+                                    AStar(LoadedMaze)
                                 Else
-                                    Console.Clear()
-                                    MsgColour("Maze is too big for the screen, please decrease font size and try again", ConsoleColor.Red)
-                                    Console.ReadKey()
+                                    OptionNotReady()
                                 End If
                             Else
                                 Console.Clear()
-                                MsgColour("File doesn't exist", ConsoleColor.Red)
+                                MsgColour("Maze is too big for the screen, please decrease font size and try again", ConsoleColor.Red)
                                 Console.ReadKey()
                             End If
-                        ElseIf y = arr.Count - 1 Then
-                            End
                         Else
-                            OptionNotReady()
+                            Console.Clear()
+                            MsgColour("File doesn't exist", ConsoleColor.Red)
+                            Console.ReadKey()
+                        End If
+                    ElseIf y = arr.Count - 1 Then
+                        End
+                    Else
+                        OptionNotReady()
                     End If
                     SetBackGroundColour(ConsoleColor.Black)
                     Console.Clear()
