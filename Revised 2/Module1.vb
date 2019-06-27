@@ -5,14 +5,82 @@ Imports Revised_2
 Module Module1
     'TODO:  fix when loading the previous maze twice
     Sub Main()
+        'Console.ForegroundColor = ConsoleColor.White
+        'Console.CursorVisible = False
+        'SetColour(ConsoleColor.White)
+        'Dim MenuOptions() As String = {"Recursive Backtracker Algorithm", "Hunt and Kill Algorithm", "Prim's Algorithm", "Aldous-Broder Algorithm", "Growing Tree Algorithm", "Custom Algorithm", "Sidewinder Algorithm", "Binary Tree Algorithm", "Load the previously generated maze", "Save the previously generated maze", "Load a saved maze", "Exit"}
+        'Menu(MenuOptions)
 
-        Console.CursorVisible = False
-        SetColour(ConsoleColor.White)
-        Dim MenuOptions() As String = {"Recursive Backtracker Algorithm", "Hunt and Kill Algorithm", "Prim's Algorithm", "Aldous-Broder Algorithm", "Growing Tree Algorithm", "Custom Algorithm", "Sidewinder Algorithm", "Binary Tree Algorithm", "Load the previously generated maze", "Save the previously generated maze", "Load a saved maze", "Exit"}
-        Menu(MenuOptions)
+
+        Dim arr() As Integer = {6, 6, Console.WindowWidth - 5, Console.WindowHeight - 10}
+
+        Dim ap As List(Of Node) = RecursiveBacktracker(arr, 0)
+        Dijkstras(ap)
         Console.ReadKey()
+
+    End Sub
+    Sub Dijkstras(ByVal availablepath As List(Of Node))
+        Dim grid As New nGrid
+        Dim Q As New List(Of Node)
+        Dim u As Node = availablepath(availablepath.Count - 2)
+
+        Dim prev As New List(Of Node)
+        Dim dist As New List(Of Node)
+        Dim INFINITY As Integer = 99999
+
+
+        For Each v In availablepath
+            dist.Add(v)
+            dist(dist.Count - 1).dist = INFINITY
+
+            prev.Add(v)
+
+            Q.Add(v)
+
+        Next
+
+        dist(0).dist = 0 'setting source distance to 0
+
+        SetBackGroundColour(ConsoleColor.Black)
+        SetColour(ConsoleColor.Red)
+        While Q.Count > 0
+            u = ExtractMin(Q, u)
+            Dim index As Integer = FindIndex(Q, u)
+            Q.RemoveAt(index)
+
+            For Each v As Node In grid.GetNeighbours(u, availablepath, False)
+                If Not availablepath.Contains(v) Then Continue For
+                v.Print("XX")
+                Dim udist As Integer = FindIndex(dist, u)
+                Dim vdist As Integer = FindIndex(dist, v)
+
+
+
+                Dim alt As Single = 1 + GetDistance(u, v)
+                If alt < dist(vdist).dist Then
+                    dist(vdist).dist = alt
+                    Dim vprev As Integer = FindIndex(prev, v)
+                    prev(vprev) = u
+                End If
+            Next
+
+        End While
+
     End Sub
 
+
+    Public Function FindIndex(ByVal list As List(Of Node), ByVal node As Node)
+        Dim index As Integer = list.FindIndex(Function(p) p.xcord = node.X And p.ycord = node.Y)
+        If index = -1 Then Return 0
+        Return index
+    End Function
+    Function ExtractMin(ByVal list As List(Of Node), ByVal currentnode As Node)
+        Dim returnnode As Node = currentnode
+        For Each node In list
+            If node.dist < currentnode.dist Then returnnode = node
+        Next
+        Return returnnode
+    End Function
     Sub SetBackGroundColour(ByVal colour As ConsoleColor)
         Console.BackgroundColor = colour
     End Sub
@@ -1335,6 +1403,7 @@ Public Class nGrid
     End Function
 End Class
 Public Class Node
+    Public dist As Single
     Public xcord, ycord, gCost, hCost As Integer
     Public parent As Node
     Public Walkable As Boolean
