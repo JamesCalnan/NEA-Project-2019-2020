@@ -1,83 +1,102 @@
 ﻿Imports System.Drawing
 Imports System.IO
 Imports Revised_2
+Class Point
+    Public x, y As Integer
+    Public Sub New(ByVal _x As Integer, ByVal _y As Integer)
+        x = _x
+        y = _y
+    End Sub
+    Public Overrides Function Equals(obj As Object) As Boolean
+        Dim point = TryCast(obj, Point)
+        Return point IsNot Nothing AndAlso
+               x = point.x AndAlso
+               y = point.y
+    End Function
 
+    Public Overrides Function GetHashCode() As Integer
+        Dim hashCode As Long = 1502939027
+        hashCode = (hashCode * -1521134295 + x.GetHashCode()).GetHashCode()
+        hashCode = (hashCode * -1521134295 + y.GetHashCode()).GetHashCode()
+        Return hashCode
+    End Function
+End Class
 Module Module1
     'TODO:  fix when loading the previous maze twice
     Sub Main()
-        'Console.ForegroundColor = ConsoleColor.White
-        'Console.CursorVisible = False
-        'SetColour(ConsoleColor.White)
-        'Dim MenuOptions() As String = {"Recursive Backtracker Algorithm", "Hunt and Kill Algorithm", "Prim's Algorithm", "Aldous-Broder Algorithm", "Growing Tree Algorithm", "Custom Algorithm", "Sidewinder Algorithm", "Binary Tree Algorithm", "Load the previously generated maze", "Save the previously generated maze", "Load a saved maze", "Exit"}
-        'Menu(MenuOptions)
+        Console.ForegroundColor = ConsoleColor.White
+        Console.CursorVisible = False
+        SetColour(ConsoleColor.White)
+        Dim MenuOptions() As String = {"Recursive Backtracker Algorithm", "Hunt and Kill Algorithm", "Prim's Algorithm", "Aldous-Broder Algorithm", "Growing Tree Algorithm", "Custom Algorithm", "Sidewinder Algorithm", "Binary Tree Algorithm", "Load the previously generated maze", "Save the previously generated maze", "Load a saved maze", "Exit"}
+        Menu(MenuOptions)
 
-
-        Dim arr() As Integer = {6, 6, Console.WindowWidth - 5, Console.WindowHeight - 10}
-
-        Dim ap As List(Of Node) = RecursiveBacktracker(arr, 0)
-        Dijkstras(ap)
         Console.ReadKey()
 
     End Sub
     Sub Dijkstras(ByVal availablepath As List(Of Node))
-        Dim grid As New nGrid
-        Dim Q As New List(Of Node)
-        Dim u As Node = availablepath(availablepath.Count - 2)
-
-        Dim prev As New List(Of Node)
-        Dim dist As New List(Of Node)
-        Dim INFINITY As Integer = 99999
-
-
-        For Each v In availablepath
-            dist.Add(v)
-            dist(dist.Count - 1).dist = INFINITY
-
-            prev.Add(v)
-
-            Q.Add(v)
-
-        Next
-
-        dist(0).dist = 0 'setting source distance to 0
-
+        Dim source As New Node(availablepath(availablepath.Count - 2).X, availablepath(availablepath.Count - 2).Y)
+        Dim target As New Node(availablepath(availablepath.Count - 1).X, availablepath(availablepath.Count - 1).Y)
         SetBackGroundColour(ConsoleColor.Black)
-        SetColour(ConsoleColor.Red)
+        Dim dist As New Dictionary(Of Node, Integer)
+        Dim prev As New Dictionary(Of Node, Node)
+        Dim Q As New List(Of Node)
+
+        Dim INFINITY As Integer = Int32.MaxValue
+        Dim grid As New nGrid
+        For Each v In availablepath
+            dist(v) = INFINITY
+            prev(v) = Nothing
+            Q.Add(v)
+        Next
+        dist(source) = 0
+        Dim stopwatch As Stopwatch = Stopwatch.StartNew()
         While Q.Count > 0
-            u = ExtractMin(Q, u)
-            Dim index As Integer = FindIndex(Q, u)
-            Q.RemoveAt(index)
-
+            Dim u As Node = Min(Q, dist)
+            If u.X = target.X And u.Y = target.Y Then
+                Exit While
+            End If
+            Q.Remove(u)
             For Each v As Node In grid.GetNeighbours(u, availablepath, False)
-                If Not availablepath.Contains(v) Then Continue For
-                v.Print("XX")
-                Dim udist As Integer = FindIndex(dist, u)
-                Dim vdist As Integer = FindIndex(dist, v)
-
-
-
-                Dim alt As Single = 1 + GetDistance(u, v)
-                If alt < dist(vdist).dist Then
-                    dist(vdist).dist = alt
-                    Dim vprev As Integer = FindIndex(prev, v)
-                    prev(vprev) = u
+                If Not Q.Contains(v) Then Continue For
+                Dim alt As Integer = dist(u) + GetDistance(u, v)
+                If alt < dist(v) Then
+                    dist(v) = alt
+                    prev(v) = u
+                    SetColour(ConsoleColor.Red)
                 End If
             Next
-
         End While
+        backtrack(prev, target, stopwatch)
+        Console.ReadKey()
+    End Sub
+
+    Sub backtrack(ByVal prev As Dictionary(Of Node, Node), ByVal target As Node, ByVal watch As Stopwatch)
+        Dim s As New List(Of Node)
+        Dim u As Node = target
+
+        While prev(u) IsNot Nothing
+            s.Add(u)
+            u = prev(u)
+        End While
+        s.Reverse()
+        Dim mess As String = $"Time Taken to solve: {watch.Elapsed.TotalSeconds} seconds"
+        SetColour(ConsoleColor.Yellow)
+        Console.SetCursorPosition(Console.WindowWidth / 2 - mess.Count / 2, Console.WindowHeight - 1)
+        Console.Write(mess)
+        SetColour(ConsoleColor.Green)
+        For Each node In s
+            node.Print("██")
+            Threading.Thread.Sleep(2)
+        Next
 
     End Sub
 
-
-    Public Function FindIndex(ByVal list As List(Of Node), ByVal node As Node)
-        Dim index As Integer = list.FindIndex(Function(p) p.xcord = node.X And p.ycord = node.Y)
-        If index = -1 Then Return 0
-        Return index
-    End Function
-    Function ExtractMin(ByVal list As List(Of Node), ByVal currentnode As Node)
-        Dim returnnode As Node = currentnode
+    Function Min(ByVal list As List(Of Node), ByVal dist As Dictionary(Of Node, Integer))
+        Dim returnnode As Node = list(0)
         For Each node In list
-            If node.dist < currentnode.dist Then returnnode = node
+            If dist(node) < dist(returnnode) Then
+                returnnode = node
+            End If
         Next
         Return returnnode
     End Function
@@ -145,6 +164,7 @@ Module Module1
     End Sub
     Function GrowingTreeMenu(ByVal arr() As String)
         Console.Clear()
+        Dim temparr() As Integer = {0, 0, 0, 0, 0, 0, 0, 0, 0}
         Dim CurrentCol As Integer = Console.CursorTop
         Dim y As Integer = Console.CursorTop
         Dim NumOfOptions As Integer = arr.Count
@@ -165,30 +185,8 @@ Module Module1
                     If y = -1 Then y = arr.Count - 1
                 Case "Enter"
                     Console.Clear()
-                    If y = 0 Then
-                        Return {1, 0, 0, 0, 0, 0, 0, 0, 0}
-                    ElseIf y = 1 Then
-                        Return {0, 1, 0, 0, 0, 0, 0, 0, 0}
-                    ElseIf y = 2 Then
-                        Return {0, 0, 1, 0, 0, 0, 0, 0, 0}
-                    ElseIf y = 3 Then
-                        Return {0, 0, 0, 1, 0, 0, 0, 0, 0}
-                    ElseIf y = 4 Then
-                        Return {0, 0, 0, 0, 1, 0, 0, 0, 0}
-                    ElseIf y = 5 Then
-                        Return {0, 0, 0, 0, 0, 1, 0, 0, 0}
-                    ElseIf y = 6 Then
-                        Return {0, 0, 0, 0, 0, 0, 1, 0, 0}
-                    ElseIf y = 7 Then
-                        Return {0, 0, 0, 0, 0, 0, 0, 1, 0}
-                    ElseIf y = 8 Then
-                        Return {0, 0, 0, 0, 0, 0, 0, 0, 1}
-                    Else
-                        OptionNotReady()
-                    End If
-                    SetBackGroundColour(ConsoleColor.Black)
-                    Console.Clear()
-                    MsgColour("What cell selection method would you like to use: ", ConsoleColor.Yellow)
+                    temparr(y) = 1
+                    Return temparr
             End Select
             SetColour(ConsoleColor.White)
             Dim Count As Integer = 1
@@ -244,7 +242,7 @@ Module Module1
                             If input = "astar" Then
                                 AStar(AvailablePath)
                             Else
-                                OptionNotReady()
+                                Dijkstras(AvailablePath)
                             End If
                         End If
                     ElseIf y = 1 Then
@@ -264,7 +262,7 @@ Module Module1
                             If input = "astar" Then
                                 AStar(AvailablePath)
                             Else
-                                OptionNotReady()
+                                Dijkstras(AvailablePath)
                             End If
                         End If
                     ElseIf y = 2 Then
@@ -284,7 +282,7 @@ Module Module1
                             If input = "astar" Then
                                 AStar(AvailablePath)
                             Else
-                                OptionNotReady()
+                                Dijkstras(AvailablePath)
                             End If
                         End If
                     ElseIf y = 3 Then
@@ -304,7 +302,7 @@ Module Module1
                             If input = "astar" Then
                                 AStar(AvailablePath)
                             Else
-                                OptionNotReady()
+                                Dijkstras(AvailablePath)
                             End If
                         End If
                     ElseIf y = 4 Then
@@ -326,7 +324,7 @@ Module Module1
                             If input = "astar" Then
                                 AStar(AvailablePath)
                             Else
-                                OptionNotReady()
+                                Dijkstras(AvailablePath)
                             End If
                         End If
                     ElseIf y = 5 Then
@@ -347,7 +345,7 @@ Module Module1
                                 AStar(AvailablePath)
 
                             Else
-                                OptionNotReady()
+                                Dijkstras(AvailablePath)
                             End If
                         End If
                     ElseIf y = 8 Then
@@ -366,7 +364,7 @@ Module Module1
                             If input = "astar" Then
                                 AStar(PreviousMaze)
                             Else
-                                OptionNotReady()
+                                Dijkstras(PreviousMaze)
                             End If
                         Else
                             Console.Clear()
@@ -452,7 +450,7 @@ Module Module1
                                 If input = "astar" Then
                                     AStar(LoadedMaze)
                                 Else
-                                    OptionNotReady()
+                                    Dijkstras(LoadedMaze)
                                 End If
                             Else
                                 Console.Clear()
