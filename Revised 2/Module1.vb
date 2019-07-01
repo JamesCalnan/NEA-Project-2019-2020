@@ -1,28 +1,9 @@
 ﻿Imports System.Drawing
 Imports System.IO
 Imports Revised_2
-Class Point
-    Public x, y As Integer
-    Public Sub New(ByVal _x As Integer, ByVal _y As Integer)
-        x = _x
-        y = _y
-    End Sub
-    Public Overrides Function Equals(obj As Object) As Boolean
-        Dim point = TryCast(obj, Point)
-        Return point IsNot Nothing AndAlso
-               x = point.x AndAlso
-               y = point.y
-    End Function
 
-    Public Overrides Function GetHashCode() As Integer
-        Dim hashCode As Long = 1502939027
-        hashCode = (hashCode * -1521134295 + x.GetHashCode()).GetHashCode()
-        hashCode = (hashCode * -1521134295 + y.GetHashCode()).GetHashCode()
-        Return hashCode
-    End Function
-End Class
 Module Module1
-    'TODO:  fix when loading the previous maze twice
+    'TODO:  fix when loading the previous maze twice,   get rid of "Walkable" boolean
     Sub Main()
         Console.ForegroundColor = ConsoleColor.White
         Console.CursorVisible = False
@@ -36,13 +17,13 @@ Module Module1
     Sub Dijkstras(ByVal availablepath As List(Of Node))
         Dim source As New Node(availablepath(availablepath.Count - 2).X, availablepath(availablepath.Count - 2).Y)
         Dim target As New Node(availablepath(availablepath.Count - 1).X, availablepath(availablepath.Count - 1).Y)
+        Dim startamount As Integer = availablepath.Count - 1
+        Dim ExtraPath As List(Of Node) = availablepath
         SetBackGroundColour(ConsoleColor.Black)
         Dim dist As New Dictionary(Of Node, Integer)
         Dim prev As New Dictionary(Of Node, Node)
         Dim Q As New List(Of Node)
-
         Dim INFINITY As Integer = Int32.MaxValue
-        Dim grid As New nGrid
         For Each v In availablepath
             dist(v) = INFINITY
             prev(v) = Nothing
@@ -51,33 +32,36 @@ Module Module1
         dist(source) = 0
         Dim stopwatch As Stopwatch = Stopwatch.StartNew()
         While Q.Count > 0
-            Dim u As Node = Min(Q, dist)
+            If ExitCase() Then Exit While
+            Dim u As Node = ExtractMin(Q, dist)
+            SetColour(ConsoleColor.Red)
+            u.Print("██")
             If u.X = target.X And u.Y = target.Y Then
+                Backtrack(prev, target, source, stopwatch)
+                Console.ReadKey()
                 Exit While
             End If
             Q.Remove(u)
-            For Each v As Node In grid.GetNeighbours(u, availablepath, False)
+            For Each v As Node In GetNeighbours(u, availablepath, False)
                 If Not Q.Contains(v) Then Continue For
-                Dim alt As Integer = dist(u) + GetDistance(u, v)
+                Dim alt As Integer = dist(u) + 1 'GetDistance(u, v)
                 If alt < dist(v) Then
                     dist(v) = alt
                     prev(v) = u
-                    SetColour(ConsoleColor.Red)
                 End If
             Next
+            'ExtraPath.Remove(u)
+            'CurrentExploredPercent(ExtraPath.Count - 1, startamount)
         End While
-        backtrack(prev, target, stopwatch)
-        Console.ReadKey()
     End Sub
-
-    Sub backtrack(ByVal prev As Dictionary(Of Node, Node), ByVal target As Node, ByVal watch As Stopwatch)
+    Sub Backtrack(ByVal prev As Dictionary(Of Node, Node), ByVal target As Node, ByVal source As Node, ByVal watch As Stopwatch)
         Dim s As New List(Of Node)
         Dim u As Node = target
-
         While prev(u) IsNot Nothing
             s.Add(u)
             u = prev(u)
         End While
+        s.Add(source)
         s.Reverse()
         Dim mess As String = $"Time Taken to solve: {watch.Elapsed.TotalSeconds} seconds"
         SetColour(ConsoleColor.Yellow)
@@ -88,10 +72,8 @@ Module Module1
             node.Print("██")
             Threading.Thread.Sleep(2)
         Next
-
     End Sub
-
-    Function Min(ByVal list As List(Of Node), ByVal dist As Dictionary(Of Node, Integer))
+    Function ExtractMin(ByVal list As List(Of Node), ByVal dist As Dictionary(Of Node, Integer))
         Dim returnnode As Node = list(0)
         For Each node In list
             If dist(node) < dist(returnnode) Then
@@ -554,9 +536,8 @@ Module Module1
         Dim pathfound As Boolean = False
         SetBoth(ConsoleColor.Green)
         start.Print("██")
-        Dim openSet, closedSet, mazepath As New List(Of Node)
+        Dim openSet, closedSet As New List(Of Node)
         Dim current As New Node(start.X, start.Y)
-        Dim grid As New nGrid
         openSet.Add(current)
         SetBoth(ConsoleColor.Yellow)
         Dim stopwatch As Stopwatch = Stopwatch.StartNew()
@@ -585,7 +566,7 @@ Module Module1
                 Console.ReadKey()
                 Exit While
             End If
-            For Each neighbour As Node In grid.GetNeighbours(current, availablepath, False)
+            For Each neighbour As Node In GetNeighbours(current, availablepath, False)
                 If Not neighbour.Walkable Or closedSet.Contains(neighbour) Then Continue For
                 Dim newmovementcost As Single = current.gCost + GetDistance(current, neighbour)
                 If newmovementcost < neighbour.gCost Or Not openSet.Contains(neighbour) Then
@@ -600,8 +581,8 @@ Module Module1
                     End If
                 End If
             Next
-            ExtraPath.Remove(current)
-            CurrentExploredPercent(ExtraPath.Count - 1, startamount)
+            'ExtraPath.Remove(current)
+            'CurrentExploredPercent(ExtraPath.Count - 1, startamount)
         End While
         If pathfound = False Then
             Dim mess As String = "No Path Availible"
@@ -660,7 +641,6 @@ Module Module1
     Function GrowingTree(ByVal Limits() As Integer, ByVal delay As Integer, ByVal CellSelectionMethod() As Integer)
         Dim R As New Random
         Dim availablepath As New List(Of Cell)
-        Dim grid As New nGrid
         Dim VisistedList, FrontierSet, RecentFrontierSet As New List(Of Cell)
         Dim CurrentCell As New Cell(Limits(0) + 3, Limits(1) + 2)
         Dim PreviousCell As Cell = CurrentCell
@@ -839,7 +819,6 @@ Module Module1
     Function Custom(ByVal Limits() As Integer, ByVal delay As Integer)
         Dim R As New Random
         Dim availablepath As New List(Of Cell)
-        Dim grid As New nGrid
         Dim VisistedList, FrontierSet, RecentFrontierSet As New List(Of Cell)
         Dim CurrentCell As New Cell(Limits(0) + 3, Limits(1) + 2)
         Dim WallCell As Cell
@@ -898,7 +877,6 @@ Module Module1
         Dim TotalCellCount As Integer
         Dim R As New Random
         Dim availablepath As New List(Of Cell)
-        Dim grid As New nGrid
         Dim VisitedList, RecentCells As New List(Of Cell)
         Dim CurrentCell As New Cell(Limits(0) + 3, Limits(1) + 2)
         Dim PrevCell, WallPrev As New Cell(Limits(0) + 3, Limits(1) + 2)
@@ -960,7 +938,6 @@ Module Module1
     Function Prims(ByVal Limits() As Integer, ByVal delay As Integer)
         Dim R As New Random
         Dim availablepath As New List(Of Cell)
-        Dim grid As New nGrid
         Dim VisistedList, FrontierSet As New List(Of Cell)
         Dim CurrentCell As New Cell(Limits(0) + 3, Limits(1) + 2)
         Dim WallCell As Cell
@@ -1349,6 +1326,9 @@ Module Module1
         Next
         Return neighbours
     End Function
+    Function GetNeighbours(ByVal current As Node, ByRef availablepath As List(Of Node), ByVal something As Boolean)
+        Return CheckAndAdd(current, availablepath)
+    End Function
 End Module
 Class Cell
     Private xcord, ycord As Integer
@@ -1393,11 +1373,6 @@ Class Cell
         hashCode = (hashCode * -1521134295 + xcord.GetHashCode()).GetHashCode()
         hashCode = (hashCode * -1521134295 + ycord.GetHashCode()).GetHashCode()
         Return hashCode
-    End Function
-End Class
-Public Class nGrid
-    Function GetNeighbours(ByVal current As Node, ByRef availablepath As List(Of Node), ByVal something As Boolean)
-        Return CheckAndAdd(current, availablepath)
     End Function
 End Class
 Public Class Node
