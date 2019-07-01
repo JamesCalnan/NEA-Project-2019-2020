@@ -43,7 +43,7 @@ Module Module1
             End If
             Q.Remove(u)
             For Each v As Node In GetNeighbours(u, availablepath, False)
-                If Not Q.Contains(v) Then Continue For
+                'If Not Q.Contains(v) Then Continue For
                 Dim alt As Integer = dist(u) + 1 'GetDistance(u, v)
                 If alt < dist(v) Then
                     dist(v) = alt
@@ -53,6 +53,7 @@ Module Module1
             'ExtraPath.Remove(u)
             'CurrentExploredPercent(ExtraPath.Count - 1, startamount)
         End While
+
     End Sub
     Sub Backtrack(ByVal prev As Dictionary(Of Node, Node), ByVal target As Node, ByVal source As Node, ByVal watch As Stopwatch)
         Dim s As New List(Of Node)
@@ -381,7 +382,7 @@ Module Module1
                         Dim ValidMaze, XMax, YMax As Integer
                         ValidMaze = 1
                         XMax = Console.WindowWidth - 6
-                        YMax = Console.WindowHeight - 6
+                        YMax = Console.WindowHeight - 4
                         LoadedMaze.Clear()
                         Console.Clear()
                         Dim _x, _y As Integer
@@ -396,7 +397,9 @@ Module Module1
                                     If c = 0 Then
                                         _x = Int(reader.ReadLine)
                                         If _x > XMax Then
+
                                             ValidMaze = 0
+
                                             Exit Do
                                         End If
                                     ElseIf c = 1 Then
@@ -567,7 +570,7 @@ Module Module1
                 Exit While
             End If
             For Each neighbour As Node In GetNeighbours(current, availablepath, False)
-                If Not neighbour.Walkable Or closedSet.Contains(neighbour) Then Continue For
+                If closedSet.Contains(neighbour) Then Continue For
                 Dim newmovementcost As Single = current.gCost + GetDistance(current, neighbour)
                 If newmovementcost < neighbour.gCost Or Not openSet.Contains(neighbour) Then
                     neighbour.gCost = newmovementcost
@@ -1307,23 +1310,21 @@ Module Module1
             End If
         End If
     End Function
-    Sub Check(ByVal neighbours As List(Of Node), ByVal current As Node, ByVal availablepath As List(Of Node), ByVal currentiteration As Integer)
-        If availablepath.Contains(current) Then
-            neighbours(currentiteration).Walkable = True
-        Else
-            neighbours(currentiteration).Walkable = False
-        End If
-    End Sub
     Function CheckAndAdd(ByRef current As Node, ByRef availablepath As List(Of Node))
-        Dim neighbours As New List(Of Node) From {
-            New Node(current.X, current.Y - 1), 'top
-            New Node(current.X + 2, current.Y), 'right
-            New Node(current.X, current.Y + 1), 'down
-            New Node(current.X - 2, current.Y) 'left
-            }
-        For i = 0 To 3
-            Check(neighbours, current, availablepath, i)
-        Next
+        Dim neighbours As New List(Of Node)
+
+        Dim newnode As New Node(current.X, current.Y - 1)
+        If availablepath.Contains(newnode) Then neighbours.Add(New Node(newnode.X, newnode.Y))
+
+        newnode.update(current.X + 2, current.Y)
+        If availablepath.Contains(newnode) Then neighbours.Add(New Node(newnode.X, newnode.Y))
+
+        newnode.update(current.X, current.Y + 1)
+        If availablepath.Contains(newnode) Then neighbours.Add(New Node(newnode.X, newnode.Y))
+
+        newnode.update(current.X - 2, current.Y)
+        If availablepath.Contains(newnode) Then neighbours.Add(New Node(newnode.X, newnode.Y))
+
         Return neighbours
     End Function
     Function GetNeighbours(ByVal current As Node, ByRef availablepath As List(Of Node), ByVal something As Boolean)
