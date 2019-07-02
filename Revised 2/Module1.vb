@@ -544,6 +544,7 @@ Module Module1
         openSet.Add(current)
         SetBoth(ConsoleColor.Yellow)
         Dim stopwatch As Stopwatch = Stopwatch.StartNew()
+        SetBoth(ConsoleColor.Red)
         While openSet.Count > 0
             If ExitCase() Then
                 pathfound = True
@@ -557,11 +558,7 @@ Module Module1
             Next 'finding node with the lowest fcost in the openset
             openSet.Remove(current)
             closedSet.Add(current)
-            SetBoth(ConsoleColor.Red)
-            If availablepath.Contains(closedSet(closedSet.Count - 1)) Then
-                closedSet(closedSet.Count - 1).Print("██")
-            End If
-            SetBoth(ConsoleColor.Yellow)
+            current.Print("██")
             If current.X = target.X And current.Y = target.Y Then
                 Dim Time As String = $"Time Taken to solve: {stopwatch.Elapsed.TotalSeconds} seconds"
                 RetracePath(start, current, Time)
@@ -576,16 +573,11 @@ Module Module1
                     neighbour.gCost = newmovementcost
                     neighbour.hCost = GetDistance(neighbour, target)
                     neighbour.parent = current
-                    If availablepath.Contains(neighbour) Then
-                        neighbour.Print("██")
-                    End If
                     If Not openSet.Contains(neighbour) Then
                         openSet.Add(neighbour)
                     End If
                 End If
             Next
-            'ExtraPath.Remove(current)
-            'CurrentExploredPercent(ExtraPath.Count - 1, startamount)
         End While
         If pathfound = False Then
             Dim mess As String = "No Path Availible"
