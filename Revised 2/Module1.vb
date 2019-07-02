@@ -173,13 +173,9 @@ Module Module1
             End Select
             SetColour(ConsoleColor.White)
             Dim Count As Integer = 1
-            For i = 0 To arr.Count - 1
-                Console.SetCursorPosition(0, i + 1 + CurrentCol)
-                Console.Write("                                      ")
-            Next
             For Each MenuOption In arr
                 Console.SetCursorPosition(0, Count + CurrentCol)
-                Console.Write($" {MenuOption}")
+                Console.Write($" {MenuOption}  ")
                 Count += 1
             Next
             Console.SetCursorPosition(0, y + 1)
@@ -197,10 +193,10 @@ Module Module1
         For i = 1 To arr.Count - 1
             Console.WriteLine($" {arr(i)}")
         Next
-        Console.CursorVisible = False
         While 1
             SetBackGroundColour(ConsoleColor.Black)
             Dim key = Console.ReadKey
+            Console.CursorVisible = False
             Select Case key.Key.ToString
                 Case "DownArrow"
                     y += 1
@@ -398,9 +394,7 @@ Module Module1
                                     If c = 0 Then
                                         _x = Int(reader.ReadLine)
                                         If _x > XMax Then
-
                                             ValidMaze = 0
-
                                             Exit Do
                                         End If
                                     ElseIf c = 1 Then
@@ -459,13 +453,9 @@ Module Module1
             End Select
             SetColour(ConsoleColor.White)
             Dim Count As Integer = 1
-            For i = 0 To arr.Count - 1
-                Console.SetCursorPosition(0, i + 1 + CurrentCol)
-                Console.Write("                                      ")
-            Next
             For Each MenuOption In arr
                 Console.SetCursorPosition(0, Count + CurrentCol)
-                Console.Write($" {MenuOption}")
+                Console.Write($" {MenuOption}  ")
                 Count += 1
             Next
             Console.SetCursorPosition(0, y + 1)
@@ -1293,20 +1283,14 @@ Module Module1
     End Function
 End Module
 Class Cell
-    Private xcord, ycord As Integer
+    Public X, Y As Integer
     Public Sub New(ByVal xpoint As Integer, ByVal ypoint As Integer)
-        xcord = xpoint
-        ycord = ypoint
+        X = xpoint
+        Y = ypoint
     End Sub
-    Public Function X()
-        Return xcord
-    End Function
-    Public Function Y()
-        Return ycord
-    End Function
-    Sub Update(ByVal x As Integer, ByVal y As Integer)
-        xcord = x
-        ycord = y
+    Sub Update(ByVal _x As Integer, ByVal _y As Integer)
+        X = _x
+        Y = _y
     End Sub
     Public Function Pop(ByVal list As List(Of Cell))
         Dim val As Cell
@@ -1316,69 +1300,54 @@ Class Cell
     End Function
 
     Public Sub Print(ByVal str As String)
-        Console.SetCursorPosition(Me.X, Me.Y)
+        Console.SetCursorPosition(X, Y)
         Console.Write(str)
-    End Sub
-    Public Sub RemoveWhere(ByRef list As List(Of Cell))
-        list.RemoveAt(list.FindIndex(Function(p) p.xcord = Me.X And p.ycord = Me.Y))
     End Sub
 
     Public Overrides Function Equals(obj As Object) As Boolean
         Dim cell = TryCast(obj, Cell)
         Return cell IsNot Nothing AndAlso
-               xcord = cell.xcord AndAlso
-               ycord = cell.ycord
+               X = cell.X AndAlso
+               Y = cell.Y
     End Function
 
     Public Overrides Function GetHashCode() As Integer
         Dim hashCode As Long = 1855483287
-        hashCode = (hashCode * -1521134295 + xcord.GetHashCode()).GetHashCode()
-        hashCode = (hashCode * -1521134295 + ycord.GetHashCode()).GetHashCode()
+        hashCode = (hashCode * -1521134295 + X.GetHashCode()).GetHashCode()
+        hashCode = (hashCode * -1521134295 + Y.GetHashCode()).GetHashCode()
         Return hashCode
     End Function
 End Class
 Public Class Node
-    Public dist As Single
-    Public xcord, ycord, gCost, hCost As Integer
+    Public X, Y, gCost, hCost As Integer
     Public parent As Node
-    Public Walkable As Boolean
     Public Sub Print(ByVal letter As String)
-        Console.SetCursorPosition(Me.xcord, Me.ycord)
+        Console.SetCursorPosition(X, Y)
         Console.Write(letter)
     End Sub
 
     Public Sub New(ByVal xpoint As Integer, ByVal ypoint As Integer)
-        xcord = xpoint
-        ycord = ypoint
+        X = xpoint
+        Y = ypoint
     End Sub
     Public Sub update(ByVal xpoint As Integer, ByVal ypoint As Integer)
-        xcord = xpoint
-        ycord = ypoint
+        X = xpoint
+        Y = ypoint
     End Sub
-    Public Function X()
-        Return xcord
-    End Function
-    Public Function Y()
-        Return ycord
-    End Function
     Public Function fCost()
         Return gCost + hCost
     End Function
-    Public Sub RemoveWhere(ByRef list As List(Of Node))
-        list.RemoveAt(list.FindIndex(Function(p) p.xcord = Me.X And p.ycord = Me.Y))
-
-    End Sub
     Public Overrides Function Equals(obj As Object) As Boolean
         Dim node = TryCast(obj, Node)
         Return node IsNot Nothing AndAlso
-               xcord = node.xcord AndAlso
-               ycord = node.ycord
+               X = node.X AndAlso
+               Y = node.Y
     End Function
 
     Public Overrides Function GetHashCode() As Integer
         Dim hashCode As Long = 1855483287
-        hashCode = (hashCode * -1521134295 + xcord.GetHashCode()).GetHashCode()
-        hashCode = (hashCode * -1521134295 + ycord.GetHashCode()).GetHashCode()
+        hashCode = (hashCode * -1521134295 + X.GetHashCode()).GetHashCode()
+        hashCode = (hashCode * -1521134295 + Y.GetHashCode()).GetHashCode()
         Return hashCode
     End Function
 End Class
