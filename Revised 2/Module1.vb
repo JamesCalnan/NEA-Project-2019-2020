@@ -2,7 +2,7 @@
 Imports System.IO
 Imports Revised_2
 Module Module1
-    'TODO:  fix when loading the previous maze twice,   get rid of "Walkable" boolean
+    'TODO: 
     Sub Main()
         Console.CursorVisible = False
         SetColour(ConsoleColor.White)
@@ -216,9 +216,7 @@ Module Module1
                             Console.SetCursorPosition(0, YPosAfterMaze + 2)
                             Dim input As String = SolvingMenu(YPosAfterMaze + 2)
                             PreviousMaze.Clear()
-                            For Each node In AvailablePath
-                                PreviousMaze.Add(New Node(node.X, node.Y))
-                            Next
+                            PreviousMaze = AvailablePath
                             If input = "astar" Then
                                 AStar(AvailablePath)
                             Else
@@ -236,9 +234,7 @@ Module Module1
                             Console.SetCursorPosition(0, YPosAfterMaze + 2)
                             Dim input As String = SolvingMenu(YPosAfterMaze + 2)
                             PreviousMaze.Clear()
-                            For Each node In AvailablePath
-                                PreviousMaze.Add(New Node(node.X, node.Y))
-                            Next
+                            PreviousMaze = AvailablePath
                             If input = "astar" Then
                                 AStar(AvailablePath)
                             Else
@@ -256,9 +252,7 @@ Module Module1
                             Console.SetCursorPosition(0, YPosAfterMaze + 2)
                             Dim input As String = SolvingMenu(YPosAfterMaze + 2)
                             PreviousMaze.Clear()
-                            For Each node In AvailablePath
-                                PreviousMaze.Add(New Node(node.X, node.Y))
-                            Next
+                            PreviousMaze = AvailablePath
                             If input = "astar" Then
                                 AStar(AvailablePath)
                             Else
@@ -276,9 +270,7 @@ Module Module1
                             Console.SetCursorPosition(0, YPosAfterMaze + 2)
                             Dim input As String = SolvingMenu(YPosAfterMaze + 2)
                             PreviousMaze.Clear()
-                            For Each node In AvailablePath
-                                PreviousMaze.Add(New Node(node.X, node.Y))
-                            Next
+                            PreviousMaze = AvailablePath
                             If input = "astar" Then
                                 AStar(AvailablePath)
                             Else
@@ -298,9 +290,7 @@ Module Module1
                             Console.SetCursorPosition(0, YPosAfterMaze + 2)
                             Dim input As String = SolvingMenu(YPosAfterMaze + 2)
                             PreviousMaze.Clear()
-                            For Each node In AvailablePath
-                                PreviousMaze.Add(New Node(node.X, node.Y))
-                            Next
+                            PreviousMaze = AvailablePath
                             If input = "astar" Then
                                 AStar(AvailablePath)
                             Else
@@ -318,12 +308,9 @@ Module Module1
                             Console.SetCursorPosition(0, YPosAfterMaze + 2)
                             Dim input As String = SolvingMenu(YPosAfterMaze + 2)
                             PreviousMaze.Clear()
-                            For Each node In AvailablePath
-                                PreviousMaze.Add(New Node(node.X, node.Y))
-                            Next
+                            PreviousMaze = AvailablePath
                             If input = "astar" Then
                                 AStar(AvailablePath)
-
                             Else
                                 Dijkstras(AvailablePath)
                             End If
@@ -374,7 +361,7 @@ Module Module1
                             MsgColour("No previous maze available", ConsoleColor.Red)
                             Console.ReadKey()
                         End If
-                        Console.ReadKey()
+                        'Console.ReadKey()
                     ElseIf y = 10 Then
                         Dim ValidMaze, XMax, YMax As Integer
                         ValidMaze = 1
@@ -424,9 +411,7 @@ Module Module1
                                 Console.SetCursorPosition(0, YPosAfterMaze + 2)
                                 Dim input As String = SolvingMenu(YPosAfterMaze + 2)
                                 PreviousMaze.Clear()
-                                For Each node In LoadedMaze
-                                    PreviousMaze.Add(New Node(node.X, node.Y))
-                                Next
+                                PreviousMaze = LoadedMaze
                                 If input = "astar" Then
                                     AStar(LoadedMaze)
                                 Else
@@ -842,6 +827,7 @@ Module Module1
                 TotalCellCount += 1
             Next
         Next
+
         While VisitedList.Count <> TotalCellCount
             If ExitCase() Then Return Nothing
             SetBoth(ConsoleColor.White)
@@ -852,13 +838,13 @@ Module Module1
             Dim Index As Integer = R.Next(0, RecentCells.Count)
             Dim TemporaryCell As Cell = RecentCells(Index)
             Dim TempNodeCell As New Node(TemporaryCell.X, TemporaryCell.Y)
-            If Not ReturnablePath.Contains(TempNodeCell) Then ReturnablePath.Add(New Node(TemporaryCell.X, TemporaryCell.Y))
-            If Not VisitedList.Contains(TemporaryCell) Then
+                If Not VisitedList.Contains(TemporaryCell) Then 'Unvisited cell?
                 VisitedList.Add(New Cell(TemporaryCell.X, TemporaryCell.Y))
                 WallCell = MidPoint(CurrentCell, TemporaryCell)
                 CurrentCell = TemporaryCell
                 ReturnablePath.Add(New Node(WallCell.X, WallCell.Y))
-                SetBoth(ConsoleColor.White)
+                    ReturnablePath.Add(New Node(TemporaryCell.X, TemporaryCell.Y))
+                    SetBoth(ConsoleColor.White)
                 PrevCell.Print("██")
                 WallCell.Print("██")
                 SetBoth(ConsoleColor.Blue)
@@ -876,17 +862,7 @@ Module Module1
         End While
         SetBoth(ConsoleColor.White)
         PrevCell.Print("██")
-        ReturnablePath.Add(New Node(Limits(0) + 3, Limits(1) - 1))
-        ReturnablePath(ReturnablePath.Count - 1).Print("██")
-        Dim testnode As New Cell(Limits(2) - 3, Limits(3))
-        If VisitedList.Contains(testnode) Then
-            ReturnablePath.Add(New Node(Limits(2) - 3, Limits(3) + 1))
-        Else
-            ReturnablePath.Add(New Node(Limits(2) - 1, Limits(3) + 1))
-        End If
-        ReturnablePath(ReturnablePath.Count - 1).Print("██")
-        SetColour(ConsoleColor.White)
-        SetBackGroundColour(ConsoleColor.Black)
+        AddStartAndEnd(ReturnablePath, VisitedList, Limits)
         Return ReturnablePath
     End Function
     Function Prims(ByVal Limits() As Integer, ByVal delay As Integer)
