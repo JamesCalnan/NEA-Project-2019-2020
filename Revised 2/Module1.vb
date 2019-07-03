@@ -6,7 +6,7 @@ Module Module1
     Sub Main()
         Console.CursorVisible = False
         SetColour(ConsoleColor.White)
-        Dim MenuOptions() As String = {"Recursive Backtracker Algorithm", "Hunt and Kill Algorithm", "Prim's Algorithm", "Aldous-Broder Algorithm", "Growing Tree Algorithm", "Custom Algorithm", "Sidewinder Algorithm", "Binary Tree Algorithm", "Load the previously generated maze", "Save the previously generated maze", "Load a saved maze", "Exit"}
+        Dim MenuOptions() As String = {"Recursive Backtracker Algorithm", "Hunt and Kill Algorithm", "Prim's Algorithm", "Aldous-Broder Algorithm", "Growing Tree Algorithm", "Custom Algorithm", "Sidewinder Algorithm", "Binary Tree Algorithm", "Eller's Algorithm", "Load the previously generated maze", "Save the previously generated maze", "Load a saved maze", "Exit"}
         Menu(MenuOptions)
 
         Console.ReadKey()
@@ -315,7 +315,7 @@ Module Module1
                                 Dijkstras(AvailablePath)
                             End If
                         End If
-                    ElseIf y = 8 Then
+                    ElseIf y = 9 Then
                         'Load previous maze
                         If PreviousMaze.Count > 1 Then
                             Console.Clear()
@@ -338,7 +338,7 @@ Module Module1
                             MsgColour("No previous maze available", ConsoleColor.Red)
                             Console.ReadKey()
                         End If
-                    ElseIf y = 9 Then
+                    ElseIf y = 10 Then
                         If PreviousMaze.Count > 1 Then
                             Console.Clear()
                             Dim filename As String
@@ -362,7 +362,7 @@ Module Module1
                             Console.ReadKey()
                         End If
                         'Console.ReadKey()
-                    ElseIf y = 10 Then
+                    ElseIf y = 11 Then
                         Dim ValidMaze, XMax, YMax As Integer
                         ValidMaze = 1
                         XMax = Console.WindowWidth - 6
