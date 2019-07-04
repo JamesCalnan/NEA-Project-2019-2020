@@ -2,9 +2,12 @@
 Imports System.IO
 Imports Revised_2
 Module Module1
-    'TODO: 
+    'TODO: add show steps when making maze, add input delay when solving, add show/not show steps with dijkstras
     Sub Main()
         Console.CursorVisible = False
+
+
+
         SetColour(ConsoleColor.White)
         Dim MenuOptions() As String = {"Recursive Backtracker Algorithm", "Hunt and Kill Algorithm", "Prim's Algorithm", "Aldous-Broder Algorithm", "Growing Tree Algorithm", "Custom Algorithm", "Sidewinder Algorithm", "Binary Tree Algorithm", "Eller's Algorithm", "Load the previously generated maze", "Save the previously generated maze", "Load a saved maze", "Exit"}
         Menu1(MenuOptions)
@@ -370,10 +373,11 @@ Module Module1
                             DisplayAvailablePositions(AvailablePath.Count)
                             Console.SetCursorPosition(0, YPosAfterMaze + 2)
                             Dim input As String = SolvingMenu(YPosAfterMaze + 2)
+                            Dim ShowPath As Boolean = HorizontalYesNo(YPosAfterMaze + 2, "Do you want to show the steps in solving the maze: ")
                             PreviousMaze.Clear()
                             PreviousMaze = AvailablePath
                             If input = "astar" Then
-                                AStar(AvailablePath, True, True)
+                                aStar(AvailablePath, ShowPath, True)
                             ElseIf input = "dijkstras" Then
                                 Dijkstras(AvailablePath)
                             ElseIf input = "play" Then
@@ -392,10 +396,11 @@ Module Module1
                             DisplayAvailablePositions(AvailablePath.Count)
                             Console.SetCursorPosition(0, YPosAfterMaze + 2)
                             Dim input As String = SolvingMenu(YPosAfterMaze + 2)
+                            Dim ShowPath As Boolean = HorizontalYesNo(YPosAfterMaze + 2, "Do you want to show the steps in solving the maze: ")
                             PreviousMaze.Clear()
                             PreviousMaze = AvailablePath
                             If input = "astar" Then
-                                AStar(AvailablePath, True, True)
+                                aStar(AvailablePath, ShowPath, True)
                             ElseIf input = "dijkstras" Then
                                 Dijkstras(AvailablePath)
                             ElseIf input = "play" Then
@@ -414,10 +419,11 @@ Module Module1
                             DisplayAvailablePositions(AvailablePath.Count)
                             Console.SetCursorPosition(0, YPosAfterMaze + 2)
                             Dim input As String = SolvingMenu(YPosAfterMaze + 2)
+                            Dim ShowPath As Boolean = HorizontalYesNo(YPosAfterMaze + 2, "Do you want to show the steps in solving the maze: ")
                             PreviousMaze.Clear()
                             PreviousMaze = AvailablePath
                             If input = "astar" Then
-                                AStar(AvailablePath, True, True)
+                                aStar(AvailablePath, ShowPath, True)
                             ElseIf input = "dijkstras" Then
                                 Dijkstras(AvailablePath)
                             ElseIf input = "play" Then
@@ -436,10 +442,11 @@ Module Module1
                             DisplayAvailablePositions(AvailablePath.Count)
                             Console.SetCursorPosition(0, YPosAfterMaze + 2)
                             Dim input As String = SolvingMenu(YPosAfterMaze + 2)
+                            Dim ShowPath As Boolean = HorizontalYesNo(YPosAfterMaze + 2, "Do you want to show the steps in solving the maze: ")
                             PreviousMaze.Clear()
                             PreviousMaze = AvailablePath
                             If input = "astar" Then
-                                AStar(AvailablePath, True, True)
+                                aStar(AvailablePath, ShowPath, True)
                             ElseIf input = "dijkstras" Then
                                 Dijkstras(AvailablePath)
                             ElseIf input = "play" Then
@@ -460,10 +467,11 @@ Module Module1
                             DisplayAvailablePositions(AvailablePath.Count)
                             Console.SetCursorPosition(0, YPosAfterMaze + 2)
                             Dim input As String = SolvingMenu(YPosAfterMaze + 2)
+                            Dim ShowPath As Boolean = HorizontalYesNo(YPosAfterMaze + 2, "Do you want to show the steps in solving the maze: ")
                             PreviousMaze.Clear()
                             PreviousMaze = AvailablePath
                             If input = "astar" Then
-                                AStar(AvailablePath, True, True)
+                                aStar(AvailablePath, ShowPath, True)
                             ElseIf input = "dijkstras" Then
                                 Dijkstras(AvailablePath)
                             ElseIf input = "play" Then
@@ -482,10 +490,11 @@ Module Module1
                             DisplayAvailablePositions(AvailablePath.Count)
                             Console.SetCursorPosition(0, YPosAfterMaze + 2)
                             Dim input As String = SolvingMenu(YPosAfterMaze + 2)
+                            Dim ShowPath As Boolean = HorizontalYesNo(YPosAfterMaze + 2, "Do you want to show the steps in solving the maze: ")
                             PreviousMaze.Clear()
                             PreviousMaze = AvailablePath
                             If input = "astar" Then
-                                AStar(AvailablePath, True, True)
+                                aStar(AvailablePath, ShowPath, True)
                             ElseIf input = "dijkstras" Then
                                 Dijkstras(AvailablePath)
                             ElseIf input = "play" Then
@@ -507,8 +516,9 @@ Module Module1
                             DisplayAvailablePositions(PreviousMaze.Count)
                             Console.SetCursorPosition(0, YPosAfterMaze + 2)
                             Dim input As String = SolvingMenu(YPosAfterMaze + 2)
+                            Dim ShowPath As Boolean = HorizontalYesNo(YPosAfterMaze + 2, "Do you want to show the steps in solving the maze: ")
                             If input = "astar" Then
-                                AStar(PreviousMaze, True, True)
+                                aStar(PreviousMaze, ShowPath, True)
                             ElseIf input = "dijkstras" Then
                                 Dijkstras(PreviousMaze)
                             ElseIf input = "play" Then
@@ -594,9 +604,9 @@ Module Module1
                                 Console.SetCursorPosition(0, YPosAfterMaze + 2)
                                 PreviousMaze = LoadedMaze
                                 Dim input As String = SolvingMenu(YPosAfterMaze + 2)
-
+                                Dim ShowPath As Boolean = HorizontalYesNo(YPosAfterMaze + 2, "Do you want to show the steps in solving the maze: ")
                                 If input = "astar" Then
-                                    AStar(PreviousMaze, True, True)
+                                    aStar(PreviousMaze, ShowPath, True)
                                 ElseIf input = "dijkstras" Then
                                     Dijkstras(PreviousMaze)
                                 ElseIf input = "play" Then
@@ -640,6 +650,52 @@ Module Module1
         Console.ReadKey()
         Console.Clear()
     End Sub
+    Function HorizontalYesNo(ByVal ColumnPosition As Integer, ByVal message As String)
+        SetColour(ConsoleColor.White)
+        Dim Choice As Boolean = True
+        Dim x, y As Integer
+        y = ColumnPosition
+        Console.SetCursorPosition(x, y)
+        Console.Write(Message)
+        MsgColour("> Yes", ConsoleColor.Green)
+        Console.SetCursorPosition(Message.Length + 10, y)
+        Console.Write(" No")
+        While 1
+            Dim key = Console.ReadKey
+            Select Case key.Key.ToString
+                Case "RightArrow"
+                    If Choice Then Choice = False
+                Case "LeftArrow"
+                    If Not Choice Then Choice = True
+                Case "Enter"
+                    Console.SetCursorPosition(0, y)
+                    Console.Write("                                                                                                               ")
+                    If Choice Then
+                        Return True
+                    Else
+                        Return False
+                    End If
+                Case "Escape"
+                    Return Nothing
+            End Select
+            Console.SetCursorPosition(0, y)
+            Console.Write($"{Message}  Yes        No")
+            If Choice Then
+                Console.SetCursorPosition(Message.Length, y)
+                MsgColour("> Yes", ConsoleColor.Green)
+                Console.SetCursorPosition(Message.Length + 8, y)
+                Console.Write("                    ")
+                Console.SetCursorPosition(Message.Length + 11, y)
+                Console.Write("No")
+            ElseIf Not Choice Then
+                Console.SetCursorPosition(Message.Length + 8, y)
+                Console.Write("                    ")
+                Console.SetCursorPosition(Message.Length + 9, y)
+                MsgColour("> No", ConsoleColor.Green)
+            End If
+        End While
+        Return Nothing
+    End Function
     Function SolvingMenu(ByVal ColumnPosition As Integer)
         SetColour(ConsoleColor.White)
         Dim Option1 As Integer = 1
@@ -1220,6 +1276,7 @@ Module Module1
         Dim VisitedList, Stack As New List(Of Cell)
         Dim ReturnablePath As New List(Of Node)
         Dim RecentCells As New List(Of Cell)
+        Dim stopwatch As Stopwatch = Stopwatch.StartNew()
         While True
             If ExitCase() Then Return Nothing
             SetBoth(ConsoleColor.White)
@@ -1261,6 +1318,8 @@ Module Module1
             Threading.Thread.Sleep(Delay)
         End While
         AddStartAndEnd(ReturnablePath, VisitedList, Limits)
+        Console.SetCursorPosition(Console.WindowWidth / 2, Console.WindowHeight - 4)
+        Console.Write($"Time: {stopwatch.Elapsed.TotalSeconds}")
         Return ReturnablePath
     End Function
     Function AdjacentCheck(ByVal cell As Cell, ByVal visitedcells As List(Of Cell))
