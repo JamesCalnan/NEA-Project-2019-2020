@@ -782,7 +782,7 @@ Module Module1
             path.Add(current)
             current = current.parent
         End While
-        Dim mess As String = ($"Path length :{path.Count - 1}   {timetaken}")
+        Dim mess As String = ($"Path length: {path.Count - 1}   {timetaken}")
         SetColour(ConsoleColor.Yellow)
         SetBackGroundColour(ConsoleColor.Black)
         Console.SetCursorPosition(Console.WindowWidth / 2 - mess.Count / 2, Console.WindowHeight - 1)
