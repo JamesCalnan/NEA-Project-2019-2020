@@ -7,7 +7,7 @@ Module Module1
         Console.CursorVisible = False
         SetColour(ConsoleColor.White)
         Dim MenuOptions() As String = {"Recursive Backtracker Algorithm", "Hunt and Kill Algorithm", "Prim's Algorithm", "Aldous-Broder Algorithm", "Growing Tree Algorithm", "Custom Algorithm", "Sidewinder Algorithm", "Binary Tree Algorithm", "Eller's Algorithm", "Load the previously generated maze", "Save the previously generated maze", "Load a saved maze", "Exit"}
-        Menu(MenuOptions)
+        Menu1(MenuOptions)
     End Sub
     Sub Playmaze(ByVal AvailablePath As List(Of Node))
         Dim playerPath As New List(Of Node)
@@ -189,7 +189,6 @@ Module Module1
         If Height Mod 2 = 0 Then Height += 1
         Limits = {5, 3, Width, Height}
         Console.Clear()
-        Console.ReadKey()
     End Sub
     Sub MsgColour(ByVal Msg As String, ByVal Colour As ConsoleColor)
         SetColour(Colour)
@@ -303,8 +302,17 @@ Module Module1
                         GetMazeInfo(Width, Height, DelayMS, Limits)
                         Dim AvailablePath As List(Of Node) = RecursiveBacktracker(Limits, DelayMS)
                         If AvailablePath IsNot Nothing Then
-                            'Solve
-                            Console.ReadKey()
+                            Dim YPosAfterMaze As Integer = Console.CursorTop
+                            Dim Input As String = SolvingMenu(YPosAfterMaze + 2)
+                            If Input = "astar" Then
+                                aStar(AvailablePath, True, True)
+                            ElseIf Input = "dijkstras" Then
+                                'Dijkstras
+                            ElseIf Input = "play" Then
+                                'Play maze
+                            ElseIf IsNothing(Input) Then
+
+                            End If
                         End If
                     ElseIf y = arr.Count - 1 Then
                         End
@@ -661,7 +669,7 @@ Module Module1
                     ElseIf Option1 = 3 Then
                         Return "play"
                     End If
-                Case Else
+                Case "Escape"
                     Return Nothing
             End Select
             Console.SetCursorPosition(0, y)
@@ -697,13 +705,11 @@ Module Module1
             End Select
         End If
     End Function
-    Sub AStar(ByVal availablepath As List(Of Node), ByVal ShowPath As Boolean, ByVal ShowSolveTime As Boolean)
-        Dim startamount As Integer = availablepath.Count - 1
-        Dim ExtraPath As List(Of Node) = availablepath
+    Sub aStar(ByVal availablepath As List(Of Node), ByVal ShowPath As Boolean, ByVal ShowSolveTime As Boolean)
         Dim start As New Node(availablepath(availablepath.Count - 2).X, availablepath(availablepath.Count - 2).Y)
         Dim target As New Node(availablepath(availablepath.Count - 1).X, availablepath(availablepath.Count - 1).Y)
         Dim current As Node = start
-        Dim openSet, closedSet As New List(Of Node)
+        Dim openSet, closedSet As New HashSet(Of Node)
 
         SetBoth(ConsoleColor.Red)
         target.Print("██")
@@ -786,7 +792,6 @@ Module Module1
         path.Reverse()
         For Each node In path
             node.Print("██")
-            'Threading.Thread.Sleep(2)
         Next
         SetBackGroundColour(ConsoleColor.Black)
     End Sub
@@ -1445,19 +1450,14 @@ Module Module1
     End Function
     Function CheckAndAdd(ByRef current As Node, ByRef availablepath As List(Of Node))
         Dim neighbours As New List(Of Node)
-
         Dim newnode As New Node(current.X, current.Y - 1)
         If availablepath.Contains(newnode) Then neighbours.Add(New Node(newnode.X, newnode.Y))
-
         newnode.update(current.X + 2, current.Y)
         If availablepath.Contains(newnode) Then neighbours.Add(New Node(newnode.X, newnode.Y))
-
         newnode.update(current.X, current.Y + 1)
         If availablepath.Contains(newnode) Then neighbours.Add(New Node(newnode.X, newnode.Y))
-
         newnode.update(current.X - 2, current.Y)
         If availablepath.Contains(newnode) Then neighbours.Add(New Node(newnode.X, newnode.Y))
-
         Return neighbours
     End Function
     Function GetNeighbours(ByVal current As Node, ByRef availablepath As List(Of Node))
