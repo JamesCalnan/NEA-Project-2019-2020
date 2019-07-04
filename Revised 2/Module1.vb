@@ -5,18 +5,9 @@ Module Module1
     'TODO: 
     Sub Main()
         Console.CursorVisible = False
-
-
-
         SetColour(ConsoleColor.White)
         Dim MenuOptions() As String = {"Recursive Backtracker Algorithm", "Hunt and Kill Algorithm", "Prim's Algorithm", "Aldous-Broder Algorithm", "Growing Tree Algorithm", "Custom Algorithm", "Sidewinder Algorithm", "Binary Tree Algorithm", "Eller's Algorithm", "Load the previously generated maze", "Save the previously generated maze", "Load a saved maze", "Exit"}
         Menu(MenuOptions)
-        Dim limits() As Integer = {5, 5, Console.WindowWidth / 1.5, Console.WindowHeight / 1.5}
-        Console.ReadKey()
-        Dim path As List(Of Node) = RecursiveBacktracker(limits, 0)
-        Playmaze(path)
-        Console.ReadKey()
-
     End Sub
     Sub Playmaze(ByVal AvailablePath As List(Of Node))
         Dim playerPath As New List(Of Node)
@@ -198,6 +189,7 @@ Module Module1
         If Height Mod 2 = 0 Then Height += 1
         Limits = {5, 3, Width, Height}
         Console.Clear()
+        Console.ReadKey()
     End Sub
     Sub MsgColour(ByVal Msg As String, ByVal Colour As ConsoleColor)
         SetColour(Colour)
@@ -282,7 +274,62 @@ Module Module1
             MsgColour($"> {arr(y)}", ConsoleColor.Green)
         End While
     End Function
+
     Sub Menu(ByVal arr() As String)
+        Dim PreviousMaze, LoadedMaze As New List(Of Node)
+        Console.Clear()
+        Dim CurrentCol As Integer = Console.CursorTop
+        Dim y As Integer = Console.CursorTop
+        Dim NumOfOptions As Integer = arr.Count
+        MsgColour("What Maze Generation Algorithm do you want to use: ", ConsoleColor.Yellow)
+        MsgColour($"> {arr(0)}", ConsoleColor.Green)
+        For i = 1 To arr.Count - 1
+            Console.WriteLine($" {arr(i)}")
+        Next
+        While 1
+            SetBackGroundColour(ConsoleColor.Black)
+            Dim key = Console.ReadKey
+            Console.CursorVisible = False
+            Select Case key.Key.ToString
+                Case "DownArrow"
+                    y += 1
+                    If y = arr.Count Then y = 0
+                Case "UpArrow"
+                    y -= 1
+                    If y = -1 Then y = arr.Count - 1
+                Case "Enter"
+                    If y = 0 Then
+                        Dim Width, Height, DelayMS, Limits() As Integer
+                        GetMazeInfo(Width, Height, DelayMS, Limits)
+                        Dim AvailablePath As List(Of Node) = RecursiveBacktracker(Limits, DelayMS)
+                        If AvailablePath IsNot Nothing Then
+                            'Solve
+                            Console.ReadKey()
+                        End If
+                    ElseIf y = arr.Count - 1 Then
+                        End
+                    Else
+                        OptionNotReady()
+                    End If
+                    SetBackGroundColour(ConsoleColor.Black)
+                    Console.Clear()
+                    MsgColour("What Maze Generation Algorithm do you want to use: ", ConsoleColor.Yellow)
+            End Select
+            SetColour(ConsoleColor.White)
+            Dim Count As Integer = 1
+            For Each MenuOption In arr
+                Console.SetCursorPosition(0, Count + CurrentCol)
+                Console.Write($" {MenuOption}  ")
+                Count += 1
+            Next
+            Console.SetCursorPosition(0, y + 1)
+            MsgColour($"> {arr(y)}", ConsoleColor.Green)
+        End While
+    End Sub
+
+
+
+    Sub Menu1(ByVal arr() As String)
         Dim PreviousMaze, LoadedMaze As New List(Of Node)
         Console.Clear()
         Dim CurrentCol As Integer = Console.CursorTop
@@ -1172,17 +1219,20 @@ Module Module1
             If ExitCase() Then Return Nothing
             SetBoth(ConsoleColor.White)
             PrevCell.Print("██")
-            If Neighbour(CurrentCell, VisitedList, Limits, False) Then
+            If Neighbour(CurrentCell, VisitedList, Limits, False) Then 'done
                 RecentCells.Clear()
                 For Each cell As Cell In Neighbour(CurrentCell, VisitedList, Limits, True)
                     RecentCells.Add(cell)
                 Next
                 Dim Index As Integer = r.Next(0, RecentCells.Count)
                 Dim TemporaryCell As Cell = RecentCells(Index)
+                'Picking random cell from neighbours
                 ReturnablePath.Add(New Node(TemporaryCell.X, TemporaryCell.Y))
                 VisitedList.Add(New Cell(TemporaryCell.X, TemporaryCell.Y))
                 Stack.Add(New Cell(TemporaryCell.X, TemporaryCell.Y))
+                'Pushing the cell onto the stack and the visited list
                 Dim WallCell As Cell = MidPoint(CurrentCell, TemporaryCell)
+                'Getting the position of the wall between the newly chosen cell and the previous cell
                 CurrentCell = TemporaryCell
                 ReturnablePath.Add(New Node(WallCell.X, WallCell.Y))
                 SetBoth(ConsoleColor.White)
@@ -1191,7 +1241,7 @@ Module Module1
                 SetBoth(ConsoleColor.Blue)
                 TemporaryCell.Print("██")
                 PrevCell = CurrentCell
-                WallPrev = WallCell
+                'Displaying the maze to the user
             ElseIf Stack.Count > 1 Then
                 CurrentCell = CurrentCell.Pop(Stack)
                 SetBoth(ConsoleColor.White)
