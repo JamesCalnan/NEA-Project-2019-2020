@@ -716,13 +716,13 @@ Module Module1
         Dim Index As Integer
         Dim ReturnablePath As New List(Of Node)
         VisitedList.Add(CurrentCell)
-        CurrentCell.Print("██")
+        If ShowMazeGeneration Then CurrentCell.Print("██")
         ReturnablePath.Add(New Node(CurrentCell.X, CurrentCell.Y))
         Dim stopwatch As Stopwatch = Stopwatch.StartNew()
         While True
             If ExitCase() Then Return Nothing
 
-            For Each cell As Cell In NeighbourGrowingTree(CurrentCell, VisitedList, FrontierSet, Limits, False)
+            For Each cell As Cell In Neighbour(CurrentCell, VisitedList, Limits, True)
                 If Not FrontierSet.Contains(cell) Then FrontierSet.Add(cell)
                 RecentFrontierSet.Add(cell)
                 If ShowMazeGeneration Then
@@ -879,7 +879,7 @@ Module Module1
         While True
             If ExitCase() Then Return Nothing
 
-            For Each cell As Cell In NeighbourPrims(CurrentCell, VisitedList, FrontierSet, Limits, False)
+            For Each cell As Cell In NeighbourPrims(CurrentCell, VisitedList, FrontierSet, Limits)
                 If Not FrontierSet.Contains(cell) Then FrontierSet.Add(cell)
                 RecentFrontierSet.Add(cell)
                 If ShowMazeGeneration Then
@@ -949,7 +949,7 @@ Module Module1
             If ExitCase() Then Return Nothing
             SetBoth(ConsoleColor.White)
             RecentCells.Clear()
-            For Each cell As Cell In RanNeighbour(CurrentCell, Limits, False)
+            For Each cell As Cell In RanNeighbour(CurrentCell, Limits)
                 RecentCells.Add(cell)
             Next
             Dim Index As Integer = R.Next(0, RecentCells.Count)
@@ -1010,7 +1010,7 @@ Module Module1
         While True
             If ExitCase() Then Return Nothing
 
-            For Each cell As Cell In NeighbourPrims(CurrentCell, VisitedList, FrontierSet, Limits, False)
+            For Each cell As Cell In NeighbourPrims(CurrentCell, VisitedList, FrontierSet, Limits)
                 If Not FrontierSet.Contains(cell) Then FrontierSet.Add(cell)
                 If ShowMazeGeneration Then
                     SetBoth(ConsoleColor.Yellow)
@@ -1281,145 +1281,46 @@ Module Module1
         Dim newpoint As New Cell(((cell1.X + cell2.X) / 2), ((cell1.Y + cell2.Y) / 2))
         Return newpoint
     End Function
-    Function NeighbourGrowingTree(ByVal current As Cell, ByVal visited As List(Of Cell), ByVal frontier As List(Of Cell), ByVal Limits() As Integer, ByVal bool As Boolean)
+    Function NeighbourPrims(ByVal current As Cell, ByVal visited As List(Of Cell), ByVal frontier As List(Of Cell), ByVal Limits() As Integer)
         Dim neighbours As New List(Of Cell)
-        'left
         Dim newPoint As New Cell(current.X - 4, current.Y)
-        If newPoint.X >= Limits(0) And newPoint.X <= Limits(2) And newPoint.Y >= Limits(1) And newPoint.Y <= Limits(3) Then
-            If Not visited.Contains(newPoint) Then
-                neighbours.Add(New Cell(newPoint.X, newPoint.Y))
-            End If
-        End If
-        'up
+        If newPoint.WithinLimits(Limits) Then If Not visited.Contains(newPoint) And Not frontier.Contains(newPoint) Then neighbours.Add(New Cell(newPoint.X, newPoint.Y))
         newPoint.Update(current.X, current.Y - 2)
-        If newPoint.X >= Limits(0) And newPoint.X <= Limits(2) And newPoint.Y >= Limits(1) And newPoint.Y <= Limits(3) Then
-            If Not visited.Contains(newPoint) Then
-                neighbours.Add(New Cell(newPoint.X, newPoint.Y))
-            End If
-        End If
-        'down
+        If newPoint.WithinLimits(Limits) Then If Not visited.Contains(newPoint) And Not frontier.Contains(newPoint) Then neighbours.Add(New Cell(newPoint.X, newPoint.Y))
         newPoint.Update(current.X, current.Y + 2)
-        If newPoint.X >= Limits(0) And newPoint.X <= Limits(2) And newPoint.Y >= Limits(1) And newPoint.Y <= Limits(3) Then
-            If Not visited.Contains(newPoint) Then
-                neighbours.Add(New Cell(newPoint.X, newPoint.Y))
-            End If
-        End If
-        'right
+        If newPoint.WithinLimits(Limits) Then If Not visited.Contains(newPoint) And Not frontier.Contains(newPoint) Then neighbours.Add(New Cell(newPoint.X, newPoint.Y))
         newPoint.Update(current.X + 4, current.Y)
-        If newPoint.X >= Limits(0) And newPoint.X <= Limits(2) And newPoint.Y >= Limits(1) And newPoint.Y <= Limits(3) Then
-            If Not visited.Contains(newPoint) Then
-                neighbours.Add(New Cell(newPoint.X, newPoint.Y))
-            End If
-        End If
-        Dim r As New Random
-        If bool Then Return neighbours(r.Next(0, neighbours.Count))
+        If newPoint.WithinLimits(Limits) Then If Not visited.Contains(newPoint) And Not frontier.Contains(newPoint) Then neighbours.Add(New Cell(newPoint.X, newPoint.Y))
         Return neighbours
     End Function
-    Function NeighbourPrims(ByVal current As Cell, ByVal visited As List(Of Cell), ByVal frontier As List(Of Cell), ByVal Limits() As Integer, ByVal bool As Boolean)
+    Function RanNeighbour(ByVal current As Cell, ByVal Limits() As Integer)
         Dim neighbours As New List(Of Cell)
-        'left
         Dim newPoint As New Cell(current.X - 4, current.Y)
-        If newPoint.X >= Limits(0) And newPoint.X <= Limits(2) And newPoint.Y >= Limits(1) And newPoint.Y <= Limits(3) Then
-            If Not visited.Contains(newPoint) And Not frontier.Contains(newPoint) Then
-                neighbours.Add(New Cell(newPoint.X, newPoint.Y))
-            End If
-        End If
-        'up
+        If newPoint.WithinLimits(Limits) Then neighbours.Add(New Cell(newPoint.X, newPoint.Y))
         newPoint.Update(current.X, current.Y - 2)
-        If newPoint.X >= Limits(0) And newPoint.X <= Limits(2) And newPoint.Y >= Limits(1) And newPoint.Y <= Limits(3) Then
-            If Not visited.Contains(newPoint) And Not frontier.Contains(newPoint) Then
-                neighbours.Add(New Cell(newPoint.X, newPoint.Y))
-            End If
-        End If
-        'down
+        If newPoint.WithinLimits(Limits) Then neighbours.Add(New Cell(newPoint.X, newPoint.Y))
         newPoint.Update(current.X, current.Y + 2)
-        If newPoint.X >= Limits(0) And newPoint.X <= Limits(2) And newPoint.Y >= Limits(1) And newPoint.Y <= Limits(3) Then
-            If Not visited.Contains(newPoint) And Not frontier.Contains(newPoint) Then
-                neighbours.Add(New Cell(newPoint.X, newPoint.Y))
-            End If
-        End If
-        'right
+        If newPoint.WithinLimits(Limits) Then neighbours.Add(New Cell(newPoint.X, newPoint.Y))
         newPoint.Update(current.X + 4, current.Y)
-        If newPoint.X >= Limits(0) And newPoint.X <= Limits(2) And newPoint.Y >= Limits(1) And newPoint.Y <= Limits(3) Then
-            If Not visited.Contains(newPoint) And Not frontier.Contains(newPoint) Then
-                neighbours.Add(New Cell(newPoint.X, newPoint.Y))
-            End If
-        End If
-        Dim r As New Random
-        If bool Then Return neighbours(r.Next(0, neighbours.Count))
-        Return neighbours
-    End Function
-    Function RanNeighbour(ByVal current As Cell, ByVal Limits() As Integer, ByVal bool As Boolean)
-        Dim neighbours As New List(Of Cell)
-        'left
-        Dim checkx As Integer = current.X - 4
-        Dim checky As Integer = current.Y
-        If checkx >= Limits(0) And checkx <= Limits(2) And checky >= Limits(1) And checky <= Limits(3) Then
-            neighbours.Add(New Cell(checkx, checky))
-        End If
-        'up
-        checkx = current.X
-        checky = current.Y - 2
-        If checkx >= Limits(0) And checkx <= Limits(2) And checky >= Limits(1) And checky <= Limits(3) Then
-            neighbours.Add(New Cell(checkx, checky))
-        End If
-        'down
-        checkx = current.X
-        checky = current.Y + 2
-        If checkx >= Limits(0) And checkx <= Limits(2) And checky >= Limits(1) And checky <= Limits(3) Then
-            neighbours.Add(New Cell(checkx, checky))
-        End If
-        'right
-        checkx = current.X + 4
-        checky = current.Y
-        If checkx >= Limits(0) And checkx <= Limits(2) And checky >= Limits(1) And checky <= Limits(3) Then
-            neighbours.Add(New Cell(checkx, checky))
-        End If
-        Dim r As New Random
-        If bool Then Return neighbours(r.Next(0, neighbours.Count))
+        If newPoint.WithinLimits(Limits) Then neighbours.Add(New Cell(newPoint.X, newPoint.Y))
         Return neighbours
     End Function
     Function Neighbour(ByVal current As Cell, ByVal visited As List(Of Cell), ByVal Limits() As Integer, ByVal bool As Boolean)
         Dim neighbours As New List(Of Cell)
-        'left
         Dim newPoint As New Cell(current.X - 4, current.Y)
-        If newPoint.X >= Limits(0) And newPoint.X <= Limits(2) And newPoint.Y >= Limits(1) And newPoint.Y <= Limits(3) Then
-            If Not visited.Contains(newPoint) Then
-                neighbours.Add(New Cell(newPoint.X, newPoint.Y))
-            End If
-        End If
-        'up
+        If newPoint.WithinLimits(Limits) Then If Not visited.Contains(newPoint) Then neighbours.Add(New Cell(newPoint.X, newPoint.Y))
         newPoint.Update(current.X, current.Y - 2)
-        If newPoint.X >= Limits(0) And newPoint.X <= Limits(2) And newPoint.Y >= Limits(1) And newPoint.Y <= Limits(3) Then
-            If Not visited.Contains(newPoint) Then
-                neighbours.Add(New Cell(newPoint.X, newPoint.Y))
-            End If
-        End If
-        'down
+        If newPoint.WithinLimits(Limits) Then If Not visited.Contains(newPoint) Then neighbours.Add(New Cell(newPoint.X, newPoint.Y))
         newPoint.Update(current.X, current.Y + 2)
-        If newPoint.X >= Limits(0) And newPoint.X <= Limits(2) And newPoint.Y >= Limits(1) And newPoint.Y <= Limits(3) Then
-            If Not visited.Contains(newPoint) Then
-                neighbours.Add(New Cell(newPoint.X, newPoint.Y))
-            End If
-        End If
-        'right
+        If newPoint.WithinLimits(Limits) Then If Not visited.Contains(newPoint) Then neighbours.Add(New Cell(newPoint.X, newPoint.Y))
         newPoint.Update(current.X + 4, current.Y)
-        If newPoint.X >= Limits(0) And newPoint.X <= Limits(2) And newPoint.Y >= Limits(1) And newPoint.Y <= Limits(3) Then
-            If Not visited.Contains(newPoint) Then
-                neighbours.Add(New Cell(newPoint.X, newPoint.Y))
-            End If
-        End If
-        Dim r As New Random
+        If newPoint.WithinLimits(Limits) Then If Not visited.Contains(newPoint) Then neighbours.Add(New Cell(newPoint.X, newPoint.Y))
         If bool Then
-            'Return neighbours(r.Next(0, neighbours.Count))
             Return neighbours
         Else
-            If neighbours.Count > 0 Then
-                Return True
-            Else
-                Return False
-            End If
+            If neighbours.Count > 0 Then Return True
         End If
+        Return False
     End Function
     Function CheckAndAdd(ByRef current As Node, ByRef availablepath As List(Of Node))
         Dim neighbours As New List(Of Node)
@@ -1447,6 +1348,12 @@ Class Cell
         X = _x
         Y = _y
     End Sub
+    Function WithinLimits(ByVal limits() As Integer)
+        If Me.X >= limits(0) And Me.X <= limits(2) And Me.Y >= limits(1) And Me.Y <= limits(3) Then
+            Return True
+        End If
+        Return False
+    End Function
     Public Function Pop(ByVal list As List(Of Cell))
         Dim val As Cell
         val = list(list.Count - 1)
