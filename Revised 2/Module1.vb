@@ -2,7 +2,7 @@
 Imports System.IO
 Imports Revised_2
 Module Module1
-    'TODO: add input delay when solving
+    'TODO: add input delay when solving, fix going backwards when solving the maze yourself
     Sub Main()
         Console.CursorVisible = False
 
@@ -10,9 +10,9 @@ Module Module1
 
         SetColour(ConsoleColor.White)
         Dim MenuOptions() As String = {"Recursive Backtracker Algorithm", "Hunt and Kill Algorithm", "Prim's Algorithm", "Aldous-Broder Algorithm", "Growing Tree Algorithm", "Custom Algorithm", "Sidewinder Algorithm", "Binary Tree Algorithm", "Eller's Algorithm", "Load the previously generated maze", "Save the previously generated maze", "Load a saved maze", "Exit"}
-        Menu1(MenuOptions)
+        Menu(MenuOptions)
     End Sub
-    Sub Playmaze(ByVal AvailablePath As List(Of Node))
+    Sub Playmaze(ByVal AvailablePath As List(Of Node), ByVal ShowPath As Boolean)
         Dim playerPath As New List(Of Node)
         Dim currentPos As New Node(AvailablePath(AvailablePath.Count - 2).X, AvailablePath(AvailablePath.Count - 2).Y)
         Dim start As New Node(AvailablePath(AvailablePath.Count - 2).X, AvailablePath(AvailablePath.Count - 2).Y)
@@ -28,69 +28,50 @@ Module Module1
             Dim t As New Node(Console.CursorLeft, Console.CursorTop)
             Dim s As New Node(Console.CursorLeft - 1, Console.CursorTop)
             If AvailablePath.Contains(t) Or AvailablePath.Contains(s) Then
-                SetBoth(ConsoleColor.White)
+                If ShowPath And AvailablePath.Contains(s) Or AvailablePath.Contains(t) Then
+                    If playerPath.Contains(t) Or playerPath.Contains(s) Then
+                        SetBoth(ConsoleColor.Blue)
+                    Else
+                        SetBoth(ConsoleColor.White)
+                    End If
+                Else
+                    SetBoth(ConsoleColor.Blue)
+                End If
             Else
                 SetBoth(ConsoleColor.Black)
             End If
             Dim key = Console.ReadKey
             Select Case key.Key.ToString
-
                 Case "RightArrow"
                     Dim tempNode3 As New Node(currentPos.X + 2, currentPos.Y)
                     If AvailablePath.Contains(tempNode3) Then
-                        currentPos = tempNode3
-                        SetColour(ConsoleColor.White)
-                        PreviousPos.Print("██")
-                        SetColour(ConsoleColor.Magenta)
-                        currentPos.Print("██")
-                        PreviousPos = currentPos
-                        If Not playerPath.Contains(currentPos) Then playerPath.Add(currentPos)
+                        PlayMazeKeyPress(currentPos, tempNode3, ShowPath, PreviousPos, playerPath)
                     End If
                 Case "LeftArrow"
                     Dim tempNode2 As New Node(currentPos.X - 2, currentPos.Y)
                     If AvailablePath.Contains(tempNode2) Then
-                        currentPos = tempNode2
-                        SetColour(ConsoleColor.White)
-                        PreviousPos.Print("██")
-                        SetColour(ConsoleColor.Magenta)
-                        currentPos.Print("██")
-                        PreviousPos = currentPos
-                        If Not playerPath.Contains(currentPos) Then playerPath.Add(currentPos)
+                        PlayMazeKeyPress(currentPos, tempNode2, ShowPath, PreviousPos, playerPath)
                     End If
                 Case "UpArrow"
                     Dim tempNode1 As New Node(currentPos.X, currentPos.Y - 1)
                     If AvailablePath.Contains(tempNode1) Then
-                        currentPos = tempNode1
-                        SetColour(ConsoleColor.White)
-                        PreviousPos.Print("██")
-                        SetColour(ConsoleColor.Magenta)
-                        currentPos.Print("██")
-                        PreviousPos = currentPos
-                        If Not playerPath.Contains(currentPos) Then playerPath.Add(currentPos)
+                        PlayMazeKeyPress(currentPos, tempNode1, ShowPath, PreviousPos, playerPath)
                     End If
                 Case "DownArrow"
                     Dim tempNode As New Node(currentPos.X, currentPos.Y + 1)
                     If AvailablePath.Contains(tempNode) Then
-                        currentPos = tempNode
-                        SetColour(ConsoleColor.White)
-                        PreviousPos.Print("██")
-                        SetColour(ConsoleColor.Magenta)
-                        currentPos.Print("██")
-                        PreviousPos = currentPos
-                        If Not playerPath.Contains(currentPos) Then playerPath.Add(currentPos)
+                        PlayMazeKeyPress(currentPos, tempNode, ShowPath, PreviousPos, playerPath)
                     End If
                 Case "Enter"
                     Exit While
                 Case Else
             End Select
-
         End While
         SetColour(ConsoleColor.Yellow)
         If currentPos.Equals(target) Then
-
             playerPath.Add(start)
             playerPath.Add(target)
-            aStar(playerPath, False, False)
+            aStar(playerPath, False, False, 0)
             SetBackGroundColour(ConsoleColor.Black)
             SetColour(ConsoleColor.Yellow)
             Console.Clear()
@@ -100,17 +81,27 @@ Module Module1
                 Console.Write(letter)
                 Threading.Thread.Sleep(30)
             Next
-
-
-
             Console.ReadKey()
         End If
     End Sub
-    Sub Dijkstras(ByVal availablepath As List(Of Node), ByVal ShowSolving As Boolean)
+
+    Sub PlayMazeKeyPress(ByRef currentPos As Node, ByVal tempNode As Node, ByVal showpath As Boolean, ByRef PreviousPos As Node, ByRef playerPath As List(Of Node))
+        currentPos = tempNode
+        If showpath Then
+            SetColour(ConsoleColor.Blue)
+        Else
+            SetColour(ConsoleColor.White)
+        End If
+        PreviousPos.Print("██")
+        SetColour(ConsoleColor.Magenta)
+        currentPos.Print("██")
+        PreviousPos = currentPos
+        If Not playerPath.Contains(currentPos) Then playerPath.Add(currentPos)
+    End Sub
+
+    Sub Dijkstras(ByVal availablepath As List(Of Node), ByVal ShowSolving As Boolean, ByVal SolvingDelay As Integer)
         Dim source As New Node(availablepath(availablepath.Count - 2).X, availablepath(availablepath.Count - 2).Y)
         Dim target As New Node(availablepath(availablepath.Count - 1).X, availablepath(availablepath.Count - 1).Y)
-        Dim startamount As Integer = availablepath.Count - 1
-        Dim ExtraPath As List(Of Node) = availablepath
         SetBackGroundColour(ConsoleColor.Black)
         Dim dist As New Dictionary(Of Node, Integer)
         Dim prev As New Dictionary(Of Node, Node)
@@ -130,6 +121,7 @@ Module Module1
             SetBoth(ConsoleColor.Red)
         End If
         Dim stopwatch As Stopwatch = Stopwatch.StartNew()
+
         While Q.Count > 0
             If ExitCase() Then Exit While
             Dim u As Node = ExtractMin(Q, dist)
@@ -147,6 +139,7 @@ Module Module1
                     prev(v) = u
                 End If
             Next
+            Threading.Thread.Sleep(SolvingDelay)
         End While
     End Sub
     Sub Backtrack(ByVal prev As Dictionary(Of Node, Node), ByVal target As Node, ByVal source As Node, ByVal watch As Stopwatch)
@@ -185,7 +178,7 @@ Module Module1
     End Sub
     Sub GetMazeInfo(ByRef Width As Integer, ByRef Height As Integer, ByRef DelayMS As Integer, ByRef Limits() As Integer, ByRef ShowGeneration As Boolean)
         Console.Clear()
-        ShowGeneration = HorizontalYesNo(0, "Do you want to see the maze being generated: ")
+        ShowGeneration = HorizontalYesNo(0, "Do you want to see the maze being generated: ", False)
         Console.SetCursorPosition(0, Console.CursorTop + 1)
         If ShowGeneration Then
             DelayMS = GetIntInputArrowKeys("Delay when making the Maze (MS): ", 100, 0)
@@ -283,73 +276,39 @@ Module Module1
         End While
     End Function
 
-    'Sub Menu(ByVal arr() As String)
-    '    Dim PreviousMaze, LoadedMaze As New List(Of Node)
-    '    Console.Clear()
-    '    Dim CurrentCol As Integer = Console.CursorTop
-    '    Dim y As Integer = Console.CursorTop
-    '    Dim NumOfOptions As Integer = arr.Count
-    '    MsgColour("What Maze Generation Algorithm do you want to use: ", ConsoleColor.Yellow)
-    '    MsgColour($"> {arr(0)}", ConsoleColor.Green)
-    '    For i = 1 To arr.Count - 1
-    '        Console.WriteLine($" {arr(i)}")
-    '    Next
-    '    While 1
-    '        SetBackGroundColour(ConsoleColor.Black)
-    '        Dim key = Console.ReadKey
-    '        Console.CursorVisible = False
-    '        Select Case key.Key.ToString
-    '            Case "DownArrow"
-    '                y += 1
-    '                If y = arr.Count Then y = 0
-    '            Case "UpArrow"
-    '                y -= 1
-    '                If y = -1 Then y = arr.Count - 1
-    '            Case "Enter"
-    '                If y = 0 Then
-    '                    Dim Width, Height, DelayMS, Limits() As Integer
-    '                    'GetMazeInfo(Width, Height, DelayMS, Limits)
-    '                    Dim AvailablePath As List(Of Node) = RecursiveBacktracker(Limits, DelayMS)
-    '                    If AvailablePath IsNot Nothing Then
-    '                        Dim YPosAfterMaze As Integer = Console.CursorTop
-    '                        Dim Input As String = SolvingMenu(YPosAfterMaze + 2)
-    '                        If Input = "astar" Then
-    '                            aStar(AvailablePath, True, True)
-    '                        ElseIf Input = "dijkstras" Then
-    '                            'Dijkstras
-    '                        ElseIf Input = "play" Then
-    '                            'Play maze
-    '                        ElseIf IsNothing(Input) Then
 
-    '                        End If
-    '                    End If
-    '                ElseIf y = arr.Count - 1 Then
-    '                    End
-    '                Else
-    '                    OptionNotReady()
-    '                End If
-    '                SetBackGroundColour(ConsoleColor.Black)
-    '                Console.Clear()
-    '                MsgColour("What Maze Generation Algorithm do you want to use: ", ConsoleColor.Yellow)
-    '        End Select
-    '        SetColour(ConsoleColor.White)
-    '        Dim Count As Integer = 1
-    '        For Each MenuOption In arr
-    '            Console.SetCursorPosition(0, Count + CurrentCol)
-    '            Console.Write($" {MenuOption}  ")
-    '            Count += 1
-    '        Next
-    '        Console.SetCursorPosition(0, y + 1)
-    '        MsgColour($"> {arr(y)}", ConsoleColor.Green)
-    '    End While
-    'End Sub
+    Sub PreSolving(ByVal limits() As Integer, ByVal availablepath As List(Of Node), ByRef previousmaze As List(Of Node), ByRef input As String, ByRef yposaftermaze As Integer)
+        SetBackGroundColour(ConsoleColor.Black)
+        yposaftermaze = limits(3)
+        DisplayAvailablePositions(availablepath.Count)
+        Console.SetCursorPosition(0, yposaftermaze + 3)
+        input = SolvingMenu(yposaftermaze + 3)
+        previousmaze.Clear()
+        previousmaze = availablepath
+    End Sub
 
+    Sub Solving(ByVal input As String, ByVal showpath As Boolean, ByVal YposAfterMaze As Integer, ByVal solvingdelay As Integer, ByVal availablepath As List(Of Node))
+        If input = "astar" Then
+            showpath = HorizontalYesNo(YposAfterMaze + 3, "Do you want to show the steps in solving the maze: ", True)
+            If showpath Then solvingdelay = GetIntInputArrowKeys("Delay when solving the maze: ", 100, 0)
+            aStar(availablepath, showpath, True, solvingdelay)
+        ElseIf input = "dijkstras" Then
+            showpath = HorizontalYesNo(YposAfterMaze + 3, "Do you want to show the steps in solving the maze: ", True)
+            If showpath Then solvingdelay = GetIntInputArrowKeys("Delay when solving the maze: ", 100, 0)
+            Dijkstras(availablepath, showpath, solvingdelay)
+        ElseIf input = "play" Then
+            showpath = HorizontalYesNo(YposAfterMaze + 3, "Do you want to show the steps you have taken in the maze: ", True)
+            Playmaze(availablepath, showpath)
+        ElseIf IsNothing(input) Then
 
-
-    Sub Menu1(ByVal arr() As String)
+        End If
+    End Sub
+    Sub Menu(ByVal arr() As String)
+        Dim YPosAfterMaze As Integer
+        Dim input As String
         Dim PreviousMaze, LoadedMaze As New List(Of Node)
-        Dim Width, Height, DelayMS, Limits() As Integer
-        Dim ShowMazeGeneration As Boolean
+        Dim Width, Height, DelayMS, Limits(), SolvingDelay As Integer
+        Dim ShowMazeGeneration, ShowPath As Boolean
         Console.Clear()
         Dim CurrentCol As Integer = Console.CursorTop
         Dim y As Integer = Console.CursorTop
@@ -375,89 +334,29 @@ Module Module1
                         GetMazeInfo(Width, Height, DelayMS, Limits, ShowMazeGeneration)
                         Dim AvailablePath As List(Of Node) = RecursiveBacktracker(Limits, DelayMS, ShowMazeGeneration)
                         If AvailablePath IsNot Nothing Then
-                            SetBackGroundColour(ConsoleColor.Black)
-                            Dim YPosAfterMaze As Integer = Limits(3)
-                            DisplayAvailablePositions(AvailablePath.Count)
-                            Console.SetCursorPosition(0, YPosAfterMaze + 3)
-                            Dim input As String = SolvingMenu(YPosAfterMaze + 3)
-                            Dim ShowPath As Boolean = HorizontalYesNo(YPosAfterMaze + 3, "Do you want to show the steps in solving the maze: ")
-                            PreviousMaze.Clear()
-                            PreviousMaze = AvailablePath
-                            If input = "astar" Then
-                                aStar(AvailablePath, ShowPath, True)
-                            ElseIf input = "dijkstras" Then
-                                Dijkstras(AvailablePath, ShowPath)
-                            ElseIf input = "play" Then
-                                Playmaze(AvailablePath)
-                            ElseIf IsNothing(input) Then
-
-                            End If
+                            PreSolving(Limits, AvailablePath, PreviousMaze, input, YPosAfterMaze)
+                            Solving(input, ShowPath, YPosAfterMaze, SolvingDelay, AvailablePath)
                         End If
                     ElseIf y = 1 Then
                         GetMazeInfo(Width, Height, DelayMS, Limits, ShowMazeGeneration)
                         Dim AvailablePath As List(Of Node) = HuntAndKill(Limits, DelayMS, ShowMazeGeneration)
                         If AvailablePath IsNot Nothing Then
-                            SetBackGroundColour(ConsoleColor.Black)
-                            Dim YPosAfterMaze As Integer = Limits(3)
-                            DisplayAvailablePositions(AvailablePath.Count)
-                            Console.SetCursorPosition(0, YPosAfterMaze + 3)
-                            Dim input As String = SolvingMenu(YPosAfterMaze + 3)
-                            Dim ShowPath As Boolean = HorizontalYesNo(YPosAfterMaze + 3, "Do you want to show the steps in solving the maze: ")
-                            PreviousMaze.Clear()
-                            PreviousMaze = AvailablePath
-                            If input = "astar" Then
-                                aStar(AvailablePath, ShowPath, True)
-                            ElseIf input = "dijkstras" Then
-                                Dijkstras(AvailablePath, ShowPath)
-                            ElseIf input = "play" Then
-                                Playmaze(AvailablePath)
-                            ElseIf IsNothing(input) Then
-
-                            End If
+                            PreSolving(Limits, AvailablePath, PreviousMaze, input, YPosAfterMaze)
+                            Solving(input, ShowPath, YPosAfterMaze, SolvingDelay, AvailablePath)
                         End If
                     ElseIf y = 2 Then
                         GetMazeInfo(Width, Height, DelayMS, Limits, ShowMazeGeneration)
                         Dim AvailablePath As List(Of Node) = Prims(Limits, DelayMS, ShowMazeGeneration)
                         If AvailablePath IsNot Nothing Then
-                            SetBackGroundColour(ConsoleColor.Black)
-                            Dim YPosAfterMaze As Integer = Limits(3)
-                            DisplayAvailablePositions(AvailablePath.Count)
-                            Console.SetCursorPosition(0, YPosAfterMaze + 3)
-                            Dim input As String = SolvingMenu(YPosAfterMaze + 3)
-                            Dim ShowPath As Boolean = HorizontalYesNo(YPosAfterMaze + 3, "Do you want to show the steps in solving the maze: ")
-                            PreviousMaze.Clear()
-                            PreviousMaze = AvailablePath
-                            If input = "astar" Then
-                                aStar(AvailablePath, ShowPath, True)
-                            ElseIf input = "dijkstras" Then
-                                Dijkstras(AvailablePath, ShowPath)
-                            ElseIf input = "play" Then
-                                Playmaze(AvailablePath)
-                            ElseIf IsNothing(input) Then
-
-                            End If
+                            PreSolving(Limits, AvailablePath, PreviousMaze, input, YPosAfterMaze)
+                            Solving(input, ShowPath, YPosAfterMaze, SolvingDelay, AvailablePath)
                         End If
                     ElseIf y = 3 Then
                         GetMazeInfo(Width, Height, DelayMS, Limits, ShowMazeGeneration)
                         Dim AvailablePath As List(Of Node) = AldousBroder(Limits, DelayMS, ShowMazeGeneration)
                         If AvailablePath IsNot Nothing Then
-                            SetBackGroundColour(ConsoleColor.Black)
-                            Dim YPosAfterMaze As Integer = Limits(3)
-                            DisplayAvailablePositions(AvailablePath.Count)
-                            Console.SetCursorPosition(0, YPosAfterMaze + 3)
-                            Dim input As String = SolvingMenu(YPosAfterMaze + 3)
-                            Dim ShowPath As Boolean = HorizontalYesNo(YPosAfterMaze + 3, "Do you want to show the steps in solving the maze: ")
-                            PreviousMaze.Clear()
-                            PreviousMaze = AvailablePath
-                            If input = "astar" Then
-                                aStar(AvailablePath, ShowPath, True)
-                            ElseIf input = "dijkstras" Then
-                                Dijkstras(AvailablePath, ShowPath)
-                            ElseIf input = "play" Then
-                                Playmaze(AvailablePath)
-                            ElseIf IsNothing(input) Then
-
-                            End If
+                            PreSolving(Limits, AvailablePath, PreviousMaze, input, YPosAfterMaze)
+                            Solving(input, ShowPath, YPosAfterMaze, SolvingDelay, AvailablePath)
                         End If
                     ElseIf y = 4 Then
                         GetMazeInfo(Width, Height, DelayMS, Limits, ShowMazeGeneration)
@@ -465,48 +364,17 @@ Module Module1
                         Dim CellSelectionMethod() As Integer = GrowingTreeMenu(ArrOptions)
                         Dim AvailablePath As List(Of Node) = GrowingTree(Limits, DelayMS, CellSelectionMethod, ShowMazeGeneration)
                         If AvailablePath IsNot Nothing Then
-                            SetBackGroundColour(ConsoleColor.Black)
-                            Dim YPosAfterMaze As Integer = Limits(3)
-                            DisplayAvailablePositions(AvailablePath.Count)
-                            Console.SetCursorPosition(0, YPosAfterMaze + 3)
-                            Dim input As String = SolvingMenu(YPosAfterMaze + 3)
-                            Dim ShowPath As Boolean = HorizontalYesNo(YPosAfterMaze + 3, "Do you want to show the steps in solving the maze: ")
-                            PreviousMaze.Clear()
-                            PreviousMaze = AvailablePath
-                            If input = "astar" Then
-                                aStar(AvailablePath, ShowPath, True)
-                            ElseIf input = "dijkstras" Then
-                                Dijkstras(AvailablePath, ShowPath)
-                            ElseIf input = "play" Then
-                                Playmaze(AvailablePath)
-                            ElseIf IsNothing(input) Then
-
-                            End If
+                            PreSolving(Limits, AvailablePath, PreviousMaze, input, YPosAfterMaze)
+                            Solving(input, ShowPath, YPosAfterMaze, SolvingDelay, AvailablePath)
                         End If
                     ElseIf y = 5 Then
                         GetMazeInfo(Width, Height, DelayMS, Limits, ShowMazeGeneration)
                         Dim AvailablePath As List(Of Node) = Custom(Limits, DelayMS, ShowMazeGeneration)
                         If AvailablePath IsNot Nothing Then
-                            SetBackGroundColour(ConsoleColor.Black)
-                            Dim YPosAfterMaze As Integer = Limits(3)
-                            DisplayAvailablePositions(AvailablePath.Count)
-                            Console.SetCursorPosition(0, YPosAfterMaze + 3)
-                            Dim input As String = SolvingMenu(YPosAfterMaze + 3)
-                            Dim ShowPath As Boolean = HorizontalYesNo(YPosAfterMaze + 3, "Do you want to show the steps in solving the maze: ")
-                            PreviousMaze.Clear()
-                            PreviousMaze = AvailablePath
-                            If input = "astar" Then
-                                aStar(AvailablePath, ShowPath, True)
-                            ElseIf input = "dijkstras" Then
-                                Dijkstras(AvailablePath, ShowPath)
-                            ElseIf input = "play" Then
-                                Playmaze(AvailablePath)
-                            ElseIf IsNothing(input) Then
-
-                            End If
+                            PreSolving(Limits, AvailablePath, PreviousMaze, input, YPosAfterMaze)
+                            Solving(input, ShowPath, YPosAfterMaze, SolvingDelay, AvailablePath)
                         End If
                     ElseIf y = 9 Then
-                        'Load previous maze
                         If PreviousMaze.Count > 1 Then
                             Console.Clear()
                             SetBoth(ConsoleColor.White)
@@ -514,20 +382,11 @@ Module Module1
                                 node.Print("██")
                             Next
                             SetBackGroundColour(ConsoleColor.Black)
-                            Dim YPosAfterMaze As Integer = Limits(3)
+                            YPosAfterMaze = Limits(3)
                             DisplayAvailablePositions(PreviousMaze.Count)
                             Console.SetCursorPosition(0, YPosAfterMaze + 3)
-                            Dim input As String = SolvingMenu(YPosAfterMaze + 3)
-                            Dim ShowPath As Boolean = HorizontalYesNo(YPosAfterMaze + 3, "Do you want to show the steps in solving the maze: ")
-                            If input = "astar" Then
-                                aStar(PreviousMaze, ShowPath, True)
-                            ElseIf input = "dijkstras" Then
-                                Dijkstras(PreviousMaze, ShowPath)
-                            ElseIf input = "play" Then
-                                Playmaze(PreviousMaze)
-                            ElseIf IsNothing(input) Then
-
-                            End If
+                            input = SolvingMenu(YPosAfterMaze + 3)
+                            Solving(input, ShowPath, YPosAfterMaze, SolvingDelay, PreviousMaze)
                         Else
                             Console.Clear()
                             MsgColour("No previous maze available", ConsoleColor.Red)
@@ -556,7 +415,6 @@ Module Module1
                             MsgColour("No previous maze available", ConsoleColor.Red)
                             Console.ReadKey()
                         End If
-                        'Console.ReadKey()
                     ElseIf y = 11 Then
                         Dim ValidMaze, XMax, YMax As Integer
                         ValidMaze = 1
@@ -601,21 +459,12 @@ Module Module1
                                 For Each node In LoadedMaze
                                     node.Print("██")
                                 Next
-                                Dim YPosAfterMaze As Integer = Limits(3)
+                                YPosAfterMaze = Limits(3)
                                 DisplayAvailablePositions(PreviousMaze.Count)
                                 Console.SetCursorPosition(0, YPosAfterMaze + 3)
                                 PreviousMaze = LoadedMaze
-                                Dim input As String = SolvingMenu(YPosAfterMaze + 3)
-                                Dim ShowPath As Boolean = HorizontalYesNo(YPosAfterMaze + 3, "Do you want to show the steps in solving the maze: ")
-                                If input = "astar" Then
-                                    aStar(PreviousMaze, ShowPath, True)
-                                ElseIf input = "dijkstras" Then
-                                    Dijkstras(PreviousMaze, ShowPath)
-                                ElseIf input = "play" Then
-                                    Playmaze(PreviousMaze)
-                                ElseIf IsNothing(input) Then
-
-                                End If
+                                input = SolvingMenu(YPosAfterMaze + 3)
+                                Solving(input, ShowPath, YPosAfterMaze, SolvingDelay, PreviousMaze)
                             Else
                                 Console.Clear()
                                 MsgColour("Maze is too big for the screen, please decrease the font size and try again", ConsoleColor.Red)
@@ -652,7 +501,7 @@ Module Module1
         Console.ReadKey()
         Console.Clear()
     End Sub
-    Function HorizontalYesNo(ByVal ColumnPosition As Integer, ByVal message As String)
+    Function HorizontalYesNo(ByVal ColumnPosition As Integer, ByVal message As String, ByVal ClearMessage As Boolean)
         SetColour(ConsoleColor.White)
         Dim Choice As Boolean = True
         Dim x, y As Integer
@@ -671,7 +520,8 @@ Module Module1
                     If Not Choice Then Choice = True
                 Case "Enter"
                     Console.SetCursorPosition(0, y)
-                    'Console.Write("                                                                                                               ")
+                    If ClearMessage Then Console.Write("                                                                                                               ")
+                    Console.SetCursorPosition(0, y)
                     If Choice Then
                         Return True
                     Else
@@ -763,7 +613,7 @@ Module Module1
             End Select
         End If
     End Function
-    Sub aStar(ByVal availablepath As List(Of Node), ByVal ShowPath As Boolean, ByVal ShowSolveTime As Boolean)
+    Sub aStar(ByVal availablepath As List(Of Node), ByVal ShowPath As Boolean, ByVal ShowSolveTime As Boolean, ByVal Delay As Integer)
         Dim start As New Node(availablepath(availablepath.Count - 2).X, availablepath(availablepath.Count - 2).Y)
         Dim target As New Node(availablepath(availablepath.Count - 1).X, availablepath(availablepath.Count - 1).Y)
         Dim current As Node = start
@@ -801,6 +651,7 @@ Module Module1
                     openSet.Add(Neighbour)
                 End If
             Next
+            Threading.Thread.Sleep(Delay)
         End While
         If ShowSolveTime Then
             RetracePath(start, current, $"Time Taken to solve: {stopwatch.Elapsed.TotalSeconds} seconds")
@@ -1009,7 +860,7 @@ Module Module1
         End If
         Dim ypos As Integer = Console.CursorTop
         AddStartAndEnd(ReturnablePath, VisitedList, Limits)
-        PrintMessageMiddle($"Time taken to generate the maze: {Stopwatch.Elapsed.TotalSeconds}", 1, ConsoleColor.Yellow)
+        PrintMessageMiddle($"Time taken to generate the maze: {stopwatch.Elapsed.TotalSeconds}", 1, ConsoleColor.Yellow)
         Console.SetCursorPosition(0, ypos)
         Return ReturnablePath
     End Function
@@ -1044,7 +895,7 @@ Module Module1
                     CurrentCell.Print("██")
                 End If
             Else
-                    If FrontierSet.Count = 0 Then Exit While
+                If FrontierSet.Count = 0 Then Exit While
                 Index = FrontierSet.Count - 1 'R.Next(0, FrontierSet.Count)
                 CurrentCell = FrontierSet(Index)
                 If ShowMazeGeneration Then
@@ -1141,7 +992,7 @@ Module Module1
         End If
         Dim ypos As Integer = Console.CursorTop
         AddStartAndEnd(ReturnablePath, VisitedList, Limits)
-        PrintMessageMiddle($"Time taken to generate the maze: {Stopwatch.Elapsed.TotalSeconds}", 1, ConsoleColor.Yellow)
+        PrintMessageMiddle($"Time taken to generate the maze: {stopwatch.Elapsed.TotalSeconds}", 1, ConsoleColor.Yellow)
         Console.SetCursorPosition(0, ypos)
         Return ReturnablePath
     End Function
