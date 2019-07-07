@@ -11,9 +11,14 @@ Module Module1
         SetColour(ConsoleColor.White)
         Dim MenuOptions() As String = {"Recursive Backtracker Algorithm", "Hunt and Kill Algorithm", "Prim's Algorithm", "Aldous-Broder Algorithm", "Growing Tree Algorithm", "Custom Algorithm", "Binary Tree Algorithm", "Sidewinder Algorithm", "Eller's Algorithm", "Load the previously generated maze", "Save the previously generated maze", "Load a saved maze", "Exit"}
         Menu(MenuOptions)
-        Console.ReadKey()
-        Dim Limits() As Integer = {5, 3, Console.WindowWidth - 5, If(Console.WindowHeight - 4 Mod 2 = 0, Console.WindowHeight - 5, Console.WindowHeight - 4)}
+        'WHEN height is even doesnt work
 
+
+
+
+        Dim Limits() As Integer = {5, 3, Console.WindowWidth - 93, Console.WindowHeight - 10}
+        Dim path As List(Of Node) = Sidewinder(Limits, 0, False)
+        aStar(path, True, False, 0)
     End Sub
     Sub Playmaze(ByVal AvailablePath As List(Of Node), ByVal ShowPath As Boolean)
         Dim playerPath As New List(Of Node)
@@ -175,13 +180,13 @@ Module Module1
         ShowGeneration = HorizontalYesNo(0, "Do you want to see the maze being generated: ", False)
         Console.SetCursorPosition(0, Console.CursorTop + 1)
         If ShowGeneration Then
-            DelayMS = GetIntInputArrowKeys("Delay when making the Maze (MS): ", 100, 0)
+            DelayMS = GetIntInputArrowKeys("Delay when making the Maze (MS): ", 100, 0, False)
         Else
             DelayMS = 0
         End If
-        Width = GetIntInputArrowKeys($"Width of the Maze: ", Console.WindowWidth - 6, 20)
+        Width = GetIntInputArrowKeys($"Width of the Maze: ", Console.WindowWidth - 6, 20, False)
         If Width Mod 2 = 0 Then Width += 1
-        Height = GetIntInputArrowKeys($"Height of the Maze: ", Console.WindowHeight - 6, 10)
+        Height = GetIntInputArrowKeys($"Height of the Maze: ", Console.WindowHeight - 6, 10, False)
         If Height Mod 2 = 0 Then Height += 1
         Limits = {5, 3, Width, Height}
         Console.Clear()
@@ -191,7 +196,7 @@ Module Module1
         Console.WriteLine(Msg)
         SetColour(ConsoleColor.White)
     End Sub
-    Function GetIntInputArrowKeys(ByVal message As String, ByVal NumMax As Integer, ByVal NumMin As Integer)
+    Function GetIntInputArrowKeys(ByVal message As String, ByVal NumMax As Integer, ByVal NumMin As Integer, ByVal ClearMessage As Boolean)
         Console.Write(message)
         SetColour(ConsoleColor.Yellow)
         Dim cursorleft, cursortop As Integer
@@ -223,6 +228,10 @@ Module Module1
             Console.SetCursorPosition(cursorleft, cursortop)
             Console.Write(current)
         End While
+        If ClearMessage Then
+            Console.SetCursorPosition(0, cursortop)
+            Console.Write("".PadLeft(message.Length + 5, " "c))
+        End If
         Console.SetCursorPosition(0, cursortop + 1)
         SetColour(ConsoleColor.White)
         Return current
@@ -230,7 +239,7 @@ Module Module1
     Sub DisplayAvailablePositions(ByVal count As Integer)
         PrintMessageMiddle($"There are {count} available positions in the maze", 0, ConsoleColor.Magenta)
     End Sub
-    Function PreGenMenu(ByVal arr() As String, byval Message As String)
+    Function PreGenMenu(ByVal arr() As String, ByVal Message As String)
         Console.Clear()
         Dim temparr() As Integer = {0, 0, 0, 0, 0, 0, 0, 0, 0}
         Dim CurrentCol As Integer = Console.CursorTop
@@ -279,11 +288,12 @@ Module Module1
     Sub Solving(ByVal input As String, ByVal showpath As Boolean, ByVal YposAfterMaze As Integer, ByVal solvingdelay As Integer, ByVal availablepath As List(Of Node))
         If input = "astar" Then
             showpath = HorizontalYesNo(YposAfterMaze + 3, "Do you want to show the steps in solving the maze: ", True)
-            If showpath Then solvingdelay = GetIntInputArrowKeys("Delay when solving the maze: ", 100, 0)
+            If showpath Then solvingdelay = GetIntInputArrowKeys("Delay when solving the maze: ", 100, 0, True)
+
             aStar(availablepath, showpath, True, solvingdelay)
         ElseIf input = "dijkstras" Then
             showpath = HorizontalYesNo(YposAfterMaze + 3, "Do you want to show the steps in solving the maze: ", True)
-            If showpath Then solvingdelay = GetIntInputArrowKeys("Delay when solving the maze: ", 100, 0)
+            If showpath Then solvingdelay = GetIntInputArrowKeys("Delay when solving the maze: ", 100, 0, True)
             Dijkstras(availablepath, showpath, solvingdelay)
         ElseIf input = "play" Then
             showpath = HorizontalYesNo(YposAfterMaze + 3, "Do you want to show the steps you have taken in the maze: ", True)
@@ -368,6 +378,13 @@ Module Module1
                         Dim ArrOptions() As String = {"Northwest", "Northeast", "Southwest", "Southeast"}
                         Dim Bias() As Integer = PreGenMenu(ArrOptions, "Bias: ")
                         AvailablePath = BinaryTree(Limits, DelayMS, ShowMazeGeneration, Bias)
+                        If AvailablePath IsNot Nothing Then
+                            PreSolving(Limits, AvailablePath, PreviousMaze, input, YPosAfterMaze)
+                            Solving(input, ShowPath, YPosAfterMaze, SolvingDelay, AvailablePath)
+                        End If
+                    ElseIf y = 7 Then
+                        GetMazeInfo(Width, Height, DelayMS, Limits, ShowMazeGeneration)
+                        AvailablePath = Sidewinder(Limits, DelayMS, ShowMazeGeneration)
                         If AvailablePath IsNot Nothing Then
                             PreSolving(Limits, AvailablePath, PreviousMaze, input, YPosAfterMaze)
                             Solving(input, ShowPath, YPosAfterMaze, SolvingDelay, AvailablePath)
@@ -616,7 +633,7 @@ Module Module1
         Dim target As New Node(availablepath(availablepath.Count - 1).X, availablepath(availablepath.Count - 1).Y)
         Dim current As Node = start
         Dim openSet, closedSet As New HashSet(Of Node)
-
+        Dim prev As HashSet(Of Node)
         SetBoth(ConsoleColor.Red)
         target.Print("██")
         SetBoth(ConsoleColor.Green)
@@ -698,13 +715,67 @@ Module Module1
         Next
         SetBackGroundColour(ConsoleColor.Black)
     End Sub
+
     Sub PrintMessageMiddle(ByVal message As String, ByVal y As Integer, ByVal colour As ConsoleColor)
         SetBackGroundColour(ConsoleColor.Black)
         SetColour(colour)
         Console.SetCursorPosition(Console.WindowWidth / 2 - message.Length / 2, y)
         Console.Write(message)
     End Sub
+    'algorithm functions
+    Function Sidewinder(ByVal Limits() As Integer, ByVal Delay As Integer, ByVal ShowMazeGeneration As Boolean)
+        While Limits(2) Mod 4 <> 2
+            Limits(2) -= 1
+        End While
+        Dim WallCell As Cell
+        Dim VisitedList As New List(Of Cell)
+        Dim RunSet As New List(Of Cell)
+        Dim Availablepath As New List(Of Node)
+        Dim R As New Random
+        Dim stopwatch As Stopwatch = Stopwatch.StartNew()
+        For y = Limits(1) To Limits(3) Step 2
+            For x = Limits(0) + 3 To Limits(2) Step 4
+                Dim CurrentCell As New Cell(x, y)
+                Availablepath.Add(New Node(CurrentCell.X, CurrentCell.Y))
+                VisitedList.Add(New Cell(CurrentCell.X, CurrentCell.Y))
+                If ShowMazeGeneration Then CurrentCell.Print("██")
+                If y <> Limits(1) Then RunSet.Add(New Cell(CurrentCell.X, CurrentCell.Y))
+                Dim EastCell As New Cell(x + 4, y)
+                Dim RanNum As Integer = R.Next(1, 101)
+                If x + 2 = Limits(2) And y <> Limits(1) Then
+                    RanNum = 1
+                End If
+                If RanNum > 45 Or y = Limits(1) Then
+                    If EastCell.WithinLimits(Limits) Then
+                        WallCell = MidPoint(CurrentCell, EastCell)
+                        If ShowMazeGeneration Then WallCell.Print("██")
+                    End If
+                Else
+                    Dim RandomRunSet As Integer = R.Next(0, RunSet.Count)
+                    Dim RandomRunSetCell As Cell = RunSet(RandomRunSet)
+                    Dim NorthCell As New Cell(RandomRunSetCell.X, y - 2)
+                    WallCell = MidPoint(RandomRunSetCell, NorthCell)
+                    If ShowMazeGeneration Then WallCell.Print("██")
+                    RunSet.Clear()
+                End If
+                Availablepath.Add(New Node(WallCell.X, WallCell.Y))
+                Threading.Thread.Sleep(Delay)
+            Next
+        Next
+        If Not ShowMazeGeneration Then
+            SetBoth(ConsoleColor.White)
+            For Each node In Availablepath
+                node.Print("██")
+            Next
+        End If
+        Dim ypos As Integer = Console.CursorTop
+        AddStartAndEnd(Availablepath, VisitedList, Limits, 1)
+        PrintMessageMiddle($"Time taken to generate the maze: {stopwatch.Elapsed.TotalSeconds}", 1, ConsoleColor.Yellow)
+        Console.SetCursorPosition(0, ypos)
+        Return Availablepath
+    End Function
     Function BinaryTree(ByVal Limits() As Integer, ByVal Delay As Integer, ByVal ShowMazeGeneration As Boolean, ByVal BiasArr() As Integer)
+
         Dim Availablepath As New List(Of Node)
         Dim VisitedList As New List(Of Cell)
         Dim WallCell As Cell
@@ -762,13 +833,11 @@ Module Module1
             Next
         End If
         Dim ypos As Integer = Console.CursorTop
-        AddStartAndEnd(Availablepath, VisitedList, Limits)
+        AddStartAndEnd(Availablepath, VisitedList, Limits, 0)
         PrintMessageMiddle($"Time taken to generate the maze: {stopwatch.Elapsed.TotalSeconds}", 1, ConsoleColor.Yellow)
         Console.SetCursorPosition(0, ypos)
         Return Availablepath
     End Function
-
-    'algorithm functions
     Function GrowingTree(ByVal Limits() As Integer, ByVal delay As Integer, ByVal CellSelectionMethod() As Integer, ByVal ShowMazeGeneration As Boolean)
         Dim R As New Random
         Dim availablepath As New List(Of Cell)
@@ -921,7 +990,7 @@ Module Module1
             Next
         End If
         Dim ypos As Integer = Console.CursorTop
-        AddStartAndEnd(ReturnablePath, VisitedList, Limits)
+        AddStartAndEnd(ReturnablePath, VisitedList, Limits, 0)
         PrintMessageMiddle($"Time taken to generate the maze: {stopwatch.Elapsed.TotalSeconds}", 1, ConsoleColor.Yellow)
         Console.SetCursorPosition(0, ypos)
         Return ReturnablePath
@@ -986,7 +1055,7 @@ Module Module1
             Next
         End If
         Dim ypos As Integer = Console.CursorTop
-        AddStartAndEnd(ReturnablePath, VisitedList, Limits)
+        AddStartAndEnd(ReturnablePath, VisitedList, Limits, 0)
         PrintMessageMiddle($"Time taken to generate the maze: {stopwatch.Elapsed.TotalSeconds}", 1, ConsoleColor.Yellow)
         Console.SetCursorPosition(0, ypos)
         Return ReturnablePath
@@ -1053,7 +1122,7 @@ Module Module1
             Next
         End If
         Dim ypos As Integer = Console.CursorTop
-        AddStartAndEnd(ReturnablePath, VisitedList, Limits)
+        AddStartAndEnd(ReturnablePath, VisitedList, Limits, 0)
         PrintMessageMiddle($"Time taken to generate the maze: {stopwatch.Elapsed.TotalSeconds}", 1, ConsoleColor.Yellow)
         Console.SetCursorPosition(0, ypos)
         Return ReturnablePath
@@ -1102,7 +1171,7 @@ Module Module1
             Next
         End If
         Dim ypos As Integer = Console.CursorTop
-        AddStartAndEnd(ReturnablePath, VisitedList, Limits)
+        AddStartAndEnd(ReturnablePath, VisitedList, Limits, 0)
         PrintMessageMiddle($"Time taken to generate the maze: {stopwatch.Elapsed.TotalSeconds}", 1, ConsoleColor.Yellow)
         Console.SetCursorPosition(0, ypos)
         Return ReturnablePath
@@ -1198,7 +1267,7 @@ Module Module1
             Next
         End If
         Dim ypos As Integer = Console.CursorTop
-        AddStartAndEnd(ReturnablePath, VisitedList, Limits)
+        AddStartAndEnd(ReturnablePath, VisitedList, Limits, 0)
         PrintMessageMiddle($"Time taken to generate the maze: {stopwatch.Elapsed.TotalSeconds}", 1, ConsoleColor.Yellow)
         Console.SetCursorPosition(0, ypos)
         Return ReturnablePath
@@ -1266,7 +1335,7 @@ Module Module1
             Next
         End If
         Dim y As Integer = Console.CursorTop
-        AddStartAndEnd(ReturnablePath, VisitedList, Limits)
+        AddStartAndEnd(ReturnablePath, VisitedList, Limits, 0)
         PrintMessageMiddle($"Time taken to generate the maze: {stopwatch.Elapsed.TotalSeconds}", 1, ConsoleColor.Yellow)
         Console.SetCursorPosition(0, y)
         Return ReturnablePath
@@ -1283,15 +1352,15 @@ Module Module1
             End If
         Next
     End Sub
-    Sub AddStartAndEnd(ByRef ReturnablePath As List(Of Node), ByVal VisitedList As List(Of Cell), ByVal Limits() As Integer)
+    Sub AddStartAndEnd(ByRef ReturnablePath As List(Of Node), ByVal VisitedList As List(Of Cell), ByVal Limits() As Integer, ByVal EvenWidth As Integer)
         ReturnablePath.Add(New Node(Limits(0) + 3, Limits(1) - 1))
         SetBoth(ConsoleColor.Green)
         ReturnablePath(ReturnablePath.Count - 1).Print("██")
         Dim testnode As New Cell(Limits(2) - 3, Limits(3))
         If VisitedList.Contains(testnode) Then
-            ReturnablePath.Add(New Node(Limits(2) - 3, Limits(3) + 1))
+            ReturnablePath.Add(New Node(Limits(2) - (3 + EvenWidth), Limits(3) + 1))
         Else
-            ReturnablePath.Add(New Node(Limits(2) - 1, Limits(3) + 1))
+            ReturnablePath.Add(New Node(Limits(2) - (1 + EvenWidth), Limits(3) + 1))
         End If
         SetBoth(ConsoleColor.Red)
         ReturnablePath(ReturnablePath.Count - 1).Print("██")
