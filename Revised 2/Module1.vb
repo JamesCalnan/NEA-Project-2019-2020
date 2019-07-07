@@ -7,18 +7,83 @@ Module Module1
         Console.CursorVisible = False
 
 
-
         SetColour(ConsoleColor.White)
-        Dim MenuOptions() As String = {"Recursive Backtracker Algorithm", "Hunt and Kill Algorithm", "Prim's Algorithm", "Aldous-Broder Algorithm", "Growing Tree Algorithm", "Custom Algorithm", "Binary Tree Algorithm", "Sidewinder Algorithm", "Eller's Algorithm", "Load the previously generated maze", "Save the previously generated maze", "Load a saved maze", "Exit"}
+        Dim MenuOptions() As String = {"Recursive Backtracker Algorithm", "Hunt and Kill Algorithm", "Prim's Algorithm", "Aldous-Broder Algorithm", "Growing Tree Algorithm", "Custom Algorithm", "Binary Tree Algorithm", "Sidewinder Algorithm", "Eller's Algorithm", "Kruskal's Algorithm", "Load the previously generated maze", "Save the previously generated maze", "Load a saved maze", "Exit"}
         Menu(MenuOptions)
         'WHEN height is even doesnt work
+        Dim limits() As Integer = {5, 4, Console.WindowWidth - 4, Console.WindowHeight - 5}
+        Ellers(limits, 0, False)
+
+    End Sub
+    Sub Ellers(ByVal Limits() As Integer, ByVal Delay As Integer, ByVal ShowMazeGeneration As Boolean)
+        Dim SetNum As Integer = 0
+        Dim List As New List(Of EllersCell)
+        Dim DownList As New List(Of Cell)
+        Dim r As New Random
 
 
+        Dim SetT As New Dictionary(Of Integer, List(Of Cell))
+        Dim templist As New List(Of Cell)
+        'For i = 0 To 4
+        '    For j = 0 To 4
+        '        TempList.Add(New Cell(i, j))
+        '    Next
+        'Next
+        'SetT.Add(0, TempList)
+        'For i = 10 To 14
+        '    For j = 10 To 14
+        '        TempList.Add(New Cell(i, j))
+        '    Next
+        'Next
+        'SetT.Add(3, TempList)
+        'For Each value In SetT
+        '    For Each point In value.Value
+        '        point.Print("XX")
+        '    Next
+        'Next
+
+        For y = Limits(1) To Limits(3) Step 2
+            For x = Limits(0) + 3 To Limits(2) Step 4
+                SetBoth(ConsoleColor.White)
+                Dim currentcell As New Cell(x, y)
+                currentcell.Print("██")
+                Dim ran As Integer = r.Next(1, 101)
+                TempList.Add(New Cell(x, y))
+                If ran > 50 Then
+                    Dim WallCell As New Cell(x + 2, y)
+                    templist.Add(New Cell(x + 2, y))
+                    If WallCell.WithinLimits(Limits) Then WallCell.Print("██")
+                Else
+                    SetT.Add(x, templist)
+                    SetNum += 1
+                    templist.Clear()
+                End If
+            Next
+            If y <> Limits(3) Then
+                'if y isnt on the last column
+                'DownList = thing.Value
+                SetBoth(ConsoleColor.Green)
+                For Each value In SetT
+                    For Each point In value.Value
+                        point.Print("XX")
+                    Next
+                Next
+                Console.ReadKey()
+            End If
+        Next
+
+        Console.ReadKey()
+
+        SetColour(ConsoleColor.Red)
+        SetBackGroundColour(ConsoleColor.Black)
+        Console.SetCursorPosition(0, 0)
+        Console.Write("Done")
+        'Console.ReadKey()
+        Threading.Thread.Sleep(Delay)
 
 
-        Dim Limits() As Integer = {5, 3, Console.WindowWidth - 93, Console.WindowHeight - 10}
-        Dim path As List(Of Node) = Sidewinder(Limits, 0, False)
-        aStar(path, True, False, 0)
+        Console.ReadKey()
+
     End Sub
     Sub Playmaze(ByVal AvailablePath As List(Of Node), ByVal ShowPath As Boolean)
         Dim playerPath As New List(Of Node)
@@ -389,7 +454,7 @@ Module Module1
                             PreSolving(Limits, AvailablePath, PreviousMaze, input, YPosAfterMaze)
                             Solving(input, ShowPath, YPosAfterMaze, SolvingDelay, AvailablePath)
                         End If
-                    ElseIf y = 9 Then
+                    ElseIf y = 10 Then
                         If PreviousMaze.Count > 1 Then
                             Console.Clear()
                             SetBoth(ConsoleColor.White)
@@ -407,7 +472,7 @@ Module Module1
                             MsgColour("No previous maze available", ConsoleColor.Red)
                             Console.ReadKey()
                         End If
-                    ElseIf y = 10 Then
+                    ElseIf y = 11 Then
                         If PreviousMaze.Count > 1 Then
                             Console.Clear()
                             Dim filename As String
@@ -430,7 +495,7 @@ Module Module1
                             MsgColour("No previous maze available", ConsoleColor.Red)
                             Console.ReadKey()
                         End If
-                    ElseIf y = 11 Then
+                    ElseIf y = 12 Then
                         Dim ValidMaze, XMax, YMax As Integer
                         ValidMaze = 1
                         XMax = Console.WindowWidth - 6
@@ -735,6 +800,7 @@ Module Module1
         Dim stopwatch As Stopwatch = Stopwatch.StartNew()
         For y = Limits(1) To Limits(3) Step 2
             For x = Limits(0) + 3 To Limits(2) Step 4
+                If ExitCase() Then Return Nothing
                 Dim CurrentCell As New Cell(x, y)
                 Availablepath.Add(New Node(CurrentCell.X, CurrentCell.Y))
                 VisitedList.Add(New Cell(CurrentCell.X, CurrentCell.Y))
@@ -797,6 +863,7 @@ Module Module1
         End If
         For y = Limits(1) To Limits(3) Step 2
             For x = Limits(0) + 3 To Limits(2) Step 4
+                If ExitCase() Then Return Nothing
                 Dim tempcell As New Cell(x, y)
                 If ShowMazeGeneration Then tempcell.Print("██")
                 Availablepath.Add(New Node(tempcell.X, tempcell.Y))
@@ -1406,6 +1473,13 @@ Module Module1
         End If
         Return ReturnCell
     End Function
+    Function EllerMidPoint(ByVal cell1 As EllersCell, ByVal cell2 As EllersCell)
+        Dim x, y As Integer
+        x = (cell1.X + cell2.X) / 2
+        y = (cell1.Y + cell2.Y) / 2
+        Dim newpoint As New EllersCell(((cell1.X + cell2.X) / 2), ((cell1.Y + cell2.Y) / 2), 0)
+        Return newpoint
+    End Function
     Function MidPoint(ByVal cell1 As Cell, ByVal cell2 As Cell)
         Dim x, y As Integer
         x = (cell1.X + cell2.X) / 2
@@ -1472,8 +1546,51 @@ Module Module1
         Return CheckAndAdd(current, availablepath)
     End Function
 End Module
+Class EllersCell
+    Public X, Y, CellSet As Integer
+    Public Sub New(ByVal xpoint As Integer, ByVal ypoint As Integer, ByVal SetNum As Integer)
+        X = xpoint
+        Y = ypoint
+        CellSet = SetNum
+    End Sub
+    Sub Update(ByVal _x As Integer, ByVal _y As Integer)
+        X = _x
+        Y = _y
+    End Sub
+    Function WithinLimits(ByVal limits() As Integer)
+        If Me.X >= limits(0) And Me.X <= limits(2) And Me.Y >= limits(1) And Me.Y <= limits(3) Then
+            Return True
+        End If
+        Return False
+    End Function
+    Public Function Pop(ByVal list As List(Of Cell))
+        Dim val As Cell
+        val = list(list.Count - 1)
+        list.RemoveAt(list.Count - 1)
+        Return val
+    End Function
+
+    Public Sub Print(ByVal str As String)
+        Console.SetCursorPosition(X, Y)
+        Console.Write(str)
+    End Sub
+
+    Public Overrides Function Equals(obj As Object) As Boolean
+        Dim cell = TryCast(obj, Cell)
+        Return cell IsNot Nothing AndAlso
+               X = cell.X AndAlso
+               Y = cell.Y
+    End Function
+
+    Public Overrides Function GetHashCode() As Integer
+        Dim hashCode As Long = 1855483287
+        hashCode = (hashCode * -1521134295 + X.GetHashCode()).GetHashCode()
+        hashCode = (hashCode * -1521134295 + Y.GetHashCode()).GetHashCode()
+        Return hashCode
+    End Function
+End Class
 Class Cell
-    Public X, Y As Integer
+    Public X, Y, CellSet As Integer
     Public Sub New(ByVal xpoint As Integer, ByVal ypoint As Integer)
         X = xpoint
         Y = ypoint
