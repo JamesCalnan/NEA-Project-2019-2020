@@ -6,13 +6,13 @@ Module Module1
     Sub Main()
         Console.CursorVisible = False
 
-
+        Console.ReadKey()
         SetColour(ConsoleColor.White)
-        Dim MenuOptions() As String = {"Recursive Backtracker Algorithm", "Hunt and Kill Algorithm", "Prim's Algorithm", "Aldous-Broder Algorithm", "Growing Tree Algorithm", "Custom Algorithm", "Binary Tree Algorithm", "Sidewinder Algorithm", "Eller's Algorithm", "Kruskal's Algorithm", "Load the previously generated maze", "Save the previously generated maze", "Load a saved maze", "Exit"}
-        Menu(MenuOptions)
+        'Dim MenuOptions() As String = {"Recursive Backtracker Algorithm", "Hunt and Kill Algorithm", "Prim's Algorithm", "Aldous-Broder Algorithm", "Growing Tree Algorithm", "Custom Algorithm", "Binary Tree Algorithm", "Sidewinder Algorithm", "Eller's Algorithm", "Kruskal's Algorithm", "Load the previously generated maze", "Save the previously generated maze", "Load a saved maze", "Exit"}
+        'Menu(MenuOptions)
         'WHEN height is even doesnt work
-        Dim limits() As Integer = {5, 4, Console.WindowWidth - 4, Console.WindowHeight - 5}
-        Ellers(limits, 0, False)
+        Dim limits() As Integer = {5, 4, Console.WindowWidth - 2, Console.WindowHeight - 1}
+        Wilsons(limits, 0, False)
 
     End Sub
     Sub Ellers(ByVal Limits() As Integer, ByVal Delay As Integer, ByVal ShowMazeGeneration As Boolean)
@@ -85,6 +85,163 @@ Module Module1
         Console.ReadKey()
 
     End Sub
+    Function Wilsons(ByVal Limits() As Integer, ByVal Delay As Integer, ByVal ShowMazeGeneration As Boolean)
+        Dim TotalCellCount As Integer
+        Dim R As New Random
+        Dim availablepath As New List(Of Cell)
+        Dim UST, RecentCells As New List(Of Cell)
+        Dim CurrentCell As New Cell(Limits(0) + 3, Limits(1) + 2)
+        Dim PrevCell, WallPrev As New Cell(Limits(0) + 3, Limits(1) + 2)
+        Dim PreviousCell As Cell = CurrentCell
+        Dim WallCell As Cell
+        Dim ReturnablePath As New List(Of Node)
+        Dim StartingCell As New Cell(0, 0)
+        Dim done As Boolean = False
+        For y = Limits(1) To Limits(3) Step 2
+            For x = Limits(0) + 3 To Limits(2) - 1 Step 4
+                Console.SetCursorPosition(x, y)
+                Console.Write("██")
+                TotalCellCount += 1
+                If Not done Then
+                    If R.Next(1, 3) = 2 And x > 20 Then
+                        StartingCell.Update(x, y)
+                        done = True
+                    End If
+                End If
+            Next
+        Next
+        SetBoth(ConsoleColor.Red)
+        StartingCell.Print("██")
+        UST.Add(StartingCell)
+        Dim c As Integer = 9
+        Dim Direction As New Dictionary(Of Cell, Integer)
+        Dim stopwatch As Stopwatch = Stopwatch.StartNew()
+        Console.ReadKey()
+
+
+
+        While UST.Count <> TotalCellCount
+
+            If ExitCase() Then Return Nothing
+            SetBoth(c)
+            RecentCells.Clear()
+            For Each cell As Cell In RanNeighbour(CurrentCell, Limits)
+                RecentCells.Add(cell)
+            Next
+            Dim TemporaryCell As Cell = RecentCells(R.Next(0, RecentCells.Count))
+            TemporaryCell.Print("██")
+            Dim TempNodeCell As New Node(TemporaryCell.X, TemporaryCell.Y)
+            'picking a random cell
+
+
+            If UST.Contains(TemporaryCell) Then 'Unvisited cell?
+                'reached the path
+
+
+
+                Dim NewList As New List(Of Cell)
+                Dim cur As Cell
+
+                For Each value In Direction
+                    cur = value.Key
+                    If value.Value = 1 Then
+
+                        cur.Update(cur.X, cur.Y + 2)
+                    ElseIf value.Value = 2 Then
+
+                        cur.Update(cur.X - 4, cur.Y)
+                    ElseIf value.Value = 3 Then
+
+                        cur.Update(cur.X, cur.Y - 2)
+                    ElseIf value.Value = 4 Then
+
+                        cur.Update(cur.X + 4, cur.Y)
+                    End If
+                    NewList.Add(cur)
+                Next
+                Dim num As Integer
+                SetBoth(2)
+                Dim prev As Cell
+                For Each node In NewList
+                    node.Print("██")
+                    num += 1
+
+                    If num Mod 2 = 0 And num <> 0 Then
+                        Dim wall As Cell = MidPoint(prev, node)
+                        SetBoth(ConsoleColor.Cyan)
+                        wall.Print("██")
+                    End If
+                    prev = node
+
+                Next
+                UST.Concat(NewList)
+                NewList.Clear()
+                Direction.Clear()
+                Console.ReadKey()
+            Else
+                CurrentCell = TemporaryCell
+                If Direction.ContainsKey(CurrentCell) Then
+                    Direction(CurrentCell) = GetDirection(CurrentCell, PrevCell)
+                Else
+                    Try
+                        Direction.Add(PrevCell, GetDirection(CurrentCell, PrevCell))
+                    Catch ex As Exception
+                        Direction(CurrentCell) = GetDirection(CurrentCell, PrevCell)
+                    End Try
+
+                End If
+                PrevCell = CurrentCell
+                Dim wall As Cell = MidPoint(CurrentCell, PrevCell)
+                ' wall.Print("██")
+            End If
+            'Console.ReadKey()
+            c = 13
+            If c > 15 Then c = 9
+        End While
+        '1 = UP
+        '2 = RIGHT
+        '3 = DOWN
+        '4 = LEFT
+
+        'If ShowMazeGeneration Then
+        '    SetBoth(ConsoleColor.White)
+        '    PrevCell.Print("██")
+        'End If
+        'If Not ShowMazeGeneration Then
+        '    For Each node In ReturnablePath
+        '        node.Print("██")
+        '    Next
+        'End If
+        'Dim ypos As Integer = Console.CursorTop
+        'AddStartAndEnd(ReturnablePath, UST, Limits, 0)
+        'PrintMessageMiddle($"Time taken to generate the maze: {stopwatch.Elapsed.TotalSeconds}", 1, ConsoleColor.Yellow)
+        'Console.SetCursorPosition(0, ypos)
+        'Return ReturnablePath
+    End Function
+    Function GetDirection(ByVal cell1 As Cell, ByVal cell2 As Cell)
+        SetBoth(3)
+        'cell1.Print("XX")
+        SetBoth(4)
+        'cell2.Print("XX")
+
+        Dim tempcell As New Cell(cell2.X, cell2.Y + 2)
+        'check up
+        If cell1.Equals(tempcell) Then
+            Return 1
+        End If
+        tempcell.Update(cell2.X + 4, cell2.Y)
+        If cell1.Equals(tempcell) Then
+            Return 2
+        End If
+        tempcell.Update(cell2.X, cell2.Y - 2)
+        If cell1.Equals(tempcell) Then
+            Return 3
+        End If
+        tempcell.Update(cell2.X - 4, cell2.Y)
+        If cell1.Equals(tempcell) Then
+            Return 4
+        End If
+    End Function
     Sub Playmaze(ByVal AvailablePath As List(Of Node), ByVal ShowPath As Boolean)
         Dim playerPath As New List(Of Node)
         Dim currentPos As New Node(AvailablePath(AvailablePath.Count - 2).X, AvailablePath(AvailablePath.Count - 2).Y)
