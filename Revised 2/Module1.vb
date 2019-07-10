@@ -8,9 +8,10 @@ Module Module1
 
         ' Console.ReadKey()
         SetColour(ConsoleColor.White)
-        Dim MenuOptions() As String = {"Recursive Backtracker Algorithm", "Hunt and Kill Algorithm", "Prim's Algorithm", "Aldous-Broder Algorithm", "Growing Tree Algorithm", "Custom Algorithm", "Binary Tree Algorithm", "Sidewinder Algorithm", "Eller's Algorithm", "Kruskal's Algorithm", "Load the previously generated maze", "Save the previously generated maze", "Load a saved maze", "Exit"}
-        Menu(MenuOptions)
+        'Dim MenuOptions() As String = {"Recursive Backtracker Algorithm", "Hunt and Kill Algorithm", "Prim's Algorithm", "Aldous-Broder Algorithm", "Growing Tree Algorithm", "Custom Algorithm", "Binary Tree Algorithm", "Sidewinder Algorithm", "Eller's Algorithm", "Kruskal's Algorithm", "Load the previously generated maze", "Save the previously generated maze", "Load a saved maze", "Exit"}
+        'Menu(MenuOptions)
         'WHEN height is even doesnt work
+        Console.ReadKey()
         Dim limits() As Integer = {5, 4, Console.WindowWidth - 2, Console.WindowHeight - 1}
         Wilsons(limits, 0, False)
 
@@ -48,7 +49,7 @@ Module Module1
                 Dim currentcell As New Cell(x, y)
                 currentcell.Print("██")
                 Dim ran As Integer = r.Next(1, 101)
-                TempList.Add(New Cell(x, y))
+                templist.Add(New Cell(x, y))
                 If ran > 50 Then
                     Dim WallCell As New Cell(x + 2, y)
                     templist.Add(New Cell(x + 2, y))
@@ -89,27 +90,26 @@ Module Module1
         Dim TotalCellCount As Integer
         Dim R As New Random
         Dim availablepath As New List(Of Cell)
-        Dim UST, RecentCells As New List(Of Cell)
+        Dim UST, RecentCells, availablepositions As New List(Of Cell)
         Dim CurrentCell As New Cell(Limits(0) + 3, Limits(1) + 2)
         Dim PrevCell, WallPrev As New Cell(Limits(0) + 3, Limits(1) + 2)
         Dim PreviousCell As Cell = CurrentCell
         Dim WallCell As Cell
         Dim ReturnablePath As New List(Of Node)
-        Dim StartingCell As New Cell(0, 0)
+
         Dim done As Boolean = False
         For y = Limits(1) To Limits(3) Step 2
             For x = Limits(0) + 3 To Limits(2) - 1 Step 4
                 Console.SetCursorPosition(x, y)
                 Console.Write("██")
                 TotalCellCount += 1
-                If Not done Then
-                    If R.Next(1, 3) = 2 And x > 20 Then
-                        StartingCell.Update(x, y)
-                        done = True
-                    End If
-                End If
+                availablepositions.Add(New Cell(x, y))
             Next
         Next
+        Dim StartingCell As New Cell(R.Next(Limits(1), Limits(3)), R.Next(Limits(0) + 3, Limits(2) - 1))
+        While Not availablepositions.Contains(StartingCell)
+            StartingCell.Update(R.Next(Limits(1), Limits(3)), R.Next(Limits(0) + 3, Limits(2) - 1))
+        End While
         SetBoth(ConsoleColor.Red)
         StartingCell.Print("██")
         UST.Add(StartingCell)
@@ -117,87 +117,82 @@ Module Module1
         Dim Direction As New Dictionary(Of Cell, Integer)
         Dim stopwatch As Stopwatch = Stopwatch.StartNew()
         Console.ReadKey()
-
-
+        Dim startingVal As Integer = 1
+        Dim startingCell1 As Cell
+        Dim signlist As New List(Of Cell)
 
         While UST.Count <> TotalCellCount
 
             If ExitCase() Then Return Nothing
-            SetBoth(c)
             RecentCells.Clear()
             For Each cell As Cell In RanNeighbour(CurrentCell, Limits)
                 RecentCells.Add(cell)
             Next
             Dim TemporaryCell As Cell = RecentCells(R.Next(0, RecentCells.Count))
+            If startingVal = 1 Then
+                startingCell1 = TemporaryCell
+                startingVal = 3
+            ElseIf startingVal = 2 Then
+                TemporaryCell = startingCell1
+                startingVal = 3
+            End If
             TemporaryCell.Print("██")
             Dim TempNodeCell As New Node(TemporaryCell.X, TemporaryCell.Y)
             'picking a random cell
-
-
             If UST.Contains(TemporaryCell) Then 'Unvisited cell?
-                'reached the path
-
+                Direction.Add(CurrentCell, GetDirection(TemporaryCell, CurrentCell, signlist))
                 Dim NewList As New List(Of Cell)
                 Dim cur As Cell
 
+
+                SetBoth(ConsoleColor.Yellow)
                 For Each value In Direction
-                    cur = value.Key
-                    If value.Value = 1 Then
-
-                        cur.Update(value.Key.X, value.Key.Y + 2)
-                    ElseIf value.Value = 2 Then
-
-                        cur.Update(value.Key.X - 4, value.Key.Y)
-                    ElseIf value.Value = 3 Then
-
-                        cur.Update(value.Key.X, value.Key.Y - 2)
-                    ElseIf value.Value = 4 Then
-
-                        cur.Update(value.Key.X + 4, value.Key.Y)
-                    End If
-                    NewList.Add(cur)
-                    If UST.Contains(cur) Then Exit For
+                    NewList.Add(value.Key)
+                    value.Key.Print("██")
+                    Console.ReadKey()
                 Next
                 Dim num As Integer
-                SetBoth(2)
+                SetBoth(ConsoleColor.Magenta)
                 Dim prev As Cell
-
+                Dim thing As Integer
                 For Each node In NewList
                     node.Print("██")
                     num += 1
-
-                    If num <> 1 Then
+                    If Not IsNothing(prev) Then
                         Dim wall As Cell = MidPoint(node, prev)
-                        SetBoth(ConsoleColor.Cyan)
                         wall.Print("██")
                     End If
-
                     prev = node
-
+                    Console.ReadKey()
                 Next
-
-                UST.Concat(NewList)
+                Console.ReadKey()
+                For Each value In NewList
+                    UST.Add(value)
+                Next
                 NewList.Clear()
                 Direction.Clear()
-                Console.ReadKey()
+                While Not availablepositions.Contains(StartingCell)
+                    StartingCell.Update(R.Next(Limits(1), Limits(3)), R.Next(Limits(0) + 3, Limits(2) - 1))
+                End While
+                CurrentCell = StartingCell
             Else
                 CurrentCell = TemporaryCell
                 If Direction.ContainsKey(CurrentCell) Then
-                    Direction(CurrentCell) = GetDirection(CurrentCell, PrevCell)
+                    Direction.Clear()
+                    startingVal = 2
+                    SetBoth(ConsoleColor.White)
+                    For y = Limits(1) To Limits(3) Step 2
+                        For x = Limits(0) + 3 To Limits(2) - 1 Step 4
+                            Dim temp As New Cell(x, y)
+                            If Not UST.Contains(temp) Then temp.Print("██")
+                        Next
+                    Next
                 Else
-                    Try
-                        Direction.Add(PrevCell, GetDirection(CurrentCell, PrevCell))
-                    Catch ex As Exception
-                        Direction(CurrentCell) = GetDirection(CurrentCell, PrevCell)
-                    End Try
+                    Direction.Add(CurrentCell, GetDirection(CurrentCell, PrevCell, signlist))
                 End If
                 PrevCell = CurrentCell
                 Dim wall As Cell = MidPoint(CurrentCell, PrevCell)
-                ' wall.Print("██")
             End If
-            'Console.ReadKey()
-            c = 13
-            If c > 15 Then c = 9
         End While
         '1 = UP
         '2 = RIGHT
@@ -219,27 +214,30 @@ Module Module1
         'Console.SetCursorPosition(0, ypos)
         'Return ReturnablePath
     End Function
-    Function GetDirection(ByVal cell1 As Cell, ByVal cell2 As Cell)
-        SetBoth(ConsoleColor.Cyan)
-        cell1.Print("XX")
-        SetBoth(ConsoleColor.DarkCyan)
-        cell2.Print("XX")
-
+    Function GetDirection(ByVal cell1 As Cell, ByVal cell2 As Cell, ByRef list As List(Of Cell))
+        SetBoth(ConsoleColor.Red)
+        'If Not list.Contains(cell2) Then cell2.Print("XX")
+        SetBackGroundColour(ConsoleColor.Black)
+        SetColour(ConsoleColor.Red)
         Dim tempcell As New Cell(cell2.X, cell2.Y + 2)
         'check up
         If cell1.Equals(tempcell) Then
+            tempcell.Print("^^")
             Return 1
         End If
         tempcell.Update(cell2.X + 4, cell2.Y)
         If cell1.Equals(tempcell) Then
+            tempcell.Print("<<")
             Return 2
         End If
         tempcell.Update(cell2.X, cell2.Y - 2)
         If cell1.Equals(tempcell) Then
+            tempcell.Print("VV")
             Return 3
         End If
         tempcell.Update(cell2.X - 4, cell2.Y)
         If cell1.Equals(tempcell) Then
+            tempcell.Print(">>")
             Return 4
         End If
     End Function
