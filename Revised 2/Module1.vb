@@ -107,7 +107,7 @@ Module Module1
             Next
         Next
         Dim StartingCell As New Cell(R.Next(Limits(1), Limits(3)), R.Next(Limits(0) + 3, Limits(2) - 1))
-        While Not availablepositions.Contains(StartingCell)
+        While Not availablepositions.Contains(StartingCell) And Not UST.Contains(StartingCell)
             StartingCell.Update(R.Next(Limits(1), Limits(3)), R.Next(Limits(0) + 3, Limits(2) - 1))
         End While
         SetBoth(ConsoleColor.Red)
@@ -118,15 +118,17 @@ Module Module1
         Dim stopwatch As Stopwatch = Stopwatch.StartNew()
         Console.ReadKey()
         Dim startingVal As Integer = 1
-        Dim startingCell1 As Cell
+        Dim startingCell1 As Cell = startingCell1
         Dim signlist As New List(Of Cell)
 
-        While UST.Count <> TotalCellCount
+        While 1
 
             If ExitCase() Then Return Nothing
             RecentCells.Clear()
+            'SetBoth(ConsoleColor.Gray)
             For Each cell As Cell In RanNeighbour(CurrentCell, Limits)
                 RecentCells.Add(cell)
+                cell.Print("██")
             Next
             Dim TemporaryCell As Cell = RecentCells(R.Next(0, RecentCells.Count))
             If startingVal = 1 Then
@@ -136,51 +138,47 @@ Module Module1
                 TemporaryCell = startingCell1
                 startingVal = 3
             End If
+            SetBoth(ConsoleColor.White)
             TemporaryCell.Print("██")
             Dim TempNodeCell As New Node(TemporaryCell.X, TemporaryCell.Y)
             'picking a random cell
+
             If UST.Contains(TemporaryCell) Then 'Unvisited cell?
-                Direction.Add(CurrentCell, GetDirection(TemporaryCell, CurrentCell, signlist))
+                Direction.Add(TemporaryCell, GetDirection(TemporaryCell, CurrentCell, signlist))
                 Dim NewList As New List(Of Cell)
-                Dim cur As Cell
-
-
                 SetBoth(ConsoleColor.Yellow)
                 For Each value In Direction
                     NewList.Add(value.Key)
-                    value.Key.Print("██")
-                    Console.ReadKey()
                 Next
-                Dim num As Integer
                 SetBoth(ConsoleColor.Magenta)
                 Dim prev As Cell
-                Dim thing As Integer
                 For Each node In NewList
                     node.Print("██")
-                    num += 1
                     If Not IsNothing(prev) Then
                         Dim wall As Cell = MidPoint(node, prev)
                         wall.Print("██")
                     End If
                     prev = node
-                    Console.ReadKey()
+                    availablepositions.Remove(node)
                 Next
-                Console.ReadKey()
                 For Each value In NewList
                     UST.Add(value)
                 Next
                 NewList.Clear()
                 Direction.Clear()
-                While Not availablepositions.Contains(StartingCell)
-                    StartingCell.Update(R.Next(Limits(1), Limits(3)), R.Next(Limits(0) + 3, Limits(2) - 1))
-                End While
+                SetBoth(ConsoleColor.Yellow)
+                Dim ran As Integer = R.Next(0, availablepositions.Count)
+                StartingCell.Update(availablepositions(ran).X, availablepositions(ran).Y)
+                StartingCell.Print("XX")
                 CurrentCell = StartingCell
+                startingCell1 = CurrentCell
             Else
                 CurrentCell = TemporaryCell
                 If Direction.ContainsKey(CurrentCell) Then
                     Direction.Clear()
                     startingVal = 2
                     SetBoth(ConsoleColor.White)
+
                     For y = Limits(1) To Limits(3) Step 2
                         For x = Limits(0) + 3 To Limits(2) - 1 Step 4
                             Dim temp As New Cell(x, y)
@@ -191,9 +189,9 @@ Module Module1
                     Direction.Add(CurrentCell, GetDirection(CurrentCell, PrevCell, signlist))
                 End If
                 PrevCell = CurrentCell
-                Dim wall As Cell = MidPoint(CurrentCell, PrevCell)
             End If
         End While
+
         '1 = UP
         '2 = RIGHT
         '3 = DOWN
