@@ -6,10 +6,10 @@ Module Module1
     Sub Main()
         Console.CursorVisible = False
 
-        Console.ReadKey()
+        ' Console.ReadKey()
         SetColour(ConsoleColor.White)
-        'Dim MenuOptions() As String = {"Recursive Backtracker Algorithm", "Hunt and Kill Algorithm", "Prim's Algorithm", "Aldous-Broder Algorithm", "Growing Tree Algorithm", "Custom Algorithm", "Binary Tree Algorithm", "Sidewinder Algorithm", "Eller's Algorithm", "Kruskal's Algorithm", "Load the previously generated maze", "Save the previously generated maze", "Load a saved maze", "Exit"}
-        'Menu(MenuOptions)
+        Dim MenuOptions() As String = {"Recursive Backtracker Algorithm", "Hunt and Kill Algorithm", "Prim's Algorithm", "Aldous-Broder Algorithm", "Growing Tree Algorithm", "Custom Algorithm", "Binary Tree Algorithm", "Sidewinder Algorithm", "Eller's Algorithm", "Kruskal's Algorithm", "Load the previously generated maze", "Save the previously generated maze", "Load a saved maze", "Exit"}
+        Menu(MenuOptions)
         'WHEN height is even doesnt work
         Dim limits() As Integer = {5, 4, Console.WindowWidth - 2, Console.WindowHeight - 1}
         Wilsons(limits, 0, False)
@@ -137,8 +137,6 @@ Module Module1
             If UST.Contains(TemporaryCell) Then 'Unvisited cell?
                 'reached the path
 
-
-
                 Dim NewList As New List(Of Cell)
                 Dim cur As Cell
 
@@ -146,34 +144,38 @@ Module Module1
                     cur = value.Key
                     If value.Value = 1 Then
 
-                        cur.Update(cur.X, cur.Y + 2)
+                        cur.Update(value.Key.X, value.Key.Y + 2)
                     ElseIf value.Value = 2 Then
 
-                        cur.Update(cur.X - 4, cur.Y)
+                        cur.Update(value.Key.X - 4, value.Key.Y)
                     ElseIf value.Value = 3 Then
 
-                        cur.Update(cur.X, cur.Y - 2)
+                        cur.Update(value.Key.X, value.Key.Y - 2)
                     ElseIf value.Value = 4 Then
 
-                        cur.Update(cur.X + 4, cur.Y)
+                        cur.Update(value.Key.X + 4, value.Key.Y)
                     End If
                     NewList.Add(cur)
+                    If UST.Contains(cur) Then Exit For
                 Next
                 Dim num As Integer
                 SetBoth(2)
                 Dim prev As Cell
+
                 For Each node In NewList
                     node.Print("██")
                     num += 1
 
-                    If num Mod 2 = 0 And num <> 0 Then
-                        Dim wall As Cell = MidPoint(prev, node)
+                    If num <> 1 Then
+                        Dim wall As Cell = MidPoint(node, prev)
                         SetBoth(ConsoleColor.Cyan)
                         wall.Print("██")
                     End If
+
                     prev = node
 
                 Next
+
                 UST.Concat(NewList)
                 NewList.Clear()
                 Direction.Clear()
@@ -188,7 +190,6 @@ Module Module1
                     Catch ex As Exception
                         Direction(CurrentCell) = GetDirection(CurrentCell, PrevCell)
                     End Try
-
                 End If
                 PrevCell = CurrentCell
                 Dim wall As Cell = MidPoint(CurrentCell, PrevCell)
@@ -219,10 +220,10 @@ Module Module1
         'Return ReturnablePath
     End Function
     Function GetDirection(ByVal cell1 As Cell, ByVal cell2 As Cell)
-        SetBoth(3)
-        'cell1.Print("XX")
-        SetBoth(4)
-        'cell2.Print("XX")
+        SetBoth(ConsoleColor.Cyan)
+        cell1.Print("XX")
+        SetBoth(ConsoleColor.DarkCyan)
+        cell2.Print("XX")
 
         Dim tempcell As New Cell(cell2.X, cell2.Y + 2)
         'check up
