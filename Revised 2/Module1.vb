@@ -87,6 +87,9 @@ Module Module1
 
     End Sub
     Function Wilsons(ByVal Limits() As Integer, ByVal Delay As Integer, ByVal ShowMazeGeneration As Boolean)
+
+
+        'value being printed isnt the same as the one being returned
         Dim TotalCellCount As Integer
         Dim R As New Random
         Dim availablepath As New List(Of Cell)
@@ -114,7 +117,7 @@ Module Module1
         StartingCell.Print("██")
         UST.Add(StartingCell)
         Dim c As Integer = 9
-        Dim Direction As New Dictionary(Of Cell, String)
+        Dim Direction, newdir As New Dictionary(Of Cell, String)
         Dim stopwatch As Stopwatch = Stopwatch.StartNew()
         Console.ReadKey()
         Dim Reset As Boolean = False
@@ -144,6 +147,21 @@ Module Module1
 
             If UST.Contains(TemporaryCell) Then 'Unvisited cell?
                 Direction.Add(TemporaryCell, GetDirection(TemporaryCell, CurrentCell, signlist))
+                Console.ReadKey()
+                SetBackGroundColour(ConsoleColor.Black)
+                SetColour(ConsoleColor.Yellow)
+                'For Each thing In Direction
+                '    thing.Key.Print(thing.Value)
+                '    'Console.ReadKey()
+                'Next
+                'Console.ReadKey()
+                For Each thing In newdir
+                    ' thing.Key.Print(thing.Value)
+                    'Console.ReadKey()
+                Next
+                Console.ReadKey()
+
+
                 Dim NewList As New List(Of Cell)
 
                 Dim cOunt As Integer = 0
@@ -173,7 +191,7 @@ Module Module1
                     End If
                     prev = node
                     availablepositions.Remove(node)
-                    Console.ReadKey
+                    Console.ReadKey()
                 Next
                 For Each value In NewList
                     UST.Add(value)
@@ -190,20 +208,27 @@ Module Module1
                 Console.ReadKey()
             Else
                 CurrentCell = TemporaryCell
+
                 If Direction.ContainsKey(CurrentCell) Then
-                    Direction(CurrentCell) = GetDirection(PrevCell, CurrentCell, signlist)
-                    'Direction.Clear()
-                    'Reset = True
+                    Direction(CurrentCell) = GetDirection(CurrentCell, PrevCell, signlist)
                     SetBoth(ConsoleColor.White)
-                    'For y = Limits(1) To Limits(3) Step 2
-                    '    For x = Limits(0) + 3 To Limits(2) - 1 Step 4
-                    '        Dim temp As New Cell(x, y)
-                    '        If Not UST.Contains(temp) Or Direction.ContainsKey(temp) Then temp.Print("██")
-                    '    Next
-                    'Next
+                    'ElseIf Direction.ContainsKey(PrevCell) Then
+                    '    Direction(PrevCell) = GetDirection(CurrentCell, PrevCell, signlist)
                 Else
-                    Direction.Add(CurrentCell, GetDirection(PrevCell, CurrentCell, signlist))
+                    Direction.Add(CurrentCell, GetDirection(CurrentCell, PrevCell, signlist))
                 End If
+                SetBackGroundColour(ConsoleColor.Black)
+                SetColour(ConsoleColor.Yellow)
+                Console.SetCursorPosition(CurrentCell.X, CurrentCell.Y)
+                'Console.Write(Direction(CurrentCell))
+                'If newdir.ContainsKey(CurrentCell) Then
+                '    newdir(CurrentCell) = (Direction(CurrentCell))
+                'Else
+                '    newdir.Add(CurrentCell, Direction(CurrentCell))
+                'End If
+
+                SetBackGroundColour(ConsoleColor.Black)
+                SetColour(ConsoleColor.Red)
                 PrevCell = CurrentCell
             End If
         End While
@@ -212,27 +237,12 @@ Module Module1
         '2 = RIGHT
         '3 = DOWN
         '4 = LEFT
-
-        'If ShowMazeGeneration Then
-        '    SetBoth(ConsoleColor.White)
-        '    PrevCell.Print("██")
-        'End If
-        'If Not ShowMazeGeneration Then
-        '    For Each node In ReturnablePath
-        '        node.Print("██")
-        '    Next
-        'End If
-        'Dim ypos As Integer = Console.CursorTop
-        'AddStartAndEnd(ReturnablePath, UST, Limits, 0)
-        'PrintMessageMiddle($"Time taken to generate the maze: {stopwatch.Elapsed.TotalSeconds}", 1, ConsoleColor.Yellow)
-        'Console.SetCursorPosition(0, ypos)
-        'Return ReturnablePath
     End Function
     Function PickNextDir(ByVal currentcell As Cell, ByVal direction As Dictionary(Of Cell, String))
 
-
+        currentcell.Print("X")
+        Console.ReadKey()
         Dim go As String = direction(currentcell)
-
         If go = "VV" Then 'down
             Console.SetCursorPosition(currentcell.X, currentcell.Y + 2)
             Console.Write("XX")
@@ -251,34 +261,34 @@ Module Module1
             Return New Cell(currentcell.X + 4, currentcell.Y)
         End If
 
-
-
     End Function
     Function GetDirection(ByVal cell1 As Cell, ByVal cell2 As Cell, ByRef list As List(Of Cell))
+        SetBoth(ConsoleColor.Yellow)
+        'cell1.Print("X")
         SetBoth(ConsoleColor.Red)
+        'cell2.Print("X")
         'If Not list.Contains(cell2) Then cell2.Print("XX")
         SetBackGroundColour(ConsoleColor.Black)
         SetColour(ConsoleColor.Red)
         Dim tempcell As New Cell(cell2.X, cell2.Y - 2)
-        'check up
-        If cell1.Equals(tempcell) Then
-            tempcell.Print("^^")
-            Return "^^"
-        End If
-        tempcell.Update(cell2.X + 4, cell2.Y)
-        If cell1.Equals(tempcell) Then
-            tempcell.Print("<<")
-            Return ">>"
-        End If
-        tempcell.Update(cell2.X, cell2.Y + 2)
         If cell1.Equals(tempcell) Then
             tempcell.Print("VV")
             Return "VV"
         End If
+        tempcell.Update(cell2.X + 4, cell2.Y)
+        If cell1.Equals(tempcell) Then
+            tempcell.Print("<<")
+            Return "<<"
+        End If
+        tempcell.Update(cell2.X, cell2.Y + 2)
+        If cell1.Equals(tempcell) Then
+            tempcell.Print("^^")
+            Return "^^"
+        End If
         tempcell.Update(cell2.X - 4, cell2.Y)
         If cell1.Equals(tempcell) Then
             tempcell.Print(">>")
-            Return "<<"
+            Return ">>"
         End If
     End Function
     Sub Playmaze(ByVal AvailablePath As List(Of Node), ByVal ShowPath As Boolean)
