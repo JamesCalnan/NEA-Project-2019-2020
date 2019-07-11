@@ -114,11 +114,11 @@ Module Module1
         StartingCell.Print("██")
         UST.Add(StartingCell)
         Dim c As Integer = 9
-        Dim Direction As New Dictionary(Of Cell, Integer)
+        Dim Direction As New Dictionary(Of Cell, String)
         Dim stopwatch As Stopwatch = Stopwatch.StartNew()
         Console.ReadKey()
-        Dim startingVal As Integer = 1
-        Dim startingCell1 As Cell = startingCell1
+        Dim Reset As Boolean = False
+        Dim startingCell1 As Cell = CurrentCell
         Dim signlist As New List(Of Cell)
 
         While 1
@@ -126,30 +126,43 @@ Module Module1
             If ExitCase() Then Return Nothing
             RecentCells.Clear()
             'SetBoth(ConsoleColor.Gray)
+            Dim TemporaryCell As Cell
+            If Reset Then
+                CurrentCell = startingCell1
+                Reset = False
+                SetColour(ConsoleColor.Yellow)
+                CurrentCell.Print("██")
+            End If
             For Each cell As Cell In RanNeighbour(CurrentCell, Limits)
                 RecentCells.Add(cell)
-                cell.Print("██")
             Next
-            Dim TemporaryCell As Cell = RecentCells(R.Next(0, RecentCells.Count))
-            If startingVal = 1 Then
-                startingCell1 = TemporaryCell
-                startingVal = 3
-            ElseIf startingVal = 2 Then
-                TemporaryCell = startingCell1
-                startingVal = 3
-            End If
-            SetBoth(ConsoleColor.White)
-            TemporaryCell.Print("██")
-            Dim TempNodeCell As New Node(TemporaryCell.X, TemporaryCell.Y)
-            'picking a random cell
+            TemporaryCell = RecentCells(R.Next(0, RecentCells.Count))
+            SetColour(ConsoleColor.Red)
+            'TemporaryCell.Print("██")
+            Dim dir As String = GetDirection(CurrentCell, TemporaryCell, signlist)
+            'Console.ReadKey()
 
             If UST.Contains(TemporaryCell) Then 'Unvisited cell?
                 Direction.Add(TemporaryCell, GetDirection(TemporaryCell, CurrentCell, signlist))
                 Dim NewList As New List(Of Cell)
-                SetBoth(ConsoleColor.Yellow)
-                For Each value In Direction
-                    NewList.Add(value.Key)
+
+                Dim cOunt As Integer = 0
+                Dim current As Cell = Direction.Keys(0)
+                Dim cur As Cell = current
+
+                SetBoth(ConsoleColor.Magenta)
+                For Each thing In UST
+                    thing.Print("██")
                 Next
+                SetBoth(ConsoleColor.Yellow)
+                Console.ReadKey()
+
+                While 1
+                    Dim prev111 As Cell = cur
+                    cur = PickNextDir(prev111, Direction)
+                    NewList.Add(cur)
+                    If UST.Contains(cur) Then Exit While
+                End While
                 SetBoth(ConsoleColor.Magenta)
                 Dim prev As Cell
                 For Each node In NewList
@@ -160,6 +173,7 @@ Module Module1
                     End If
                     prev = node
                     availablepositions.Remove(node)
+                    Console.ReadKey
                 Next
                 For Each value In NewList
                     UST.Add(value)
@@ -170,23 +184,25 @@ Module Module1
                 Dim ran As Integer = R.Next(0, availablepositions.Count)
                 StartingCell.Update(availablepositions(ran).X, availablepositions(ran).Y)
                 StartingCell.Print("XX")
+                TemporaryCell = CurrentCell
                 CurrentCell = StartingCell
-                startingCell1 = CurrentCell
+                startingCell1 = StartingCell
+                Console.ReadKey()
             Else
                 CurrentCell = TemporaryCell
                 If Direction.ContainsKey(CurrentCell) Then
-                    Direction.Clear()
-                    startingVal = 2
+                    Direction(CurrentCell) = GetDirection(PrevCell, CurrentCell, signlist)
+                    'Direction.Clear()
+                    'Reset = True
                     SetBoth(ConsoleColor.White)
-
-                    For y = Limits(1) To Limits(3) Step 2
-                        For x = Limits(0) + 3 To Limits(2) - 1 Step 4
-                            Dim temp As New Cell(x, y)
-                            If Not UST.Contains(temp) Then temp.Print("██")
-                        Next
-                    Next
+                    'For y = Limits(1) To Limits(3) Step 2
+                    '    For x = Limits(0) + 3 To Limits(2) - 1 Step 4
+                    '        Dim temp As New Cell(x, y)
+                    '        If Not UST.Contains(temp) Or Direction.ContainsKey(temp) Then temp.Print("██")
+                    '    Next
+                    'Next
                 Else
-                    Direction.Add(CurrentCell, GetDirection(CurrentCell, PrevCell, signlist))
+                    Direction.Add(CurrentCell, GetDirection(PrevCell, CurrentCell, signlist))
                 End If
                 PrevCell = CurrentCell
             End If
@@ -212,31 +228,57 @@ Module Module1
         'Console.SetCursorPosition(0, ypos)
         'Return ReturnablePath
     End Function
+    Function PickNextDir(ByVal currentcell As Cell, ByVal direction As Dictionary(Of Cell, String))
+
+
+        Dim go As String = direction(currentcell)
+
+        If go = "VV" Then 'down
+            Console.SetCursorPosition(currentcell.X, currentcell.Y + 2)
+            Console.Write("XX")
+            Return New Cell(currentcell.X, currentcell.Y + 2)
+        ElseIf go = "<<" Then 'left
+            Console.SetCursorPosition(currentcell.X - 4, currentcell.Y)
+            Console.Write("XX")
+            Return New Cell(currentcell.X - 4, currentcell.Y)
+        ElseIf go = "^^" Then 'up
+            Console.SetCursorPosition(currentcell.X, currentcell.Y - 2)
+            Console.Write("XX")
+            Return New Cell(currentcell.X, currentcell.Y - 2)
+        ElseIf go = ">>" Then 'right
+            Console.SetCursorPosition(currentcell.X + 4, currentcell.Y)
+            Console.Write("XX")
+            Return New Cell(currentcell.X + 4, currentcell.Y)
+        End If
+
+
+
+    End Function
     Function GetDirection(ByVal cell1 As Cell, ByVal cell2 As Cell, ByRef list As List(Of Cell))
         SetBoth(ConsoleColor.Red)
         'If Not list.Contains(cell2) Then cell2.Print("XX")
         SetBackGroundColour(ConsoleColor.Black)
         SetColour(ConsoleColor.Red)
-        Dim tempcell As New Cell(cell2.X, cell2.Y + 2)
+        Dim tempcell As New Cell(cell2.X, cell2.Y - 2)
         'check up
         If cell1.Equals(tempcell) Then
             tempcell.Print("^^")
-            Return 1
+            Return "^^"
         End If
         tempcell.Update(cell2.X + 4, cell2.Y)
         If cell1.Equals(tempcell) Then
             tempcell.Print("<<")
-            Return 2
+            Return ">>"
         End If
-        tempcell.Update(cell2.X, cell2.Y - 2)
+        tempcell.Update(cell2.X, cell2.Y + 2)
         If cell1.Equals(tempcell) Then
             tempcell.Print("VV")
-            Return 3
+            Return "VV"
         End If
         tempcell.Update(cell2.X - 4, cell2.Y)
         If cell1.Equals(tempcell) Then
             tempcell.Print(">>")
-            Return 4
+            Return "<<"
         End If
     End Function
     Sub Playmaze(ByVal AvailablePath As List(Of Node), ByVal ShowPath As Boolean)
