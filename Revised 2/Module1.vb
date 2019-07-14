@@ -9,7 +9,7 @@ Module Module1
 
         ' Console.ReadKey()
         SetColour(ConsoleColor.White)
-        Dim MenuOptions() As String = {"Recursive Backtracker Algorithm", "Hunt and Kill Algorithm", "Prim's Algorithm", "Aldous-Broder Algorithm", "Growing Tree Algorithm", "Custom Algorithm", "Binary Tree Algorithm", "Sidewinder Algorithm", "Wilson's Algorithm", "Eller's Algorithm", "Kruskal's Algorithm", "Load the previously generated maze", "Save the previously generated maze", "Load a saved maze", "Exit"}
+        Dim MenuOptions() As String = {"Recursive Backtracker Algorithm", "Hunt and Kill Algorithm", "Prim's Algorithm", "Aldous-Broder Algorithm", "Growing Tree Algorithm", "Custom Algorithm", "Binary Tree Algorithm", "Sidewinder Algorithm", "Wilson's Algorithm", "Eller's Algorithm", "Kruskal's Algorithm", "", "Load the previously generated maze", "Save the previously generated maze", "Load a saved maze", "", "Exit"}
         Menu(MenuOptions)
         Console.ReadKey()
         Dim limits() As Integer = {5, 4, Console.WindowWidth - 2, Console.WindowHeight - 1}
@@ -105,13 +105,13 @@ Module Module1
         Dim UST, RecentCells, availablepositions As New List(Of Cell)
         Dim CurrentCell As New Cell(Limits(0) + 3, Limits(1) + 2)
         Dim PrevCell, WallPrev As New Cell(Limits(0) + 3, Limits(1) + 2)
-        Dim WallCell As Cell
         Dim ReturnablePath As New List(Of Node)
         For y = Limits(1) To Limits(3) Step 2
             For x = Limits(0) + 3 To Limits(2) - 1 Step 4
                 availablepositions.Add(New Cell(x, y))
             Next
         Next
+        Dim CellCount As Integer = availablepositions.Count
         Dim StartingCell As Cell = PickRandomCell(availablepositions, UST, Limits)
         If ShowMazeGeneration Then
             SetBoth(ConsoleColor.White)
@@ -129,6 +129,7 @@ Module Module1
                 RecentCells.Add(cell)
             Next
             TemporaryCell = RecentCells(R.Next(0, RecentCells.Count))
+
             Dim dir As String = GetDirection(CurrentCell, TemporaryCell, directions, ShowMazeGeneration)
             If UST.Contains(TemporaryCell) Then 'Unvisited cell?
                 Direction.Add(TemporaryCell, GetDirection(TemporaryCell, CurrentCell, directions, ShowMazeGeneration))
@@ -140,9 +141,9 @@ Module Module1
                     Dim prev111 As Cell = cur
                     cur = PickNextDir(prev111, directions, ShowMazeGeneration, Delay, ReturnablePath)
                     NewList.Add(cur)
+                    availablepositions.Remove(cur)
                     If UST.Contains(cur) Then Exit While
                 End While
-
                 Dim newcell As Cell = MidPoint(NewList(0), directions.Keys(0))
                 ReturnablePath.Add(New Node(newcell.X, newcell.Y))
                 If ShowMazeGeneration Then newcell.Print("██")
@@ -162,7 +163,6 @@ Module Module1
                 If Not UST.Contains(directions.Keys(0)) Then UST.Add(directions.Keys(0))
                 NewList.Clear()
                 directions.Clear()
-
                 Threading.Thread.Sleep(Delay)
                 If ShowMazeGeneration Then
                     For Each thing In Direction
@@ -174,10 +174,9 @@ Module Module1
                             thing.Key.Print("  ")
                         End If
                     Next
-
                 End If
                 Direction.Clear()
-                If availablepositions.Count = UST.Count Then Exit While
+                If CellCount = UST.Count Then Exit While
                 CurrentCell = PickRandomCell(availablepositions, UST, Limits)
             Else
                 CurrentCell = TemporaryCell
@@ -261,6 +260,7 @@ Module Module1
             End If
             Return ">>"
         End If
+        Return Nothing
     End Function
     Sub Playmaze(ByVal AvailablePath As List(Of Node), ByVal ShowPath As Boolean)
         Dim playerPath As New List(Of Node)
@@ -517,6 +517,7 @@ Module Module1
             Console.SetCursorPosition(0, y + 1)
             MsgColour($"> {arr(y)}", ConsoleColor.Green)
         End While
+        Return Nothing
     End Function
     Sub PreSolving(ByVal limits() As Integer, ByVal availablepath As List(Of Node), ByRef previousmaze As List(Of Node), ByRef input As String, ByRef yposaftermaze As Integer)
         SetBackGroundColour(ConsoleColor.Black)
@@ -547,7 +548,8 @@ Module Module1
     Sub Menu(ByVal arr() As String)
         Dim YPosAfterMaze As Integer
         Dim input As String
-        Dim PreviousMaze, LoadedMaze, AvailablePath As New List(Of Node)
+
+        Dim PreviousMaze, LoadedMaze, unused As New List(Of Node)
         Dim Width, Height, DelayMS, Limits(), SolvingDelay As Integer
         Dim ShowMazeGeneration, ShowPath As Boolean
         Console.Clear()
@@ -567,10 +569,14 @@ Module Module1
                 Case "DownArrow"
                     y += 1
                     If y = arr.Count Then y = 0
+                    If y = 11 Or y = 15 Then y += 1
+
                 Case "UpArrow"
                     y -= 1
                     If y = -1 Then y = arr.Count - 1
+                    If y = 11 Or y = 15 Then y -= 1
                 Case "Enter"
+                    Dim AvailablePath As List(Of Node)
                     If y = 0 Then
                         GetMazeInfo(Width, Height, DelayMS, Limits, ShowMazeGeneration)
                         AvailablePath = RecursiveBacktracker(Limits, DelayMS, ShowMazeGeneration)
@@ -602,7 +608,7 @@ Module Module1
                     ElseIf y = 4 Then
                         GetMazeInfo(Width, Height, DelayMS, Limits, ShowMazeGeneration)
                         Dim ArrOptions() As String = {"Newest (Recursive Backtracker)", "Random (Prim's)", "Newest/Random, 75/25 split", "Newest/Random, 50/50 split", "Newest/Random, 25/75 split", "Oldest", "Middle", "Newest/Oldest, 50/50 split", "Oldest/Random, 50/50 split"}
-                        Dim CellSelectionMethod() As Integer = PreGenMenu(ArrOptions, "What Cell Selection Method: ")
+                        Dim CellSelectionMethod() As Integer = PreGenMenu(ArrOptions, "What Cell selection method would you like to use: ")
                         AvailablePath = GrowingTree(Limits, DelayMS, CellSelectionMethod, ShowMazeGeneration)
                         If AvailablePath IsNot Nothing Then
                             PreSolving(Limits, AvailablePath, PreviousMaze, input, YPosAfterMaze)
@@ -618,7 +624,7 @@ Module Module1
                     ElseIf y = 6 Then
                         GetMazeInfo(Width, Height, DelayMS, Limits, ShowMazeGeneration)
                         Dim ArrOptions() As String = {"Northwest", "Northeast", "Southwest", "Southeast"}
-                        Dim Bias() As Integer = PreGenMenu(ArrOptions, "Bias: ")
+                        Dim Bias() As Integer = PreGenMenu(ArrOptions, "Cell bias: ")
                         AvailablePath = BinaryTree(Limits, DelayMS, ShowMazeGeneration, Bias)
                         If AvailablePath IsNot Nothing Then
                             PreSolving(Limits, AvailablePath, PreviousMaze, input, YPosAfterMaze)
@@ -638,15 +644,18 @@ Module Module1
                             PreSolving(Limits, AvailablePath, PreviousMaze, input, YPosAfterMaze)
                             Solving(input, ShowPath, YPosAfterMaze, SolvingDelay, AvailablePath)
                         End If
-                    ElseIf y = 11 Then
+                    ElseIf y = 12 Then
+                        Dim GreatestY As Integer = 0
                         If PreviousMaze.Count > 1 Then
                             Console.Clear()
                             SetBoth(ConsoleColor.White)
                             For Each node In PreviousMaze
                                 node.Print("██")
+                                If GreatestY < node.Y Then GreatestY = node.Y
                             Next
+                            PrintStartandEnd(PreviousMaze)
                             SetBackGroundColour(ConsoleColor.Black)
-                            YPosAfterMaze = Limits(3)
+                            YPosAfterMaze = GreatestY
                             DisplayAvailablePositions(PreviousMaze.Count)
                             Console.SetCursorPosition(0, YPosAfterMaze + 3)
                             input = SolvingMenu(YPosAfterMaze + 3)
@@ -656,7 +665,7 @@ Module Module1
                             MsgColour("No previous maze available", ConsoleColor.Red)
                             Console.ReadKey()
                         End If
-                    ElseIf y = 12 Then
+                    ElseIf y = 13 Then
                         If PreviousMaze.Count > 1 Then
                             Console.Clear()
                             Dim filename As String
@@ -679,8 +688,9 @@ Module Module1
                             MsgColour("No previous maze available", ConsoleColor.Red)
                             Console.ReadKey()
                         End If
-                    ElseIf y = 13 Then
+                    ElseIf y = 14 Then
                         Dim ValidMaze, XMax, YMax As Integer
+                        Dim GreatestY As Integer = 0
                         ValidMaze = 1
                         XMax = Console.WindowWidth - 6
                         YMax = Console.WindowHeight - 4
@@ -703,6 +713,7 @@ Module Module1
                                         End If
                                     ElseIf c = 1 Then
                                         _y = Int(reader.ReadLine)
+                                        If Int(_y) > GreatestY Then GreatestY = Int(_y)
                                         If _y > YMax Then
                                             ValidMaze = 0
                                             Exit Do
@@ -716,6 +727,7 @@ Module Module1
                                     End If
                                 Loop
                             End Using
+                            If LoadedMaze.Count < 1 Then ValidMaze = 2
                             If ValidMaze = 1 Then
                                 MsgColour($"Finished loading maze positions, total maze positions: {LoadedMaze.Count}", ConsoleColor.Green)
                                 Console.ReadKey()
@@ -723,15 +735,20 @@ Module Module1
                                 For Each node In LoadedMaze
                                     node.Print("██")
                                 Next
-                                YPosAfterMaze = Limits(3)
+                                PrintStartandEnd(LoadedMaze)
+                                YPosAfterMaze = GreatestY
                                 DisplayAvailablePositions(PreviousMaze.Count)
                                 Console.SetCursorPosition(0, YPosAfterMaze + 3)
                                 PreviousMaze = LoadedMaze
                                 input = SolvingMenu(YPosAfterMaze + 3)
                                 Solving(input, ShowPath, YPosAfterMaze, SolvingDelay, PreviousMaze)
-                            Else
+                            ElseIf ValidMaze = 0 Then
                                 Console.Clear()
                                 MsgColour("Maze is too big for the screen, please decrease the font size and try again", ConsoleColor.Red)
+                                Console.ReadKey()
+                            ElseIf ValidMaze = 2 Then
+                                Console.Clear()
+                                MsgColour("Invalid maze", ConsoleColor.Red)
                                 Console.ReadKey()
                             End If
                         Else
@@ -758,6 +775,13 @@ Module Module1
             Console.SetCursorPosition(0, y + 1)
             MsgColour($"> {arr(y)}", ConsoleColor.Green)
         End While
+    End Sub
+    Sub PrintStartandEnd(ByVal mazePositions As List(Of Node))
+        SetColour(ConsoleColor.Green)
+        mazePositions(mazePositions.Count - 2).Print("██")
+        SetColour(ConsoleColor.Red)
+        mazePositions(mazePositions.Count - 1).Print("██")
+        SetColour(ConsoleColor.White)
     End Sub
     Sub OptionNotReady()
         Console.Clear()
