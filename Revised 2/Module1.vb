@@ -7,23 +7,12 @@ Module Module1
     Sub Main()
         Console.CursorVisible = False
 
-        '' Console.ReadKey()
-        SetColour(ConsoleColor.White)
-        Dim MenuOptions() As String = {"Recursive Backtracker Algorithm", "Recursive Backtracker Algorithm (using recursion)", "Hunt and Kill Algorithm", "Prim's Algorithm", "Aldous-Broder Algorithm", "Growing Tree Algorithm", "Custom Algorithm", "Binary Tree Algorithm", "Sidewinder Algorithm", "Wilson's Algorithm", "Eller's Algorithm", "Kruskal's Algorithm", "", "Load the previously generated maze", "Save the previously generated maze", "Load a saved maze", "", "Exit"}
-        Menu(MenuOptions)
-        'Console.ReadKey()
-        Console.ReadKey()
-        Dim r As New Random
-        Dim limits() As Integer = {5, 4, Console.WindowWidth - 4, Console.WindowHeight - 5}
-        'Wilsons(limits, 0, True)
-        Dim CurrentCell As New Cell(limits(0) + 3, limits(1) + 2)
-        Dim prev As New Cell(limits(0) + 3, limits(1) + 2)
 
-        Dim v As New List(Of Cell)
-        Dim path As New List(Of Node)
-        'path = Backtracker(CurrentCell, limits, path, v, prev, r)
-        AddStartAndEnd(path, v, limits, 0)
-        aStar(path, True, False, 0)
+
+        SetColour(ConsoleColor.White)
+        Dim MenuOptions() As String = {"Recursive Backtracker Algorithm (using iteration)", "Recursive Backtracker Algorithm (using recursion)", "Hunt and Kill Algorithm", "Prim's Algorithm", "Aldous-Broder Algorithm", "Growing Tree Algorithm", "Custom Algorithm", "Binary Tree Algorithm", "Sidewinder Algorithm", "Wilson's Algorithm", "Eller's Algorithm", "Kruskal's Algorithm", "", "Load the previously generated maze", "Save the previously generated maze", "Load a saved maze", "", "Exit"}
+        Menu(MenuOptions)
+
     End Sub
     Sub Playmaze(ByVal AvailablePath As List(Of Node), ByVal ShowPath As Boolean)
         Dim playerPath As New List(Of Node)
@@ -128,7 +117,6 @@ Module Module1
         While Q.Count > 0
             If ExitCase() Then Exit While
             Dim u As Node = ExtractMin(Q, dist)
-
             If ShowSolving Then u.Print("██")
             If u.Equals(target) Then
                 Backtrack(prev, target, source, stopwatch)
@@ -155,11 +143,8 @@ Module Module1
         End While
         s.Add(source)
         s.Reverse()
-        Dim mess As String = $"Time Taken to solve: {watch.Elapsed.TotalSeconds} seconds"
-        SetColour(ConsoleColor.Yellow)
-        SetBackGroundColour(ConsoleColor.Black)
-        Console.SetCursorPosition(Console.WindowWidth / 2 - mess.Count / 2, Console.WindowHeight - 1)
-        Console.Write(mess)
+        Dim timetaken As String = $"Time Taken to solve: {watch.Elapsed.TotalSeconds} seconds"
+        PrintMessageMiddle($"Path length: {s.Count - 1}   {timetaken}", Console.WindowHeight - 1, ConsoleColor.Yellow)
         SetBoth(ConsoleColor.Green)
         For Each node In s
             node.Print("██")
@@ -191,7 +176,7 @@ Module Module1
         End If
         Width = GetIntInputArrowKeys($"Width of the Maze: ", Console.WindowWidth - 6, 20, False)
         If Width Mod 2 = 0 Then Width += 1
-        Height = GetIntInputArrowKeys($"Height of the Maze: ", Console.WindowHeight - 6, 10, False)
+        Height = GetIntInputArrowKeys($"Height of the Maze: ", Console.WindowHeight - 7, 10, False)
         If Height Mod 2 = 0 Then Height += 1
         Limits = {5, 3, Width, Height}
         Console.Clear()
@@ -203,7 +188,7 @@ Module Module1
     End Sub
     Function GetIntInputArrowKeys(ByVal message As String, ByVal NumMax As Integer, ByVal NumMin As Integer, ByVal ClearMessage As Boolean)
         Console.Write(message)
-        SetColour(ConsoleColor.Yellow)
+        SetColour(ConsoleColor.Magenta)
         Dim cursorleft, cursortop As Integer
         cursorleft = Console.CursorLeft
         cursortop = Console.CursorTop
@@ -306,14 +291,15 @@ Module Module1
         ElseIf IsNothing(input) Then
         End If
     End Sub
-    Sub Solving(ByVal AvailablePath As List(Of Node), ByVal Limits() As Integer, ByRef PreviousMaze As List(Of Node), ByRef Input As String, ByVal YPosAfterMaze As Integer, ByVal ShowPath As Boolean, ByVal SolvingDelay As Integer)
+    Sub Solving(ByVal AvailablePath As List(Of Node), ByVal Limits() As Integer, ByRef PreviousMaze As List(Of Node), ByRef Input As String, ByVal YPosAfterMaze As Integer, ByVal ShowPath As Boolean, ByVal SolvingDelay As Integer, ByRef Algorithm As String, ByRef SetPreivousAlgorithm As String)
         If AvailablePath IsNot Nothing Then
+            SetPreivousAlgorithm = Algorithm
             PreSolving(Limits, AvailablePath, PreviousMaze, Input, YPosAfterMaze)
             SolvingInput(Input, ShowPath, YPosAfterMaze, SolvingDelay, AvailablePath)
         End If
     End Sub
     Sub Menu(ByVal arr() As String)
-        Dim input As String
+        Dim input, PreviousAlgorithm As String
         Dim PreviousMaze, LoadedMaze As New List(Of Node)
         Dim Width, Height, DelayMS, Limits(), SolvingDelay, YPosAfterMaze, y As Integer
         Dim ShowMazeGeneration, ShowPath As Boolean
@@ -343,7 +329,7 @@ Module Module1
                     If y = 0 Then
                         GetMazeInfo(Width, Height, DelayMS, Limits, ShowMazeGeneration, True, 0)
                         AvailablePath = RecursiveBacktracker(Limits, DelayMS, ShowMazeGeneration)
-                        Solving(AvailablePath, Limits, PreviousMaze, input, YPosAfterMaze, ShowPath, SolvingDelay)
+                        Solving(AvailablePath, Limits, PreviousMaze, input, YPosAfterMaze, ShowPath, SolvingDelay, arr(y), PreviousAlgorithm)
                     ElseIf y = 1 Then
                         Dim r As New Random
                         GetMazeInfo(Width, Height, DelayMS, Limits, ShowMazeGeneration, True, 0)
@@ -361,49 +347,54 @@ Module Module1
                             Next
                         End If
                         AddStartAndEnd(path, v, Limits, 0)
-                        Solving(path, Limits, PreviousMaze, input, YPosAfterMaze, ShowPath, SolvingDelay)
+                        Solving(path, Limits, PreviousMaze, input, YPosAfterMaze, ShowPath, SolvingDelay, arr(y), PreviousAlgorithm)
                         PreviousMaze = path
                     ElseIf y = 2 Then
                         Dim Optimised As Boolean = HorizontalYesNo(0, "Do you want to use the optimised version of hunt and kill: ", False, True, True)
                         GetMazeInfo(Width, Height, DelayMS, Limits, ShowMazeGeneration, False, 1)
                         AvailablePath = HuntAndKill(Limits, DelayMS, ShowMazeGeneration, Optimised)
-                        Solving(AvailablePath, Limits, PreviousMaze, input, YPosAfterMaze, ShowPath, SolvingDelay)
+                        Solving(AvailablePath, Limits, PreviousMaze, input, YPosAfterMaze, ShowPath, SolvingDelay, arr(y), PreviousAlgorithm)
                     ElseIf y = 3 Then
                         GetMazeInfo(Width, Height, DelayMS, Limits, ShowMazeGeneration, True, 0)
                         AvailablePath = Prims(Limits, DelayMS, ShowMazeGeneration)
-                        Solving(AvailablePath, Limits, PreviousMaze, input, YPosAfterMaze, ShowPath, SolvingDelay)
+                        Solving(AvailablePath, Limits, PreviousMaze, input, YPosAfterMaze, ShowPath, SolvingDelay, arr(y), PreviousAlgorithm)
                     ElseIf y = 4 Then
                         GetMazeInfo(Width, Height, DelayMS, Limits, ShowMazeGeneration, True, 0)
                         AvailablePath = AldousBroder(Limits, DelayMS, ShowMazeGeneration)
-                        Solving(AvailablePath, Limits, PreviousMaze, input, YPosAfterMaze, ShowPath, SolvingDelay)
+                        Solving(AvailablePath, Limits, PreviousMaze, input, YPosAfterMaze, ShowPath, SolvingDelay, arr(y), PreviousAlgorithm)
                     ElseIf y = 5 Then
                         GetMazeInfo(Width, Height, DelayMS, Limits, ShowMazeGeneration, True, 0)
                         Dim ArrOptions() As String = {"Newest (Recursive Backtracker)", "Random (Prim's)", "Newest/Random, 75/25 split", "Newest/Random, 50/50 split", "Newest/Random, 25/75 split", "Oldest", "Middle", "Newest/Oldest, 50/50 split", "Oldest/Random, 50/50 split"}
                         Dim CellSelectionMethod() As Integer = PreGenMenu(ArrOptions, "What Cell selection method would you like to use: ")
                         AvailablePath = GrowingTree(Limits, DelayMS, CellSelectionMethod, ShowMazeGeneration)
-                        Solving(AvailablePath, Limits, PreviousMaze, input, YPosAfterMaze, ShowPath, SolvingDelay)
+                        Solving(AvailablePath, Limits, PreviousMaze, input, YPosAfterMaze, ShowPath, SolvingDelay, arr(y), PreviousAlgorithm)
                     ElseIf y = 6 Then
                         GetMazeInfo(Width, Height, DelayMS, Limits, ShowMazeGeneration, True, 0)
                         AvailablePath = Custom(Limits, DelayMS, ShowMazeGeneration)
-                        Solving(AvailablePath, Limits, PreviousMaze, input, YPosAfterMaze, ShowPath, SolvingDelay)
+                        Solving(AvailablePath, Limits, PreviousMaze, input, YPosAfterMaze, ShowPath, SolvingDelay, arr(y), PreviousAlgorithm)
                     ElseIf y = 7 Then
                         GetMazeInfo(Width, Height, DelayMS, Limits, ShowMazeGeneration, True, 0)
                         Dim ArrOptions() As String = {"Northwest", "Northeast", "Southwest", "Southeast"}
                         Dim Bias() As Integer = PreGenMenu(ArrOptions, "Cell bias: ")
                         AvailablePath = BinaryTree(Limits, DelayMS, ShowMazeGeneration, Bias)
-                        Solving(AvailablePath, Limits, PreviousMaze, input, YPosAfterMaze, ShowPath, SolvingDelay)
+                        Solving(AvailablePath, Limits, PreviousMaze, input, YPosAfterMaze, ShowPath, SolvingDelay, arr(y), PreviousAlgorithm)
                     ElseIf y = 8 Then
                         GetMazeInfo(Width, Height, DelayMS, Limits, ShowMazeGeneration, True, 0)
                         AvailablePath = Sidewinder(Limits, DelayMS, ShowMazeGeneration)
-                        Solving(AvailablePath, Limits, PreviousMaze, input, YPosAfterMaze, ShowPath, SolvingDelay)
+                        Solving(AvailablePath, Limits, PreviousMaze, input, YPosAfterMaze, ShowPath, SolvingDelay, arr(y), PreviousAlgorithm)
                     ElseIf y = 9 Then
                         GetMazeInfo(Width, Height, DelayMS, Limits, ShowMazeGeneration, True, 0)
                         AvailablePath = Wilsons(Limits, DelayMS, ShowMazeGeneration)
-                        Solving(AvailablePath, Limits, PreviousMaze, input, YPosAfterMaze, ShowPath, SolvingDelay)
+                        Solving(AvailablePath, Limits, PreviousMaze, input, YPosAfterMaze, ShowPath, SolvingDelay, arr(y), PreviousAlgorithm)
                     ElseIf y = 13 Then
                         Dim GreatestY As Integer = 0
                         If PreviousMaze.Count > 1 Then
                             Console.Clear()
+                            Console.SetCursorPosition(0, 0)
+                            Dim mess As String = "Algorithm used to generate this maze: "
+                            Console.Write(mess)
+                            Console.SetCursorPosition(mess.Length, 0)
+                            MsgColour(PreviousAlgorithm, ConsoleColor.Green)
                             SetBoth(ConsoleColor.White)
                             For Each node In PreviousMaze
                                 node.Print("██")
@@ -434,6 +425,7 @@ Module Module1
                                 End If
                             Loop Until Not System.IO.File.Exists(filename)
                             Using writer As StreamWriter = New StreamWriter(filename, True)
+                                writer.WriteLine($"{PreviousAlgorithm}")
                                 For i = 0 To PreviousMaze.Count - 1
                                     writer.WriteLine(PreviousMaze(i).X)
                                     writer.WriteLine(PreviousMaze(i).Y)
@@ -457,10 +449,16 @@ Module Module1
                         Dim filename As String = Console.ReadLine
                         filename += ".txt"
                         If System.IO.File.Exists(filename) Then
+                            Dim UsedAlgorithm As String
                             Dim c As Integer = 0
+                            Dim e As Boolean = True
                             Console.Clear()
                             Using reader As StreamReader = New StreamReader(filename)
                                 Do Until reader.EndOfStream
+                                    If e = True Then
+                                        UsedAlgorithm = reader.ReadLine
+                                        e = False
+                                    End If
                                     If c = 0 Then
                                         _x = Int(reader.ReadLine)
                                         If _x > XMax Then
@@ -488,6 +486,11 @@ Module Module1
                                 MsgColour($"Finished loading maze positions, total maze positions: {LoadedMaze.Count}", ConsoleColor.Green)
                                 Console.ReadKey()
                                 Console.Clear()
+                                Console.SetCursorPosition(0, 0)
+                                Dim mess As String = "Algorithm used to generate this maze: "
+                                Console.Write(mess)
+                                Console.SetCursorPosition(mess.Length, 0)
+                                MsgColour(UsedAlgorithm, ConsoleColor.Green)
                                 For Each node In LoadedMaze
                                     node.Print("██")
                                 Next
@@ -736,7 +739,7 @@ Module Module1
             path.Add(current)
             current = current.parent
         End While
-        PrintMessageMiddle($"Path length: {path.Count - 1}   {timetaken}", Console.WindowHeight - 1, ConsoleColor.Yellow)
+        PrintMessageMiddle($"Path length: {path.Count}   {timetaken}", Console.WindowHeight - 1, ConsoleColor.Yellow)
         SetBoth(ConsoleColor.Green)
         startnode.Print("██")
         path.Reverse()
