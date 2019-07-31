@@ -679,18 +679,21 @@ Module Module1
         gScore(start) = 0
         fScore(start) = GetDistance(start, goal)
         openSet.Add(start)
+        Dim stopwatch As Stopwatch = Stopwatch.StartNew()
         While openSet.Count > 0
             Dim current As Node = ExtractMin(openSet, fScore)
-
             If current.Equals(goal) Then
-                ReconstructPath(cameFrom, current, goal)
+                If ShowSolveTime Then
+                    ReconstructPath(cameFrom, current, start, $"Time Taken to solve: {stopwatch.Elapsed.TotalSeconds} seconds")
+                Else
+                    ReconstructPath(cameFrom, current, start, $"")
+                End If
                 Exit While
             End If
-
             openSet.Remove(current)
             closedSet.Add(current)
             SetBoth(ConsoleColor.Red)
-            closedSet(closedSet.Count - 1).Print("XX")
+            If ShowPath Then closedSet(closedSet.Count - 1).Print("XX")
             For Each Neighbour As Node In GetNeighbours(current, availablepath)
                 If closedSet.Contains(Neighbour) Then Continue For
                 Dim tentative_gScore = gScore(current) + 1
@@ -703,14 +706,10 @@ Module Module1
                 gScore(Neighbour) = tentative_gScore
                 fScore(Neighbour) = gScore(Neighbour) + GetDistance(start, goal)
             Next
-            'Console.ReadKey()
+            Threading.Thread.Sleep(Delay)
         End While
-        Console.SetCursorPosition(0, 0)
-        Console.Write("SSSSSSSSS")
-
-
     End Sub
-    Sub ReconstructPath(ByVal camefrom As Dictionary(Of Node, Node), ByVal current As Node, ByVal goal As Node)
+    Sub ReconstructPath(ByVal camefrom As Dictionary(Of Node, Node), ByVal current As Node, ByVal goal As Node, ByVal timetaken As String)
         Dim totalPath As New List(Of Node) From {
             current
         }
@@ -718,11 +717,13 @@ Module Module1
             totalPath.Add(current)
             current = camefrom(current)
         End While
+        totalPath.Add(goal)
+        PrintMessageMiddle($"Path length: {totalPath.Count}   {timetaken}", Console.WindowHeight - 1, ConsoleColor.Yellow)
         SetBoth(ConsoleColor.Green)
         For Each node In totalPath
             node.Print("XX")
         Next
-        Console.Read()
+        Console.ReadKey()
     End Sub
     Sub aStar(ByVal availablepath As List(Of Node), ByVal ShowPath As Boolean, ByVal ShowSolveTime As Boolean, ByVal Delay As Integer)
         Dim start As New Node(availablepath(availablepath.Count - 2).X, availablepath(availablepath.Count - 2).Y)
