@@ -111,9 +111,9 @@ Module Module1
         Else
             DelayMS = 0
         End If
-        Width = GetIntInputArrowKeys($"Width of the Maze: ", Console.WindowWidth - 6, 20, False)
+        Width = GetIntInputArrowKeys($"Width of the Maze: ", Console.WindowWidth - 40, 20, False)
         If Width Mod 2 = 0 Then Width += 1
-        Height = GetIntInputArrowKeys($"Height of the Maze: ", Console.WindowHeight - 7, 10, False)
+        Height = GetIntInputArrowKeys($"Height of the Maze: ", Console.WindowHeight - 3, 10, False)
         If Height Mod 2 = 0 Then Height += 1
         Limits = {5, 3, Width, Height}
         Console.Clear()
@@ -240,9 +240,6 @@ Module Module1
             SolvingInput(Input, ShowPath, YPosAfterMaze, SolvingDelay, AvailablePath)
         End If
     End Sub
-
-
-
     Sub Menu(ByVal arr() As String)
         Dim input, PreviousAlgorithm As String
         Dim PreviousMaze, LoadedMaze As New List(Of Node)
@@ -607,63 +604,37 @@ Module Module1
         End If
     End Function
     Sub DFS_Iterative(ByVal availablepath As List(Of Node), ByVal ShowPath As Boolean, ByVal ShowSolveTime As Boolean, ByVal Delay As Integer)
-        'Initialize an empty stack For storage Of nodes, S.
-        'For Each vertex u, define u.visited to be false.
-        'Push the root (first node to be visited) onto S.
-        'While S Is Not Empty
-        '   Pop the first element In S, u.
-        '   If u.visited = False, then
-        '       U.visited = True
-        '       For Each unvisited neighbor w of u
-        '            Push w into S.
-        'End process When all nodes have been visited.
         Dim start_v As New Node(availablepath(availablepath.Count - 2).X, availablepath(availablepath.Count - 2).Y)
         Dim goal As New Node(availablepath(availablepath.Count - 1).X, availablepath(availablepath.Count - 1).Y)
         Dim visited As New Dictionary(Of Node, Boolean)
         Dim stopwatch As Stopwatch = Stopwatch.StartNew()
         Dim li As New List(Of Node)
-
-
-        Dim S As New Stack(Of Node) 'Initialize an empty stack for storage of nodes, S.
-
+        Dim cameFrom As New Dictionary(Of Node, Node)
+        Dim S As New Stack(Of Node)
         For Each u In availablepath
             visited(u) = False
         Next
         S.Push(start_v)
-
+        SetBoth(ConsoleColor.Red)
         While S.Count > 0
             Dim u As Node = S.Pop
-            SetColour(ConsoleColor.Red)
-            u.Print("XX")
-            SetColour(ConsoleColor.Green)
+            If u.Equals(goal) Then Exit While
+            If ShowPath Then u.Print("XX")
             If visited(u) = False Then
                 visited(u) = True
                 For Each w As Node In GetNeighbours(u, availablepath)
                     If visited(w) = False Then
                         S.Push(w)
-                        w.Print("XX")
+                        cameFrom(w) = u
                     End If
                 Next
             End If
         End While
-
-
-
-
-
-        SetColour(ConsoleColor.Green)
-
-        For Each Value In S
-            Value.Print("XX")
-        Next
-
-        'If ShowSolveTime Then
-        '    ReconstructPath(cameFrom, goal, start_v, $"Time Taken to solve: {stopwatch.Elapsed.TotalSeconds} seconds")
-        'Else
-        '    ReconstructPath(cameFrom, goal, start_v, $"")
-        'End If
-
-        Console.ReadKey()
+        If ShowSolveTime Then
+            ReconstructPath(cameFrom, goal, start_v, $"Time Taken to solve: {stopwatch.Elapsed.TotalSeconds} seconds")
+        Else
+            ReconstructPath(cameFrom, goal, start_v, $"")
+        End If
     End Sub
     Sub BFS(ByVal availablepath As List(Of Node), ByVal ShowPath As Boolean, ByVal ShowSolveTime As Boolean, ByVal Delay As Integer)
         Dim start_v As New Node(availablepath(availablepath.Count - 2).X, availablepath(availablepath.Count - 2).Y)
@@ -697,7 +668,6 @@ Module Module1
                 End If
             Next
         End While
-        Console.ReadKey()
     End Sub
     Sub Dijkstras(ByVal availablepath As List(Of Node), ByVal ShowSolving As Boolean, ByVal SolvingDelay As Integer)
         Dim source As New Node(availablepath(availablepath.Count - 2).X, availablepath(availablepath.Count - 2).Y)
@@ -810,8 +780,6 @@ Module Module1
             goal
         }
         SetColour(ConsoleColor.Green)
-
-
         While Not current.Equals(goal)
             totalPath.Add(current)
             current = camefrom(current)
