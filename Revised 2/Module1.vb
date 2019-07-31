@@ -3,9 +3,16 @@ Imports System.IO
 Imports Revised_2
 Module Module1
 
-    'TODO: 
+    'TODO: use new menu when solving a maze that has just been loaded from a text file
     Sub Main()
         Console.CursorVisible = False
+
+
+
+        'Dim temparr() As String = {"A* algorithm", "Dijkstra's algorithm", "Breadth-first search", "Depth-first search", "Play the maze"}
+        ' Dim val As String = SolvingMenu2(temparr, "What would you like to do with the maze", 20, 3)
+
+        'Console.WriteLine(val)
         SetColour(ConsoleColor.White)
         Dim MenuOptions() As String = {"Recursive Backtracker Algorithm (using iteration)", "Recursive Backtracker Algorithm (using recursion)", "Hunt and Kill Algorithm", "Prim's Algorithm", "Aldous-Broder Algorithm", "Growing Tree Algorithm", "Custom Algorithm", "Binary Tree Algorithm", "Sidewinder Algorithm", "Wilson's Algorithm", "Eller's Algorithm", "Kruskal's Algorithm", "", "Load the previously generated maze", "Save the previously generated maze", "Load a saved maze", "", "Exit"}
         Menu(MenuOptions)
@@ -111,9 +118,9 @@ Module Module1
         Else
             DelayMS = 0
         End If
-        Width = GetIntInputArrowKeys($"Width of the Maze: ", Console.WindowWidth - 40, 20, False)
+        Width = GetIntInputArrowKeys($"Width of the Maze: ", Console.WindowWidth - 42, 20, False)
         If Width Mod 2 = 0 Then Width += 1
-        Height = GetIntInputArrowKeys($"Height of the Maze: ", Console.WindowHeight - 3, 10, False)
+        Height = GetIntInputArrowKeys($"Height of the Maze: ", Console.WindowHeight - 5, 10, False)
         If Height Mod 2 = 0 Then Height += 1
         Limits = {5, 3, Width, Height}
         Console.Clear()
@@ -209,28 +216,38 @@ Module Module1
         yposaftermaze = limits(3)
         DisplayAvailablePositions(availablepath.Count)
         Console.SetCursorPosition(0, yposaftermaze + 3)
-        input = SolvingMenu(yposaftermaze + 3)
+        Dim temparr() As String = {"A* algorithm", "Dijkstra's algorithm", "Breadth-first search", "Depth-first search", "Play the maze", "Clear the maze"}
+        input = SolvingMenu2(temparr, "What would you like to do with the maze", limits(2) + 2, 3)
         previousmaze.Clear()
         previousmaze = availablepath
     End Sub
     Sub SolvingInput(ByVal input As String, ByVal showpath As Boolean, ByVal YposAfterMaze As Integer, ByVal solvingdelay As Integer, ByVal availablepath As List(Of Node))
-        If input = "astar" Then
-            showpath = HorizontalYesNo(YposAfterMaze + 3, "Do you want to show the steps in solving the maze: ", True, False, False)
+        If input = "A* algorithm" Then
+            showpath = HorizontalYesNo(YposAfterMaze + 2, "Do you want to show the steps in solving the maze: ", True, False, False)
             If showpath Then solvingdelay = GetIntInputArrowKeys("Delay when solving the maze: ", 100, 0, True)
-            Dim OptimisedAStar As Boolean = HorizontalYesNo(YposAfterMaze + 3, "Do you want to use the optimised version of A*: ", True, False, False)
+            Dim OptimisedAStar As Boolean = HorizontalYesNo(YposAfterMaze + 2, "Do you want to use the optimised version of A*: ", True, False, False)
             If OptimisedAStar Then
                 aStar(availablepath, showpath, True, solvingdelay)
             Else
                 aStarWiki(availablepath, showpath, True, solvingdelay)
             End If
-        ElseIf input = "dijkstras" Then
-            showpath = HorizontalYesNo(YposAfterMaze + 3, "Do you want to show the steps in solving the maze: ", True, False, False)
+        ElseIf input = "Dijkstra's algorithm" Then
+            showpath = HorizontalYesNo(YposAfterMaze + 2, "Do you want to show the steps in solving the maze: ", True, False, False)
+            If showpath Then solvingdelay = GetIntInputArrowKeys("Delay when solving the maze: ", 100, 0, True)
+            Dijkstras(availablepath, showpath, solvingdelay)
+        ElseIf input = "Breadth-first search" Then
+            showpath = HorizontalYesNo(YposAfterMaze + 2, "Do you want to show the steps in solving the maze: ", True, False, False)
+            If showpath Then solvingdelay = GetIntInputArrowKeys("Delay when solving the maze: ", 100, 0, True)
+            BFS(availablepath, showpath, True, solvingdelay)
+        ElseIf input = "Depth-first search" Then
+            showpath = HorizontalYesNo(YposAfterMaze + 2, "Do you want to show the steps in solving the maze: ", True, False, False)
             If showpath Then solvingdelay = GetIntInputArrowKeys("Delay when solving the maze: ", 100, 0, True)
             DFS_Iterative(availablepath, showpath, True, solvingdelay)
-        ElseIf input = "play" Then
-            showpath = HorizontalYesNo(YposAfterMaze + 3, "Do you want to show the steps you have taken in the maze: ", True, False, False)
+        ElseIf input = "Play the maze" Then
+            showpath = HorizontalYesNo(YposAfterMaze + 2, "Do you want to show the steps you have taken in the maze: ", True, False, False)
             Playmaze(availablepath, showpath)
-        ElseIf IsNothing(input) Then
+        ElseIf input = "Clear the maze" Then
+            Console.Clear()
         End If
     End Sub
     Sub Solving(ByVal AvailablePath As List(Of Node), ByVal Limits() As Integer, ByRef PreviousMaze As List(Of Node), ByRef Input As String, ByVal YPosAfterMaze As Integer, ByVal ShowPath As Boolean, ByVal SolvingDelay As Integer, ByRef Algorithm As String, ByRef SetPreivousAlgorithm As String)
@@ -329,7 +346,7 @@ Module Module1
                         AvailablePath = Wilsons(Limits, DelayMS, ShowMazeGeneration)
                         Solving(AvailablePath, Limits, PreviousMaze, input, YPosAfterMaze, ShowPath, SolvingDelay, arr(y), PreviousAlgorithm)
                     ElseIf y = 13 Then
-                        Dim GreatestY As Integer = 0
+                        Dim GreatestX, GreatestY As Integer
                         If PreviousMaze.Count > 1 Then
                             Console.Clear()
                             Console.SetCursorPosition(0, 0)
@@ -340,14 +357,16 @@ Module Module1
                             SetBoth(ConsoleColor.White)
                             For Each node In PreviousMaze
                                 node.Print("██")
+                                If GreatestX < node.X Then GreatestX = node.X
                                 If GreatestY < node.Y Then GreatestY = node.Y
                             Next
                             PrintStartandEnd(PreviousMaze)
                             SetBackGroundColour(ConsoleColor.Black)
-                            YPosAfterMaze = GreatestY
                             DisplayAvailablePositions(PreviousMaze.Count)
+                            YPosAfterMaze = GreatestY - 1
                             Console.SetCursorPosition(0, YPosAfterMaze + 3)
-                            input = SolvingMenu(YPosAfterMaze + 3)
+                            Dim temparr() As String = {"A* algorithm", "Dijkstra's algorithm", "Breadth-first search", "Depth-first search", "Play the maze"}
+                            input = SolvingMenu2(temparr, "What would you like to do with the maze", GreatestX + 3, 3)
                             SolvingInput(input, ShowPath, YPosAfterMaze, SolvingDelay, PreviousMaze)
                         Else
                             Console.Clear()
@@ -594,6 +613,44 @@ Module Module1
         End While
         Return Nothing
     End Function
+    Function SolvingMenu2(ByVal arr() As String, ByVal Message As String, ByVal X As Integer, ByVal Y_ As Integer)
+        Dim temparr() As String = arr
+        Dim CurrentCol As Integer = 0 'Console.CursorTop
+        Dim y As Integer = 0
+        Dim NumOfOptions As Integer = arr.Count
+        Console.SetCursorPosition(X, y + Y_)
+        MsgColour(Message, ConsoleColor.Yellow)
+        Console.SetCursorPosition(X, y + 1 + Y_)
+        MsgColour($"> {arr(0)}", ConsoleColor.Green)
+        For i = 1 To arr.Count - 1
+            Console.SetCursorPosition(X, i + 1 + Y_)
+            Console.Write($" {arr(i)}")
+        Next
+        While 1
+            SetBackGroundColour(ConsoleColor.Black)
+            Dim key = Console.ReadKey
+            Select Case key.Key.ToString
+                Case "DownArrow"
+                    y += 1
+                    If y = arr.Count Then y = 0
+                Case "UpArrow"
+                    y -= 1
+                    If y = -1 Then y = arr.Count - 1
+                Case "Enter"
+                    Return temparr(y)
+            End Select
+            SetColour(ConsoleColor.White)
+            Dim Count As Integer = 1
+            For Each MenuOption In arr
+                Console.SetCursorPosition(X, Count + CurrentCol + Y_)
+                Console.Write($" {MenuOption}  ")
+                Count += 1
+            Next
+            Console.SetCursorPosition(X, y + 1 + Y_)
+            MsgColour($"> {arr(y)}", ConsoleColor.Green)
+        End While
+        Return Nothing
+    End Function
     Function ExitCase()
         If Console.KeyAvailable Then
             Dim key = Console.ReadKey
@@ -620,10 +677,10 @@ Module Module1
             Dim u As Node = S.Pop
             If u.Equals(goal) Then Exit While
             If ShowPath Then u.Print("XX")
-            If visited(u) = False Then
+            If Not visited(u) Then
                 visited(u) = True
                 For Each w As Node In GetNeighbours(u, availablepath)
-                    If visited(w) = False Then
+                    If Not visited(w) Then
                         S.Push(w)
                         cameFrom(w) = u
                     End If
@@ -783,7 +840,6 @@ Module Module1
         While Not current.Equals(goal)
             totalPath.Add(current)
             current = camefrom(current)
-            current.Print("DD")
         End While
         totalPath.Add(goal)
         PrintMessageMiddle($"Path length: {totalPath.Count}   {timetaken}", Console.WindowHeight - 1, ConsoleColor.Yellow)
@@ -1302,7 +1358,7 @@ Module Module1
         Dim stopwatch As Stopwatch = Stopwatch.StartNew()
         While True
             If ExitCase() Then Return Nothing
-            For Each cell As Cell In Neighbour(CurrentCell, VisitedList, Limits, true)
+            For Each cell As Cell In Neighbour(CurrentCell, VisitedList, Limits, True)
                 If Not FrontierSet.Contains(cell) Then FrontierSet.Add(cell)
                 If ShowMazeGeneration Then
                     SetBoth(ConsoleColor.Yellow)
