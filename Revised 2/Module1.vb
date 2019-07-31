@@ -226,7 +226,7 @@ Module Module1
         ElseIf input = "dijkstras" Then
             showpath = HorizontalYesNo(YposAfterMaze + 3, "Do you want to show the steps in solving the maze: ", True, False, False)
             If showpath Then solvingdelay = GetIntInputArrowKeys("Delay when solving the maze: ", 100, 0, True)
-            Dijkstras(availablepath, showpath, solvingdelay)
+            DFS_Iterative(availablepath, showpath, True, solvingdelay)
         ElseIf input = "play" Then
             showpath = HorizontalYesNo(YposAfterMaze + 3, "Do you want to show the steps you have taken in the maze: ", True, False, False)
             Playmaze(availablepath, showpath)
@@ -606,6 +606,99 @@ Module Module1
             End Select
         End If
     End Function
+    Sub DFS_Iterative(ByVal availablepath As List(Of Node), ByVal ShowPath As Boolean, ByVal ShowSolveTime As Boolean, ByVal Delay As Integer)
+        'Initialize an empty stack For storage Of nodes, S.
+        'For Each vertex u, define u.visited to be false.
+        'Push the root (first node to be visited) onto S.
+        'While S Is Not Empty
+        '   Pop the first element In S, u.
+        '   If u.visited = False, then
+        '       U.visited = True
+        '       For Each unvisited neighbor w of u
+        '            Push w into S.
+        'End process When all nodes have been visited.
+        Dim start_v As New Node(availablepath(availablepath.Count - 2).X, availablepath(availablepath.Count - 2).Y)
+        Dim goal As New Node(availablepath(availablepath.Count - 1).X, availablepath(availablepath.Count - 1).Y)
+        Dim visited As New Dictionary(Of Node, Boolean)
+        Dim stopwatch As Stopwatch = Stopwatch.StartNew()
+        Dim li As New List(Of Node)
+
+
+        Dim S As New Stack(Of Node) 'Initialize an empty stack for storage of nodes, S.
+
+        For Each u In availablepath
+            visited(u) = False
+        Next
+        S.Push(start_v)
+
+        While S.Count > 0
+            Dim u As Node = S.Pop
+            SetColour(ConsoleColor.Red)
+            u.Print("XX")
+            SetColour(ConsoleColor.Green)
+            If visited(u) = False Then
+                visited(u) = True
+                For Each w As Node In GetNeighbours(u, availablepath)
+                    If visited(w) = False Then
+                        S.Push(w)
+                        w.Print("XX")
+                    End If
+                Next
+            End If
+        End While
+
+
+
+
+
+        SetColour(ConsoleColor.Green)
+
+        For Each Value In S
+            Value.Print("XX")
+        Next
+
+        'If ShowSolveTime Then
+        '    ReconstructPath(cameFrom, goal, start_v, $"Time Taken to solve: {stopwatch.Elapsed.TotalSeconds} seconds")
+        'Else
+        '    ReconstructPath(cameFrom, goal, start_v, $"")
+        'End If
+
+        Console.ReadKey()
+    End Sub
+    Sub BFS(ByVal availablepath As List(Of Node), ByVal ShowPath As Boolean, ByVal ShowSolveTime As Boolean, ByVal Delay As Integer)
+        Dim start_v As New Node(availablepath(availablepath.Count - 2).X, availablepath(availablepath.Count - 2).Y)
+        Dim goal As New Node(availablepath(availablepath.Count - 1).X, availablepath(availablepath.Count - 1).Y)
+        Dim Discovered As New Dictionary(Of Node, Boolean)
+        Dim Q As New Queue(Of Node)
+        Dim cameFrom As New Dictionary(Of Node, Node)
+        For Each node In availablepath
+            Discovered(node) = False
+        Next
+        Discovered(start_v) = True
+        Q.Enqueue(start_v)
+        Dim stopwatch As Stopwatch = Stopwatch.StartNew()
+        While Q.Count > 0
+            Dim v As Node = Q.Dequeue
+            If v.Equals(goal) Then
+                If ShowSolveTime Then
+                    ReconstructPath(cameFrom, v, start_v, $"Time Taken to solve: {stopwatch.Elapsed.TotalSeconds} seconds")
+                Else
+                    ReconstructPath(cameFrom, v, start_v, $"")
+                End If
+                Exit While
+            End If
+            SetBoth(ConsoleColor.Red)
+            For Each w As Node In GetNeighbours(v, availablepath)
+                If Not Discovered(w) Then
+                    Discovered(w) = True
+                    Q.Enqueue(w)
+                    If ShowPath Then w.Print("XX")
+                    cameFrom(w) = v
+                End If
+            Next
+        End While
+        Console.ReadKey()
+    End Sub
     Sub Dijkstras(ByVal availablepath As List(Of Node), ByVal ShowSolving As Boolean, ByVal SolvingDelay As Integer)
         Dim source As New Node(availablepath(availablepath.Count - 2).X, availablepath(availablepath.Count - 2).Y)
         Dim target As New Node(availablepath(availablepath.Count - 1).X, availablepath(availablepath.Count - 1).Y)
@@ -713,11 +806,16 @@ Module Module1
     End Sub
     Sub ReconstructPath(ByVal camefrom As Dictionary(Of Node, Node), ByVal current As Node, ByVal goal As Node, ByVal timetaken As String)
         Dim totalPath As New List(Of Node) From {
-            current
+            current,
+            goal
         }
+        SetColour(ConsoleColor.Green)
+
+
         While Not current.Equals(goal)
             totalPath.Add(current)
             current = camefrom(current)
+            current.Print("DD")
         End While
         totalPath.Add(goal)
         PrintMessageMiddle($"Path length: {totalPath.Count}   {timetaken}", Console.WindowHeight - 1, ConsoleColor.Yellow)
