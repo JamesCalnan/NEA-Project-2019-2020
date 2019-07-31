@@ -118,7 +118,7 @@ Module Module1
         Else
             DelayMS = 0
         End If
-        Width = GetIntInputArrowKeys($"Width of the Maze: ", Console.WindowWidth - 42, 20, False)
+        Width = GetIntInputArrowKeys($"Width of the Maze: ", Console.WindowWidth - 54, 20, False)
         If Width Mod 2 = 0 Then Width += 1
         Height = GetIntInputArrowKeys($"Height of the Maze: ", Console.WindowHeight - 5, 10, False)
         If Height Mod 2 = 0 Then Height += 1
