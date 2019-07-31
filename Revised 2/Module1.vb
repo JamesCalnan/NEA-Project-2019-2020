@@ -6,7 +6,7 @@ Module Module1
     'TODO: 
     Sub Main()
         Console.CursorVisible = False
-
+        Console.ReadKey()
 
 
         SetColour(ConsoleColor.White)
@@ -98,67 +98,7 @@ Module Module1
             If Not playerPath.Contains(currentPos) Then playerPath.Add(currentPos)
         End If
     End Sub
-    Sub Dijkstras(ByVal availablepath As List(Of Node), ByVal ShowSolving As Boolean, ByVal SolvingDelay As Integer)
-        Dim source As New Node(availablepath(availablepath.Count - 2).X, availablepath(availablepath.Count - 2).Y)
-        Dim target As New Node(availablepath(availablepath.Count - 1).X, availablepath(availablepath.Count - 1).Y)
-        SetBackGroundColour(ConsoleColor.Black)
-        Dim dist As New Dictionary(Of Node, Integer)
-        Dim prev As New Dictionary(Of Node, Node)
-        Dim Q As New List(Of Node)
-        Dim INFINITY As Integer = Int32.MaxValue
-        For Each v In availablepath
-            dist(v) = INFINITY
-            prev(v) = Nothing
-            Q.Add(v)
-        Next
-        dist(source) = 0
-        Dim stopwatch As Stopwatch = Stopwatch.StartNew()
-        SetBoth(ConsoleColor.Red)
-        While Q.Count > 0
-            If ExitCase() Then Exit While
-            Dim u As Node = ExtractMin(Q, dist)
-            If ShowSolving Then u.Print("██")
-            If u.Equals(target) Then
-                Backtrack(prev, target, source, stopwatch)
-                Console.ReadKey()
-                Exit While
-            End If
-            Q.Remove(u)
-            For Each v As Node In GetNeighbours(u, availablepath)
-                Dim alt As Integer = dist(u) + 1
-                If alt < dist(v) Then
-                    dist(v) = alt
-                    prev(v) = u
-                End If
-            Next
-            Threading.Thread.Sleep(SolvingDelay)
-        End While
-    End Sub
-    Sub Backtrack(ByVal prev As Dictionary(Of Node, Node), ByVal target As Node, ByVal source As Node, ByVal watch As Stopwatch)
-        Dim s As New List(Of Node)
-        Dim u As Node = target
-        While prev(u) IsNot Nothing
-            s.Add(u)
-            u = prev(u)
-        End While
-        s.Add(source)
-        s.Reverse()
-        Dim timetaken As String = $"Time Taken to solve: {watch.Elapsed.TotalSeconds} seconds"
-        PrintMessageMiddle($"Path length: {s.Count - 1}   {timetaken}", Console.WindowHeight - 1, ConsoleColor.Yellow)
-        SetBoth(ConsoleColor.Green)
-        For Each node In s
-            node.Print("██")
-        Next
-    End Sub
-    Function ExtractMin(ByVal list As List(Of Node), ByVal dist As Dictionary(Of Node, Integer))
-        Dim returnnode As Node = list(0)
-        For Each node In list
-            If dist(node) < dist(returnnode) Then
-                returnnode = node
-            End If
-        Next
-        Return returnnode
-    End Function
+
     Sub SetBackGroundColour(ByVal colour As ConsoleColor)
         Console.BackgroundColor = colour
     End Sub
@@ -280,7 +220,7 @@ Module Module1
         If input = "astar" Then
             showpath = HorizontalYesNo(YposAfterMaze + 3, "Do you want to show the steps in solving the maze: ", True, False, False)
             If showpath Then solvingdelay = GetIntInputArrowKeys("Delay when solving the maze: ", 100, 0, True)
-            aStar(availablepath, showpath, True, solvingdelay)
+            aStarWiki(availablepath, showpath, True, solvingdelay)
         ElseIf input = "dijkstras" Then
             showpath = HorizontalYesNo(YposAfterMaze + 3, "Do you want to show the steps in solving the maze: ", True, False, False)
             If showpath Then solvingdelay = GetIntInputArrowKeys("Delay when solving the maze: ", 100, 0, True)
@@ -298,6 +238,9 @@ Module Module1
             SolvingInput(Input, ShowPath, YPosAfterMaze, SolvingDelay, AvailablePath)
         End If
     End Sub
+
+
+
     Sub Menu(ByVal arr() As String)
         Dim input, PreviousAlgorithm As String
         Dim PreviousMaze, LoadedMaze As New List(Of Node)
@@ -661,18 +604,132 @@ Module Module1
             End Select
         End If
     End Function
+    Sub Dijkstras(ByVal availablepath As List(Of Node), ByVal ShowSolving As Boolean, ByVal SolvingDelay As Integer)
+        Dim source As New Node(availablepath(availablepath.Count - 2).X, availablepath(availablepath.Count - 2).Y)
+        Dim target As New Node(availablepath(availablepath.Count - 1).X, availablepath(availablepath.Count - 1).Y)
+        SetBackGroundColour(ConsoleColor.Black)
+        Dim dist As New Dictionary(Of Node, Integer)
+        Dim prev As New Dictionary(Of Node, Node)
+        Dim Q As New List(Of Node)
+        Dim INFINITY As Integer = Int32.MaxValue
+        For Each v In availablepath
+            dist(v) = INFINITY
+            prev(v) = Nothing
+            Q.Add(v)
+        Next
+        dist(source) = 0
+        Dim stopwatch As Stopwatch = Stopwatch.StartNew()
+        SetBoth(ConsoleColor.Red)
+        While Q.Count > 0
+            If ExitCase() Then Exit While
+            Dim u As Node = ExtractMin(Q, dist)
+            If ShowSolving Then u.Print("██")
+            If u.Equals(target) Then
+                Backtrack(prev, target, source, stopwatch)
+                Console.ReadKey()
+                Exit While
+            End If
+            Q.Remove(u)
+            For Each v As Node In GetNeighbours(u, availablepath)
+                Dim alt As Integer = dist(u) + 1
+                If alt < dist(v) Then
+                    dist(v) = alt
+                    prev(v) = u
+                End If
+            Next
+            Threading.Thread.Sleep(SolvingDelay)
+        End While
+    End Sub
+    Sub Backtrack(ByVal prev As Dictionary(Of Node, Node), ByVal target As Node, ByVal source As Node, ByVal watch As Stopwatch)
+        Dim s As New List(Of Node)
+        Dim u As Node = target
+        While prev(u) IsNot Nothing
+            s.Add(u)
+            u = prev(u)
+        End While
+        s.Add(source)
+        s.Reverse()
+        Dim timetaken As String = $"Time Taken to solve: {watch.Elapsed.TotalSeconds} seconds"
+        PrintMessageMiddle($"Path length: {s.Count - 1}   {timetaken}", Console.WindowHeight - 1, ConsoleColor.Yellow)
+        SetBoth(ConsoleColor.Green)
+        For Each node In s
+            node.Print("██")
+        Next
+    End Sub
+    Function ExtractMin(ByVal list As List(Of Node), ByVal dist As Dictionary(Of Node, Integer))
+        Dim returnnode As Node = list(0)
+        For Each node In list
+            If dist(node) < dist(returnnode) Then
+                returnnode = node
+            End If
+        Next
+        Return returnnode
+    End Function
+    Sub aStarWiki(ByVal availablepath As List(Of Node), ByVal ShowPath As Boolean, ByVal ShowSolveTime As Boolean, ByVal Delay As Integer)
+        Dim openSet, closedSet As New List(Of Node)
+        Dim start As New Node(availablepath(availablepath.Count - 2).X, availablepath(availablepath.Count - 2).Y)
+        Dim goal As New Node(availablepath(availablepath.Count - 1).X, availablepath(availablepath.Count - 1).Y)
+        Dim gScore, fScore As New Dictionary(Of Node, Integer)
+        Dim cameFrom As New Dictionary(Of Node, Node)
+        Dim INFINITY As Integer = Int32.MaxValue
+        For Each node In availablepath
+            gScore(node) = INFINITY
+            fScore(node) = INFINITY
+        Next
+        gScore(start) = 0
+        fScore(start) = GetDistance(start, goal)
+        openSet.Add(start)
+        While openSet.Count > 0
+            Dim current As Node = ExtractMin(openSet, fScore)
+
+            If current.Equals(goal) Then
+                ReconstructPath(cameFrom, current, goal)
+                Exit While
+            End If
+
+            openSet.Remove(current)
+            closedSet.Add(current)
+            SetBoth(ConsoleColor.Red)
+            closedSet(closedSet.Count - 1).Print("XX")
+            For Each Neighbour As Node In GetNeighbours(current, availablepath)
+                If closedSet.Contains(Neighbour) Then Continue For
+                Dim tentative_gScore = gScore(current) + 1
+                If Not openSet.Contains(Neighbour) Then
+                    openSet.Add(Neighbour)
+                ElseIf tentative_gScore >= gScore(Neighbour) Then
+                    Continue For
+                End If
+                cameFrom(Neighbour) = current
+                gScore(Neighbour) = tentative_gScore
+                fScore(Neighbour) = gScore(Neighbour) + GetDistance(start, goal)
+            Next
+            'Console.ReadKey()
+        End While
+        Console.SetCursorPosition(0, 0)
+        Console.Write("SSSSSSSSS")
+
+
+    End Sub
+    Sub ReconstructPath(ByVal camefrom As Dictionary(Of Node, Node), ByVal current As Node, ByVal goal As Node)
+        Dim totalPath As New List(Of Node) From {
+            current
+        }
+        While Not current.Equals(goal)
+            totalPath.Add(current)
+            current = camefrom(current)
+        End While
+        SetBoth(ConsoleColor.Green)
+        For Each node In totalPath
+            node.Print("XX")
+        Next
+        Console.Read()
+    End Sub
     Sub aStar(ByVal availablepath As List(Of Node), ByVal ShowPath As Boolean, ByVal ShowSolveTime As Boolean, ByVal Delay As Integer)
         Dim start As New Node(availablepath(availablepath.Count - 2).X, availablepath(availablepath.Count - 2).Y)
         Dim target As New Node(availablepath(availablepath.Count - 1).X, availablepath(availablepath.Count - 1).Y)
         Dim current As Node = start
         Dim openSet, closedSet As New HashSet(Of Node)
-        Dim prev As HashSet(Of Node)
         SetBoth(ConsoleColor.Red)
-        target.Print("██")
-        SetBoth(ConsoleColor.Green)
-        start.Print("██")
-        SetBoth(ConsoleColor.Red)
-
         openSet.Add(current)
         Dim stopwatch As Stopwatch = Stopwatch.StartNew()
         While openSet.Count > 0
@@ -691,10 +748,10 @@ Module Module1
             End If
             For Each Neighbour As Node In GetNeighbours(current, availablepath)
                 If closedSet.Contains(Neighbour) Then Continue For
-                Dim tentative_gScore As Single = current.gCost + GetDistance(current, Neighbour)
+                Dim tentative_gScore As Single = current.gCost + 1 'GetDistance(current, Neighbour)
                 If tentative_gScore < Neighbour.gCost Or Not openSet.Contains(Neighbour) Then
                     Neighbour.gCost = tentative_gScore
-                    Neighbour.hCost = GetDistance(Neighbour, target)
+                    Neighbour.hCost = 1 'GetDistance(current, Neighbour)
                     Neighbour.parent = current
                     openSet.Add(Neighbour)
                 End If
@@ -1044,7 +1101,7 @@ Module Module1
         While True
             If ExitCase() Then Return Nothing
 
-            For Each cell As Cell In NeighbourPrims(CurrentCell, VisitedList, FrontierSet, Limits)
+            For Each cell As Cell In Neighbour(CurrentCell, VisitedList, Limits, True)
                 If Not FrontierSet.Contains(cell) Then FrontierSet.Add(cell)
                 RecentFrontierSet.Add(cell)
                 If ShowMazeGeneration Then
@@ -1176,7 +1233,7 @@ Module Module1
         Dim stopwatch As Stopwatch = Stopwatch.StartNew()
         While True
             If ExitCase() Then Return Nothing
-            For Each cell As Cell In NeighbourPrims(CurrentCell, VisitedList, FrontierSet, Limits)
+            For Each cell As Cell In Neighbour(CurrentCell, VisitedList, Limits, true)
                 If Not FrontierSet.Contains(cell) Then FrontierSet.Add(cell)
                 If ShowMazeGeneration Then
                     SetBoth(ConsoleColor.Yellow)
@@ -1585,10 +1642,9 @@ Module Module1
         SetBoth(ConsoleColor.Red)
         ReturnablePath(ReturnablePath.Count - 1).Print("██")
         Dim testnode As New Node(Limits(2) + 2, Limits(3))
-        While 1
+        Do
             testnode.update(testnode.X - 1, testnode.Y)
-            If ReturnablePath.Contains(testnode) Then Exit While
-        End While
+        Loop Until ReturnablePath.Contains(testnode)
         ReturnablePath.Add(New Node(testnode.X, testnode.Y + 1))
         SetBoth(ConsoleColor.Green)
         ReturnablePath(ReturnablePath.Count - 1).Print("██")
@@ -1611,16 +1667,16 @@ Module Module1
         Dim ReturnCell As Cell
         Dim Neighbours As New List(Of Cell)
         If adjancencylist(0) = 1 Then
-            Neighbours.Add(New Cell(cell.X, cell.Y - 1 * 2))
+            Neighbours.Add(New Cell(cell.X, cell.Y - 2))
         End If
         If adjancencylist(1) = 1 Then
-            Neighbours.Add(New Cell(cell.X + 1 * 4, cell.Y))
+            Neighbours.Add(New Cell(cell.X + 4, cell.Y))
         End If
         If adjancencylist(2) = 1 Then
-            Neighbours.Add(New Cell(cell.X, cell.Y + 1 * 2))
+            Neighbours.Add(New Cell(cell.X, cell.Y + 2))
         End If
         If adjancencylist(3) = 1 Then
-            Neighbours.Add(New Cell(cell.X - 1 * 4, cell.Y))
+            Neighbours.Add(New Cell(cell.X - 4, cell.Y))
         End If
         Dim R As New Random
         If Neighbours.Count > 0 Then
@@ -1635,20 +1691,6 @@ Module Module1
         Dim newpoint As New Cell(((cell1.X + cell2.X) / 2), ((cell1.Y + cell2.Y) / 2))
         Return newpoint
     End Function
-    Function NeighbourPrims(ByVal current As Cell, ByVal visited As List(Of Cell), ByVal frontier As List(Of Cell), ByVal Limits() As Integer)
-        Dim neighbours As New List(Of Cell)
-        Dim newPoint As New Cell(current.X - 4, current.Y)
-        If newPoint.WithinLimits(Limits) Then If Not visited.Contains(newPoint) And Not frontier.Contains(newPoint) Then neighbours.Add(New Cell(newPoint.X, newPoint.Y))
-        newPoint.Update(current.X, current.Y - 2)
-        If newPoint.WithinLimits(Limits) Then If Not visited.Contains(newPoint) And Not frontier.Contains(newPoint) Then neighbours.Add(New Cell(newPoint.X, newPoint.Y))
-        newPoint.Update(current.X, current.Y + 2)
-        If newPoint.WithinLimits(Limits) Then If Not visited.Contains(newPoint) And Not frontier.Contains(newPoint) Then neighbours.Add(New Cell(newPoint.X, newPoint.Y))
-        newPoint.Update(current.X + 4, current.Y)
-        If newPoint.WithinLimits(Limits) Then If Not visited.Contains(newPoint) And Not frontier.Contains(newPoint) Then neighbours.Add(New Cell(newPoint.X, newPoint.Y))
-        Return neighbours
-    End Function
-
-
     Function RanNeighbour(ByVal current As Cell, ByVal Limits() As Integer)
         Dim neighbours As New List(Of Cell)
         Dim newPoint As New Cell(current.X - 4, current.Y)
@@ -1678,7 +1720,7 @@ Module Module1
         End If
         Return False
     End Function
-    Function CheckAndAdd(ByRef current As Node, ByRef availablepath As List(Of Node))
+    Function GetNeighbours(ByRef current As Node, ByRef availablepath As List(Of Node))
         Dim neighbours As New List(Of Node)
         Dim newnode As New Node(current.X, current.Y - 1)
         If availablepath.Contains(newnode) Then neighbours.Add(New Node(newnode.X, newnode.Y))
@@ -1689,9 +1731,6 @@ Module Module1
         newnode.update(current.X - 2, current.Y)
         If availablepath.Contains(newnode) Then neighbours.Add(New Node(newnode.X, newnode.Y))
         Return neighbours
-    End Function
-    Function GetNeighbours(ByVal current As Node, ByRef availablepath As List(Of Node))
-        Return CheckAndAdd(current, availablepath)
     End Function
 End Module
 
@@ -1706,14 +1745,11 @@ Class Cell
         Y = _y
     End Sub
     Function WithinLimits(ByVal limits() As Integer)
-        If Me.X >= limits(0) And Me.X <= limits(2) And Me.Y >= limits(1) And Me.Y <= limits(3) Then
-            Return True
-        End If
+        If Me.X >= limits(0) And Me.X <= limits(2) And Me.Y >= limits(1) And Me.Y <= limits(3) Then Return True
         Return False
     End Function
     Public Function Pop(ByVal list As List(Of Cell))
-        Dim val As Cell
-        val = list(list.Count - 1)
+        Dim val As Cell = list(list.Count - 1)
         list.RemoveAt(list.Count - 1)
         Return val
     End Function
