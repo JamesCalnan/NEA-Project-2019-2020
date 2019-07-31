@@ -6,9 +6,6 @@ Module Module1
     'TODO: 
     Sub Main()
         Console.CursorVisible = False
-        Console.ReadKey()
-
-
         SetColour(ConsoleColor.White)
         Dim MenuOptions() As String = {"Recursive Backtracker Algorithm (using iteration)", "Recursive Backtracker Algorithm (using recursion)", "Hunt and Kill Algorithm", "Prim's Algorithm", "Aldous-Broder Algorithm", "Growing Tree Algorithm", "Custom Algorithm", "Binary Tree Algorithm", "Sidewinder Algorithm", "Wilson's Algorithm", "Eller's Algorithm", "Kruskal's Algorithm", "", "Load the previously generated maze", "Save the previously generated maze", "Load a saved maze", "", "Exit"}
         Menu(MenuOptions)
@@ -220,7 +217,12 @@ Module Module1
         If input = "astar" Then
             showpath = HorizontalYesNo(YposAfterMaze + 3, "Do you want to show the steps in solving the maze: ", True, False, False)
             If showpath Then solvingdelay = GetIntInputArrowKeys("Delay when solving the maze: ", 100, 0, True)
-            aStarWiki(availablepath, showpath, True, solvingdelay)
+            Dim OptimisedAStar As Boolean = HorizontalYesNo(YposAfterMaze + 3, "Do you want to use the optimised version of A*: ", True, False, False)
+            If OptimisedAStar Then
+                aStar(availablepath, showpath, True, solvingdelay)
+            Else
+                aStarWiki(availablepath, showpath, True, solvingdelay)
+            End If
         ElseIf input = "dijkstras" Then
             showpath = HorizontalYesNo(YposAfterMaze + 3, "Do you want to show the steps in solving the maze: ", True, False, False)
             If showpath Then solvingdelay = GetIntInputArrowKeys("Delay when solving the maze: ", 100, 0, True)
