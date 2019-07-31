@@ -216,13 +216,13 @@ Module Module1
         yposaftermaze = limits(3)
         DisplayAvailablePositions(availablepath.Count)
         Console.SetCursorPosition(0, yposaftermaze + 3)
-        Dim temparr() As String = {"A* algorithm", "Dijkstra's algorithm", "Breadth-first search", "Depth-first search", "Play the maze", "Clear the maze"}
+        Dim temparr() As String = {"Solve using the A* algorithm", "Solve using Dijkstra's algorithm", "Solve using Breadth-first search", "Solve using Depth-first search (using iteration)", "Solve using Depth-first search (using recursion)", "Play the maze", "Clear the maze and return to the menu"}
         input = SolvingMenu2(temparr, "What would you like to do with the maze", limits(2) + 2, 3)
         previousmaze.Clear()
         previousmaze = availablepath
     End Sub
     Sub SolvingInput(ByVal input As String, ByVal showpath As Boolean, ByVal YposAfterMaze As Integer, ByVal solvingdelay As Integer, ByVal availablepath As List(Of Node))
-        If input = "A* algorithm" Then
+        If input = "Solve using the A* algorithm" Then
             showpath = HorizontalYesNo(YposAfterMaze + 2, "Do you want to show the steps in solving the maze: ", True, False, False)
             If showpath Then solvingdelay = GetIntInputArrowKeys("Delay when solving the maze: ", 100, 0, True)
             Dim OptimisedAStar As Boolean = HorizontalYesNo(YposAfterMaze + 2, "Do you want to use the optimised version of A*: ", True, False, False)
@@ -231,22 +231,36 @@ Module Module1
             Else
                 aStarWiki(availablepath, showpath, True, solvingdelay)
             End If
-        ElseIf input = "Dijkstra's algorithm" Then
+        ElseIf input = "Solve using Dijkstra's algorithm" Then
             showpath = HorizontalYesNo(YposAfterMaze + 2, "Do you want to show the steps in solving the maze: ", True, False, False)
             If showpath Then solvingdelay = GetIntInputArrowKeys("Delay when solving the maze: ", 100, 0, True)
             Dijkstras(availablepath, showpath, solvingdelay)
-        ElseIf input = "Breadth-first search" Then
+        ElseIf input = "Solve using Breadth-first search" Then
             showpath = HorizontalYesNo(YposAfterMaze + 2, "Do you want to show the steps in solving the maze: ", True, False, False)
             If showpath Then solvingdelay = GetIntInputArrowKeys("Delay when solving the maze: ", 100, 0, True)
             BFS(availablepath, showpath, True, solvingdelay)
-        ElseIf input = "Depth-first search" Then
+        ElseIf input = "Solve using Depth-first search (using iteration)" Then
             showpath = HorizontalYesNo(YposAfterMaze + 2, "Do you want to show the steps in solving the maze: ", True, False, False)
             If showpath Then solvingdelay = GetIntInputArrowKeys("Delay when solving the maze: ", 100, 0, True)
             DFS_Iterative(availablepath, showpath, True, solvingdelay)
+        ElseIf input = "Solve using Depth-first search (using recursion)" Then
+            showpath = HorizontalYesNo(YposAfterMaze + 2, "Do you want to show the steps in solving the maze: ", True, False, False)
+            If showpath Then solvingdelay = GetIntInputArrowKeys("Delay when solving the maze: ", 100, 0, True)
+            Dim start_v As New Node(availablepath(availablepath.Count - 2).X, availablepath(availablepath.Count - 2).Y)
+            Dim goal As New Node(availablepath(availablepath.Count - 1).X, availablepath(availablepath.Count - 1).Y)
+            Dim discovered As New Dictionary(Of Node, Boolean)
+            For Each node In availablepath
+                discovered(node) = False
+            Next
+            Dim cameFrom As New Dictionary(Of Node, Node)
+            Dim timer As Stopwatch = Stopwatch.StartNew
+            SetBoth(ConsoleColor.Red)
+            DFS(availablepath, start_v, discovered, cameFrom, goal, showpath, solvingdelay, False)
+            ReconstructPath(cameFrom, goal, start_v, $"Time Taken to solve: {timer.Elapsed.TotalSeconds} seconds")
         ElseIf input = "Play the maze" Then
             showpath = HorizontalYesNo(YposAfterMaze + 2, "Do you want to show the steps you have taken in the maze: ", True, False, False)
             Playmaze(availablepath, showpath)
-        ElseIf input = "Clear the maze" Then
+        ElseIf input = "Clear the maze and return to the menu" Then
             Console.Clear()
         End If
     End Sub
@@ -365,7 +379,7 @@ Module Module1
                             DisplayAvailablePositions(PreviousMaze.Count)
                             YPosAfterMaze = GreatestY - 1
                             Console.SetCursorPosition(0, YPosAfterMaze + 3)
-                            Dim temparr() As String = {"A* algorithm", "Dijkstra's algorithm", "Breadth-first search", "Depth-first search", "Play the maze"}
+                            Dim temparr() As String = {"Solve using the A* algorithm", "Solve using Dijkstra's algorithm", "Solve using Breadth-first search", "Solve using Depth-first search (using iteration)", "Solve using Depth-first search (using recursion)", "Play the maze", "Clear the maze and return to the menu"}
                             input = SolvingMenu2(temparr, "What would you like to do with the maze", GreatestX + 3, 3)
                             SolvingInput(input, ShowPath, YPosAfterMaze, SolvingDelay, PreviousMaze)
                         Else
@@ -400,6 +414,7 @@ Module Module1
                     ElseIf y = 15 Then
                         Dim ValidMaze, XMax, YMax As Integer
                         Dim GreatestY As Integer = 0
+                        Dim GreatestX As Integer = 0
                         ValidMaze = 1
                         XMax = Console.WindowWidth - 6
                         YMax = Console.WindowHeight - 4
@@ -422,6 +437,7 @@ Module Module1
                                     End If
                                     If c = 0 Then
                                         _x = Int(reader.ReadLine)
+                                        If Int(_x) > GreatestX Then GreatestX = Int(_x)
                                         If _x > XMax Then
                                             ValidMaze = 0
                                             Exit Do
@@ -460,7 +476,8 @@ Module Module1
                                 DisplayAvailablePositions(PreviousMaze.Count)
                                 Console.SetCursorPosition(0, YPosAfterMaze + 3)
                                 PreviousMaze = LoadedMaze
-                                input = SolvingMenu(YPosAfterMaze + 3)
+                                Dim temparr() As String = {"Solve using the A* algorithm", "Solve using Dijkstra's algorithm", "Solve using Breadth-first search", "Solve using Depth-first search (using iteration)", "Solve using Depth-first search (using recursion)", "Play the maze", "Clear the maze and return to the menu"}
+                                input = SolvingMenu2(temparr, "What would you like to do with the maze", GreatestX + 3, 3)
                                 SolvingInput(input, ShowPath, YPosAfterMaze, SolvingDelay, PreviousMaze)
                             ElseIf ValidMaze = 0 Then
                                 Console.Clear()
@@ -557,62 +574,6 @@ Module Module1
         End While
         Return Nothing
     End Function
-    Function SolvingMenu(ByVal ColumnPosition As Integer)
-        SetColour(ConsoleColor.White)
-        Dim Option1 As Integer = 1
-        Dim x, y As Integer
-        y = ColumnPosition
-        Console.SetCursorPosition(x, y)
-        Console.Write("Do you want to use ")
-        MsgColour("> A*", ConsoleColor.Green)
-        Console.SetCursorPosition(23, y)
-        Console.Write(" Or Dijkstras to solve the maze or do you want to solve the maze yourself")
-        While 1
-            Dim key = Console.ReadKey
-            Select Case key.Key.ToString
-                Case "RightArrow"
-                    Option1 += 1
-                    If Option1 = 4 Then Option1 = 1
-                Case "LeftArrow"
-                    Option1 -= 1
-                    If Option1 = 0 Then Option1 = 3
-                Case "Enter"
-                    Console.SetCursorPosition(0, y)
-                    Console.Write("                                                                                                               ")
-                    If Option1 = 1 Then
-                        Return "astar"
-                    ElseIf Option1 = 2 Then
-                        Return "dijkstras"
-                    ElseIf Option1 = 3 Then
-                        Return "play"
-                    End If
-                Case "Escape"
-                    Return Nothing
-            End Select
-            Console.SetCursorPosition(0, y)
-            Console.Write("Do you want to use A* Or Dijkstras to solve the maze or do you want to solve the maze yourself")
-            If Option1 = 1 Then
-                Console.SetCursorPosition(19, y)
-                MsgColour("> A*", ConsoleColor.Green)
-                Console.SetCursorPosition(23, y)
-                Console.Write(" Or Dijkstras to solve the maze or do you want to solve the maze yourself")
-
-            ElseIf Option1 = 2 Then
-                Console.SetCursorPosition(25, y)
-                Console.Write("                             ")
-                Console.SetCursorPosition(25, y)
-                MsgColour("> Dijkstras", ConsoleColor.Green)
-                Console.SetCursorPosition(37, y)
-                Console.Write("to solve the maze or do you want to solve the maze yourself")
-            ElseIf Option1 = 3 Then
-                '+36
-                Console.SetCursorPosition(71, y)
-                MsgColour("> solve the maze yourself", ConsoleColor.Green)
-
-            End If
-        End While
-        Return Nothing
-    End Function
     Function SolvingMenu2(ByVal arr() As String, ByVal Message As String, ByVal X As Integer, ByVal Y_ As Integer)
         Dim temparr() As String = arr
         Dim CurrentCol As Integer = 0 'Console.CursorTop
@@ -660,6 +621,21 @@ Module Module1
             End Select
         End If
     End Function
+    Function DFS(ByVal availablepath As List(Of Node), ByVal v As Node, ByVal visited As Dictionary(Of Node, Boolean), ByRef cameFrom As Dictionary(Of Node, Node), ByVal goal As Node, ByVal showsolving As Boolean, ByVal solvingdelay As Integer, ByRef exitcase As Boolean)
+        visited(v) = True
+        If v.Equals(goal) Then
+            exitcase = True
+            Return Nothing
+        End If
+        For Each w As Node In GetNeighbours(v, availablepath)
+            If Not visited(w) Then
+                If showsolving Then : w.Print("XX") : Threading.Thread.Sleep(solvingdelay) : End If
+                cameFrom(w) = v
+                DFS(availablepath, w, visited, cameFrom, goal, showsolving, solvingdelay, exitcase)
+                If exitcase Then Return Nothing
+            End If
+        Next
+    End Function
     Sub DFS_Iterative(ByVal availablepath As List(Of Node), ByVal ShowPath As Boolean, ByVal ShowSolveTime As Boolean, ByVal Delay As Integer)
         Dim start_v As New Node(availablepath(availablepath.Count - 2).X, availablepath(availablepath.Count - 2).Y)
         Dim goal As New Node(availablepath(availablepath.Count - 1).X, availablepath(availablepath.Count - 1).Y)
@@ -686,6 +662,7 @@ Module Module1
                     End If
                 Next
             End If
+            Threading.Thread.Sleep(Delay)
         End While
         If ShowSolveTime Then
             ReconstructPath(cameFrom, goal, start_v, $"Time Taken to solve: {stopwatch.Elapsed.TotalSeconds} seconds")
@@ -724,6 +701,7 @@ Module Module1
                     cameFrom(w) = v
                 End If
             Next
+            Threading.Thread.Sleep(Delay)
         End While
     End Sub
     Sub Dijkstras(ByVal availablepath As List(Of Node), ByVal ShowSolving As Boolean, ByVal SolvingDelay As Integer)
@@ -787,6 +765,17 @@ Module Module1
         Next
         Return returnnode
     End Function
+    Function ExtractMinCost(ByVal dist As Dictionary(Of Node, Integer), ByVal openSet As List(Of Node))
+        Dim returnnode As Node = openSet(openSet.Count - 1)
+        For Each node In openSet
+            Dim distance1 As Integer = dist(node)
+            Dim distance2 As Integer = dist(returnnode)
+            If dist(returnnode) < dist(node) Then
+                returnnode = node
+            End If
+        Next
+        Return returnnode
+    End Function
     Sub aStarWiki(ByVal availablepath As List(Of Node), ByVal ShowPath As Boolean, ByVal ShowSolveTime As Boolean, ByVal Delay As Integer)
         Dim openSet, closedSet As New List(Of Node)
         Dim start As New Node(availablepath(availablepath.Count - 2).X, availablepath(availablepath.Count - 2).Y)
@@ -803,7 +792,7 @@ Module Module1
         openSet.Add(start)
         Dim stopwatch As Stopwatch = Stopwatch.StartNew()
         While openSet.Count > 0
-            Dim current As Node = ExtractMin(openSet, fScore)
+            Dim current As Node = ExtractMinCost(fScore, openSet)
             If current.Equals(goal) Then
                 If ShowSolveTime Then
                     ReconstructPath(cameFrom, current, start, $"Time Taken to solve: {stopwatch.Elapsed.TotalSeconds} seconds")
@@ -873,10 +862,10 @@ Module Module1
             End If
             For Each Neighbour As Node In GetNeighbours(current, availablepath)
                 If closedSet.Contains(Neighbour) Then Continue For
-                Dim tentative_gScore As Single = current.gCost + 1 'GetDistance(current, Neighbour)
+                Dim tentative_gScore As Single = current.gCost + GetDistance(current, Neighbour)
                 If tentative_gScore < Neighbour.gCost Or Not openSet.Contains(Neighbour) Then
                     Neighbour.gCost = tentative_gScore
-                    Neighbour.hCost = 1 'GetDistance(current, Neighbour)
+                    Neighbour.hCost = GetDistance(current, Neighbour)
                     Neighbour.parent = current
                     openSet.Add(Neighbour)
                 End If
