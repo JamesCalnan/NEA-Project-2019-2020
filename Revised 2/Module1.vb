@@ -1806,3 +1806,37 @@ Public Class Node
         Return hashCode
     End Function
 End Class
+Class Tree
+    Public value As Integer
+    Public left, right As Tree
+    Public Function ContainsRecursive(ByVal current As Tree, ByVal value As Integer)
+        If IsNothing(current) Then Return False
+        If value = current.value Then Return True
+        Return value < current.value
+        ContainsRecursive(current.left, value)
+        ContainsRecursive(current.right, value)
+    End Function
+    Public Function AddRecursive(ByVal current As Tree, ByVal value As Integer)
+        If IsNothing(current) Then Return New Tree(value)
+        If value < current.value Then
+            current.left = AddRecursive(current.left, value)
+        ElseIf current.value < value Then
+            current.right = AddRecursive(current.right, value)
+        Else
+            Return current
+        End If
+        Return current
+    End Function
+    Function ExtractMin(ByVal node As Tree) As Integer
+        Dim current As Tree = node
+        While Not IsNothing(current.left)
+            current = current.left
+        End While
+        Return current.value
+    End Function
+    Public Sub New(ByVal valu As Integer)
+        value = valu
+        left = Nothing
+        right = Nothing
+    End Sub
+End Class
