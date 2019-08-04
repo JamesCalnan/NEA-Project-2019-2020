@@ -7,13 +7,8 @@ Module Module1
     Sub Main()
         Console.CursorVisible = False
 
-
-
-        'Dim temparr() As String = {"A* algorithm", "Dijkstra's algorithm", "Breadth-first search", "Depth-first search", "Play the maze"}
-        ' Dim val As String = SolvingMenu2(temparr, "What would you like to do with the maze", 20, 3)
-
         SetColour(ConsoleColor.White)
-        Dim MenuOptions() As String = {"Recursive Backtracker Algorithm (using iteration)", "Recursive Backtracker Algorithm (using recursion)", "Hunt and Kill Algorithm", "Prim's Algorithm", "Aldous-Broder Algorithm", "Growing Tree Algorithm", "Custom Algorithm", "Binary Tree Algorithm", "Sidewinder Algorithm", "Wilson's Algorithm", "Eller's Algorithm", "Kruskal's Algorithm", "", "Load the previously generated maze", "Save the previously generated maze", "Load a saved maze", "", "Exit"}
+        Dim MenuOptions() As String = {"Recursive Backtracker Algorithm (using iteration)", "Recursive Backtracker Algorithm (using recursion)", "Hunt and Kill Algorithm", "Prim's Algorithm (simplified)", "Prim's Algorithm (true)", "Aldous-Broder Algorithm", "Growing Tree Algorithm", "Custom Algorithm", "Binary Tree Algorithm", "Sidewinder Algorithm", "Wilson's Algorithm", "Eller's Algorithm", "Kruskal's Algorithm", "", "Load the previously generated maze", "Save the previously generated maze", "Load a saved maze", "", "Exit"}
         Menu(MenuOptions)
 
     End Sub
@@ -224,8 +219,7 @@ Module Module1
         If input = "Solve using the A* algorithm" Then
             showpath = HorizontalYesNo(YposAfterMaze + 2, "Do you want to show the steps in solving the maze: ", True, False, False)
             If showpath Then solvingdelay = GetIntInputArrowKeys("Delay when solving the maze: ", 100, 0, True)
-            Dim OptimisedAStar As Boolean = HorizontalYesNo(YposAfterMaze + 2, "Do you want to use the optimised version of A*: ", True, False, False)
-            If OptimisedAStar Then
+            If HorizontalYesNo(YposAfterMaze + 2, "Do you want to use the optimised version of A*: ", True, False, False) Then
                 aStar(availablepath, showpath, True, solvingdelay)
             Else
                 aStarWiki(availablepath, showpath, True, solvingdelay)
@@ -233,7 +227,7 @@ Module Module1
         ElseIf input = "Solve using Dijkstra's algorithm" Then
             showpath = HorizontalYesNo(YposAfterMaze + 2, "Do you want to show the steps in solving the maze: ", True, False, False)
             If showpath Then solvingdelay = GetIntInputArrowKeys("Delay when solving the maze: ", 100, 0, True)
-            WallFollower(availablepath, showpath, solvingdelay)
+            Dijkstras(availablepath, showpath, solvingdelay)
         ElseIf input = "Solve using Breadth-first search" Then
             showpath = HorizontalYesNo(YposAfterMaze + 2, "Do you want to show the steps in solving the maze: ", True, False, False)
             If showpath Then solvingdelay = GetIntInputArrowKeys("Delay when solving the maze: ", 100, 0, True)
@@ -279,7 +273,7 @@ Module Module1
         Dim CurrentCol As Integer = Console.CursorTop
         Dim NumOfOptions As Integer = arr.Count
         MsgColour("What Maze Generation Algorithm do you want to use: ", ConsoleColor.Yellow)
-        MsgColour($"> {arr(0)}", ConsoleColor.Green)
+        MsgColour($"> {arr(0)} <", ConsoleColor.Green)
         For i = 1 To arr.Count - 1
             Console.WriteLine($" {arr(i)}")
         Next
@@ -291,11 +285,11 @@ Module Module1
                 Case "DownArrow"
                     y += 1
                     If y = arr.Count Then y = 0
-                    If y = 12 Or y = 16 Then y += 1
+                    If y = 13 Or y = 17 Then y += 1
                 Case "UpArrow"
                     y -= 1
                     If y = -1 Then y = arr.Count - 1
-                    If y = 12 Or y = 16 Then y -= 1
+                    If y = 13 Or y = 17 Then y -= 1
                 Case "Enter"
                     Dim AvailablePath As List(Of Node)
                     If y = 0 Then
@@ -305,8 +299,8 @@ Module Module1
                     ElseIf y = 1 Then
                         Dim r As New Random
                         GetMazeInfo(Width, Height, DelayMS, Limits, ShowMazeGeneration, True, 0)
-                        Dim CurrentCell As New Cell(Limits(0) + 3, Limits(1) + 2)
-                        Dim prev As New Cell(Limits(0) + 3, Limits(1) + 2)
+                        Dim CurrentCell As Cell = PickRandomStartingCell(Limits) '(Limits(0) + 3, Limits(1) + 2)
+                        Dim prev As Cell = CurrentCell '(Limits(0) + 3, Limits(1) + 2)
                         Dim v As New List(Of Cell)
                         Dim path As New List(Of Node)
                         Dim stopwatch As Stopwatch = Stopwatch.StartNew()
@@ -322,43 +316,47 @@ Module Module1
                         Solving(path, Limits, PreviousMaze, input, YPosAfterMaze, ShowPath, SolvingDelay, arr(y), PreviousAlgorithm)
                         PreviousMaze = path
                     ElseIf y = 2 Then
-                        Dim Optimised As Boolean = HorizontalYesNo(0, "Do you want to use the optimised version of hunt and kill: ", False, True, True)
-                        GetMazeInfo(Width, Height, DelayMS, Limits, ShowMazeGeneration, False, 1)
-                        AvailablePath = HuntAndKill(Limits, DelayMS, ShowMazeGeneration, Optimised)
+                        'Dim Optimised As Boolean = HorizontalYesNo(0, "Do you want to use the optimised version of hunt and kill: ", False, True, True)
+                        GetMazeInfo(Width, Height, DelayMS, Limits, ShowMazeGeneration, True, 0)
+                        AvailablePath = HuntAndKill(Limits, DelayMS, ShowMazeGeneration)
                         Solving(AvailablePath, Limits, PreviousMaze, input, YPosAfterMaze, ShowPath, SolvingDelay, arr(y), PreviousAlgorithm)
                     ElseIf y = 3 Then
                         GetMazeInfo(Width, Height, DelayMS, Limits, ShowMazeGeneration, True, 0)
-                        AvailablePath = Prims(Limits, DelayMS, ShowMazeGeneration)
+                        AvailablePath = Prims_Simplified(Limits, DelayMS, ShowMazeGeneration)
                         Solving(AvailablePath, Limits, PreviousMaze, input, YPosAfterMaze, ShowPath, SolvingDelay, arr(y), PreviousAlgorithm)
                     ElseIf y = 4 Then
                         GetMazeInfo(Width, Height, DelayMS, Limits, ShowMazeGeneration, True, 0)
-                        AvailablePath = AldousBroder(Limits, DelayMS, ShowMazeGeneration)
+                        AvailablePath = Prims_True(Limits, DelayMS, ShowMazeGeneration)
                         Solving(AvailablePath, Limits, PreviousMaze, input, YPosAfterMaze, ShowPath, SolvingDelay, arr(y), PreviousAlgorithm)
                     ElseIf y = 5 Then
+                        GetMazeInfo(Width, Height, DelayMS, Limits, ShowMazeGeneration, True, 0)
+                        AvailablePath = AldousBroder(Limits, DelayMS, ShowMazeGeneration)
+                        Solving(AvailablePath, Limits, PreviousMaze, input, YPosAfterMaze, ShowPath, SolvingDelay, arr(y), PreviousAlgorithm)
+                    ElseIf y = 6 Then
                         GetMazeInfo(Width, Height, DelayMS, Limits, ShowMazeGeneration, True, 0)
                         Dim ArrOptions() As String = {"Newest (Recursive Backtracker)", "Random (Prim's)", "Newest/Random, 75/25 split", "Newest/Random, 50/50 split", "Newest/Random, 25/75 split", "Oldest", "Middle", "Newest/Oldest, 50/50 split", "Oldest/Random, 50/50 split"}
                         Dim CellSelectionMethod() As Integer = PreGenMenu(ArrOptions, "What Cell selection method would you like to use: ")
                         AvailablePath = GrowingTree(Limits, DelayMS, CellSelectionMethod, ShowMazeGeneration)
                         Solving(AvailablePath, Limits, PreviousMaze, input, YPosAfterMaze, ShowPath, SolvingDelay, arr(y), PreviousAlgorithm)
-                    ElseIf y = 6 Then
+                    ElseIf y = 7 Then
                         GetMazeInfo(Width, Height, DelayMS, Limits, ShowMazeGeneration, True, 0)
                         AvailablePath = Custom(Limits, DelayMS, ShowMazeGeneration)
                         Solving(AvailablePath, Limits, PreviousMaze, input, YPosAfterMaze, ShowPath, SolvingDelay, arr(y), PreviousAlgorithm)
-                    ElseIf y = 7 Then
+                    ElseIf y = 8 Then
                         GetMazeInfo(Width, Height, DelayMS, Limits, ShowMazeGeneration, True, 0)
                         Dim ArrOptions() As String = {"Northwest", "Northeast", "Southwest", "Southeast"}
                         Dim Bias() As Integer = PreGenMenu(ArrOptions, "Cell bias: ")
                         AvailablePath = BinaryTree(Limits, DelayMS, ShowMazeGeneration, Bias)
                         Solving(AvailablePath, Limits, PreviousMaze, input, YPosAfterMaze, ShowPath, SolvingDelay, arr(y), PreviousAlgorithm)
-                    ElseIf y = 8 Then
+                    ElseIf y = 9 Then
                         GetMazeInfo(Width, Height, DelayMS, Limits, ShowMazeGeneration, True, 0)
                         AvailablePath = Sidewinder(Limits, DelayMS, ShowMazeGeneration)
                         Solving(AvailablePath, Limits, PreviousMaze, input, YPosAfterMaze, ShowPath, SolvingDelay, arr(y), PreviousAlgorithm)
-                    ElseIf y = 9 Then
+                    ElseIf y = 10 Then
                         GetMazeInfo(Width, Height, DelayMS, Limits, ShowMazeGeneration, True, 0)
                         AvailablePath = Wilsons(Limits, DelayMS, ShowMazeGeneration)
                         Solving(AvailablePath, Limits, PreviousMaze, input, YPosAfterMaze, ShowPath, SolvingDelay, arr(y), PreviousAlgorithm)
-                    ElseIf y = 13 Then
+                    ElseIf y = 14 Then
                         Dim GreatestX, GreatestY As Integer
                         If PreviousMaze.Count > 1 Then
                             Console.Clear()
@@ -386,7 +384,7 @@ Module Module1
                             MsgColour("No previous maze available", ConsoleColor.Red)
                             Console.ReadKey()
                         End If
-                    ElseIf y = 14 Then
+                    ElseIf y = 15 Then
                         If PreviousMaze.Count > 1 Then
                             Console.Clear()
                             Dim filename As String
@@ -410,7 +408,7 @@ Module Module1
                             MsgColour("No previous maze available", ConsoleColor.Red)
                             Console.ReadKey()
                         End If
-                    ElseIf y = 15 Then
+                    ElseIf y = 16 Then
                         Dim ValidMaze, XMax, YMax As Integer
                         Dim GreatestY As Integer = 0
                         Dim GreatestX As Integer = 0
@@ -505,11 +503,11 @@ Module Module1
             Dim Count As Integer = 1
             For Each MenuOption In arr
                 Console.SetCursorPosition(0, Count + CurrentCol)
-                Console.Write($" {MenuOption}  ")
+                Console.Write($" {MenuOption}    ")
                 Count += 1
             Next
             Console.SetCursorPosition(0, y + 1)
-            MsgColour($"> {arr(y)}", ConsoleColor.Green)
+            MsgColour($"> {arr(y)} <", ConsoleColor.Green)
         End While
     End Sub
     Sub PrintStartandEnd(ByVal mazePositions As List(Of Node))
@@ -597,6 +595,10 @@ Module Module1
                     y -= 1
                     If y = -1 Then y = arr.Count - 1
                 Case "Enter"
+                    For i = 0 To arr.Count
+                        Console.SetCursorPosition(X, i + Y_)
+                        Console.Write("                                                        ")
+                    Next
                     Return temparr(y)
             End Select
             SetColour(ConsoleColor.White)
@@ -631,7 +633,7 @@ Module Module1
             visited(node) = False
         Next
         visited(start_v) = True
-        Dim Backtracking As Boolean = False
+        Dim JunctionNodes As New List(Of Node)
         While s.Count > 0
             'can the node go anywhere?
             '   pick neighbour make it the current node
@@ -645,7 +647,6 @@ Module Module1
                 If Not visited(node) Then Unvisitedneighbours += 1
             Next
             'getting the amount of unvisited neighbours
-            Dim c As Integer = 0
             If Unvisitedneighbours > 0 Then
                 'if there are unvisited neighbours then consider the neighbours
                 For Each neighbourOfCurrent In neighbours
@@ -658,30 +659,32 @@ Module Module1
                     s.Push(neighbourOfCurrent)
                     'push the neighbour onto the stack
                     SetColour(ConsoleColor.Green)
-                    Backtracking = False
+                    u.Print("██")
+                    Exit For
                 Next
             Else
                 'if there are no unvisited neighbours available
                 u = s.Pop
+                Console.ForegroundColor = ConsoleColor.White
+                u.Print("██")
+                If u.IsJunction(availablepath) Then JunctionNodes.Add(u)
             End If
             If u.Equals(goal) Then Exit While
-            u.Print("██")
-
-
+            'Threading.Thread.Sleep(20)
         End While
-        SetColour(ConsoleColor.Magenta)
-        For Each node In s
-            node.Print("██")
+        Console.ForegroundColor = ConsoleColor.Green
+        For Each node1 In JunctionNodes
+            For Each node2 In s
+                If node1.Adjacent(node2) Then
+                    node1.Print("██")
+                End If
+            Next
         Next
-
         Console.ReadKey()
     End Sub
     Function DFS(ByVal availablepath As List(Of Node), ByVal v As Node, ByVal visited As Dictionary(Of Node, Boolean), ByRef cameFrom As Dictionary(Of Node, Node), ByVal goal As Node, ByVal showsolving As Boolean, ByVal solvingdelay As Integer, ByRef exitcase As Boolean)
         visited(v) = True
-        If v.Equals(goal) Then
-            exitcase = True
-            Return Nothing
-        End If
+        If v.Equals(goal) Then : exitcase = True : Return Nothing : End If
         For Each w As Node In GetNeighbours(v, availablepath)
             If Not visited(w) Then
                 If showsolving Then : w.Print("██") : Threading.Thread.Sleep(solvingdelay) : End If
@@ -718,11 +721,7 @@ Module Module1
                 Next
             End If
         End While
-        If ShowSolveTime Then
-            ReconstructPath(cameFrom, goal, start_v, $"Time Taken to solve: {stopwatch.Elapsed.TotalSeconds} seconds")
-        Else
-            ReconstructPath(cameFrom, goal, start_v, $"")
-        End If
+        ReconstructPath(cameFrom, goal, start_v, If(ShowSolveTime, $"Time Taken to solve: {stopwatch.Elapsed.TotalSeconds} seconds", ""))
     End Sub
     Sub BFS(ByVal availablepath As List(Of Node), ByVal ShowPath As Boolean, ByVal ShowSolveTime As Boolean, ByVal Delay As Integer)
         Dim start_v As New Node(availablepath(availablepath.Count - 2).X, availablepath(availablepath.Count - 2).Y)
@@ -740,14 +739,7 @@ Module Module1
         While Q.Count > 0
             Dim v As Node = Q.Dequeue
             If ShowPath Then : v.Print("██") : Threading.Thread.Sleep(Delay) : End If
-            If v.Equals(goal) Then
-                If ShowSolveTime Then
-                    ReconstructPath(cameFrom, v, start_v, $"Time Taken to solve: {stopwatch.Elapsed.TotalSeconds} seconds")
-                Else
-                    ReconstructPath(cameFrom, v, start_v, $"")
-                End If
-                Exit While
-            End If
+            If v.Equals(goal) Then : ReconstructPath(cameFrom, v, start_v, If(ShowSolveTime, $"Time Taken to solve: {stopwatch.Elapsed.TotalSeconds} seconds", "")) : Exit While : End If
             For Each w As Node In GetNeighbours(v, availablepath)
                 If Not Discovered(w) Then
                     Discovered(w) = True
@@ -813,7 +805,7 @@ Module Module1
         Next
         Return returnnode
     End Function
-    Function ExtractMinCost(ByVal dist As Dictionary(Of Node, Integer), ByVal openSet As List(Of Node))
+    Function ExtractMinCost(ByVal dist As Dictionary(Of Node, Double), ByVal openSet As List(Of Node))
         Dim returnnode As Node = openSet(openSet.Count - 1)
         For Each node In openSet
             If dist(returnnode) < dist(node) Then
@@ -826,7 +818,7 @@ Module Module1
         Dim openSet, closedSet As New List(Of Node)
         Dim start As New Node(availablepath(availablepath.Count - 2).X, availablepath(availablepath.Count - 2).Y)
         Dim goal As New Node(availablepath(availablepath.Count - 1).X, availablepath(availablepath.Count - 1).Y)
-        Dim gScore, fScore As New Dictionary(Of Node, Integer)
+        Dim gScore, fScore As New Dictionary(Of Node, Double)
         Dim cameFrom As New Dictionary(Of Node, Node)
         Dim INFINITY As Integer = Int32.MaxValue
         For Each node In availablepath
@@ -834,18 +826,14 @@ Module Module1
             fScore(node) = INFINITY
         Next
         gScore(start) = 0
-        fScore(start) = GetDistance(start, goal)
+        fScore(start) = h(start, goal, 1)
         openSet.Add(start)
         Dim stopwatch As Stopwatch = Stopwatch.StartNew()
         SetBoth(ConsoleColor.Red)
         While openSet.Count > 0
             Dim current As Node = ExtractMinCost(fScore, openSet)
             If current.Equals(goal) Then
-                If ShowSolveTime Then
-                    ReconstructPath(cameFrom, current, start, $"Time Taken to solve: {stopwatch.Elapsed.TotalSeconds} seconds")
-                Else
-                    ReconstructPath(cameFrom, current, start, $"")
-                End If
+                ReconstructPath(cameFrom, current, start, If(ShowSolveTime, $"Time Taken to solve: {stopwatch.Elapsed.TotalSeconds} seconds", ""))
                 Exit While
             End If
             openSet.Remove(current)
@@ -853,18 +841,48 @@ Module Module1
             If ShowPath Then : current.Print("██") : Threading.Thread.Sleep(Delay) : End If
             For Each Neighbour As Node In GetNeighbours(current, availablepath)
                 If closedSet.Contains(Neighbour) Then Continue For
-                Dim tentative_gScore = gScore(current) + 1
+                Dim tentative_gScore = gScore(current) + 10
                 If Not openSet.Contains(Neighbour) Then
                     openSet.Add(Neighbour)
-                ElseIf tentative_gScore >= gScore(Neighbour) Then
+                ElseIf tentative_gScore > gScore(Neighbour) Then
                     Continue For
                 End If
                 cameFrom(Neighbour) = current
                 gScore(Neighbour) = tentative_gScore
-                fScore(Neighbour) = gScore(Neighbour) + GetDistance(start, goal)
+                fScore(Neighbour) = gScore(Neighbour) + h(Neighbour, goal, 1)
             Next
         End While
     End Sub
+    Function GetJunctionCount(ByVal availablePath As List(Of Node))
+        Dim JunctionCount As Integer = 0
+        For Each node In availablePath
+            If node.IsJunction(availablePath) Then
+                node.Print("JU")
+                JunctionCount += 1
+            End If
+        Next
+        Return JunctionCount
+    End Function
+    Function GetDeadEndCount(ByVal availablePath As List(Of Node))
+        Dim start As New Node(availablePath(availablePath.Count - 2).X, availablePath(availablePath.Count - 2).Y)
+        Dim target As New Node(availablePath(availablePath.Count - 1).X, availablePath(availablePath.Count - 1).Y)
+        Dim DeadEndCount As Integer = 0
+        For Each node In availablePath
+            If node.Equals(start) Or node.Equals(target) Then Continue For
+            Dim neighbours As List(Of Node) = GetNeighbours(node, availablePath)
+            If neighbours.Count = 1 Then
+                node.Print("DE")
+                DeadEndCount += 1
+            End If
+        Next
+        Return DeadEndCount
+    End Function
+
+    Function h(ByVal node As Node, ByVal goal As Node, ByVal D As Integer)
+        Dim dx As Integer = Math.Abs(node.X - goal.X)
+        Dim dy As Integer = Math.Abs(node.Y - goal.Y)
+        Return D * (dx + dy)
+    End Function
     Sub ReconstructPath(ByVal camefrom As Dictionary(Of Node, Node), ByVal current As Node, ByVal goal As Node, ByVal timetaken As String)
         Dim totalPath As New List(Of Node) From {
             current,
@@ -876,6 +894,7 @@ Module Module1
             current = camefrom(current)
         End While
         totalPath.Add(goal)
+        totalPath.Reverse()
         PrintMessageMiddle($"Path length: {totalPath.Count}   {timetaken}", Console.WindowHeight - 1, ConsoleColor.Yellow)
         SetBoth(ConsoleColor.Green)
         For Each node In totalPath
@@ -893,7 +912,7 @@ Module Module1
         Dim stopwatch As Stopwatch = Stopwatch.StartNew()
         While openSet.Count > 0
             If ExitCase() Then Exit While
-            current = openSet(openSet.Count - 1)
+            current = openSet(0)
             For i = 1 To openSet.Count - 1
                 If openSet(i).fCost() <= current.fCost() Or openSet(i).hCost = current.hCost Then
                     If openSet(i).hCost < current.hCost Then current = openSet(i)
@@ -902,25 +921,19 @@ Module Module1
             openSet.Remove(current)
             closedSet.Add(current)
             If ShowPath Then : current.Print("██") : Threading.Thread.Sleep(Delay) : End If
-            If current.Equals(target) Then
-                Exit While
-            End If
+            If current.Equals(target) Then Exit While
             For Each Neighbour As Node In GetNeighbours(current, availablepath)
                 If closedSet.Contains(Neighbour) Then Continue For
-                Dim tentative_gScore As Single = current.gCost + GetDistance(current, Neighbour)
+                Dim tentative_gScore = current.gCost + 10 '
                 If tentative_gScore < Neighbour.gCost Or Not openSet.Contains(Neighbour) Then
                     Neighbour.gCost = tentative_gScore
-                    Neighbour.hCost = GetDistance(current, Neighbour)
+                    Neighbour.hCost = GetDistance(target, Neighbour)
                     Neighbour.parent = current
-                    If Not openSet.Contains(Neighbour) Then openSet.Add(Neighbour)
+                    openSet.Add(Neighbour)
                 End If
             Next
         End While
-        If ShowSolveTime Then
-            RetracePath(start, current, $"Time Taken to solve: {stopwatch.Elapsed.TotalSeconds} seconds")
-        Else
-            RetracePath(start, current, $"")
-        End If
+        RetracePath(start, current, If(ShowSolveTime, $"Time Taken to solve: {stopwatch.Elapsed.TotalSeconds} seconds", ""))
         Console.ReadKey()
     End Sub
 
@@ -970,7 +983,18 @@ Module Module1
         Console.SetCursorPosition(Console.WindowWidth / 2 - message.Length / 2, y)
         Console.Write(message)
     End Sub
-    'main algorithm functions
+    Function PickRandomStartingCell(ByVal Limits() As Integer)
+        Dim Li As New List(Of Cell)
+        For y = Limits(1) To Limits(3) Step 2
+            For x = Limits(0) + 3 To Limits(2) - 1 Step 4
+                Dim tempNode As New Cell(x, y)
+                Li.Add(tempNode)
+            Next
+        Next
+        Dim r As New Random
+        Return Li(r.Next(0, Li.Count - 1))
+    End Function
+    'maze algorithm functions
     Function Sidewinder(ByVal Limits() As Integer, ByVal Delay As Integer, ByVal ShowMazeGeneration As Boolean)
         While Limits(2) Mod 4 <> 2
             Limits(2) -= 1
@@ -1091,7 +1115,7 @@ Module Module1
         Dim R As New Random
         Dim availablepath As New List(Of Cell)
         Dim VisitedList, FrontierSet, RecentFrontierSet As New List(Of Cell)
-        Dim CurrentCell As New Cell(Limits(0) + 3, Limits(1) + 2)
+        Dim CurrentCell As Cell = PickRandomStartingCell(Limits) '(Limits(0) + 3, Limits(1) + 2)
         Dim PreviousCell As Cell = CurrentCell
         Dim WallCell As Cell
         Dim Index As Integer
@@ -1249,7 +1273,7 @@ Module Module1
         Dim R As New Random
         Dim availablepath As New List(Of Cell)
         Dim VisitedList, FrontierSet, RecentFrontierSet As New List(Of Cell)
-        Dim CurrentCell As New Cell(Limits(0) + 3, Limits(1) + 2)
+        Dim CurrentCell As Cell = PickRandomStartingCell(Limits) '(Limits(0) + 3, Limits(1) + 2)
         Dim WallCell As Cell
         Dim Index As Integer
         Dim ReturnablePath As New List(Of Node)
@@ -1259,7 +1283,6 @@ Module Module1
         Dim stopwatch As Stopwatch = Stopwatch.StartNew()
         While True
             If ExitCase() Then Return Nothing
-
             For Each cell As Cell In Neighbour(CurrentCell, VisitedList, Limits, True)
                 If Not FrontierSet.Contains(cell) Then FrontierSet.Add(cell)
                 RecentFrontierSet.Add(cell)
@@ -1271,18 +1294,10 @@ Module Module1
             If RecentFrontierSet.Count > 0 Then
                 Index = R.Next(0, RecentFrontierSet.Count)
                 CurrentCell = RecentFrontierSet(Index)
-                If ShowMazeGeneration Then
-                    SetBoth(ConsoleColor.Red)
-                    CurrentCell.Print("██")
-                End If
             Else
                 If FrontierSet.Count = 0 Then Exit While
                 Index = FrontierSet.Count - 1 'R.Next(0, FrontierSet.Count)
                 CurrentCell = FrontierSet(Index)
-                If ShowMazeGeneration Then
-                    SetBoth(ConsoleColor.Red)
-                    CurrentCell.Print("██")
-                End If
             End If
             Dim AdjancencyList() As Integer = AdjacentCheck(CurrentCell, VisitedList)
             Dim PreviousCell As Cell = PickAdjancentCell(CurrentCell, AdjancencyList)
@@ -1316,8 +1331,8 @@ Module Module1
         Dim R As New Random
         Dim availablepath As New List(Of Cell)
         Dim VisitedList, RecentCells As New List(Of Cell)
-        Dim CurrentCell As New Cell(Limits(0) + 3, Limits(1) + 2)
-        Dim PrevCell, WallPrev As New Cell(Limits(0) + 3, Limits(1) + 2)
+        Dim CurrentCell As Cell = PickRandomStartingCell(Limits) '(Limits(0) + 3, Limits(1) + 2)
+        Dim PrevCell As Cell = PickRandomStartingCell(Limits)
         Dim PreviousCell As Cell = CurrentCell
         Dim WallCell As Cell
         Dim ReturnablePath As New List(Of Node)
@@ -1379,11 +1394,73 @@ Module Module1
         Console.SetCursorPosition(0, ypos)
         Return ReturnablePath
     End Function
-    Function Prims(ByVal Limits() As Integer, ByVal delay As Integer, ByVal ShowMazeGeneration As Boolean)
+    Function Prims_True(ByVal Limits() As Integer, ByVal delay As Integer, ByVal ShowMazeGeneration As Boolean)
+        'Assigns weights to each cell available in the grid, it then chooses the cell with the lowest weight out of the frontier set
         Dim R As New Random
         Dim availablepath As New List(Of Cell)
         Dim VisitedList, FrontierSet As New List(Of Cell)
-        Dim CurrentCell As New Cell(Limits(0) + 3, Limits(1) + 2)
+
+        Dim WallCell As Cell
+        Dim ReturnablePath As New List(Of Node)
+
+        Dim stopwatch As Stopwatch = Stopwatch.StartNew()
+        Dim Weights As New Dictionary(Of Cell, Integer)
+        For y = Limits(1) To Limits(3) Step 2
+            For x = Limits(0) + 3 To Limits(2) - 1 Step 4
+                Dim tempNode As New Cell(x, y)
+                Weights(tempNode) = R.Next(0, 99) 'Assigning random weights to each cell in the grid
+            Next
+        Next
+        Dim CurrentCell As Cell = PickRandomStartingCell(Limits) '(FrontierSet(idx).X, FrontierSet(idx).Y) '(Limits(0) + 3, Limits(1) + 2)
+        VisitedList.Add(CurrentCell)
+        If ShowMazeGeneration Then CurrentCell.Print("██")
+        ReturnablePath.Add(New Node(CurrentCell.X, CurrentCell.Y))
+        While True
+            If ExitCase() Then Return Nothing
+            For Each cell As Cell In Neighbour(CurrentCell, VisitedList, Limits, True)
+                If Not FrontierSet.Contains(cell) Then FrontierSet.Add(cell)
+                If ShowMazeGeneration Then
+                    SetBoth(ConsoleColor.Yellow)
+                    cell.Print("██")
+                End If
+            Next
+            If FrontierSet.Count = 0 Then Exit While
+            Dim HighestWeightCell As Cell = FrontierSet(0)
+            For Each cell In FrontierSet
+                If Weights(HighestWeightCell) < Weights(cell) Then HighestWeightCell = cell
+            Next
+            CurrentCell = HighestWeightCell
+            Dim AdjancencyList() As Integer = AdjacentCheck(CurrentCell, VisitedList)
+            Dim PreviousCell As Cell = PickAdjancentCell(CurrentCell, AdjancencyList)
+            WallCell = MidPoint(CurrentCell, PreviousCell)
+            If ShowMazeGeneration Then
+                SetBoth(ConsoleColor.White)
+                WallCell.Print("██")
+                CurrentCell.Print("██")
+            End If
+            VisitedList.Add(CurrentCell)
+            FrontierSet.Remove(CurrentCell)
+            AddToPath(ReturnablePath, CurrentCell, WallCell)
+            Threading.Thread.Sleep(delay)
+        End While
+        PrintMessageMiddle($"Time taken to generate the maze: {stopwatch.Elapsed.TotalSeconds}", 1, ConsoleColor.Yellow)
+        SetColour(ConsoleColor.White)
+        If Not ShowMazeGeneration Then
+            For Each node In ReturnablePath
+                node.Print("██")
+            Next
+        End If
+        Dim ypos As Integer = Console.CursorTop
+        AddStartAndEnd(ReturnablePath, VisitedList, Limits, 0)
+        Console.SetCursorPosition(0, ypos)
+        Return ReturnablePath
+    End Function
+    Function Prims_Simplified(ByVal Limits() As Integer, ByVal delay As Integer, ByVal ShowMazeGeneration As Boolean)
+        'Assumes the weights of each cell in the grid is the same and therefore chooses a random cell from the frontier set
+        Dim R As New Random
+        Dim availablepath As New List(Of Cell)
+        Dim VisitedList, FrontierSet As New List(Of Cell)
+        Dim CurrentCell As Cell = PickRandomStartingCell(Limits) '(Limits(0) + 3, Limits(1) + 2)
         Dim WallCell As Cell
         Dim ReturnablePath As New List(Of Node)
         VisitedList.Add(CurrentCell)
@@ -1426,7 +1503,7 @@ Module Module1
         Console.SetCursorPosition(0, ypos)
         Return ReturnablePath
     End Function
-    Function HuntAndKill(ByVal Limits() As Integer, ByVal delay As Integer, ByVal ShowMazeGeneration As Boolean, ByVal Optimised As Boolean)
+    Function HuntAndKill(ByVal Limits() As Integer, ByVal delay As Integer, ByVal ShowMazeGeneration As Boolean)
         Dim totalcellcount As Integer
         For y = Limits(1) To Limits(3) Step 2
             For x = Limits(0) + 3 To Limits(2) - 1 Step 4
@@ -1434,7 +1511,7 @@ Module Module1
             Next
         Next
         SetBackGroundColour(ConsoleColor.White)
-        Dim CurrentCell As New Cell(Limits(0) + 3, Limits(1) + 2)
+        Dim CurrentCell As Cell = PickRandomStartingCell(Limits) '(Limits(0) + 3, Limits(1) + 2)
         Dim r As New Random
         Dim VisitedList, Stack, VisitedListAndWall, RecentCells As New List(Of Cell)
         Dim ReturnablePath As New List(Of Node)
@@ -1477,7 +1554,7 @@ Module Module1
                             Console.SetCursorPosition(x + 2, y)
                             If Console.CursorLeft < Limits(2) - 1 Then Console.Write("██")
                         End If
-                        If Optimised Then If x = Limits(2) - 3 Or x = Limits(2) - 1 Then ColumnValue += 2
+                        'If Optimised Then If x = Limits(2) - 3 Or x = Limits(2) - 1 Then ColumnValue += 2
                         Dim AdjancencyList As Integer() = AdjacentCheck(newcell, VisitedList)
                         CurrentCell = PickAdjancentCell(newcell, AdjancencyList)
                         If CurrentCell IsNot Nothing Then
@@ -1544,8 +1621,8 @@ Module Module1
     Function RecursiveBacktracker(ByVal Limits() As Integer, ByVal Delay As Integer, ByVal ShowMazeGeneration As Boolean)
         Dim r As New Random
         SetBoth(ConsoleColor.White)
-        Dim CurrentCell As New Cell(Limits(0) + 3, Limits(1) + 2)
-        Dim PrevCell, WallPrev As New Cell(Limits(0) + 3, Limits(1) + 2)
+        Dim CurrentCell As Cell = PickRandomStartingCell(Limits) '(Limits(0) + 3, Limits(1) + 2)
+        Dim PrevCell As Cell = CurrentCell '(Limits(0) + 3, Limits(1) + 2)
         Dim VisitedList, Stack As New List(Of Cell)
         Dim ReturnablePath As New List(Of Node)
         Dim RecentCells As New List(Of Cell)
@@ -1607,7 +1684,7 @@ Module Module1
         Dim availablepath As New List(Of Cell)
         Dim UST, RecentCells, availablepositions As New List(Of Cell)
         Dim CurrentCell As New Cell(Limits(0) + 3, Limits(1) + 2)
-        Dim PrevCell, WallPrev As New Cell(Limits(0) + 3, Limits(1) + 2)
+        Dim PrevCell As New Cell(Limits(0) + 3, Limits(1) + 2)
         Dim ReturnablePath As New List(Of Node)
         For y = Limits(1) To Limits(3) Step 2
             For x = Limits(0) + 3 To Limits(2) - 1 Step 4
@@ -1632,7 +1709,6 @@ Module Module1
                 RecentCells.Add(cell)
             Next
             TemporaryCell = RecentCells(R.Next(0, RecentCells.Count))
-
             Dim dir As String = GetDirection(CurrentCell, TemporaryCell, directions, ShowMazeGeneration)
             If UST.Contains(TemporaryCell) Then 'Unvisited cell?
                 Direction.Add(TemporaryCell, GetDirection(TemporaryCell, CurrentCell, directions, ShowMazeGeneration))
@@ -1956,17 +2032,15 @@ Public Class Node
     End Function
     Function Adjacent(ByVal checknode As Node)
         Dim curNode As New Node(Me.X, Me.Y)
-        'check up
         curNode.update(Me.X, Me.Y - 1)
         If curNode.Equals(checknode) Then Return True
-        'check right
         curNode.update(Me.X + 2, Me.Y)
         If curNode.Equals(checknode) Then Return True
         curNode.update(Me.X, Me.Y + 1)
         If curNode.Equals(checknode) Then Return True
         curNode.update(Me.X - 2, Me.Y)
+        If curNode.Equals(checknode) Then Return True
         Return False
-
     End Function
     Public Function fCost()
         Return gCost + hCost
@@ -2016,5 +2090,60 @@ Class Tree
         value = valu
         left = Nothing
         right = Nothing
+    End Sub
+End Class
+
+Public Class PriorityQueue(Of T)
+    ' The items and priorities.
+    Public Values As New List(Of T)()
+    Public Priorities As New List(Of Integer)()
+
+    ' Return the number of items in the queue.
+    Public ReadOnly Property NumItems() As Integer
+        Get
+            Return Values.Count
+        End Get
+    End Property
+
+    ' Add an item to the queue.
+    Public Sub Enqueue(ByVal new_value As T, ByVal _
+new_priority As Integer)
+        Values.Add(new_value)
+        Priorities.Add(new_priority)
+    End Sub
+
+    Public Function ExtractMin()
+        Dim index As Integer = Values.IndexOf(Values.Min)
+
+        Priorities.RemoveAt(index)
+
+        Dim item As T = Values(index)
+        Values.RemoveAt(index)
+        Return item
+
+
+    End Function
+
+
+    ' Remove the item with the largest priority from the
+    ' queue.
+    Public Sub Dequeue(ByRef top_value As T, ByRef _
+        top_priority As Integer)
+        ' Find the hightest priority.
+        Dim best_index As Integer = 0
+        top_priority = Priorities(0)
+        For i As Integer = 1 To Priorities.Count - 1
+            If (top_priority < Priorities(i)) Then
+                top_priority = Priorities(i)
+                best_index = i
+            End If
+        Next i
+
+        ' Return the corresponding item.
+        top_value = Values(best_index)
+
+        ' Remove the item from the lists.
+        Values.RemoveAt(best_index)
+        Priorities.RemoveAt(best_index)
     End Sub
 End Class
