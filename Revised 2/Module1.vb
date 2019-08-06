@@ -10,7 +10,16 @@ Module Module1
         SetColour(ConsoleColor.White)
         Dim MenuOptions() As String = {"Recursive Backtracker Algorithm (using iteration)", "Recursive Backtracker Algorithm (using recursion)", "Hunt and Kill Algorithm", "Prim's Algorithm (simplified)", "Prim's Algorithm (true)", "Aldous-Broder Algorithm", "Growing Tree Algorithm", "Custom Algorithm", "Binary Tree Algorithm", "Sidewinder Algorithm", "Wilson's Algorithm", "Eller's Algorithm", "Kruskal's Algorithm", "", "Load the previously generated maze", "Save the previously generated maze", "Load a saved maze", "", "Exit"}
         Menu(MenuOptions)
+        Console.SetWindowSize(135, 41)
+        Console.ReadKey()
+        Dim limits() As Integer = {5, 3, Console.WindowWidth, Console.WindowHeight}
 
+        For Each num In limits
+            Console.WriteLine(num)
+        Next
+        Console.ReadKey()
+        Console.Clear()
+        Dim path As List(Of Node) = Ellers(limits, 0, False)
     End Sub
     Sub Playmaze(ByVal AvailablePath As List(Of Node), ByVal ShowPath As Boolean)
         Dim playerPath As New List(Of Node)
@@ -96,7 +105,6 @@ Module Module1
             If Not playerPath.Contains(currentPos) Then playerPath.Add(currentPos)
         End If
     End Sub
-
     Sub SetBackGroundColour(ByVal colour As ConsoleColor)
         Console.BackgroundColor = colour
     End Sub
@@ -227,6 +235,7 @@ Module Module1
         ElseIf input = "Solve using Dijkstra's algorithm" Then
             showpath = HorizontalYesNo(YposAfterMaze + 2, "Do you want to show the steps in solving the maze: ", True, False, False)
             If showpath Then solvingdelay = GetIntInputArrowKeys("Delay when solving the maze: ", 100, 0, True)
+
             Dijkstras(availablepath, showpath, solvingdelay)
         ElseIf input = "Solve using Breadth-first search" Then
             showpath = HorizontalYesNo(YposAfterMaze + 2, "Do you want to show the steps in solving the maze: ", True, False, False)
@@ -255,6 +264,9 @@ Module Module1
             Playmaze(availablepath, showpath)
         ElseIf input = "Clear the maze and return to the menu" Then
             Console.Clear()
+        ElseIf input = "s" Then
+
+            SD(availablepath)
         End If
     End Sub
     Sub Solving(ByVal AvailablePath As List(Of Node), ByVal Limits() As Integer, ByRef PreviousMaze As List(Of Node), ByRef Input As String, ByVal YPosAfterMaze As Integer, ByVal ShowPath As Boolean, ByVal SolvingDelay As Integer, ByRef Algorithm As String, ByRef SetPreivousAlgorithm As String)
@@ -355,6 +367,10 @@ Module Module1
                     ElseIf y = 10 Then
                         GetMazeInfo(Width, Height, DelayMS, Limits, ShowMazeGeneration, True, 0)
                         AvailablePath = Wilsons(Limits, DelayMS, ShowMazeGeneration)
+                        Solving(AvailablePath, Limits, PreviousMaze, input, YPosAfterMaze, ShowPath, SolvingDelay, arr(y), PreviousAlgorithm)
+                    ElseIf y = 11 Then
+                        GetMazeInfo(Width, Height, DelayMS, Limits, ShowMazeGeneration, True, 0)
+                        AvailablePath = Ellers(Limits, DelayMS, ShowMazeGeneration)
                         Solving(AvailablePath, Limits, PreviousMaze, input, YPosAfterMaze, ShowPath, SolvingDelay, arr(y), PreviousAlgorithm)
                     ElseIf y = 14 Then
                         Dim GreatestX, GreatestY As Integer
@@ -594,6 +610,12 @@ Module Module1
                 Case "UpArrow"
                     y -= 1
                     If y = -1 Then y = arr.Count - 1
+                Case "S"
+                    For i = 0 To arr.Count
+                        Console.SetCursorPosition(X, i + Y_)
+                        Console.Write("                                                        ")
+                    Next
+                    Return "s"
                 Case "Enter"
                     For i = 0 To arr.Count
                         Console.SetCursorPosition(X, i + Y_)
@@ -877,7 +899,6 @@ Module Module1
         Next
         Return DeadEndCount
     End Function
-
     Function h(ByVal node As Node, ByVal goal As Node, ByVal D As Integer)
         Dim dx As Integer = Math.Abs(node.X - goal.X)
         Dim dy As Integer = Math.Abs(node.Y - goal.Y)
@@ -936,7 +957,103 @@ Module Module1
         RetracePath(start, current, If(ShowSolveTime, $"Time Taken to solve: {stopwatch.Elapsed.TotalSeconds} seconds", ""))
         Console.ReadKey()
     End Sub
+    Sub SD(ByVal availablePath As List(Of Node))
+        Console.SetCursorPosition(0, 1)
+        Console.ForegroundColor = ConsoleColor.Red
+        Console.BackgroundColor = ConsoleColor.Black
+        Console.Write("SWASTIKA DETECTION MODE ENGAGED")
+        Dim Positions As New List(Of Node)
+        Dim width, minwidth, minheight, height As Integer
+        minwidth = availablePath(availablePath.Count - 2).X
+        minheight = availablePath(availablePath.Count - 2).Y + 1
+        width = availablePath(availablePath.Count - 1).X
+        height = availablePath(availablePath.Count - 1).Y - 1
+        Dim numOfsFound As Integer = 0
+        For _x = minwidth To width Step 2
+            For _y = minheight To height
+                For i = 0 To 1
+                    For y = -2 To 2
+                        For x = -4 To 4 Step 2
+                            If i = 1 Then
+                                If x = -4 And y = 1 Or x = -2 And y = 1 Then Continue For
+                                If x = 2 And y = 1 Or x = 2 And y = 2 Then Continue For
+                                If x = -2 And y = -1 Or x = -2 And y = -2 Then Continue For
+                                If x = 2 And y = -1 Or x = 4 And y = -1 Then Continue For
+                            Else
+                                If x = -2 And y = 2 Or x = -2 And y = 1 Then Continue For
+                                If x = 2 And y = 1 Or x = 4 And y = 1 Then Continue For
+                                If x = 2 And y = -1 Or x = 2 And y = -2 Then Continue For
+                                If x = -2 And y = -1 Or x = -4 And y = -1 Then Continue For
+                            End If
+                            If x = 0 And y = 0 Then Continue For
+                            Positions.Add(New Node(x + _x, y + _y))
+                        Next
+                    Next
+                    Dim CorrectCount As Integer = 0
+                    For Each node In Positions
+                        If Not availablePath.Contains(node) Then
+                            CorrectCount += 1
+                        End If
+                    Next
+                    If CorrectCount = 16 Then
+                        'there is a swastica
+                        SetBoth(ConsoleColor.Red)
+                        For Each node In Positions
+                            node.Print("XX")
+                        Next
+                        Console.SetCursorPosition(_x, _y)
+                        Console.Write("XX")
+                        numOfsFound += 1
+                    End If
+                    Positions.Clear()
+                Next
+            Next
 
+        Next
+
+        For Each cell In availablePath
+            For i = 0 To 1
+                For y = -2 To 2
+                    For x = -4 To 4 Step 2
+                        If i = 1 Then
+                            If x = -4 And y = 1 Or x = -2 And y = 1 Then Continue For
+                            If x = 2 And y = 1 Or x = 2 And y = 2 Then Continue For
+                            If x = -2 And y = -1 Or x = -2 And y = -2 Then Continue For
+                            If x = 2 And y = -1 Or x = 4 And y = -1 Then Continue For
+                        Else
+                            If x = -2 And y = 2 Or x = -2 And y = 1 Then Continue For
+                            If x = 2 And y = 1 Or x = 4 And y = 1 Then Continue For
+                            If x = 2 And y = -1 Or x = 2 And y = -2 Then Continue For
+                            If x = -2 And y = -1 Or x = -4 And y = -1 Then Continue For
+                        End If
+                        If x = 0 And y = 0 Then Continue For
+                        Positions.Add(New Node(x + cell.X, y + cell.Y))
+                    Next
+                Next
+                Dim CorrectCount As Integer = 0
+                For Each node In Positions
+                    If availablePath.Contains(node) Then
+                        CorrectCount += 1
+                    End If
+                Next
+                If CorrectCount = 16 Then
+                    'there is a swastica
+                    SetBoth(ConsoleColor.Red)
+                    For Each node In Positions
+                        node.Print("XX")
+                    Next
+                    cell.Print("XX")
+                    numOfsFound += 1
+                End If
+                Positions.Clear()
+            Next
+        Next
+        Console.SetCursorPosition(0, 1)
+        Console.ForegroundColor = ConsoleColor.Green
+        Console.BackgroundColor = ConsoleColor.Black
+        Console.Write($"---------------DONE---------------                      number of swastikas found: {numOfsFound}")
+        Console.ReadKey()
+    End Sub
     Sub CurrentExploredPercent(ByVal count As Integer, ByVal availablepath As Integer)
         Dim Percent As Integer = (count / availablepath) * 100
         Dim mess As String = $"Current percentage of the maze that has been explored: "
@@ -995,6 +1112,105 @@ Module Module1
         Return Li(r.Next(0, Li.Count - 1))
     End Function
     'maze algorithm functions
+    Function Ellers(ByVal Limits() As Integer, ByVal Delay As Integer, ByVal ShowMazeGeneration As Boolean)
+        While Limits(2) Mod 4 <> 0
+            Limits(2) -= 1
+        End While
+        Dim Row As New List(Of Cell)
+        Dim RowSet As New Dictionary(Of Cell, Integer)
+        Dim SetNum As Integer = 0
+        Dim R As New Random
+        Dim ReturnPath As New List(Of Node)
+        Dim availableCellPositions As New List(Of Cell)
+        Dim stopwatch As Stopwatch = Stopwatch.StartNew()
+        For y = Limits(1) To Limits(3) - 2 Step 2
+            For i = 0 To 1
+                For x = Limits(0) + 3 To Limits(2) Step 4
+                    If ExitCase() Then Return Nothing
+                    If i = 0 Then
+                        'first pass of the row!
+                        Dim CurCell As New Cell(x, y)
+                        Row.Add(CurCell)
+                        If Not RowSet.ContainsKey(CurCell) Then
+                            RowSet(CurCell) = SetNum
+                            If ShowMazeGeneration Then CurCell.Print($"██")
+                            ReturnPath.Add(New Node(CurCell.X, CurCell.Y))
+                            SetNum += 1
+                        End If
+                        availableCellPositions.Add(CurCell)
+                    Else
+                        'second pass of the row, need to join cells together
+                        Dim CurCell As New Cell(x, y)
+                        Dim NextCell As New Cell(x + 4, y)
+                        Dim CurrentCellSet As Integer = RowSet(CurCell)
+                        Dim AdjacentCellSet As Integer = -1
+                        If Row.Contains(NextCell) Then AdjacentCellSet = RowSet(NextCell)
+                        If CurrentCellSet <> AdjacentCellSet And R.Next(0, 101) > 50 And AdjacentCellSet <> -1 Then
+                            'join sets together
+                            Dim WallCell As Cell = MidPoint(CurCell, NextCell)
+                            If ShowMazeGeneration Then WallCell.Print("██")
+                            ReturnPath.Add(New Node(WallCell.X, WallCell.Y))
+                            RowSet(NextCell) = RowSet(CurCell)
+                        ElseIf CurrentCellSet <> AdjacentCellSet And AdjacentCellSet <> -1 And y >= Limits(3) - 3 Then
+                            Dim WallCell As Cell = MidPoint(CurCell, NextCell)
+                            If ShowMazeGeneration Then WallCell.Print("██")
+                            ReturnPath.Add(New Node(WallCell.X, WallCell.Y))
+                            RowSet(NextCell) = RowSet(CurCell)
+                        End If
+                        If x = Limits(2) And y <> Limits(3) - 2 And y < Limits(3) - 3 Then
+                            'need to carve south
+                            Dim CurrentSet As New List(Of Cell)
+                            Dim thingy As New List(Of List(Of Cell))
+                            Dim FinalCell As Cell = Row(Row.Count - 1)
+                            For j = 0 To Row.Count - 1
+                                If RowSet(Row(j)) = If(Row(j).Equals(FinalCell), True, RowSet(Row(j + 1))) Then
+                                    'if the current cell is in the same cell as the next cell then theu are in the same set
+                                    CurrentSet.Add(Row(j))
+                                    CurrentSet.Add(Row(j + 1))
+                                Else
+                                    'the next cell isnt in the same set as the current cell and therefore a path can be carved south
+                                    Dim Index As Integer = R.Next(0, CurrentSet.Count)
+                                    Dim SouthWallCell As New Cell(-1, -1)
+                                    Dim southCell As New Cell(-1, -1)
+                                    If CurrentSet.Count = 0 Then
+                                        'individual cell
+                                        SouthWallCell.Update(Row(j).X, Row(j).Y + 1)
+                                        southCell.Update(Row(j).X, Row(j).Y + 2)
+                                    Else
+                                        SouthWallCell.Update(CurrentSet(Index).X, CurrentSet(Index).Y + 1)
+                                        southCell.Update(CurrentSet(Index).X, CurrentSet(Index).Y + 2)
+                                    End If
+                                    SetColour(ConsoleColor.White)
+                                    If ShowMazeGeneration Then southCell.Print($"██")
+                                    ReturnPath.Add(New Node(southCell.X, southCell.Y))
+                                    ReturnPath.Add(New Node(SouthWallCell.X, SouthWallCell.Y))
+                                    SetColour(ConsoleColor.White)
+                                    If ShowMazeGeneration Then SouthWallCell.Print("██")
+                                    RowSet(southCell) = RowSet(Row(j))
+                                    CurrentSet.Clear()
+                                End If
+                                Threading.Thread.Sleep(Delay)
+                            Next
+                            Row.Clear()
+                        End If
+                    End If
+                    Threading.Thread.Sleep(Delay)
+                Next
+            Next
+        Next
+        PrintMessageMiddle($"Time taken to generate the maze: {Stopwatch.Elapsed.TotalSeconds}", 1, ConsoleColor.Yellow)
+        SetColour(ConsoleColor.White)
+        If Not ShowMazeGeneration Then
+            For Each node In ReturnPath
+                node.Print("██")
+            Next
+        End If
+        Dim ypos As Integer = Console.CursorTop
+        Limits(3) -= 2
+        AddStartAndEnd(ReturnPath, availableCellPositions, Limits, 0)
+        Console.SetCursorPosition(0, ypos)
+        Return ReturnPath
+    End Function
     Function Sidewinder(ByVal Limits() As Integer, ByVal Delay As Integer, ByVal ShowMazeGeneration As Boolean)
         While Limits(2) Mod 4 <> 2
             Limits(2) -= 1
@@ -1395,14 +1611,12 @@ Module Module1
         Return ReturnablePath
     End Function
     Function Prims_True(ByVal Limits() As Integer, ByVal delay As Integer, ByVal ShowMazeGeneration As Boolean)
-        'Assigns weights to each cell available in the grid, it then chooses the cell with the lowest weight out of the frontier set
+        'Assigns a random weight between 0, 99 to each available in the grid, it then chooses the cell with the lowest weight out of the frontier set
         Dim R As New Random
         Dim availablepath As New List(Of Cell)
         Dim VisitedList, FrontierSet As New List(Of Cell)
-
         Dim WallCell As Cell
         Dim ReturnablePath As New List(Of Node)
-
         Dim stopwatch As Stopwatch = Stopwatch.StartNew()
         Dim Weights As New Dictionary(Of Cell, Integer)
         For y = Limits(1) To Limits(3) Step 2
@@ -1876,7 +2090,7 @@ Module Module1
         ReturnablePath.Add(New Node(Limits(0) + 3, Limits(1) - 1))
         SetBoth(ConsoleColor.Red)
         ReturnablePath(ReturnablePath.Count - 1).Print("██")
-        Dim testnode As New Node(Limits(2) + 2, Limits(3))
+        Dim testnode As New Node(Limits(2) + 5, Limits(3))
         Do
             testnode.update(testnode.X - 1, testnode.Y)
         Loop Until ReturnablePath.Contains(testnode)
