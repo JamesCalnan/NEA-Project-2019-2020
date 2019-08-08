@@ -10,16 +10,9 @@ Module Module1
         SetColour(ConsoleColor.White)
         Dim MenuOptions() As String = {"Recursive Backtracker Algorithm (using iteration)", "Recursive Backtracker Algorithm (using recursion)", "Hunt and Kill Algorithm", "Prim's Algorithm (simplified)", "Prim's Algorithm (true)", "Aldous-Broder Algorithm", "Growing Tree Algorithm", "Custom Algorithm", "Binary Tree Algorithm", "Sidewinder Algorithm", "Wilson's Algorithm", "Eller's Algorithm", "Kruskal's Algorithm", "", "Load the previously generated maze", "Save the previously generated maze", "Load a saved maze", "", "Exit"}
         Menu(MenuOptions)
-        Console.SetWindowSize(135, 41)
         Console.ReadKey()
-        Dim limits() As Integer = {5, 3, Console.WindowWidth, Console.WindowHeight}
-
-        For Each num In limits
-            Console.WriteLine(num)
-        Next
-        Console.ReadKey()
-        Console.Clear()
-        Dim path As List(Of Node) = Ellers(limits, 0, False)
+        Dim limits() As Integer = {5, 3, Console.WindowWidth - 10, Console.WindowHeight - 5}
+        Dim path As List(Of Node) = Kruskals(limits, 0, False)
     End Sub
     Sub Playmaze(ByVal AvailablePath As List(Of Node), ByVal ShowPath As Boolean)
         Dim playerPath As New List(Of Node)
@@ -371,6 +364,10 @@ Module Module1
                     ElseIf y = 11 Then
                         GetMazeInfo(Width, Height, DelayMS, Limits, ShowMazeGeneration, True, 0)
                         AvailablePath = Ellers(Limits, DelayMS, ShowMazeGeneration)
+                        Solving(AvailablePath, Limits, PreviousMaze, input, YPosAfterMaze, ShowPath, SolvingDelay, arr(y), PreviousAlgorithm)
+                    ElseIf y = 12 Then
+                        GetMazeInfo(Width, Height, DelayMS, Limits, ShowMazeGeneration, True, 0)
+                        AvailablePath = Kruskals(Limits, DelayMS, ShowMazeGeneration)
                         Solving(AvailablePath, Limits, PreviousMaze, input, YPosAfterMaze, ShowPath, SolvingDelay, arr(y), PreviousAlgorithm)
                     ElseIf y = 14 Then
                         Dim GreatestX, GreatestY As Integer
@@ -1054,17 +1051,6 @@ Module Module1
         Console.Write($"---------------DONE---------------                      number of swastikas found: {numOfsFound}")
         Console.ReadKey()
     End Sub
-    Sub CurrentExploredPercent(ByVal count As Integer, ByVal availablepath As Integer)
-        Dim Percent As Integer = (count / availablepath) * 100
-        Dim mess As String = $"Current percentage of the maze that has been explored: "
-        SetColour(ConsoleColor.White)
-        SetBackGroundColour(ConsoleColor.Black)
-        Console.SetCursorPosition((Console.WindowWidth / 2) - ((mess.Count / 2) + 3), 1)
-        Console.Write(mess)
-        Dim mess2 As String = $"{100 - Percent}%"
-        Console.SetCursorPosition(((Console.WindowWidth / 2) - (mess.Count / 2)) + mess.Count - 2, 1)
-        MsgColour($"{100 - Percent}%", ConsoleColor.Yellow)
-    End Sub
     Sub SetBoth(ByVal colour As ConsoleColor)
         SetColour(colour)
         SetBackGroundColour(colour)
@@ -1112,6 +1098,110 @@ Module Module1
         Return Li(r.Next(0, Li.Count - 1))
     End Function
     'maze algorithm functions
+
+    Function Kruskals(ByVal Limits() As Integer, ByVal Delay As Integer, ByVal ShowMazeGeneration As Boolean)
+        Limits(3) -= 4
+        Dim CellSet As New Dictionary(Of Cell, Integer)
+        Dim AvailableCells As New List(Of Cell)
+        Dim SetNumber As Integer = 1
+        Dim BorderCells As New List(Of Cell)
+        Dim Returnpath As New List(Of Node)
+        SetColour(ConsoleColor.Green)
+        'Assigning the cell a unique set
+        For y = Limits(1) To Limits(3) Step 2
+            For x = Limits(0) + 3 To Limits(2) Step 4
+                Dim cur As New Cell(x, y)
+                CellSet(cur) = SetNumber
+                SetNumber += 1
+                'cur.Print("XX")
+                AvailableCells.Add(New Cell(cur.X, cur.Y))
+            Next
+        Next
+        For y = Limits(1) To Limits(3)
+            BorderCells.Add(New Cell(Limits(2) - 1, y))
+        Next
+        Dim EdgeWeights As New Dictionary(Of Cell, Integer)
+        Dim R As New Random
+        'Assigning edge weights
+        For y = Limits(1) To Limits(3) Step 2
+            For x = Limits(0) + 3 To Limits(2) Step 4
+                If x < Limits(2) - 2 Then
+                    Dim cur As New Cell(x + 2, y)
+                    If Not BorderCells.Contains(cur) Then
+                        EdgeWeights(cur) = R.Next(0, 99)
+                    End If
+                End If
+                If y < Limits(3) - 1 Then
+                    Dim cur As New Cell(x, y + 1)
+                    If Not BorderCells.Contains(cur) Then
+                        EdgeWeights(cur) = R.Next(0, 99)
+                    End If
+                End If
+            Next
+        Next
+        SetBoth(ConsoleColor.White)
+        Dim stopwatch As Stopwatch = Stopwatch.StartNew()
+        While EdgeWeights.Count > 0
+            'find the edge with the lowest weight
+            Dim HighestWeightCell As Cell = EdgeWeights.Keys(0)
+            For Each cell In EdgeWeights
+                If EdgeWeights(HighestWeightCell) < EdgeWeights(cell.Key) Then HighestWeightCell = cell.Key
+            Next
+            'TempLowest is now the key with the lowest value in the EdgeWeights dictionary
+            Dim WallCell As Cell = HighestWeightCell
+            'need to find the two adjacent cells
+            Dim AdjacentCells As New List(Of Cell)
+            Dim TempCell As New Cell(WallCell.X, WallCell.Y - 1)
+            If AvailableCells.Contains(New Cell(WallCell.X, WallCell.Y - 1)) Then AdjacentCells.Add(New Cell(WallCell.X, WallCell.Y - 1))
+            If AvailableCells.Contains(New Cell(WallCell.X + 2, WallCell.Y)) Then AdjacentCells.Add(New Cell(WallCell.X + 2, WallCell.Y))
+            If AvailableCells.Contains(New Cell(WallCell.X, WallCell.Y + 1)) Then AdjacentCells.Add(New Cell(WallCell.X, WallCell.Y + 1))
+            If AvailableCells.Contains(New Cell(WallCell.X - 2, WallCell.Y)) Then AdjacentCells.Add(New Cell(WallCell.X - 2, WallCell.Y))
+            SetColour(ConsoleColor.White)
+            If AdjacentCells.Count = 1 Then
+                If ShowMazeGeneration Then WallCell.Print("██")
+                If ShowMazeGeneration Then AdjacentCells(0).Print("██")
+                Returnpath.Add(New Node(WallCell.X, WallCell.Y))
+                If Not Returnpath.Contains(New Node(AdjacentCells(0).X, AdjacentCells(0).Y)) Then Returnpath.Add(New Node(AdjacentCells(0).X, AdjacentCells(0).Y))
+                EdgeWeights.Remove(WallCell)
+            Else
+                If CellSet(AdjacentCells(1)) <> CellSet(AdjacentCells(0)) Then
+                    If ShowMazeGeneration Then WallCell.Print("██")
+                    Returnpath.Add(New Node(WallCell.X, WallCell.Y))
+                    Dim SetNumToBeChanged As Integer = CellSet(AdjacentCells(1))
+                    Dim CellsToBeChanged As New List(Of Cell)
+                    For Each thing In CellSet
+                        If thing.Value = SetNumToBeChanged Then
+                            CellsToBeChanged.Add(thing.Key)
+                        End If
+                    Next
+                    For Each thing In CellsToBeChanged
+                        CellSet(thing) = CellSet(AdjacentCells(0))
+                    Next
+                    For Each cell In AdjacentCells
+                        If ShowMazeGeneration Then cell.Print("██")
+                        If Not Returnpath.Contains(New Node(cell.X, cell.Y)) Then Returnpath.Add(New Node(cell.X, cell.Y))
+                    Next
+                Else
+                    EdgeWeights.Remove(WallCell)
+                End If
+            End If
+            Threading.Thread.Sleep(Delay)
+        End While
+        PrintMessageMiddle($"Time taken to generate the maze: {stopwatch.Elapsed.TotalSeconds}", 1, ConsoleColor.Yellow)
+        SetBoth(ConsoleColor.White)
+        If Not ShowMazeGeneration Then
+            For Each node In Returnpath
+                node.Print("██")
+            Next
+        End If
+        SetColour(ConsoleColor.White)
+        SetBackGroundColour(ConsoleColor.Black)
+        Dim ypos As Integer = Console.CursorTop + 5
+        AddStartAndEnd(Returnpath, AvailableCells, Limits, 0)
+        Console.SetCursorPosition(0, ypos)
+        Return Returnpath
+        Console.ReadKey()
+    End Function
     Function Ellers(ByVal Limits() As Integer, ByVal Delay As Integer, ByVal ShowMazeGeneration As Boolean)
         While Limits(2) Mod 4 <> 0
             Limits(2) -= 1
@@ -1130,7 +1220,7 @@ Module Module1
                 availableCells(cur) = True
             Next
         Next
-        SetColour(ConsoleColor.White)
+        SetBoth(ConsoleColor.White)
         For y = Limits(1) To Limits(3) - 2 Step 2
             For i = 0 To 1
                 For x = Limits(0) + 3 To Limits(2) Step 4
@@ -1246,13 +1336,15 @@ Module Module1
                 Next
             Next
         Next
-        PrintMessageMiddle($"Time taken to generate the maze: {Stopwatch.Elapsed.TotalSeconds}", 1, ConsoleColor.Yellow)
-        SetColour(ConsoleColor.White)
+        PrintMessageMiddle($"Time taken to generate the maze: {stopwatch.Elapsed.TotalSeconds}", 1, ConsoleColor.Yellow)
+        SetBoth(ConsoleColor.White)
         If Not ShowMazeGeneration Then
             For Each node In ReturnPath
                 node.Print("██")
             Next
         End If
+        SetColour(ConsoleColor.White)
+        SetBackGroundColour(ConsoleColor.Black)
         Dim ypos As Integer = Console.CursorTop
         Limits(3) -= 2
         AddStartAndEnd(ReturnPath, availableCellPositions, Limits, 0)
@@ -1269,6 +1361,7 @@ Module Module1
         Dim Availablepath As New List(Of Node)
         Dim R As New Random
         Dim stopwatch As Stopwatch = Stopwatch.StartNew()
+        SetBoth(ConsoleColor.White)
         For y = Limits(1) To Limits(3) Step 2
             For x = Limits(0) + 3 To Limits(2) Step 4
                 If ExitCase() Then Return Nothing
@@ -1300,12 +1393,14 @@ Module Module1
             Next
         Next
         PrintMessageMiddle($"Time taken to generate the maze: {stopwatch.Elapsed.TotalSeconds}", 1, ConsoleColor.Yellow)
-        SetColour(ConsoleColor.White)
+        SetBoth(ConsoleColor.White)
         If Not ShowMazeGeneration Then
             For Each node In Availablepath
                 node.Print("██")
             Next
         End If
+        SetColour(ConsoleColor.White)
+        SetBackGroundColour(ConsoleColor.Black)
         Dim ypos As Integer = Console.CursorTop
         AddStartAndEnd(Availablepath, VisitedList, Limits, 0)
         Console.SetCursorPosition(0, ypos)
@@ -1331,6 +1426,7 @@ Module Module1
             ChangeX = +4
             ChangeY = -2
         End If
+        SetBoth(ConsoleColor.White)
         For y = Limits(1) To Limits(3) Step 2
             For x = Limits(0) + 3 To Limits(2) Step 4
                 If ExitCase() Then Return Nothing
@@ -1364,12 +1460,14 @@ Module Module1
             Next
         Next
         PrintMessageMiddle($"Time taken to generate the maze: {stopwatch.Elapsed.TotalSeconds}", 1, ConsoleColor.Yellow)
-        SetColour(ConsoleColor.White)
+        SetBoth(ConsoleColor.White)
         If Not ShowMazeGeneration Then
             For Each node In Availablepath
                 node.Print("██")
             Next
         End If
+        SetColour(ConsoleColor.White)
+        SetBackGroundColour(ConsoleColor.Black)
         Dim ypos As Integer = Console.CursorTop
         AddStartAndEnd(Availablepath, VisitedList, Limits, 0)
         Console.SetCursorPosition(0, ypos)
@@ -1388,6 +1486,7 @@ Module Module1
         If ShowMazeGeneration Then CurrentCell.Print("██")
         ReturnablePath.Add(New Node(CurrentCell.X, CurrentCell.Y))
         Dim stopwatch As Stopwatch = Stopwatch.StartNew()
+        SetBoth(ConsoleColor.White)
         While True
             If ExitCase() Then Return Nothing
             For Each cell As Cell In Neighbour(CurrentCell, VisitedList, Limits, True)
@@ -1522,12 +1621,14 @@ Module Module1
             PreviousCell = CurrentCell
         End While
         PrintMessageMiddle($"Time taken to generate the maze: {stopwatch.Elapsed.TotalSeconds}", 1, ConsoleColor.Yellow)
-        SetColour(ConsoleColor.White)
+        SetBoth(ConsoleColor.White)
         If Not ShowMazeGeneration Then
             For Each node In ReturnablePath
                 node.Print("██")
             Next
         End If
+        SetColour(ConsoleColor.White)
+        SetBackGroundColour(ConsoleColor.Black)
         Dim ypos As Integer = Console.CursorTop
         AddStartAndEnd(ReturnablePath, VisitedList, Limits, 0)
         Console.SetCursorPosition(0, ypos)
@@ -1545,6 +1646,7 @@ Module Module1
         If ShowMazeGeneration Then CurrentCell.Print("██")
         ReturnablePath.Add(New Node(CurrentCell.X, CurrentCell.Y))
         Dim stopwatch As Stopwatch = Stopwatch.StartNew()
+        SetBoth(ConsoleColor.White)
         While True
             If ExitCase() Then Return Nothing
             For Each cell As Cell In Neighbour(CurrentCell, VisitedList, Limits, True)
@@ -1579,12 +1681,14 @@ Module Module1
             RecentFrontierSet.Clear()
         End While
         PrintMessageMiddle($"Time taken to generate the maze: {stopwatch.Elapsed.TotalSeconds}", 1, ConsoleColor.Yellow)
-        SetColour(ConsoleColor.White)
+        SetBoth(ConsoleColor.White)
         If Not ShowMazeGeneration Then
             For Each node In ReturnablePath
                 node.Print("██")
             Next
         End If
+        SetColour(ConsoleColor.White)
+        SetBackGroundColour(ConsoleColor.Black)
         Dim ypos As Integer = Console.CursorTop
         AddStartAndEnd(ReturnablePath, VisitedList, Limits, 0)
         Console.SetCursorPosition(0, ypos)
@@ -1606,6 +1710,7 @@ Module Module1
             Next
         Next
         Dim stopwatch As Stopwatch = Stopwatch.StartNew()
+        SetBoth(ConsoleColor.White)
         While VisitedList.Count <> TotalCellCount
             If ExitCase() Then Return Nothing
             SetBoth(ConsoleColor.White)
@@ -1647,12 +1752,14 @@ Module Module1
             PrevCell.Print("██")
         End If
         PrintMessageMiddle($"Time taken to generate the maze: {stopwatch.Elapsed.TotalSeconds}", 1, ConsoleColor.Yellow)
-        SetColour(ConsoleColor.White)
+        SetBoth(ConsoleColor.White)
         If Not ShowMazeGeneration Then
             For Each node In ReturnablePath
                 node.Print("██")
             Next
         End If
+        SetColour(ConsoleColor.White)
+        SetBackGroundColour(ConsoleColor.Black)
         Dim ypos As Integer = Console.CursorTop
         AddStartAndEnd(ReturnablePath, VisitedList, Limits, 0)
         Console.SetCursorPosition(0, ypos)
@@ -2255,7 +2362,39 @@ Class Cell
         Console.SetCursorPosition(X, Y)
         Console.Write(str)
     End Sub
+    Function Adjacent(ByVal availableCells As List(Of Cell))
+        Dim AdjacentCellList As New List(Of Cell)
+        Dim curNode As New Cell(Me.X, Me.Y)
+        curNode.Update(Me.X, Me.Y - 1)
+        curNode.Print("XX")
+        If availableCells.Contains(curNode) Then
+            AdjacentCellList.Add(curNode)
+        End If
 
+        curNode.Update(Me.X + 2, Me.Y)
+        curNode.Print("XX")
+        If availableCells.Contains(curNode) Then
+            AdjacentCellList.Add(curNode)
+        End If
+
+        curNode.Update(Me.X, Me.Y + 1)
+        curNode.Print("XX")
+        If availableCells.Contains(curNode) Then
+            AdjacentCellList.Add(curNode)
+        End If
+
+        curNode.Update(Me.X - 2, Me.Y)
+        curNode.Print("XX")
+        If availableCells.Contains(curNode) Then
+            AdjacentCellList.Add(curNode)
+        End If
+        SetColour(ConsoleColor.Green)
+        For Each thing In AdjacentCellList
+            thing.Print("XX")
+        Next
+
+        Return AdjacentCellList
+    End Function
     Public Overrides Function Equals(obj As Object) As Boolean
         Dim cell = TryCast(obj, Cell)
         Return cell IsNot Nothing AndAlso
