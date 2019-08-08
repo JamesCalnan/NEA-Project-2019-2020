@@ -1162,8 +1162,10 @@ Module Module1
                             Dim SetNumToBeChanged As Integer = RowSet(NextCell)
                             Dim CellsToBeChanged As New List(Of Cell)
                             For Each thing In RowSet
-                                If thing.Value = SetNumToBeChanged Then
-                                    CellsToBeChanged.Add(thing.Key)
+                                If Row.Contains(thing.Key) Then
+                                    If thing.Value = SetNumToBeChanged Then
+                                        CellsToBeChanged.Add(thing.Key)
+                                    End If
                                 End If
                             Next
                             For Each thing In CellsToBeChanged
@@ -1177,8 +1179,10 @@ Module Module1
                             Dim SetNumToBeChanged As Integer = RowSet(NextCell)
                             Dim CellsToBeChanged As New List(Of Cell)
                             For Each thing In RowSet
-                                If thing.Value = SetNumToBeChanged Then
-                                    CellsToBeChanged.Add(thing.Key)
+                                If Row.Contains(thing.Key) Then
+                                    If thing.Value = SetNumToBeChanged Then
+                                        CellsToBeChanged.Add(thing.Key)
+                                    End If
                                 End If
                             Next
                             For Each thing In CellsToBeChanged
