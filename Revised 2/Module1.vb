@@ -122,7 +122,7 @@ Module Module1
         End If
         Width = (GetIntInputArrowKeys($"Width of the Maze: ", (Console.WindowWidth - 54) / 2, 20, False)) * 2
         If Width Mod 2 = 0 Then Width += 1
-        Height = GetIntInputArrowKeys($"Height of the Maze: ", Console.WindowHeight - 5, 10, False)
+        Height = GetIntInputArrowKeys($"Height of the Maze: ", Console.WindowHeight - 5, 20, False)
         If Height Mod 2 = 0 Then Height += 1
         Limits = {5, 3, Width, Height}
         Console.Clear()
@@ -1123,6 +1123,14 @@ Module Module1
         Dim ReturnPath As New List(Of Node)
         Dim availableCellPositions As New List(Of Cell)
         Dim stopwatch As Stopwatch = Stopwatch.StartNew()
+        Dim availableCells As New Dictionary(Of Cell, Boolean)
+        For y = Limits(1) To Limits(3) Step 2
+            For x = Limits(0) + 3 To Limits(2) Step 4
+                Dim cur As New Cell(x, y)
+                availableCells(cur) = True
+            Next
+        Next
+        SetColour(ConsoleColor.White)
         For y = Limits(1) To Limits(3) - 2 Step 2
             For i = 0 To 1
                 For x = Limits(0) + 3 To Limits(2) Step 4
@@ -1131,11 +1139,11 @@ Module Module1
                         'first pass of the row!
                         Dim CurCell As New Cell(x, y)
                         Row.Add(CurCell)
-                        If Not RowSet.ContainsKey(CurCell) Then
+                        If Not RowSet.ContainsKey(CurCell) And availableCells(CurCell) Then
+                            SetNum += 1
                             RowSet(CurCell) = SetNum
                             If ShowMazeGeneration Then CurCell.Print($"██")
                             ReturnPath.Add(New Node(CurCell.X, CurCell.Y))
-                            SetNum += 1
                         End If
                         availableCellPositions.Add(CurCell)
                     Else
@@ -1145,17 +1153,37 @@ Module Module1
                         Dim CurrentCellSet As Integer = RowSet(CurCell)
                         Dim AdjacentCellSet As Integer = -1
                         If Row.Contains(NextCell) Then AdjacentCellSet = RowSet(NextCell)
-                        If CurrentCellSet <> AdjacentCellSet And R.Next(0, 101) > 50 And AdjacentCellSet <> -1 Then
+                        Dim RandomNum As Integer = R.Next(0, 101)
+                        If CurrentCellSet <> AdjacentCellSet And RandomNum > 60 And AdjacentCellSet <> -1 Then
                             'join sets together
                             Dim WallCell As Cell = MidPoint(CurCell, NextCell)
                             If ShowMazeGeneration Then WallCell.Print("██")
                             ReturnPath.Add(New Node(WallCell.X, WallCell.Y))
-                            RowSet(NextCell) = RowSet(CurCell)
+                            Dim SetNumToBeChanged As Integer = RowSet(NextCell)
+                            Dim CellsToBeChanged As New List(Of Cell)
+                            For Each thing In RowSet
+                                If thing.Value = SetNumToBeChanged Then
+                                    CellsToBeChanged.Add(thing.Key)
+                                End If
+                            Next
+                            For Each thing In CellsToBeChanged
+                                RowSet(thing) = RowSet(CurCell)
+                            Next
                         ElseIf CurrentCellSet <> AdjacentCellSet And AdjacentCellSet <> -1 And y >= Limits(3) - 3 Then
+                            'final row, need to join sets together
                             Dim WallCell As Cell = MidPoint(CurCell, NextCell)
                             If ShowMazeGeneration Then WallCell.Print("██")
                             ReturnPath.Add(New Node(WallCell.X, WallCell.Y))
-                            RowSet(NextCell) = RowSet(CurCell)
+                            Dim SetNumToBeChanged As Integer = RowSet(NextCell)
+                            Dim CellsToBeChanged As New List(Of Cell)
+                            For Each thing In RowSet
+                                If thing.Value = SetNumToBeChanged Then
+                                    CellsToBeChanged.Add(thing.Key)
+                                End If
+                            Next
+                            For Each thing In CellsToBeChanged
+                                RowSet(thing) = RowSet(CurCell)
+                            Next
                         End If
                         If x = Limits(2) And y <> Limits(3) - 2 And y < Limits(3) - 3 Then
                             'need to carve south
@@ -1164,30 +1192,46 @@ Module Module1
                             Dim FinalCell As Cell = Row(Row.Count - 1)
                             For j = 0 To Row.Count - 1
                                 If RowSet(Row(j)) = If(Row(j).Equals(FinalCell), True, RowSet(Row(j + 1))) Then
-                                    'if the current cell is in the same cell as the next cell then theu are in the same set
+                                    'if the current cell is in the same set as the next cell then theu are in the same set
                                     CurrentSet.Add(Row(j))
                                     CurrentSet.Add(Row(j + 1))
                                 Else
                                     'the next cell isnt in the same set as the current cell and therefore a path can be carved south
-                                    Dim Index As Integer = R.Next(0, CurrentSet.Count)
-                                    Dim SouthWallCell As New Cell(-1, -1)
-                                    Dim southCell As New Cell(-1, -1)
                                     If CurrentSet.Count = 0 Then
                                         'individual cell
-                                        SouthWallCell.Update(Row(j).X, Row(j).Y + 1)
-                                        southCell.Update(Row(j).X, Row(j).Y + 2)
+                                        Dim SouthWallCell As New Cell(Row(j).X, Row(j).Y + 1)
+                                        Dim southCell As New Cell(Row(j).X, Row(j).Y + 2)
+                                        ReturnPath.Add(New Node(southCell.X, southCell.Y))
+                                        ReturnPath.Add(New Node(SouthWallCell.X, SouthWallCell.Y))
+                                        RowSet(southCell) = RowSet(Row(j))
+                                        availableCells(southCell) = False
+                                        If ShowMazeGeneration Then southCell.Print($"██")
+                                        If ShowMazeGeneration Then SouthWallCell.Print($"██")
                                     Else
-                                        SouthWallCell.Update(CurrentSet(Index).X, CurrentSet(Index).Y + 1)
-                                        southCell.Update(CurrentSet(Index).X, CurrentSet(Index).Y + 2)
+                                        'multiple cells
+                                        Dim Indexes As New List(Of Integer)
+                                        For k = 0 To 1
+                                            Dim idx As Integer = R.Next(0, CurrentSet.Count)
+                                            If Not Indexes.Contains(idx) Then Indexes.Add(idx)
+                                        Next
+                                        Dim Positions As New List(Of Cell)
+                                        For k = 0 To Indexes.Count - 1
+                                            'If Indexes(k) = 1 Then Continue For
+                                            Dim SouthWallCell As New Cell(CurrentSet(Indexes(k)).X, CurrentSet(Indexes(k)).Y + 1)
+                                            Dim southCell As New Cell(CurrentSet(Indexes(k)).X, CurrentSet(Indexes(k)).Y + 2)
+                                            availableCells(southCell) = False
+                                            RowSet(southCell) = RowSet(Row(j))
+                                            If ShowMazeGeneration Then southCell.Print($"██")
+                                            If ShowMazeGeneration Then SouthWallCell.Print($"██")
+                                            ReturnPath.Add(New Node(southCell.X, southCell.Y))
+                                            ReturnPath.Add(New Node(SouthWallCell.X, SouthWallCell.Y))
+                                        Next
+                                        For Each position In Positions
+                                            RowSet(position) = RowSet(Row(j))
+                                            availableCells(position) = False
+                                        Next
+                                        CurrentSet.Clear()
                                     End If
-                                    SetColour(ConsoleColor.White)
-                                    If ShowMazeGeneration Then southCell.Print($"██")
-                                    ReturnPath.Add(New Node(southCell.X, southCell.Y))
-                                    ReturnPath.Add(New Node(SouthWallCell.X, SouthWallCell.Y))
-                                    SetColour(ConsoleColor.White)
-                                    If ShowMazeGeneration Then SouthWallCell.Print("██")
-                                    RowSet(southCell) = RowSet(Row(j))
-                                    CurrentSet.Clear()
                                 End If
                                 Threading.Thread.Sleep(Delay)
                             Next
