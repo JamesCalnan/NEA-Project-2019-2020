@@ -7,7 +7,7 @@ Module Module1
     Sub Main()
         Console.CursorVisible = False
         Console.ForegroundColor = (ConsoleColor.White)
-        Dim MenuOptions() As String = {"Recursive Backtracker Algorithm (using iteration)", "Recursive Backtracker Algorithm (using recursion)", "Hunt and Kill Algorithm", "Prim's Algorithm (simplified)", "Prim's Algorithm (true)", "Aldous-Broder Algorithm", "Growing Tree Algorithm", "Custom Algorithm", "Binary Tree Algorithm", "Sidewinder Algorithm", "Wilson's Algorithm", "Eller's Algorithm", "Kruskal's Algorithm", "", "Load the previously generated maze", "Save the previously generated maze", "Save the previous maze as a png image", "Load a saved maze", "", "Exit"}
+        Dim MenuOptions() As String = {"Recursive Backtracker Algorithm (using iteration)", "Recursive Backtracker Algorithm (using recursion)", "Hunt and Kill Algorithm", "Prim's Algorithm (simplified)", "Prim's Algorithm (true)", "Aldous-Broder Algorithm", "Growing Tree Algorithm", "Sidewinder Algorithm", "Binary Tree Algorithm", "Wilson's Algorithm", "Eller's Algorithm", "Kruskal's Algorithm", "Custom Algorithm", "", "Load the previously generated maze", "Save the previously generated maze", "Output the previous maze as a png image", "Load a saved maze", "", "Exit"}
         Menu(MenuOptions)
         Dim bmp As New Bitmap(350, 350)
         Dim g As Graphics
@@ -153,6 +153,10 @@ Module Module1
                 Case "DownArrow"
                     current -= 1
                     If current < NumMin Then current = NumMin
+                Case "M"
+                    current = NumMax
+                Case "H"
+                    current = NumMax / 2
                 Case "Enter"
                     Exit While
             End Select
@@ -215,12 +219,12 @@ Module Module1
         yposaftermaze = limits(3)
         DisplayAvailablePositions(availablepath.Count)
         Console.SetCursorPosition(0, yposaftermaze + 3)
-        Dim temparr() As String = {"Solve using the A* algorithm", "Solve using Dijkstra's algorithm", "Solve using Breadth-first search", "Solve using Depth-first search (using iteration)", "Solve using Depth-first search (using recursion)", "Play the maze", "Clear the maze and return to the menu"}
+        Dim temparr() As String = {"Solve using the A* algorithm", "Solve using Dijkstra's algorithm", "Solve using Breadth-first search", "Solve using Depth-first search (using iteration)", "Solve using Depth-first search (using recursion)", "Play the maze", "Save the maze", "Output the maze as a png image", "Clear the maze and return to the menu"}
         input = SolvingMenu(temparr, "What would you like to do with the maze", limits(2) + 2, 3)
         previousmaze.Clear()
         previousmaze = availablepath
     End Sub
-    Sub SolvingInput(ByVal input As String, ByVal showpath As Boolean, ByVal YposAfterMaze As Integer, ByVal solvingdelay As Integer, ByVal availablepath As List(Of Node))
+    Sub SolvingInput(ByVal input As String, ByVal showpath As Boolean, ByVal YposAfterMaze As Integer, ByVal solvingdelay As Integer, ByVal availablepath As List(Of Node), ByVal Algorithm As String)
         If input = "Solve using the A* algorithm" Then
             showpath = HorizontalYesNo(YposAfterMaze + 2, "Do you want to show the steps in solving the maze: ", True, False, False)
             If showpath Then solvingdelay = GetIntInputArrowKeys("Delay when solving the maze: ", 100, 0, True)
@@ -232,7 +236,6 @@ Module Module1
         ElseIf input = "Solve using Dijkstra's algorithm" Then
             showpath = HorizontalYesNo(YposAfterMaze + 2, "Do you want to show the steps in solving the maze: ", True, False, False)
             If showpath Then solvingdelay = GetIntInputArrowKeys("Delay when solving the maze: ", 100, 0, True)
-
             Dijkstras(availablepath, showpath, solvingdelay)
         ElseIf input = "Solve using Breadth-first search" Then
             showpath = HorizontalYesNo(YposAfterMaze + 2, "Do you want to show the steps in solving the maze: ", True, False, False)
@@ -262,8 +265,16 @@ Module Module1
             Playmaze(availablepath, showpath)
         ElseIf input = "Clear the maze and return to the menu" Then
             Console.Clear()
+        ElseIf input = "Save the maze" Then
+            SaveMaze(availablepath, $"Algorithm used to generate this maze: {Algorithm}")
+        ElseIf input = "Output the maze as a png image" Then
+            Console.Clear()
+            Console.ForegroundColor = ConsoleColor.White
+            Console.Write("File Name of the maze to load (don't include .png): ")
+            Dim filename As String = Console.ReadLine
+            Console.Clear()
+            SaveMazePNG(availablepath, Algorithm, filename)
         ElseIf input = "s" Then
-
             SD(availablepath)
         End If
     End Sub
@@ -271,29 +282,30 @@ Module Module1
         If AvailablePath IsNot Nothing Then
             SetPreivousAlgorithm = Algorithm
             PreSolving(Limits, AvailablePath, PreviousMaze, Input, YPosAfterMaze)
-            SolvingInput(Input, ShowPath, YPosAfterMaze, SolvingDelay, AvailablePath)
+            SolvingInput(Input, ShowPath, YPosAfterMaze, SolvingDelay, AvailablePath, Algorithm)
         End If
     End Sub
     Sub Menu(ByVal arr() As String)
         Dim input, PreviousAlgorithm As String
         Dim PreviousMaze, LoadedMaze As New List(Of Node)
         Dim Width, Height, DelayMS, Limits(), SolvingDelay, YPosAfterMaze, y As Integer
+        Dim ScreenWidth As Integer = Console.WindowWidth / 2
         Dim ShowMazeGeneration, ShowPath As Boolean
         Console.Clear()
         Dim CurrentCol As Integer = Console.CursorTop
         Dim NumOfOptions As Integer = arr.Count
         MsgColour("What Maze Generation Algorithm do you want to use: ", ConsoleColor.Yellow)
-        MsgColour($"> {arr(0)} <", ConsoleColor.Green)
+        MsgColour($"> {arr(0)}  ", ConsoleColor.Green)
         For i = 1 To arr.Count - 1
             Console.WriteLine($" {arr(i)}")
         Next
         While 1
             Console.BackgroundColor = (ConsoleColor.Black)
             Console.ForegroundColor = (ConsoleColor.White)
-            Dim Info() As String = {"Info:", "Use arrow keys for everything except when saving or loading a maze", "The right and left arrow keys increment by 1", "The up and down arrow keys increment by 10"}
+            Dim Info() As String = {"Info:", "Use arrow keys for everything except when saving or loading a maze", "The right and left arrow keys increment by 1", "The up and down arrow keys increment by 10", "Pressing the key M when inputting interger values will set the number to the max it can be", "Pressing the key H when inputting interger values will set the number to half of the maximum value it can be"}
             Dim cou As Integer = 0
             For Each item In Info
-                Console.SetCursorPosition(Console.WindowWidth / 2 - item.Length / 2, 0 + cou)
+                Console.SetCursorPosition(ScreenWidth - item.Length / 2, 0 + cou)
                 If cou <> 0 Then Console.ForegroundColor = (ConsoleColor.Cyan)
                 Console.Write(item)
                 cou += 1
@@ -362,7 +374,7 @@ Module Module1
                         Solving(AvailablePath, Limits, PreviousMaze, input, YPosAfterMaze, ShowPath, SolvingDelay, arr(y), PreviousAlgorithm)
                     ElseIf y = 7 Then
                         GetMazeInfo(Width, Height, DelayMS, Limits, ShowMazeGeneration, True, 0)
-                        AvailablePath = Custom(Limits, DelayMS, ShowMazeGeneration)
+                        AvailablePath = Sidewinder(Limits, DelayMS, ShowMazeGeneration)
                         Solving(AvailablePath, Limits, PreviousMaze, input, YPosAfterMaze, ShowPath, SolvingDelay, arr(y), PreviousAlgorithm)
                     ElseIf y = 8 Then
                         GetMazeInfo(Width, Height, DelayMS, Limits, ShowMazeGeneration, True, 0)
@@ -372,19 +384,19 @@ Module Module1
                         Solving(AvailablePath, Limits, PreviousMaze, input, YPosAfterMaze, ShowPath, SolvingDelay, arr(y), PreviousAlgorithm)
                     ElseIf y = 9 Then
                         GetMazeInfo(Width, Height, DelayMS, Limits, ShowMazeGeneration, True, 0)
-                        AvailablePath = Sidewinder(Limits, DelayMS, ShowMazeGeneration)
+                        AvailablePath = Wilsons(Limits, DelayMS, ShowMazeGeneration)
                         Solving(AvailablePath, Limits, PreviousMaze, input, YPosAfterMaze, ShowPath, SolvingDelay, arr(y), PreviousAlgorithm)
                     ElseIf y = 10 Then
                         GetMazeInfo(Width, Height, DelayMS, Limits, ShowMazeGeneration, True, 0)
-                        AvailablePath = Wilsons(Limits, DelayMS, ShowMazeGeneration)
+                        AvailablePath = Ellers(Limits, DelayMS, ShowMazeGeneration)
                         Solving(AvailablePath, Limits, PreviousMaze, input, YPosAfterMaze, ShowPath, SolvingDelay, arr(y), PreviousAlgorithm)
                     ElseIf y = 11 Then
                         GetMazeInfo(Width, Height, DelayMS, Limits, ShowMazeGeneration, True, 0)
-                        AvailablePath = Ellers(Limits, DelayMS, ShowMazeGeneration)
+                        AvailablePath = Kruskals(Limits, DelayMS, ShowMazeGeneration)
                         Solving(AvailablePath, Limits, PreviousMaze, input, YPosAfterMaze, ShowPath, SolvingDelay, arr(y), PreviousAlgorithm)
                     ElseIf y = 12 Then
                         GetMazeInfo(Width, Height, DelayMS, Limits, ShowMazeGeneration, True, 0)
-                        AvailablePath = Kruskals(Limits, DelayMS, ShowMazeGeneration)
+                        AvailablePath = Custom(Limits, DelayMS, ShowMazeGeneration)
                         Solving(AvailablePath, Limits, PreviousMaze, input, YPosAfterMaze, ShowPath, SolvingDelay, arr(y), PreviousAlgorithm)
                     ElseIf y = 14 Then
                         Dim GreatestX, GreatestY As Integer
@@ -409,7 +421,7 @@ Module Module1
                             Console.SetCursorPosition(0, YPosAfterMaze + 3)
                             Dim temparr() As String = {"Solve using the A* algorithm", "Solve using Dijkstra's algorithm", "Solve using Breadth-first search", "Solve using Depth-first search (using iteration)", "Solve using Depth-first search (using recursion)", "Play the maze", "Clear the maze and return to the menu"}
                             input = SolvingMenu(temparr, "What would you like to do with the maze", GreatestX + 3, 3)
-                            SolvingInput(input, ShowPath, YPosAfterMaze, SolvingDelay, PreviousMaze)
+                            SolvingInput(input, ShowPath, YPosAfterMaze, SolvingDelay, PreviousMaze, PreviousAlgorithm)
                         Else
                             Console.Clear()
                             MsgColour("No previous maze available", ConsoleColor.Red)
@@ -417,23 +429,7 @@ Module Module1
                         End If
                     ElseIf y = 15 Then
                         If PreviousMaze.Count > 1 Then
-                            Console.Clear()
-                            Dim filename As String
-                            Do
-                                Console.Write("File Name (don't include .txt): ")
-                                filename = Console.ReadLine
-                                filename += ".txt"
-                                If System.IO.File.Exists(filename) Then
-                                    MsgColour("Invalid filename", ConsoleColor.Red)
-                                End If
-                            Loop Until Not System.IO.File.Exists(filename)
-                            Using writer As StreamWriter = New StreamWriter(filename, True)
-                                writer.WriteLine($"{PreviousAlgorithm}")
-                                For i = 0 To PreviousMaze.Count - 1
-                                    writer.WriteLine(PreviousMaze(i).X)
-                                    writer.WriteLine(PreviousMaze(i).Y)
-                                Next
-                            End Using
+                            SaveMaze(PreviousMaze, PreviousAlgorithm)
                         Else
                             Console.Clear()
                             MsgColour("No previous maze available", ConsoleColor.Red)
@@ -446,7 +442,7 @@ Module Module1
                             Console.Write("File Name of the maze to load (don't include .png): ")
                             Dim filename As String = Console.ReadLine
                             If Not System.IO.File.Exists(filename) Then
-                                SaveMazePNG(PreviousMaze, PreviousAlgorithm, filename)
+                                SaveMazePNG(PreviousMaze, $"Algorithm used to generate this maze: {PreviousAlgorithm}", filename)
                             Else
                                 Console.Clear()
                                 Console.ForegroundColor = ConsoleColor.Red
@@ -526,7 +522,7 @@ Module Module1
                                 PreviousMaze = LoadedMaze
                                 Dim temparr() As String = {"Solve using the A* algorithm", "Solve using Dijkstra's algorithm", "Solve using Breadth-first search", "Solve using Depth-first search (using iteration)", "Solve using Depth-first search (using recursion)", "Play the maze", "Clear the maze and return to the menu"}
                                 input = SolvingMenu(temparr, "What would you like to do with the maze", GreatestX + 3, 3)
-                                SolvingInput(input, ShowPath, YPosAfterMaze, SolvingDelay, PreviousMaze)
+                                SolvingInput(input, ShowPath, YPosAfterMaze, SolvingDelay, PreviousMaze, UsedAlgorithm)
                             ElseIf ValidMaze = 0 Then
                                 Console.Clear()
                                 MsgColour("Maze is too big for the screen, please decrease the font size and try again", ConsoleColor.Red)
@@ -558,8 +554,27 @@ Module Module1
                 Count += 1
             Next
             Console.SetCursorPosition(0, y + 1)
-            MsgColour($"> {arr(y)} <", ConsoleColor.Green)
+            MsgColour($"> {arr(y)}  ", ConsoleColor.Green)
         End While
+    End Sub
+    Sub SaveMaze(ByVal path As List(Of Node), ByVal Algorithm As String)
+        Console.Clear()
+        Dim filename As String
+        Do
+            Console.Write("File Name (don't include .txt): ")
+            filename = Console.ReadLine
+            filename += ".txt"
+            If System.IO.File.Exists(filename) Then
+                MsgColour("Invalid filename", ConsoleColor.Red)
+            End If
+        Loop Until Not System.IO.File.Exists(filename)
+        Using writer As StreamWriter = New StreamWriter(filename, True)
+            writer.WriteLine($"{Algorithm}")
+            For i = 0 To path.Count - 1
+                writer.WriteLine(path(i).X)
+                writer.WriteLine(path(i).Y)
+            Next
+        End Using
     End Sub
     Sub PrintStartandEnd(ByVal mazePositions As List(Of Node))
         Console.ForegroundColor = (ConsoleColor.Red)
@@ -781,6 +796,33 @@ Module Module1
         End While
         ReconstructPath(cameFrom, goal, start_v, If(ShowSolveTime, $"Time Taken to solve: {stopwatch.Elapsed.TotalSeconds} seconds", ""))
     End Sub
+    Sub DFS_IterativeFORFILE(ByVal availablepath As List(Of Node), ByRef bmp As Bitmap, ByRef g As Graphics, ByVal Multiplier As Integer)
+        Dim start_v As New Node(availablepath(availablepath.Count - 2).X, availablepath(availablepath.Count - 2).Y)
+        Dim goal As New Node(availablepath(availablepath.Count - 1).X, availablepath(availablepath.Count - 1).Y)
+        Dim visited As New Dictionary(Of Node, Boolean)
+        Dim stopwatch As Stopwatch = Stopwatch.StartNew()
+        Dim li As New List(Of Node)
+        Dim cameFrom As New Dictionary(Of Node, Node)
+        Dim S As New Stack(Of Node)
+        For Each u In availablepath
+            visited(u) = False
+        Next
+        S.Push(start_v)
+        While S.Count > 0
+            Dim u As Node = S.Pop
+            If u.Equals(goal) Then Exit While
+            If Not visited(u) Then
+                visited(u) = True
+                For Each w As Node In GetNeighbours(u, availablepath)
+                    If Not visited(w) Then
+                        S.Push(w)
+                        cameFrom(w) = u
+                    End If
+                Next
+            End If
+        End While
+        ReconstructPathFORFILE(cameFrom, goal, start_v, bmp, g, Multiplier)
+    End Sub
     Sub BFS(ByVal availablepath As List(Of Node), ByVal ShowPath As Boolean, ByVal ShowSolveTime As Boolean, ByVal Delay As Integer)
         Dim start_v As New Node(availablepath(availablepath.Count - 2).X, availablepath(availablepath.Count - 2).Y)
         Dim goal As New Node(availablepath(availablepath.Count - 1).X, availablepath(availablepath.Count - 1).Y)
@@ -945,6 +987,46 @@ Module Module1
         Dim dy As Integer = Math.Abs(node.Y - goal.Y)
         Return Math.Sqrt((node.X - goal.X) ^ 2 + (node.Y - goal.Y) ^ 2) * D 'D * (dx + dy) ^ 2
     End Function
+    Function getBrushColours()
+        Dim l As New List(Of Brush) From {
+            Brushes.Red,
+            Brushes.OrangeRed,
+            Brushes.Orange,
+            Brushes.Yellow,
+            Brushes.YellowGreen,
+            Brushes.Green,
+            Brushes.SeaGreen,
+            Brushes.LightSeaGreen,
+            Brushes.RoyalBlue,
+            Brushes.Blue,
+            Brushes.BlueViolet,
+            Brushes.DarkViolet,
+            Brushes.Violet,
+            Brushes.PaleVioletRed,
+            Brushes.PaleVioletRed,
+            Brushes.MediumVioletRed
+        }
+        Return l
+    End Function
+    Sub ReconstructPathFORFILE(ByVal camefrom As Dictionary(Of Node, Node), ByVal current As Node, ByVal goal As Node, ByRef bmp As Bitmap, ByRef g As Graphics, ByVal Multiplier As Integer)
+        Dim totalPath As New List(Of Node) From {
+            current,
+            goal
+        }
+        While Not current.Equals(goal)
+            totalPath.Add(current)
+            current = camefrom(current)
+        End While
+        totalPath.Add(goal)
+        totalPath.Reverse()
+        Dim colourList As List(Of Brush) = getBrushColours()
+        Dim c As Double = 0
+        For Each node In totalPath
+            g.FillRectangle(colourList(Math.Floor(c)), (node.X) * Multiplier, (node.Y * 2) * Multiplier, 2 * Multiplier, 2 * Multiplier)
+            c += 0.008
+            If Math.Floor(c) = colourList.Count Then c = 0
+        Next
+    End Sub
     Sub ReconstructPath(ByVal camefrom As Dictionary(Of Node, Node), ByVal current As Node, ByVal goal As Node, ByVal timetaken As String)
         Dim totalPath As New List(Of Node) From {
             current,
@@ -1978,6 +2060,7 @@ Module Module1
                         Dim newcell As New Cell(x, y)
                         If ShowMazeGeneration Then
                             Console.BackgroundColor = (ConsoleColor.Blue)
+                            Console.ForegroundColor = (ConsoleColor.Blue)
                             Console.SetCursorPosition(x, y)
                             newcell.Print("██")
                             Console.SetCursorPosition(x + 2, y)
@@ -2116,12 +2199,14 @@ Module Module1
         End If
         Dim ypos As Integer = Console.CursorTop
         AddStartAndEnd(ReturnablePath, VisitedList, Limits, 0)
-        SaveMazePNG(ReturnablePath, "Recursive thingiginging", "newfile")
         Console.SetCursorPosition(0, ypos)
         Return ReturnablePath
     End Function
     Sub SaveMazePNG(ByVal Path As List(Of Node), ByVal Algorithm As String, ByVal fileName As String)
-        Dim Multiplier As Integer = 8
+        Dim solving As Boolean = HorizontalYesNo(0, "Do you want the outputted maze to have the solution on it  ", False, False, False)
+        Console.Clear()
+        Console.Write("Saving...")
+        Dim Multiplier As Integer = 5
         Dim Max_X, Max_Y As Integer
         For Each node In Path
             If node.X > Max_X Then Max_X = node.X
@@ -2136,11 +2221,12 @@ Module Module1
         For Each thing In Path
             g.FillRectangle(Brushes.White, (thing.X) * Multiplier, (thing.Y * 2) * Multiplier, 2 * Multiplier, 2 * Multiplier)
         Next
+        If solving Then DFS_IterativeFORFILE(Path, bmp, g, Multiplier)
         g.FillRectangle(Brushes.Red, (Path(Path.Count - 2).X) * Multiplier, (Path(Path.Count - 2).Y + 2) * Multiplier, 2 * Multiplier, 2 * Multiplier)
-        g.FillRectangle(Brushes.ForestGreen, (Path(Path.Count - 1).X) * Multiplier, (Path(Path.Count - 1).Y * 2) * Multiplier, 2 * Multiplier, 2 * Multiplier)
-        Dim f As New Font("Arial", 14)
-        Dim point As New PointF((Width / 2) - (Algorithm.Length / 2) * Multiplier, 2)
-        g.DrawString(Algorithm, f, Brushes.AntiqueWhite, point)
+        g.FillRectangle(Brushes.Lime, (Path(Path.Count - 1).X) * Multiplier, (Path(Path.Count - 1).Y * 2) * Multiplier, 2 * Multiplier, 2 * Multiplier)
+        Dim f As New Font("Roboto", 14)
+        Dim point As New PointF(((Width) / 2) - (Algorithm.Length / 2) * Multiplier, 5)
+        g.DrawString(Algorithm, f, Brushes.White, point)
         g.Dispose()
         bmp.Save($"{fileName}.PNG", System.Drawing.Imaging.ImageFormat.Png)
         bmp.Dispose()
