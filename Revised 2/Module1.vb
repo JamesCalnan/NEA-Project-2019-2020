@@ -1,6 +1,5 @@
 ﻿Imports System.Drawing
 Imports System.IO
-Imports Revised_2
 Module Module1
 
     'TODO: use new menu when solving a maze that has just been loaded from a text file
@@ -302,11 +301,11 @@ Module Module1
         While 1
             Console.BackgroundColor = (ConsoleColor.Black)
             Console.ForegroundColor = (ConsoleColor.White)
-            Dim Info() As String = {"Info:", "Use arrow keys for everything except when saving or loading a maze", "The right and left arrow keys increment by 1", "The up and down arrow keys increment by 10", "Pressing the key M when inputting interger values will set the number to the max it can be", "Pressing the key H when inputting interger values will set the number to half of the maximum value it can be"}
+            Dim Info() As String = {"Info for using this program:", "Use arrow keys for navigating the menus", "Use the enter key to select an option", "", "When inputting integer values:", "The right and left arrow keys increment by 1", "The up and down arrow keys increment by 10", "The 'M' key will set the number to the max it can be", "The 'H' key will set the number to half of the maximum value it can be"}
             Dim cou As Integer = 0
             For Each item In Info
                 Console.SetCursorPosition(ScreenWidth - item.Length / 2, 0 + cou)
-                If cou <> 0 Then Console.ForegroundColor = (ConsoleColor.Cyan)
+                If cou <> 0 Then Console.ForegroundColor = (ConsoleColor.Magenta)
                 Console.Write(item)
                 cou += 1
             Next
@@ -2224,8 +2223,8 @@ Module Module1
         If solving Then DFS_IterativeFORFILE(Path, bmp, g, Multiplier)
         g.FillRectangle(Brushes.Red, (Path(Path.Count - 2).X) * Multiplier, (Path(Path.Count - 2).Y + 2) * Multiplier, 2 * Multiplier, 2 * Multiplier)
         g.FillRectangle(Brushes.Lime, (Path(Path.Count - 1).X) * Multiplier, (Path(Path.Count - 1).Y * 2) * Multiplier, 2 * Multiplier, 2 * Multiplier)
-        Dim f As New Font("Roboto", 14)
-        Dim point As New PointF(((Width) / 2) - (Algorithm.Length / 2) * Multiplier, 5)
+        Dim f As New Font("Roboto", Width / 60)
+        Dim point As New PointF(((Width) / 2) - (Algorithm.Length / 2) * Multiplier, 1)
         g.DrawString(Algorithm, f, Brushes.White, point)
         g.Dispose()
         bmp.Save($"{fileName}.PNG", System.Drawing.Imaging.ImageFormat.Png)
