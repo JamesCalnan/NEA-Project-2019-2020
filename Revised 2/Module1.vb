@@ -6,7 +6,7 @@ Module Module1
     Sub Main()
         Console.CursorVisible = False
         Console.ForegroundColor = (ConsoleColor.White)
-        Console.SetWindowSize(Console.LargestWindowWidth, Console.LargestWindowHeight)
+        Console.SetWindowSize(Console.LargestWindowWidth - 6, Console.LargestWindowHeight - 3)
         Dim MenuOptions() As String = {"Recursive Backtracker Algorithm (using iteration)", "Recursive Backtracker Algorithm (using recursion)", "Hunt and Kill Algorithm", "Prim's Algorithm (simplified)", "Prim's Algorithm (true)", "Aldous-Broder Algorithm", "Growing Tree Algorithm", "Sidewinder Algorithm", "Binary Tree Algorithm", "Wilson's Algorithm", "Eller's Algorithm", "Kruskal's Algorithm", "Custom Algorithm", "Houston's Algorithm", "Spiral Backtracker Algorithm", "", "Load the previously generated maze", "Save the previously generated maze", "Output the previous maze as a png image", "Load a saved maze", "", "Exit"}
         Menu(MenuOptions)
         Dim bmp As New Bitmap(350, 350)
@@ -276,6 +276,10 @@ Module Module1
             SaveMazePNG(availablepath, Algorithm, filename)
         ElseIf input = "s" Then
             SD(availablepath)
+        ElseIf input = "" Then
+            Console.Clear
+            Console.WriteLine("A critical error has occured that has caused the program to no longer work")
+            End
         End If
     End Sub
     Sub Solving(ByVal AvailablePath As List(Of Node), ByVal Limits() As Integer, ByRef PreviousMaze As List(Of Node), ByRef Input As String, ByVal YPosAfterMaze As Integer, ByVal ShowPath As Boolean, ByVal SolvingDelay As Integer, ByRef Algorithm As String, ByRef SetPreivousAlgorithm As String)
@@ -286,9 +290,11 @@ Module Module1
         End If
     End Sub
     Sub Menu(ByVal arr() As String)
-        Dim input, PreviousAlgorithm As String
+        Dim input As String = ""
+        Dim PreviousAlgorithm As String = ""
         Dim PreviousMaze, LoadedMaze As New List(Of Node)
-        Dim Width, Height, DelayMS, Limits(), SolvingDelay, YPosAfterMaze, y As Integer
+        Dim Width, Height, DelayMS, SolvingDelay, YPosAfterMaze, y As Integer
+        Dim Limits(3) As Integer
         Dim ScreenWidth As Integer = Console.WindowWidth / 2
         Dim ShowMazeGeneration, ShowPath As Boolean
         Console.Clear()
@@ -332,7 +338,7 @@ Module Module1
                         GetMazeInfo(Width, Height, DelayMS, Limits, ShowMazeGeneration, True, 0)
                         Dim CurrentCell As Cell = PickRandomStartingCell(Limits) '(Limits(0) + 3, Limits(1) + 2)
                         Dim prev As Cell = CurrentCell '(Limits(0) + 3, Limits(1) + 2)
-                        Dim v As New List(Of Cell)
+                        Dim v As Dictionary(Of Cell, Boolean) = InitialiseVisited(Limits)
                         Dim path As New List(Of Node)
                         Dim stopwatch As Stopwatch = Stopwatch.StartNew()
                         Console.ForegroundColor = (ConsoleColor.White)
@@ -346,7 +352,7 @@ Module Module1
                                 cell.Print("██")
                             Next
                         End If
-                        AddStartAndEnd(path, v, Limits, 0)
+                        AddStartAndEnd(path, Limits, 0)
                         Solving(path, Limits, PreviousMaze, input, YPosAfterMaze, ShowPath, SolvingDelay, arr(y), PreviousAlgorithm)
                         PreviousMaze = path
                     ElseIf y = 2 Then
@@ -368,7 +374,7 @@ Module Module1
                         Solving(AvailablePath, Limits, PreviousMaze, input, YPosAfterMaze, ShowPath, SolvingDelay, arr(y), PreviousAlgorithm)
                     ElseIf y = 6 Then
                         GetMazeInfo(Width, Height, DelayMS, Limits, ShowMazeGeneration, True, 0)
-                        Dim ArrOptions() As String = {"Newest (Recursive Backtracker)", "Random (Prim's)", "Newest/Random, 75/25 split", "Newest/Random, 50/50 split", "Newest/Random, 25/75 split", "Oldest", "Middle", "Newest/Oldest, 50/50 split", "Oldest/Random, 50/50 split"}
+                        Dim ArrOptions() As String = {"Newest (Recursive Backtracker)", "Random (Prim's simplified)", "Newest/Random, 75/25 split", "Newest/Random, 50/50 split", "Newest/Random, 25/75 split", "Oldest", "Middle", "Newest/Oldest, 50/50 split", "Oldest/Random, 50/50 split"}
                         Dim CellSelectionMethod() As Integer = PreGenMenu(ArrOptions, "What Cell selection method would you like to use: ")
                         AvailablePath = GrowingTree(Limits, DelayMS, CellSelectionMethod, ShowMazeGeneration)
                         Solving(AvailablePath, Limits, PreviousMaze, input, YPosAfterMaze, ShowPath, SolvingDelay, arr(y), PreviousAlgorithm)
@@ -476,7 +482,7 @@ Module Module1
                         Dim filename As String = Console.ReadLine
                         filename += ".txt"
                         If System.IO.File.Exists(filename) Then
-                            Dim UsedAlgorithm As String
+                            Dim UsedAlgorithm As String = ""
                             Dim c As Integer = 0
                             Dim e As Boolean = True
                             Console.Clear()
@@ -700,6 +706,7 @@ Module Module1
                     Return True
             End Select
         End If
+        Return False
     End Function
     Sub WallFollower(ByVal availablepath As List(Of Node), ByVal ShowPath As Boolean, ByVal Delay As Integer)
         Dim start_v As New Node(availablepath(availablepath.Count - 2).X, availablepath(availablepath.Count - 2).Y)
@@ -1320,7 +1327,7 @@ Module Module1
             Next
         End If
         Dim ypos As Integer = Console.CursorTop + 5
-        AddStartAndEnd(Returnpath, AvailableCells, Limits, 0)
+        AddStartAndEnd(Returnpath, Limits, 0)
         Console.SetCursorPosition(0, ypos)
         Return Returnpath
         Console.ReadKey()
@@ -1470,7 +1477,7 @@ Module Module1
         End If
         Dim ypos As Integer = Console.CursorTop
         Limits(3) -= 2
-        AddStartAndEnd(ReturnPath, availableCellPositions, Limits, 0)
+        AddStartAndEnd(ReturnPath, Limits, 0)
         Console.SetCursorPosition(0, ypos)
         Return ReturnPath
     End Function
@@ -1479,7 +1486,6 @@ Module Module1
             Limits(2) -= 1
         End While
         Dim WallCell As Cell
-        Dim VisitedList As New List(Of Cell)
         Dim RunSet As New List(Of Cell)
         Dim Availablepath As New List(Of Node)
         Dim R As New Random
@@ -1491,7 +1497,6 @@ Module Module1
                 If ExitCase() Then Return Nothing
                 Dim CurrentCell As New Cell(x, y)
                 Availablepath.Add(New Node(CurrentCell.X, CurrentCell.Y))
-                VisitedList.Add(New Cell(CurrentCell.X, CurrentCell.Y))
                 If ShowMazeGeneration Then CurrentCell.Print("██")
                 If y <> Limits(1) Then RunSet.Add(New Cell(CurrentCell.X, CurrentCell.Y))
                 Dim EastCell As New Cell(x + 4, y)
@@ -1503,16 +1508,17 @@ Module Module1
                     If EastCell.WithinLimits(Limits) Then
                         WallCell = MidPoint(CurrentCell, EastCell)
                         If ShowMazeGeneration Then WallCell.Print("██")
+                        Availablepath.Add(New Node(WallCell.X, WallCell.Y))
                     End If
                 Else
                     Dim RandomRunSet As Integer = R.Next(0, RunSet.Count)
                     Dim RandomRunSetCell As Cell = RunSet(RandomRunSet)
                     Dim NorthCell As New Cell(RandomRunSetCell.X, y - 2)
                     WallCell = MidPoint(RandomRunSetCell, NorthCell)
+                    Availablepath.Add(New Node(WallCell.X, WallCell.Y))
                     If ShowMazeGeneration Then WallCell.Print("██")
                     RunSet.Clear()
                 End If
-                Availablepath.Add(New Node(WallCell.X, WallCell.Y))
                 Threading.Thread.Sleep(Delay)
             Next
         Next
@@ -1525,13 +1531,12 @@ Module Module1
             Next
         End If
         Dim ypos As Integer = Console.CursorTop
-        AddStartAndEnd(Availablepath, VisitedList, Limits, 0)
+        AddStartAndEnd(Availablepath, Limits, 0)
         Console.SetCursorPosition(0, ypos)
         Return Availablepath
     End Function
     Function BinaryTree(ByVal Limits() As Integer, ByVal Delay As Integer, ByVal ShowMazeGeneration As Boolean, ByVal BiasArr() As Integer)
         Dim Availablepath As New List(Of Node)
-        Dim VisitedList As New List(Of Cell)
         Dim WallCell As Cell
         Dim R As New Random
         Dim stopwatch As Stopwatch = Stopwatch.StartNew()
@@ -1580,7 +1585,6 @@ Module Module1
                     Availablepath.Add(New Node(WallCell.X, WallCell.Y))
                 End If
                 Threading.Thread.Sleep(Delay)
-                VisitedList.Add(New Cell(tempcell.X, tempcell.Y))
             Next
         Next
         PrintMessageMiddle($"Time taken to generate the maze: {stopwatch.Elapsed.TotalSeconds}", 1, ConsoleColor.Yellow)
@@ -1592,20 +1596,21 @@ Module Module1
             Next
         End If
         Dim ypos As Integer = Console.CursorTop
-        AddStartAndEnd(Availablepath, VisitedList, Limits, 0)
+        AddStartAndEnd(Availablepath, Limits, 0)
         Console.SetCursorPosition(0, ypos)
         Return Availablepath
     End Function
     Function GrowingTree(ByVal Limits() As Integer, ByVal delay As Integer, ByVal CellSelectionMethod() As Integer, ByVal ShowMazeGeneration As Boolean)
         Dim R As New Random
         Dim availablepath As New List(Of Cell)
-        Dim VisitedList, FrontierSet, RecentFrontierSet As New List(Of Cell)
+        Dim FrontierSet, RecentFrontierSet As New List(Of Cell)
         Dim CurrentCell As Cell = PickRandomStartingCell(Limits) '(Limits(0) + 3, Limits(1) + 2)
         Dim PreviousCell As Cell = CurrentCell
         Dim WallCell As Cell
         Dim Index As Integer
+        Dim VisitedCells As Dictionary(Of Cell, Boolean) = InitialiseVisited(Limits)
         Dim ReturnablePath As New List(Of Node)
-        VisitedList.Add(CurrentCell)
+        VisitedCells(CurrentCell) = True
         Console.ForegroundColor = ConsoleColor.White
         Console.BackgroundColor = ConsoleColor.White
         If ShowMazeGeneration Then CurrentCell.Print("██")
@@ -1615,7 +1620,7 @@ Module Module1
         Console.BackgroundColor = ConsoleColor.White
         While True
             If ExitCase() Then Return Nothing
-            For Each cell As Cell In Neighbour(CurrentCell, VisitedList, Limits, True)
+            For Each cell As Cell In Neighbour(CurrentCell, VisitedCells, Limits, True)
                 If Not FrontierSet.Contains(cell) Then FrontierSet.Add(cell)
                 RecentFrontierSet.Add(cell)
                 If ShowMazeGeneration Then
@@ -1634,7 +1639,7 @@ Module Module1
                     If FrontierSet.Count = 0 Then Exit While
                     Index = FrontierSet.Count - 1
                     CurrentCell = FrontierSet(Index)
-                    Dim AdjancencyList() As Integer = AdjacentCheck(CurrentCell, VisitedList)
+                    Dim AdjancencyList() As Integer = AdjacentCheck(CurrentCell, VisitedCells)
                     PreviousCell = PickAdjancentCell(CurrentCell, AdjancencyList)
                 End If
             ElseIf CellSelectionMethod(1) = 1 Then
@@ -1642,7 +1647,7 @@ Module Module1
                 If FrontierSet.Count = 0 Then Exit While
                 Index = R.Next(0, FrontierSet.Count)
                 CurrentCell = FrontierSet(Index)
-                Dim AdjancencyList() As Integer = AdjacentCheck(CurrentCell, VisitedList)
+                Dim AdjancencyList() As Integer = AdjacentCheck(CurrentCell, VisitedCells)
                 PreviousCell = PickAdjancentCell(CurrentCell, AdjancencyList)
             ElseIf CellSelectionMethod(2) = 1 Or CellSelectionMethod(3) = 1 Or CellSelectionMethod(4) = 1 Then
                 Dim Chance As Integer
@@ -1666,7 +1671,7 @@ Module Module1
                         If FrontierSet.Count = 0 Then Exit While
                         Index = R.Next(0, FrontierSet.Count)
                         CurrentCell = FrontierSet(Index)
-                        Dim AdjancencyList() As Integer = AdjacentCheck(CurrentCell, VisitedList)
+                        Dim AdjancencyList() As Integer = AdjacentCheck(CurrentCell, VisitedCells)
                         PreviousCell = PickAdjancentCell(CurrentCell, AdjancencyList)
                     End If
                 Else
@@ -1674,7 +1679,7 @@ Module Module1
                     If FrontierSet.Count = 0 Then Exit While
                     Index = R.Next(0, FrontierSet.Count)
                     CurrentCell = FrontierSet(Index)
-                    Dim AdjancencyList() As Integer = AdjacentCheck(CurrentCell, VisitedList)
+                    Dim AdjancencyList() As Integer = AdjacentCheck(CurrentCell, VisitedCells)
                     PreviousCell = PickAdjancentCell(CurrentCell, AdjancencyList)
                 End If
             ElseIf CellSelectionMethod(5) = 1 Then
@@ -1682,14 +1687,14 @@ Module Module1
                 If FrontierSet.Count = 0 Then Exit While
                 Index = 0
                 CurrentCell = FrontierSet(Index)
-                Dim AdjancencyList() As Integer = AdjacentCheck(CurrentCell, VisitedList)
+                Dim AdjancencyList() As Integer = AdjacentCheck(CurrentCell, VisitedCells)
                 PreviousCell = PickAdjancentCell(CurrentCell, AdjancencyList)
             ElseIf CellSelectionMethod(6) = 1 Then
                 'Middle
                 If FrontierSet.Count = 0 Then Exit While
                 Index = FrontierSet.Count / 2
                 CurrentCell = FrontierSet(Index)
-                Dim AdjancencyList() As Integer = AdjacentCheck(CurrentCell, VisitedList)
+                Dim AdjancencyList() As Integer = AdjacentCheck(CurrentCell, VisitedCells)
                 PreviousCell = PickAdjancentCell(CurrentCell, AdjancencyList)
             ElseIf CellSelectionMethod(7) = 1 Then
                 'Newest/Oldest, 50/50 split
@@ -1703,7 +1708,7 @@ Module Module1
                         If FrontierSet.Count = 0 Then Exit While
                         Index = R.Next(0, FrontierSet.Count)
                         CurrentCell = FrontierSet(Index)
-                        Dim AdjancencyList() As Integer = AdjacentCheck(CurrentCell, VisitedList)
+                        Dim AdjancencyList() As Integer = AdjacentCheck(CurrentCell, VisitedCells)
                         PreviousCell = PickAdjancentCell(CurrentCell, AdjancencyList)
                     End If
                 Else
@@ -1711,7 +1716,7 @@ Module Module1
                     If FrontierSet.Count = 0 Then Exit While
                     Index = 0 'R.Next(0, FrontierSet.Count)
                     CurrentCell = FrontierSet(Index)
-                    Dim AdjancencyList() As Integer = AdjacentCheck(CurrentCell, VisitedList)
+                    Dim AdjancencyList() As Integer = AdjacentCheck(CurrentCell, VisitedCells)
                     PreviousCell = PickAdjancentCell(CurrentCell, AdjancencyList)
                 End If
             ElseIf CellSelectionMethod(8) = 1 Then
@@ -1722,14 +1727,14 @@ Module Module1
                     If FrontierSet.Count = 0 Then Exit While
                     Index = 0
                     CurrentCell = FrontierSet(Index)
-                    Dim AdjancencyList() As Integer = AdjacentCheck(CurrentCell, VisitedList)
+                    Dim AdjancencyList() As Integer = AdjacentCheck(CurrentCell, VisitedCells)
                     PreviousCell = PickAdjancentCell(CurrentCell, AdjancencyList)
                 Else
                     'Random
                     If FrontierSet.Count = 0 Then Exit While
                     Index = R.Next(0, FrontierSet.Count)
                     CurrentCell = FrontierSet(Index)
-                    Dim AdjancencyList() As Integer = AdjacentCheck(CurrentCell, VisitedList)
+                    Dim AdjancencyList() As Integer = AdjacentCheck(CurrentCell, VisitedCells)
                     PreviousCell = PickAdjancentCell(CurrentCell, AdjancencyList)
                 End If
             End If
@@ -1740,7 +1745,7 @@ Module Module1
                 WallCell.Print("██")
                 CurrentCell.Print("██")
             End If
-            VisitedList.Add(CurrentCell)
+            VisitedCells(CurrentCell) = True
             FrontierSet.Remove(CurrentCell)
             ReturnablePath.Add(New Node(WallCell.X, WallCell.Y))
             ReturnablePath.Add(New Node(CurrentCell.X, CurrentCell.Y))
@@ -1757,19 +1762,20 @@ Module Module1
             Next
         End If
         Dim ypos As Integer = Console.CursorTop
-        AddStartAndEnd(ReturnablePath, VisitedList, Limits, 0)
+        AddStartAndEnd(ReturnablePath, Limits, 0)
         Console.SetCursorPosition(0, ypos)
         Return ReturnablePath
     End Function
     Function Custom(ByVal Limits() As Integer, ByVal delay As Integer, ByVal ShowMazeGeneration As Boolean)
         Dim R As New Random
         Dim availablepath As New List(Of Cell)
-        Dim VisitedList, FrontierSet, RecentFrontierSet As New List(Of Cell)
+        Dim FrontierSet, RecentFrontierSet As New List(Of Cell)
         Dim CurrentCell As Cell = PickRandomStartingCell(Limits) '(Limits(0) + 3, Limits(1) + 2)
         Dim WallCell As Cell
         Dim Index As Integer
         Dim ReturnablePath As New List(Of Node)
-        VisitedList.Add(CurrentCell)
+        Dim VisitedCells As Dictionary(Of Cell, Boolean) = InitialiseVisited(Limits)
+        VisitedCells(CurrentCell) = True
         If ShowMazeGeneration Then CurrentCell.Print("██")
         ReturnablePath.Add(New Node(CurrentCell.X, CurrentCell.Y))
         Dim stopwatch As Stopwatch = Stopwatch.StartNew()
@@ -1777,7 +1783,7 @@ Module Module1
         Console.BackgroundColor = ConsoleColor.White
         While True
             If ExitCase() Then Return Nothing
-            For Each cell As Cell In Neighbour(CurrentCell, VisitedList, Limits, True)
+            For Each cell As Cell In Neighbour(CurrentCell, VisitedCells, Limits, True)
                 If Not FrontierSet.Contains(cell) Then FrontierSet.Add(cell)
                 RecentFrontierSet.Add(cell)
                 If ShowMazeGeneration Then
@@ -1794,7 +1800,7 @@ Module Module1
                 Index = FrontierSet.Count - 1 'R.Next(0, FrontierSet.Count)
                 CurrentCell = FrontierSet(Index)
             End If
-            Dim AdjancencyList() As Integer = AdjacentCheck(CurrentCell, VisitedList)
+            Dim AdjancencyList() As Integer = AdjacentCheck(CurrentCell, VisitedCells)
             Dim PreviousCell As Cell = PickAdjancentCell(CurrentCell, AdjancencyList)
             WallCell = MidPoint(CurrentCell, PreviousCell)
             If ShowMazeGeneration Then
@@ -1803,7 +1809,7 @@ Module Module1
                 WallCell.Print("██")
                 CurrentCell.Print("██")
             End If
-            VisitedList.Add(CurrentCell)
+            VisitedCells(CurrentCell) = True
             FrontierSet.Remove(CurrentCell)
             ReturnablePath.Add(New Node(WallCell.X, WallCell.Y))
             ReturnablePath.Add(New Node(CurrentCell.X, CurrentCell.Y))
@@ -1820,7 +1826,7 @@ Module Module1
             Next
         End If
         Dim ypos As Integer = Console.CursorTop
-        AddStartAndEnd(ReturnablePath, VisitedList, Limits, 0)
+        AddStartAndEnd(ReturnablePath, Limits, 0)
         Console.SetCursorPosition(0, ypos)
         Return ReturnablePath
     End Function
@@ -1828,9 +1834,10 @@ Module Module1
         Dim TotalCellCount As Integer
         Dim R As New Random
         Dim availablepath As New List(Of Cell)
-        Dim VisitedList, RecentCells As New List(Of Cell)
+        Dim RecentCells As New List(Of Cell)
         Dim CurrentCell As Cell = PickRandomStartingCell(Limits) '(Limits(0) + 3, Limits(1) + 2)
         Dim PrevCell As Cell = PickRandomStartingCell(Limits)
+        Dim VisitedCells As Dictionary(Of Cell, Boolean) = InitialiseVisited(Limits)
         Dim PreviousCell As Cell = CurrentCell
         Dim WallCell As Cell
         Dim ReturnablePath As New List(Of Node)
@@ -1842,7 +1849,9 @@ Module Module1
         Dim stopwatch As Stopwatch = Stopwatch.StartNew()
         Console.ForegroundColor = ConsoleColor.White
         Console.BackgroundColor = ConsoleColor.White
-        While VisitedList.Count <> TotalCellCount
+        VisitedCells(CurrentCell) = True
+        Dim UsedCellCount As Integer = 1
+        While UsedCellCount <> TotalCellCount
             If ExitCase() Then Return Nothing
             RecentCells.Clear()
             For Each cell As Cell In RanNeighbour(CurrentCell, Limits)
@@ -1851,8 +1860,9 @@ Module Module1
             Dim Index As Integer = R.Next(0, RecentCells.Count)
             Dim TemporaryCell As Cell = RecentCells(Index)
             Dim TempNodeCell As New Node(TemporaryCell.X, TemporaryCell.Y)
-            If Not VisitedList.Contains(TemporaryCell) Then
-                VisitedList.Add(New Cell(TemporaryCell.X, TemporaryCell.Y))
+            If Not VisitedCells(TemporaryCell) Then
+                VisitedCells(New Cell(TemporaryCell.X, TemporaryCell.Y)) = True
+                UsedCellCount += 1
                 WallCell = MidPoint(CurrentCell, TemporaryCell)
                 CurrentCell = TemporaryCell
                 ReturnablePath.Add(New Node(WallCell.X, WallCell.Y))
@@ -1881,14 +1891,6 @@ Module Module1
             End If
             Threading.Thread.Sleep(delay)
         End While
-
-
-
-        If ShowMazeGeneration Then
-            Console.ForegroundColor = ConsoleColor.White
-            Console.BackgroundColor = ConsoleColor.White
-            PrevCell.Print("██")
-        End If
         PrintMessageMiddle($"Time taken to generate the maze: {stopwatch.Elapsed.TotalSeconds}", 1, ConsoleColor.Yellow)
         If Not ShowMazeGeneration Then
             Console.ForegroundColor = ConsoleColor.White
@@ -1896,9 +1898,13 @@ Module Module1
             For Each node In ReturnablePath
                 node.Print("██")
             Next
+        Else
+            Console.ForegroundColor = ConsoleColor.White
+            Console.BackgroundColor = ConsoleColor.White
+            PrevCell.Print("██")
         End If
         Dim ypos As Integer = Console.CursorTop
-        AddStartAndEnd(ReturnablePath, VisitedList, Limits, 0)
+        AddStartAndEnd(ReturnablePath, Limits, 0)
         Console.SetCursorPosition(0, ypos)
         Return ReturnablePath
     End Function
@@ -1906,9 +1912,10 @@ Module Module1
         'Assigns a random weight between 0, 99 to each available in the grid, it then chooses the cell with the lowest weight out of the frontier set
         Dim R As New Random
         Dim availablepath As New List(Of Cell)
-        Dim VisitedList, FrontierSet As New List(Of Cell)
+        Dim FrontierSet As New List(Of Cell)
         Dim WallCell As Cell
         Dim ReturnablePath As New List(Of Node)
+        Dim VisitedCells As Dictionary(Of Cell, Boolean) = InitialiseVisited(Limits)
         Dim stopwatch As Stopwatch = Stopwatch.StartNew()
         Dim Weights As New Dictionary(Of Cell, Integer)
         For y = Limits(1) To Limits(3) Step 2
@@ -1918,14 +1925,14 @@ Module Module1
             Next
         Next
         Dim CurrentCell As Cell = PickRandomStartingCell(Limits) '(FrontierSet(idx).X, FrontierSet(idx).Y) '(Limits(0) + 3, Limits(1) + 2)
-        VisitedList.Add(CurrentCell)
+        VisitedCells(CurrentCell) = True
         Console.ForegroundColor = ConsoleColor.White
         Console.BackgroundColor = ConsoleColor.White
         If ShowMazeGeneration Then CurrentCell.Print("██")
         ReturnablePath.Add(New Node(CurrentCell.X, CurrentCell.Y))
         While True
             If ExitCase() Then Return Nothing
-            For Each cell As Cell In Neighbour(CurrentCell, VisitedList, Limits, True)
+            For Each cell As Cell In Neighbour(CurrentCell, VisitedCells, Limits, True)
                 If Not FrontierSet.Contains(cell) Then FrontierSet.Add(cell)
                 If ShowMazeGeneration Then
                     Console.ForegroundColor = ConsoleColor.Yellow
@@ -1939,7 +1946,7 @@ Module Module1
                 If Weights(HighestWeightCell) < Weights(cell) Then HighestWeightCell = cell
             Next
             CurrentCell = HighestWeightCell
-            Dim AdjancencyList() As Integer = AdjacentCheck(CurrentCell, VisitedList)
+            Dim AdjancencyList() As Integer = AdjacentCheck(CurrentCell, VisitedCells)
             Dim PreviousCell As Cell = PickAdjancentCell(CurrentCell, AdjancencyList)
             WallCell = MidPoint(CurrentCell, PreviousCell)
             If ShowMazeGeneration Then
@@ -1948,13 +1955,12 @@ Module Module1
                 WallCell.Print("██")
                 CurrentCell.Print("██")
             End If
-            VisitedList.Add(CurrentCell)
+            VisitedCells(CurrentCell) = True
             FrontierSet.Remove(CurrentCell)
             AddToPath(ReturnablePath, CurrentCell, WallCell)
             Threading.Thread.Sleep(delay)
         End While
         PrintMessageMiddle($"Time taken to generate the maze: {stopwatch.Elapsed.TotalSeconds}", 1, ConsoleColor.Yellow)
-
         If Not ShowMazeGeneration Then
             Console.ForegroundColor = (ConsoleColor.White)
             Console.BackgroundColor = (ConsoleColor.White)
@@ -1963,7 +1969,7 @@ Module Module1
             Next
         End If
         Dim ypos As Integer = Console.CursorTop
-        AddStartAndEnd(ReturnablePath, VisitedList, Limits, 0)
+        AddStartAndEnd(ReturnablePath, Limits, 0)
         Console.SetCursorPosition(0, ypos)
         Return ReturnablePath
     End Function
@@ -1971,11 +1977,12 @@ Module Module1
         'Assumes the weights of each cell in the grid is the same and therefore chooses a random cell from the frontier set
         Dim R As New Random
         Dim availablepath As New List(Of Cell)
-        Dim VisitedList, FrontierSet As New List(Of Cell)
+        Dim FrontierSet As New List(Of Cell)
         Dim CurrentCell As Cell = PickRandomStartingCell(Limits) '(Limits(0) + 3, Limits(1) + 2)
+        Dim VisitedCells As Dictionary(Of Cell, Boolean) = InitialiseVisited(Limits)
         Dim WallCell As Cell
         Dim ReturnablePath As New List(Of Node)
-        VisitedList.Add(CurrentCell)
+        VisitedCells(CurrentCell) = True
         Console.ForegroundColor = ConsoleColor.White
         Console.BackgroundColor = ConsoleColor.White
         If ShowMazeGeneration Then CurrentCell.Print("██")
@@ -1983,7 +1990,7 @@ Module Module1
         Dim stopwatch As Stopwatch = Stopwatch.StartNew()
         While True
             If ExitCase() Then Return Nothing
-            For Each cell As Cell In Neighbour(CurrentCell, VisitedList, Limits, True)
+            For Each cell As Cell In Neighbour(CurrentCell, VisitedCells, Limits, True)
                 If Not FrontierSet.Contains(cell) Then FrontierSet.Add(cell)
                 If ShowMazeGeneration Then
                     Console.ForegroundColor = ConsoleColor.Yellow
@@ -1993,7 +2000,7 @@ Module Module1
             Next
             If FrontierSet.Count = 0 Then Exit While
             CurrentCell = FrontierSet(R.Next(0, FrontierSet.Count))
-            Dim AdjancencyList() As Integer = AdjacentCheck(CurrentCell, VisitedList)
+            Dim AdjancencyList() As Integer = AdjacentCheck(CurrentCell, VisitedCells)
             Dim PreviousCell As Cell = PickAdjancentCell(CurrentCell, AdjancencyList)
             WallCell = MidPoint(CurrentCell, PreviousCell)
             If ShowMazeGeneration Then
@@ -2002,7 +2009,7 @@ Module Module1
                 WallCell.Print("██")
                 CurrentCell.Print("██")
             End If
-            VisitedList.Add(CurrentCell)
+            VisitedCells(CurrentCell) = True
             FrontierSet.Remove(CurrentCell)
             AddToPath(ReturnablePath, CurrentCell, WallCell)
             Threading.Thread.Sleep(delay)
@@ -2016,7 +2023,7 @@ Module Module1
             Next
         End If
         Dim ypos As Integer = Console.CursorTop
-        AddStartAndEnd(ReturnablePath, VisitedList, Limits, 0)
+        AddStartAndEnd(ReturnablePath, Limits, 0)
         Console.SetCursorPosition(0, ypos)
         Return ReturnablePath
     End Function
@@ -2030,16 +2037,17 @@ Module Module1
         Console.BackgroundColor = (ConsoleColor.White)
         Dim CurrentCell As Cell = PickRandomStartingCell(Limits) '(Limits(0) + 3, Limits(1) + 2)
         Dim r As New Random
-        Dim Stack, VisitedListAndWall, RecentCells As New List(Of Cell)
+        Dim VisitedListAndWall, RecentCells As New List(Of Cell)
         Dim VisitedCells As Dictionary(Of Cell, Boolean) = InitialiseVisited(Limits)
+        'VisitedCells(CurrentCell) = True
         Dim ReturnablePath As New List(Of Node)
         Dim Width As Integer = Limits(2) - Limits(0)
         Dim Height As Integer = Limits(3) - Limits(1)
-        Dim xCount, ColumnValue As Integer
+        Dim ColumnValue As Integer
         ColumnValue = Limits(1)
         Dim stopwatch As Stopwatch = Stopwatch.StartNew()
-        Dim AvailablePositions As Integer = VisitedCells.Count
-        While AvailablePositions <> totalcellcount
+        Dim UsedCellPositions As Integer = 0
+        While UsedCellPositions <> totalcellcount
             If ExitCase() Then Return Nothing
             If IsNothing(CurrentCell) Then Exit While
             If Neighbour(CurrentCell, VisitedCells, Limits, False) Then
@@ -2050,9 +2058,11 @@ Module Module1
                 Dim TemporaryCell As Cell = RecentCells(r.Next(0, RecentCells.Count))
                 ReturnablePath.Add(New Node(TemporaryCell.X, TemporaryCell.Y))
                 VisitedListAndWall.Add(New Cell(TemporaryCell.X, TemporaryCell.Y))
-                VisitedCells(TemporaryCell) = True
+                UsedCellPositions += 1
                 Dim WallCell As Cell = MidPoint(CurrentCell, TemporaryCell)
                 CurrentCell = TemporaryCell
+                VisitedCells(CurrentCell) = True
+                VisitedCells(WallCell) = True
                 ReturnablePath.Add(New Node(WallCell.X, WallCell.Y))
                 VisitedListAndWall.Add(New Cell(WallCell.X, WallCell.Y))
                 If ShowMazeGeneration Then
@@ -2064,41 +2074,37 @@ Module Module1
             Else
                 Dim ContinueFor As Boolean = True
                 For y = ColumnValue To Limits(3) Step 2
-                    xCount = 0
                     For x = Limits(0) + 3 To Limits(2) - 1 Step 4
                         Dim newcell As New Cell(x, y)
                         If ShowMazeGeneration Then
                             Console.BackgroundColor = (ConsoleColor.Blue)
                             Console.ForegroundColor = (ConsoleColor.Blue)
-                            Console.SetCursorPosition(x, y)
                             newcell.Print("██")
                             Console.SetCursorPosition(x + 2, y)
                             If Console.CursorLeft < Limits(2) - 1 Then Console.Write("██")
                         End If
-                        'If Optimised Then If x = Limits(2) - 3 Or x = Limits(2) - 1 Then ColumnValue += 2
-                        Dim AdjancencyList As Integer() = AdjacentCheck(newcell, VisitedList)
+                        Dim AdjancencyList As Integer() = AdjacentCheck(newcell, VisitedCells)
                         CurrentCell = PickAdjancentCell(newcell, AdjancencyList)
                         If CurrentCell IsNot Nothing Then
                             Threading.Thread.Sleep(delay)
                             Dim WallCell As Cell = MidPoint(newcell, CurrentCell)
                             AddToPath(ReturnablePath, CurrentCell, WallCell)
-                            xCount = x
                             If ShowMazeGeneration Then
                                 Console.ForegroundColor = ConsoleColor.White
                                 Console.BackgroundColor = ConsoleColor.White
                                 WallCell.Print("██")
                                 CurrentCell.Print("██")
-                                xCount = x
-                                EraseLineHaK(Limits, xCount, VisitedListAndWall, y)
+                                VisitedCells(WallCell) = True
+                                EraseLineHaK(Limits, Limits(2), VisitedListAndWall, y)
+                                VisitedCells(CurrentCell) = True
                             End If
                             ContinueFor = False
                             Exit For
                         End If
-                        xCount = x
                     Next
                     Threading.Thread.Sleep(delay)
                     If ShowMazeGeneration Then
-                        EraseLineHaK(Limits, xCount, VisitedListAndWall, y)
+                        EraseLineHaK(Limits, Limits(2), VisitedListAndWall, y)
                     End If
                     If ContinueFor = False Then Exit For
                 Next
@@ -2106,7 +2112,6 @@ Module Module1
             Threading.Thread.Sleep(delay)
         End While
         PrintMessageMiddle($"Time taken to generate the maze: {stopwatch.Elapsed.TotalSeconds}", 1, ConsoleColor.Yellow)
-
         If Not ShowMazeGeneration Then
             Console.ForegroundColor = (ConsoleColor.White)
             Console.BackgroundColor = (ConsoleColor.White)
@@ -2119,7 +2124,7 @@ Module Module1
         Console.SetCursorPosition(0, ypos)
         Return ReturnablePath
     End Function
-    Function RecursiveBacktrackerRecursively(ByVal cell As Cell, ByVal limits() As Integer, ByVal path As List(Of Node), ByRef visited As List(Of Cell), ByRef cameFrom As Cell, ByVal r As Random, ByVal ShowMazeGeneration As Boolean, ByVal Delay As Integer)
+    Function RecursiveBacktrackerRecursively(ByVal cell As Cell, ByVal limits() As Integer, ByVal path As List(Of Node), ByRef visited As Dictionary(Of Cell, Boolean), ByRef cameFrom As Cell, ByVal r As Random, ByVal ShowMazeGeneration As Boolean, ByVal Delay As Integer)
         If Neighbour(cell, visited, limits, False) Then
             Dim RecentCells As New List(Of Cell)
             For Each cell1 As Cell In Neighbour(cell, visited, limits, True)
@@ -2133,7 +2138,7 @@ Module Module1
                 Threading.Thread.Sleep(Delay) : End If
             AddToPath(path, TemporaryCell, wall)
             cameFrom = TemporaryCell
-            visited.Add(TemporaryCell)
+            visited(TemporaryCell) = True
             RecursiveBacktrackerRecursively(TemporaryCell, limits, path, visited, cameFrom, r, ShowMazeGeneration, Delay)
         Else
             Return Nothing
@@ -2153,6 +2158,7 @@ Module Module1
         Dim ReturnablePath As New List(Of Node)
         Dim RecentCells As New List(Of Cell)
         Dim stopwatch As Stopwatch = Stopwatch.StartNew()
+        'VisitedCells(CurrentCell) = True
         While True
             If ExitCase() Then Return Nothing
             If ShowMazeGeneration Then
@@ -2183,6 +2189,7 @@ Module Module1
                 End If
             ElseIf Stack.Count > 1 Then
                 CurrentCell = CurrentCell.Pop(Stack)
+                VisitedCells(CurrentCell) = True
                 If ShowMazeGeneration Then
                     Console.ForegroundColor = ConsoleColor.White
                     Console.BackgroundColor = ConsoleColor.White
@@ -2222,7 +2229,6 @@ Module Module1
         For Each Node In Maze
             If Node.Equals(start_v) Or Node.Equals(goal) Then Continue For
             If Node.IsDeadEnd(Maze) Then
-                'if it is a deadend
                 Dim AvailableNodes As New List(Of Node) From {
                     New Node(Node.X, Node.Y - 2),'up
                     New Node(Node.X + 4, Node.Y),'right
@@ -2245,7 +2251,7 @@ Module Module1
                     AvailableNodes.Remove(thing)
                 Next
                 Dim PositionInMaze As Node = AvailableNodes(r.Next(0, AvailableNodes.Count))
-                Dim PosToBeAdded As Node = MidPointNODES(PositionInMaze, Node)
+                Dim PosToBeAdded As Node = MidPoint(PositionInMaze, Node)
                 NodesToAdd.Add(PosToBeAdded)
                 PosToBeAdded.Print("██")
             End If
@@ -2254,7 +2260,6 @@ Module Module1
             Maze.Add(node)
         Next
     End Sub
-
     Function SpiralBacktracker(ByVal Limits() As Integer, ByVal Delay As Integer, ByVal ShowMazeGeneration As Boolean)
         Dim r As New Random
         Dim CurrentCell As Cell = PickRandomStartingCell(Limits)
@@ -2270,6 +2275,7 @@ Module Module1
         Dim Dir As String = "UP"
         Console.ForegroundColor = ConsoleColor.White
         Console.BackgroundColor = ConsoleColor.White
+        VisitedCells(CurrentCell) = True
         While True
             If ExitCase() Then Return Nothing
             If ShowMazeGeneration Then
@@ -2283,28 +2289,28 @@ Module Module1
                 Do
                     If Dir = "UP" Then
                         TempCell.Update(CurrentCell.X, CurrentCell.Y - 2)
-                        If Not VisitedCells(TempCell) And TempCell.WithinLimits(Limits) Then
+                        If VisitedCells.ContainsKey(TempCell) AndAlso Not VisitedCells(TempCell) And TempCell.WithinLimits(Limits) Then
                             ValidNextCell = True
                         Else
                             Dir = "RIGHT"
                         End If
                     ElseIf Dir = "RIGHT" Then
                         TempCell.Update(CurrentCell.X + 4, CurrentCell.Y)
-                        If Not VisitedCells(TempCell) And TempCell.WithinLimits(Limits) Then
+                        If VisitedCells.ContainsKey(TempCell) AndAlso Not VisitedCells(TempCell) And TempCell.WithinLimits(Limits) Then
                             ValidNextCell = True
                         Else
                             Dir = "DOWN"
                         End If
                     ElseIf Dir = "DOWN" Then
                         TempCell.Update(CurrentCell.X, CurrentCell.Y + 2)
-                        If Not VisitedCells(TempCell) And TempCell.WithinLimits(Limits) Then
+                        If VisitedCells.ContainsKey(TempCell) AndAlso Not VisitedCells(TempCell) And TempCell.WithinLimits(Limits) Then
                             ValidNextCell = True
                         Else
                             Dir = "LEFT"
                         End If
                     ElseIf Dir = "LEFT" Then
                         TempCell.Update(CurrentCell.X - 4, CurrentCell.Y)
-                        If Not VisitedCells(TempCell) And TempCell.WithinLimits(Limits) Then
+                        If VisitedCells.ContainsKey(TempCell) AndAlso Not VisitedCells(TempCell) And TempCell.WithinLimits(Limits) Then
                             ValidNextCell = True
                         Else
                             Dir = "UP"
@@ -2699,6 +2705,7 @@ Module Module1
         ElseIf go = ">>" Then 'right
             Return New Cell(currentcell.X + 4, currentcell.Y)
         End If
+        Return Nothing
     End Function
     Function GetDirection(ByVal cell1 As Cell, ByVal cell2 As Cell, ByRef newdir As Dictionary(Of Cell, String), ByVal showmazegeneration As Boolean)
         Dim tempcell As New Cell(cell2.X, cell2.Y - 2)
@@ -2799,17 +2806,17 @@ Module Module1
         Dim Adjancent() As Integer = {0, 0, 0, 0}
         Dim Neighbours As New List(Of Cell)
         Dim tempcell As New Cell(cell.X, cell.Y - 2)
-        If visitedcells(tempcell) And Not visitedcells(cell) Then Adjancent(0) = 1
+        If If(visitedcells.ContainsKey(tempcell), visitedcells(tempcell), False) And Not visitedcells(cell) Then Adjancent(0) = 1
         tempcell.Update(cell.X + 4, cell.Y)
-        If visitedcells(tempcell) And Not visitedcells(cell) Then Adjancent(1) = 1
+        If If(visitedcells.ContainsKey(tempcell), visitedcells(tempcell), False) And Not visitedcells(cell) Then Adjancent(1) = 1
         tempcell.Update(cell.X, cell.Y + 2)
-        If visitedcells(tempcell) And Not visitedcells(cell) Then Adjancent(2) = 1
+        If If(visitedcells.ContainsKey(tempcell), visitedcells(tempcell), False) And Not visitedcells(cell) Then Adjancent(2) = 1
         tempcell.Update(cell.X - 4, cell.Y)
-        If visitedcells(tempcell) And Not visitedcells(cell) Then Adjancent(3) = 1
+        If If(visitedcells.ContainsKey(tempcell), visitedcells(tempcell), False) And Not visitedcells(cell) Then Adjancent(3) = 1
         Return Adjancent
     End Function
     Function PickAdjancentCell(ByVal cell As Cell, ByVal adjancencylist() As Integer)
-        Dim ReturnCell As Cell
+        Dim ReturnCell As  Cell
         Dim Neighbours As New List(Of Cell)
         If adjancencylist(0) = 1 Then
             Neighbours.Add(New Cell(cell.X, cell.Y - 2))
@@ -2829,18 +2836,18 @@ Module Module1
         End If
         Return ReturnCell
     End Function
-    Function MidPointNODES(ByVal cell1 As Node, ByVal cell2 As Node)
+    'Function MidPointNODES(ByVal cell1 As Object, ByVal cell2 As Node)
+    '    Dim x, y As Integer
+    '    x = (cell1.X + cell2.X) / 2
+    '    y = (cell1.Y + cell2.Y) / 2
+    '    Dim newpoint As New Node(((cell1.X + cell2.X) / 2), ((cell1.Y + cell2.Y) / 2))
+    '    Return newpoint
+    'End Function
+    Function MidPoint(ByVal cell1 As Object, ByVal cell2 As Object)
         Dim x, y As Integer
         x = (cell1.X + cell2.X) / 2
         y = (cell1.Y + cell2.Y) / 2
-        Dim newpoint As New Node(((cell1.X + cell2.X) / 2), ((cell1.Y + cell2.Y) / 2))
-        Return newpoint
-    End Function
-    Function MidPoint(ByVal cell1 As Cell, ByVal cell2 As Cell)
-        Dim x, y As Integer
-        x = (cell1.X + cell2.X) / 2
-        y = (cell1.Y + cell2.Y) / 2
-        Dim newpoint As New Cell(((cell1.X + cell2.X) / 2), ((cell1.Y + cell2.Y) / 2))
+        Dim newpoint As New Cell((cell1.X + cell2.X) / 2, (cell1.Y + cell2.Y) / 2)
         Return newpoint
     End Function
     Function RanNeighbour(ByVal current As Cell, ByVal Limits() As Integer)
