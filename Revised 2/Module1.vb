@@ -358,7 +358,7 @@ Module Module1
                     ElseIf y = 2 Then
                         'Dim Optimised As Boolean = HorizontalYesNo(0, "Do you want to use the optimised version of hunt and kill: ", False, True, True)
                         GetMazeInfo(Width, Height, DelayMS, Limits, ShowMazeGeneration, True, 0)
-                        AvailablePath = HuntAndKill(Limits, DelayMS, ShowMazeGeneration)
+                        AvailablePath = HuntAndKillREFACTORED(Limits, DelayMS, ShowMazeGeneration)
                         Solving(AvailablePath, Limits, PreviousMaze, input, YPosAfterMaze, ShowPath, SolvingDelay, arr(y), PreviousAlgorithm)
                     ElseIf y = 3 Then
                         GetMazeInfo(Width, Height, DelayMS, Limits, ShowMazeGeneration, True, 0)
@@ -2027,19 +2027,17 @@ Module Module1
         Console.SetCursorPosition(0, ypos)
         Return ReturnablePath
     End Function
-    Function HuntAndKill(ByVal Limits() As Integer, ByVal delay As Integer, ByVal ShowMazeGeneration As Boolean)
+    Function HuntAndKillREFACTORED(ByVal Limits() As Integer, ByVal delay As Integer, ByVal ShowMazeGeneration As Boolean)
         Dim totalcellcount As Integer
         For y = Limits(1) To Limits(3) Step 2
             For x = Limits(0) + 3 To Limits(2) - 1 Step 4
                 totalcellcount += 1
             Next
         Next
-        Console.BackgroundColor = (ConsoleColor.White)
         Dim CurrentCell As Cell = PickRandomStartingCell(Limits) '(Limits(0) + 3, Limits(1) + 2)
         Dim r As New Random
-        Dim VisitedListAndWall, RecentCells As New List(Of Cell)
         Dim VisitedCells As Dictionary(Of Cell, Boolean) = InitialiseVisited(Limits)
-        'VisitedCells(CurrentCell) = True
+        VisitedCells(CurrentCell) = True
         Dim ReturnablePath As New List(Of Node)
         Dim Width As Integer = Limits(2) - Limits(0)
         Dim Height As Integer = Limits(3) - Limits(1)
@@ -2047,74 +2045,79 @@ Module Module1
         ColumnValue = Limits(1)
         Dim stopwatch As Stopwatch = Stopwatch.StartNew()
         Dim UsedCellPositions As Integer = 0
-        While UsedCellPositions <> totalcellcount
+        Dim StartCell As Cell = CurrentCell
+        If ShowMazeGeneration Then
+            Console.ForegroundColor = (ConsoleColor.White)
+            Console.BackgroundColor = (ConsoleColor.White)
+            CurrentCell.Print("██")
+            ReturnablePath.Add(New Node(CurrentCell.X, CurrentCell.Y))
+        End If
+        While UsedCellPositions <> totalcellcount - 1
             If ExitCase() Then Return Nothing
-            If IsNothing(CurrentCell) Then Exit While
+            ' If IsNothing(CurrentCell) Then Exit While
             If Neighbour(CurrentCell, VisitedCells, Limits, False) Then
-                RecentCells.Clear()
-                For Each cell As Cell In Neighbour(CurrentCell, VisitedCells, Limits, True)
-                    RecentCells.Add(cell)
-                Next
+                Dim RecentCells As List(Of Cell) = Neighbour(CurrentCell, VisitedCells, Limits, True)
                 Dim TemporaryCell As Cell = RecentCells(r.Next(0, RecentCells.Count))
-                ReturnablePath.Add(New Node(TemporaryCell.X, TemporaryCell.Y))
-                VisitedListAndWall.Add(New Cell(TemporaryCell.X, TemporaryCell.Y))
-                UsedCellPositions += 1
                 Dim WallCell As Cell = MidPoint(CurrentCell, TemporaryCell)
                 CurrentCell = TemporaryCell
-                VisitedCells(CurrentCell) = True
-                VisitedCells(WallCell) = True
+                ReturnablePath.Add(New Node(CurrentCell.X, CurrentCell.Y))
                 ReturnablePath.Add(New Node(WallCell.X, WallCell.Y))
-                VisitedListAndWall.Add(New Cell(WallCell.X, WallCell.Y))
+                UsedCellPositions += 1
+                RecentCells.Clear()
                 If ShowMazeGeneration Then
-                    Console.ForegroundColor = ConsoleColor.White
-                    Console.BackgroundColor = ConsoleColor.White
-                    TemporaryCell.Print("██")
+                    Console.ForegroundColor = (ConsoleColor.White)
+                    Console.BackgroundColor = (ConsoleColor.White)
                     WallCell.Print("██")
+                    CurrentCell.Print("██")
                 End If
+                VisitedCells(CurrentCell) = True
             Else
-                Dim ContinueFor As Boolean = True
-                For y = ColumnValue To Limits(3) Step 2
+                Dim CellFound As Boolean = False
+                For y = Limits(1) To Limits(3) Step 2
                     For x = Limits(0) + 3 To Limits(2) - 1 Step 4
-                        Dim newcell As New Cell(x, y)
+                        Dim TempCell As New Cell(x, y)
                         If ShowMazeGeneration Then
-                            Console.BackgroundColor = (ConsoleColor.Blue)
                             Console.ForegroundColor = (ConsoleColor.Blue)
-                            newcell.Print("██")
-                            Console.SetCursorPosition(x + 2, y)
-                            If Console.CursorLeft < Limits(2) - 1 Then Console.Write("██")
+                            Console.BackgroundColor = (ConsoleColor.Blue)
+                            TempCell.Print("██")
+                            If x + 2 < Limits(2) Then
+                                Console.SetCursorPosition(x + 2, y)
+                                Console.Write("██")
+                            End If
                         End If
-                        Dim AdjancencyList As Integer() = AdjacentCheck(newcell, VisitedCells)
-                        CurrentCell = PickAdjancentCell(newcell, AdjancencyList)
-                        If CurrentCell IsNot Nothing Then
-                            Threading.Thread.Sleep(delay)
-                            Dim WallCell As Cell = MidPoint(newcell, CurrentCell)
-                            AddToPath(ReturnablePath, CurrentCell, WallCell)
+                        Dim AdjancencyList As Integer() = AdjacentCheck(TempCell, VisitedCells) 'finding out what cells around the current are visited
+                        Dim pathCell As Cell = PickAdjancentCell(TempCell, AdjancencyList)
+                        'CurrentCell = PickAdjancentCell(TempCell, AdjancencyList)
+                        If Not IsNothing(pathCell) Then
+                            Dim WallCell As Cell = MidPoint(pathCell, TempCell)
+                            CurrentCell = TempCell
                             If ShowMazeGeneration Then
-                                Console.ForegroundColor = ConsoleColor.White
-                                Console.BackgroundColor = ConsoleColor.White
+                                Console.ForegroundColor = (ConsoleColor.White)
+                                Console.BackgroundColor = (ConsoleColor.White)
                                 WallCell.Print("██")
                                 CurrentCell.Print("██")
-                                VisitedCells(WallCell) = True
-                                EraseLineHaK(Limits, Limits(2), VisitedListAndWall, y)
-                                VisitedCells(CurrentCell) = True
+                                EraseLineHaK(Limits, x + 1, ReturnablePath, y)
                             End If
-                            ContinueFor = False
+                            UsedCellPositions += 1
+                            ReturnablePath.Add(New Node(CurrentCell.X, CurrentCell.Y))
+                            ReturnablePath.Add(New Node(WallCell.X, WallCell.Y))
+                            CellFound = True
+                            VisitedCells(CurrentCell) = True
                             Exit For
                         End If
                     Next
-                    Threading.Thread.Sleep(delay)
-                    If ShowMazeGeneration Then
-                        EraseLineHaK(Limits, Limits(2), VisitedListAndWall, y)
-                    End If
-                    If ContinueFor = False Then Exit For
+                    If ShowMazeGeneration Then EraseLineHaK(Limits, Limits(2), ReturnablePath, y)
+                    If CellFound Then Exit For
                 Next
             End If
             Threading.Thread.Sleep(delay)
         End While
+        ReturnablePath.Add(New Node(StartCell.X, StartCell.Y))
         PrintMessageMiddle($"Time taken to generate the maze: {stopwatch.Elapsed.TotalSeconds}", 1, ConsoleColor.Yellow)
         If Not ShowMazeGeneration Then
             Console.ForegroundColor = (ConsoleColor.White)
             Console.BackgroundColor = (ConsoleColor.White)
+            StartCell.Print("██")
             For Each node In ReturnablePath
                 node.Print("██")
             Next
@@ -2189,7 +2192,6 @@ Module Module1
                 End If
             ElseIf Stack.Count > 1 Then
                 CurrentCell = CurrentCell.Pop(Stack)
-                VisitedCells(CurrentCell) = True
                 If ShowMazeGeneration Then
                     Console.ForegroundColor = ConsoleColor.White
                     Console.BackgroundColor = ConsoleColor.White
@@ -2758,9 +2760,9 @@ Module Module1
         tempnode.update(cell2.X, cell2.Y)
         If Not List.Contains(tempnode) Then List.Add(New Node(cell2.X, cell2.Y))
     End Sub
-    Sub EraseLineHaK(ByVal limits() As Integer, ByVal xCount As Integer, ByVal VisitedlistAndWall As List(Of Cell), ByVal y As Integer)
+    Sub EraseLineHaK(ByVal limits() As Integer, ByVal xCount As Integer, ByVal VisitedlistAndWall As List(Of Node), ByVal y As Integer)
         For i = limits(0) + 3 To xCount + 2 Step 2
-            Dim tempcell As New Cell(i, y)
+            Dim tempcell As New Node(i, y)
             If Not VisitedlistAndWall.Contains(tempcell) Then
                 Console.ForegroundColor = ConsoleColor.Black
                 Console.BackgroundColor = ConsoleColor.Black
@@ -2792,7 +2794,7 @@ Module Module1
         Console.ForegroundColor = ConsoleColor.Red
         Console.BackgroundColor = ConsoleColor.Red
         ReturnablePath(ReturnablePath.Count - 1).Print("██")
-        Dim testnode As New Node(Limits(2) + 5, Limits(3))
+        Dim testnode As New Node(Limits(2) + 6, Limits(3))
         Do
             testnode.update(testnode.X - 1, testnode.Y)
         Loop Until ReturnablePath.Contains(testnode)
@@ -2836,13 +2838,6 @@ Module Module1
         End If
         Return ReturnCell
     End Function
-    'Function MidPointNODES(ByVal cell1 As Object, ByVal cell2 As Node)
-    '    Dim x, y As Integer
-    '    x = (cell1.X + cell2.X) / 2
-    '    y = (cell1.Y + cell2.Y) / 2
-    '    Dim newpoint As New Node(((cell1.X + cell2.X) / 2), ((cell1.Y + cell2.Y) / 2))
-    '    Return newpoint
-    'End Function
     Function MidPoint(ByVal cell1 As Object, ByVal cell2 As Object)
         Dim x, y As Integer
         x = (cell1.X + cell2.X) / 2
