@@ -6,16 +6,38 @@ Module Module1
     Sub Main()
         Console.CursorVisible = False
         Console.ForegroundColor = (ConsoleColor.White)
+
+        'Dim newtree As New Tree(New Value(20, New Node(5, 5)))
+        'For i = 0 To 5
+        '    newtree.AddRecursive(newtree, New Value(i, New Node(5, i)))
+        '    Console.WriteLine($"i: {i}      node: (5, {i})")
+        'Next
+
+
+
+
+
+
+
+        'Dim node As Node = newtree.ExtractMin(newtree)
+        'Console.WriteLine($"({node.X}, {node.Y})")
+        'node = newtree.ExtractMin(newtree)
+        'Console.WriteLine($"({node.X}, {node.Y})")
+
+
+        'Console.ReadKey()
+
+
         Console.SetWindowSize(Console.LargestWindowWidth - 6, Console.LargestWindowHeight - 3)
         Dim MenuOptions() As String = {"Recursive Backtracker Algorithm (using iteration)", "Recursive Backtracker Algorithm (using recursion)", "Hunt and Kill Algorithm", "Prim's Algorithm (simplified)", "Prim's Algorithm (true)", "Aldous-Broder Algorithm", "Growing Tree Algorithm", "Sidewinder Algorithm", "Binary Tree Algorithm", "Wilson's Algorithm", "Eller's Algorithm", "Kruskal's Algorithm", "Custom Algorithm", "Houston's Algorithm", "Spiral Backtracker Algorithm", "", "Load the previously generated maze", "Save the previously generated maze", "Output the previous maze as a png image", "Load a saved maze", "", "Exit"}
         Menu(MenuOptions)
-        Dim bmp As New Bitmap(350, 350)
-        Dim g As Graphics
-        g = Graphics.FromImage(bmp)
-        g.FillRectangle(Brushes.Aqua, 0, 0, 250, 250)
-        g.Dispose()
-        bmp.Save("name", System.Drawing.Imaging.ImageFormat.Png)
-        bmp.Dispose()
+        'Dim bmp As New Bitmap(350, 350)
+        'Dim g As Graphics
+        'g = Graphics.FromImage(bmp)
+        'g.FillRectangle(Brushes.Aqua, 0, 0, 250, 250)
+        'g.Dispose()
+        'bmp.Save("name", System.Drawing.Imaging.ImageFormat.Png)
+        'bmp.Dispose()
     End Sub
     Sub Playmaze(ByVal AvailablePath As List(Of Node), ByVal ShowPath As Boolean)
         Dim playerPath As New List(Of Node)
@@ -258,7 +280,7 @@ Module Module1
             Dim timer As Stopwatch = Stopwatch.StartNew
             Console.ForegroundColor = ConsoleColor.Red
             Console.BackgroundColor = ConsoleColor.Red
-            DFS(availablepath, start_v, discovered, cameFrom, goal, showpath, solvingdelay, False)
+            DFS_Recursive(availablepath, start_v, discovered, cameFrom, goal, showpath, solvingdelay, False)
             ReconstructPath(cameFrom, goal, start_v, $"Time Taken to solve: {timer.Elapsed.TotalSeconds} seconds")
         ElseIf input = "Play the maze" Then
             showpath = HorizontalYesNo(YposAfterMaze + 2, "Do you want to show the steps you have taken in the maze: ", True, False, False)
@@ -308,13 +330,11 @@ Module Module1
         While 1
             Console.BackgroundColor = (ConsoleColor.Black)
             Console.ForegroundColor = (ConsoleColor.White)
-            Dim Info() As String = {"Info for using this program:", "Use arrow keys for navigating the menus", "Use the enter key to select an option", "", "When inputting integer values:", "The right and left arrow keys increment by 1", "The up and down arrow keys increment by 10", "The 'M' key will set the number to the max it can be", "The 'H' key will set the number to half of the maximum value it can be"}
-            Dim cou As Integer = 0
-            For Each item In Info
-                Console.SetCursorPosition(ScreenWidth - item.Length / 2, cou)
-                If cou <> 0 Then Console.ForegroundColor = (ConsoleColor.Magenta)
-                Console.Write(item)
-                cou += 1
+            Dim Info() As String = {"Information for using this program:", "Use arrow keys for navigating the menus", "Use the enter key to select an option", "", "When inputting integer values:", "The right and left arrow keys increment by 1", "The up and down arrow keys increment by 10", "The 'M' key will set the number to the maximum value it can be", "The 'H' key will set the number to half of the maximum value it can be"}
+            For i = 0 To Info.Count - 1
+                Console.SetCursorPosition(ScreenWidth - Info(i).Length / 2, i)
+                If i <> 0 Then Console.ForegroundColor = (ConsoleColor.Magenta)
+                Console.Write(Info(i))
             Next
             Dim key = Console.ReadKey
             Console.CursorVisible = False
@@ -339,10 +359,13 @@ Module Module1
                         Dim CurrentCell As Cell = PickRandomStartingCell(Limits) '(Limits(0) + 3, Limits(1) + 2)
                         Dim prev As Cell = CurrentCell '(Limits(0) + 3, Limits(1) + 2)
                         Dim v As Dictionary(Of Cell, Boolean) = InitialiseVisited(Limits)
+                        v(CurrentCell) = True
                         Dim path As New List(Of Node)
                         Dim stopwatch As Stopwatch = Stopwatch.StartNew()
                         Console.ForegroundColor = (ConsoleColor.White)
                         Console.BackgroundColor = (ConsoleColor.White)
+                        path.Add(New Node(CurrentCell.X, CurrentCell.Y))
+                        If ShowMazeGeneration Then CurrentCell.Print("██")
                         path = RecursiveBacktrackerRecursively(CurrentCell, Limits, path, v, prev, r, ShowMazeGeneration, DelayMS)
                         PrintMessageMiddle($"Time taken to generate the maze: {stopwatch.Elapsed.TotalSeconds}", 1, ConsoleColor.Yellow)
                         Console.ForegroundColor = (ConsoleColor.White)
@@ -424,9 +447,17 @@ Module Module1
                             Console.ForegroundColor = ConsoleColor.White
                             Console.BackgroundColor = ConsoleColor.White
                             For Each node In PreviousMaze
-                                node.Print("██")
+                                'node.Print("██")
                                 If GreatestX < node.X Then GreatestX = node.X
                                 If GreatestY < node.Y Then GreatestY = node.Y
+                            Next
+                            For __x = 1 To GreatestX + 1
+                                For __y = 3 To GreatestY + 1
+                                    If PreviousMaze.Contains(New Node(__x, __y)) Then
+                                        Console.SetCursorPosition(__x, __y)
+                                        Console.Write("██")
+                                    End If
+                                Next
                             Next
                             PrintStartandEnd(PreviousMaze)
                             Console.BackgroundColor = (ConsoleColor.Black)
@@ -768,14 +799,14 @@ Module Module1
         Next
         Console.ReadKey()
     End Sub
-    Function DFS(ByVal availablepath As List(Of Node), ByVal v As Node, ByVal visited As Dictionary(Of Node, Boolean), ByRef cameFrom As Dictionary(Of Node, Node), ByVal goal As Node, ByVal showsolving As Boolean, ByVal solvingdelay As Integer, ByRef exitcase As Boolean)
+    Function DFS_Recursive(ByVal availablepath As List(Of Node), ByVal v As Node, ByVal visited As Dictionary(Of Node, Boolean), ByRef cameFrom As Dictionary(Of Node, Node), ByVal goal As Node, ByVal showsolving As Boolean, ByVal solvingdelay As Integer, ByRef exitcase As Boolean)
         visited(v) = True
         If v.Equals(goal) Then : exitcase = True : Return Nothing : End If
         For Each w As Node In GetNeighbours(v, availablepath)
             If Not visited(w) Then
                 If showsolving Then : w.Print("██") : Threading.Thread.Sleep(solvingdelay) : End If
                 cameFrom(w) = v
-                DFS(availablepath, w, visited, cameFrom, goal, showsolving, solvingdelay, exitcase)
+                DFS_Recursive(availablepath, w, visited, cameFrom, goal, showsolving, solvingdelay, exitcase)
                 If exitcase Then Return Nothing
             End If
         Next
@@ -884,7 +915,7 @@ Module Module1
             If ExitCase() Then Exit While
             Dim u As Node = ExtractMin(Q, dist)
             If ShowSolving Then : u.Print("██") : Threading.Thread.Sleep(SolvingDelay) : End If
-            If u.Equals(target) Then : Backtrack(prev, target, source, stopwatch) : Exit While : End If
+            'If u.Equals(target) Then : Backtrack(prev, target, source, stopwatch) : Exit While : End If
             Q.Remove(u)
             For Each v As Node In GetNeighbours(u, availablepath)
                 Dim alt As Integer = dist(u) + 1
@@ -894,23 +925,21 @@ Module Module1
                 End If
             Next
         End While
+        Backtrack(prev, target, source, stopwatch)
     End Sub
     Sub Backtrack(ByVal prev As Dictionary(Of Node, Node), ByVal target As Node, ByVal source As Node, ByVal watch As Stopwatch)
-        Dim s As New List(Of Node)
         Dim u As Node = target
-        While prev(u) IsNot Nothing
-            s.Add(u)
-            u = prev(u)
-        End While
-        s.Add(source)
-        s.Reverse()
-        Dim timetaken As String = $"Time Taken to solve: {watch.Elapsed.TotalSeconds} seconds"
-        PrintMessageMiddle($"Path length: {s.Count - 1}   {timetaken}", Console.WindowHeight - 1, ConsoleColor.Yellow)
+        Dim Pathlength As Integer = 1
         Console.ForegroundColor = ConsoleColor.Green
         Console.BackgroundColor = ConsoleColor.Green
-        For Each node In s
-            node.Print("██")
-        Next
+        u.Print("██")
+        While prev(u) IsNot Nothing
+            u = prev(u)
+            u.Print("██")
+            Pathlength += 1
+        End While
+        Dim timetaken As String = $"Time Taken to solve: {watch.Elapsed.TotalSeconds} seconds"
+        PrintMessageMiddle($"Path length: {Pathlength}   {timetaken}", Console.WindowHeight - 1, ConsoleColor.Yellow)
         Console.ReadKey()
     End Sub
     Function ExtractMin(ByVal list As List(Of Node), ByVal dist As Dictionary(Of Node, Integer))
@@ -925,9 +954,7 @@ Module Module1
     Function ExtractMinCost(ByVal dist As Dictionary(Of Node, Double), ByVal openSet As List(Of Node))
         Dim returnnode As Node = openSet(openSet.Count - 1)
         For Each node In openSet
-            If dist(returnnode) <= dist(node) Then
-                returnnode = node
-            End If
+            If dist(returnnode) > dist(node) Then returnnode = node
         Next
         Return returnnode
     End Function
@@ -942,7 +969,7 @@ Module Module1
             gScore(node) = INFINITY
             fScore(node) = INFINITY
         Next
-        Dim heuristic As Double = 1
+        Dim heuristic As Double = 0.1
         gScore(start) = 0
         fScore(start) = h(start, goal, heuristic)
         openSet.Add(start)
@@ -950,7 +977,7 @@ Module Module1
         Console.ForegroundColor = ConsoleColor.Red
         Console.BackgroundColor = ConsoleColor.Red
         While openSet.Count > 0
-            Dim current As Node = ExtractMinCost(fScore, openSet)
+            Dim current As Node = ExtractMinCost(gScore, openSet)
             If current.Equals(goal) Then
                 ReconstructPath(cameFrom, current, start, If(ShowSolveTime, $"Time Taken to solve: {stopwatch.Elapsed.TotalSeconds} seconds", ""))
                 Exit While
@@ -1042,23 +1069,17 @@ Module Module1
         Next
     End Sub
     Sub ReconstructPath(ByVal camefrom As Dictionary(Of Node, Node), ByVal current As Node, ByVal goal As Node, ByVal timetaken As String)
-        Dim totalPath As New List(Of Node) From {
-            current,
-            goal
-        }
-        Console.ForegroundColor = (ConsoleColor.Green)
-        While Not current.Equals(goal)
-            totalPath.Add(current)
-            current = camefrom(current)
-        End While
-        totalPath.Add(goal)
-        totalPath.Reverse()
-        PrintMessageMiddle($"Path length: {totalPath.Count}   {timetaken}", Console.WindowHeight - 1, ConsoleColor.Yellow)
         Console.ForegroundColor = ConsoleColor.Green
         Console.BackgroundColor = ConsoleColor.Green
-        For Each node In totalPath
-            node.Print("██")
-        Next
+        Dim PathLength As Integer = 1
+        current.Print("██")
+        goal.Print("██")
+        While Not current.Equals(goal)
+            current = camefrom(current)
+            current.Print("██")
+            PathLength += 1
+        End While
+        PrintMessageMiddle($"Path length: {PathLength}   {timetaken}", Console.WindowHeight - 1, ConsoleColor.Yellow)
         Console.ReadKey()
     End Sub
     Sub aStar(ByVal availablepath As List(Of Node), ByVal ShowPath As Boolean, ByVal ShowSolveTime As Boolean, ByVal Delay As Integer)
@@ -1205,20 +1226,18 @@ Module Module1
         End If
     End Function
     Sub RetracePath(ByVal startnode As Node, ByVal endnode As Node, ByVal timetaken As String)
-        Dim path As New List(Of Node)
         Dim current As Node = endnode
-        While Not current.Equals(startnode)
-            path.Add(current)
-            current = current.parent
-        End While
-        PrintMessageMiddle($"Path length: {path.Count}   {timetaken}", Console.WindowHeight - 1, ConsoleColor.Yellow)
         Console.ForegroundColor = ConsoleColor.Green
         Console.BackgroundColor = ConsoleColor.Green
+        current.Print("██")
+        Dim PathLength As Integer = 1
+        While Not current.Equals(startnode)
+            current = current.parent
+            current.Print("██")
+            PathLength += 1
+        End While
         startnode.Print("██")
-        path.Reverse()
-        For Each node In path
-            node.Print("██")
-        Next
+        PrintMessageMiddle($"Path length: {PathLength}   {timetaken}", Console.WindowHeight - 1, ConsoleColor.Yellow)
         Console.BackgroundColor = (ConsoleColor.Black)
     End Sub
     Sub PrintMessageMiddle(ByVal message As String, ByVal y As Integer, ByVal colour As ConsoleColor)
@@ -1302,9 +1321,7 @@ Module Module1
                     Dim SetNumToBeChanged As Integer = CellSet(AdjacentCells(1))
                     Dim CellsToBeChanged As New List(Of Cell)
                     For Each thing In CellSet
-                        If thing.Value = SetNumToBeChanged Then
-                            CellsToBeChanged.Add(thing.Key)
-                        End If
+                        If thing.Value = SetNumToBeChanged Then CellsToBeChanged.Add(thing.Key)
                     Next
                     For Each thing In CellsToBeChanged
                         CellSet(thing) = CellSet(AdjacentCells(0))
@@ -1330,7 +1347,6 @@ Module Module1
         AddStartAndEnd(Returnpath, Limits, 0)
         Console.SetCursorPosition(0, ypos)
         Return Returnpath
-        Console.ReadKey()
     End Function
     Function Ellers(ByVal Limits() As Integer, ByVal Delay As Integer, ByVal ShowMazeGeneration As Boolean)
         While Limits(2) Mod 4 <> 0
@@ -1417,11 +1433,11 @@ Module Module1
                             Dim FinalCell As Cell = Row(Row.Count - 1)
                             For j = 0 To Row.Count - 1
                                 If RowSet(Row(j)) = If(Row(j).Equals(FinalCell), True, RowSet(Row(j + 1))) Then
-                                    'if the current cell is in the same set as the next cell then theu are in the same set
+                                    'if the current cell is in the same set as the next cell then they are in the same set
                                     CurrentSet.Add(Row(j))
                                     CurrentSet.Add(Row(j + 1))
                                 Else
-                                    'the next cell isnt in the same set as the current cell and therefore a path can be carved south
+                                    'the next cell isnt in the same set as the current cell and therefore a path can be carved south from random cells in the set
                                     If CurrentSet.Count = 0 Then
                                         'individual cell
                                         Dim SouthWallCell As New Cell(Row(j).X, Row(j).Y + 1)
@@ -1845,13 +1861,13 @@ Module Module1
         Console.ForegroundColor = ConsoleColor.White
         Console.BackgroundColor = ConsoleColor.White
         VisitedCells(CurrentCell) = True
+        ReturnablePath.Add(New Node(CurrentCell.X, CurrentCell.Y))
+        If ShowMazeGeneration Then CurrentCell.Print("██")
         Dim UsedCellCount As Integer = 1
         While UsedCellCount <> TotalCellCount
             If ExitCase() Then Return Nothing
             RecentCells.Clear()
-            For Each cell As Cell In RanNeighbour(CurrentCell, Limits)
-                RecentCells.Add(cell)
-            Next
+            RecentCells = RanNeighbour(CurrentCell, Limits)
             Dim Index As Integer = R.Next(0, RecentCells.Count)
             Dim TemporaryCell As Cell = RecentCells(Index)
             Dim TempNodeCell As New Node(TemporaryCell.X, TemporaryCell.Y)
@@ -1929,11 +1945,11 @@ Module Module1
             If ExitCase() Then Return Nothing
             For Each cell As Cell In Neighbour(CurrentCell, VisitedCells, Limits, True)
                 If Not FrontierSet.Contains(cell) Then FrontierSet.Add(cell)
-                If ShowMazeGeneration Then
-                    Console.ForegroundColor = ConsoleColor.Yellow
-                    Console.BackgroundColor = ConsoleColor.Yellow
-                    cell.Print("██")
-                End If
+                'If ShowMazeGeneration Then
+                '    Console.ForegroundColor = ConsoleColor.Yellow
+                '    Console.BackgroundColor = ConsoleColor.Yellow
+                '    cell.Print("██")
+                'End If
             Next
             If FrontierSet.Count = 0 Then Exit While
             Dim HighestWeightCell As Cell = FrontierSet(0)
@@ -1987,11 +2003,11 @@ Module Module1
             If ExitCase() Then Return Nothing
             For Each cell As Cell In Neighbour(CurrentCell, VisitedCells, Limits, True)
                 If Not FrontierSet.Contains(cell) Then FrontierSet.Add(cell)
-                If ShowMazeGeneration Then
-                    Console.ForegroundColor = ConsoleColor.Yellow
-                    Console.BackgroundColor = ConsoleColor.Yellow
-                    cell.Print("██")
-                End If
+                'If ShowMazeGeneration Then
+                '    Console.ForegroundColor = ConsoleColor.Yellow
+                '    Console.BackgroundColor = ConsoleColor.Yellow
+                '    cell.Print("██")
+                'End If
             Next
             If FrontierSet.Count = 0 Then Exit While
             CurrentCell = FrontierSet(R.Next(0, FrontierSet.Count))
@@ -2030,13 +2046,10 @@ Module Module1
         VisitedCells(CurrentCell) = True
         Dim ReturnablePath As New List(Of Node)
         Dim UsedCellPositions As Integer = 1
-        Dim StartCell As Cell = CurrentCell
-        If ShowMazeGeneration Then
-            Console.ForegroundColor = (ConsoleColor.White)
-            Console.BackgroundColor = (ConsoleColor.White)
-            CurrentCell.Print("██")
-            ReturnablePath.Add(New Node(CurrentCell.X, CurrentCell.Y))
-        End If
+        Console.ForegroundColor = (ConsoleColor.White)
+        Console.BackgroundColor = (ConsoleColor.White)
+        ReturnablePath.Add(New Node(CurrentCell.X, CurrentCell.Y))
+        If ShowMazeGeneration Then CurrentCell.Print("██")
         Dim stopwatch As Stopwatch = Stopwatch.StartNew()
         While UsedCellPositions <> totalcellcount
             If ExitCase() Then Return Nothing
@@ -2100,10 +2113,10 @@ Module Module1
             Threading.Thread.Sleep(delay)
         End While
         PrintMessageMiddle($"Time taken to generate the maze: {stopwatch.Elapsed.TotalSeconds}", 1, ConsoleColor.Yellow)
+        'EliminateDeadEnds(ReturnablePath)
         If Not ShowMazeGeneration Then
             Console.ForegroundColor = (ConsoleColor.White)
             Console.BackgroundColor = (ConsoleColor.White)
-            StartCell.Print("██")
             For Each node In ReturnablePath
                 node.Print("██")
             Next
@@ -2115,10 +2128,7 @@ Module Module1
     End Function
     Function RecursiveBacktrackerRecursively(ByVal cell As Cell, ByVal limits() As Integer, ByVal path As List(Of Node), ByRef visited As Dictionary(Of Cell, Boolean), ByRef cameFrom As Cell, ByVal r As Random, ByVal ShowMazeGeneration As Boolean, ByVal Delay As Integer)
         If Neighbour(cell, visited, limits, False) Then
-            Dim RecentCells As New List(Of Cell)
-            For Each cell1 As Cell In Neighbour(cell, visited, limits, True)
-                RecentCells.Add(cell1)
-            Next
+            Dim RecentCells As List(Of Cell) = Neighbour(cell, visited, limits, True)
             Dim TemporaryCell As Cell = RecentCells(r.Next(0, RecentCells.Count))
             Dim wall As Cell = MidPoint(cameFrom, TemporaryCell)
             If ShowMazeGeneration Then
@@ -2138,8 +2148,19 @@ Module Module1
     End Function
     Function RecursiveBacktracker(ByVal Limits() As Integer, ByVal Delay As Integer, ByVal ShowMazeGeneration As Boolean)
         Dim r As New Random
-        Console.ForegroundColor = ConsoleColor.White
-        Console.BackgroundColor = ConsoleColor.White
+        Dim back As ConsoleColor = ConsoleColor.White
+        If back <> ConsoleColor.White Then
+            Console.ForegroundColor = ConsoleColor.White
+            Console.BackgroundColor = ConsoleColor.White
+            For y = Limits(1) - 1 To Limits(3) + 1
+                For x = Limits(0) + 1 To Limits(2) + 1
+                    Console.SetCursorPosition(x, y)
+                    Console.Write("XX")
+                Next
+            Next
+        End If
+        Console.ForegroundColor = back
+        Console.BackgroundColor = back
         Dim CurrentCell As Cell = PickRandomStartingCell(Limits) '(Limits(0) + 3, Limits(1) + 2)
         Dim PrevCell As Cell = CurrentCell '(Limits(0) + 3, Limits(1) + 2)
         Dim VisitedCells As Dictionary(Of Cell, Boolean) = InitialiseVisited(Limits)
@@ -2147,19 +2168,19 @@ Module Module1
         Dim ReturnablePath As New List(Of Node)
         Dim RecentCells As New List(Of Cell)
         Dim stopwatch As Stopwatch = Stopwatch.StartNew()
-        'VisitedCells(CurrentCell) = True
+        VisitedCells(CurrentCell) = True
+        ReturnablePath.Add(New Node(CurrentCell.X, CurrentCell.Y))
+        If ShowMazeGeneration Then CurrentCell.Print("██")
         While True
             If ExitCase() Then Return Nothing
             If ShowMazeGeneration Then
                 PrevCell.Print("██")
-                Console.ForegroundColor = ConsoleColor.White
-                Console.BackgroundColor = ConsoleColor.White
+                Console.ForegroundColor = back
+                Console.BackgroundColor = back
             End If
             If Neighbour(CurrentCell, VisitedCells, Limits, False) Then 'done
                 RecentCells.Clear()
-                For Each cell As Cell In Neighbour(CurrentCell, VisitedCells, Limits, True)
-                    RecentCells.Add(cell)
-                Next
+                RecentCells = Neighbour(CurrentCell, VisitedCells, Limits, True)
                 Dim TemporaryCell As Cell = RecentCells(r.Next(0, RecentCells.Count))
                 VisitedCells(TemporaryCell) = True
                 Stack.Add(New Cell(TemporaryCell.X, TemporaryCell.Y))
@@ -2167,8 +2188,8 @@ Module Module1
                 CurrentCell = TemporaryCell
                 AddToPath(ReturnablePath, TemporaryCell, WallCell)
                 If ShowMazeGeneration Then
-                    Console.ForegroundColor = ConsoleColor.White
-                    Console.BackgroundColor = ConsoleColor.White
+                    Console.ForegroundColor = back
+                    Console.BackgroundColor = back
                     PrevCell.Print("██")
                     WallCell.Print("██")
                     Console.ForegroundColor = ConsoleColor.Blue
@@ -2179,14 +2200,14 @@ Module Module1
             ElseIf Stack.Count > 1 Then
                 CurrentCell = CurrentCell.Pop(Stack)
                 If ShowMazeGeneration Then
-                    Console.ForegroundColor = ConsoleColor.White
-                    Console.BackgroundColor = ConsoleColor.White
+                    Console.ForegroundColor = back
+                    Console.BackgroundColor = back
                     PrevCell.Print("██")
                     Console.ForegroundColor = ConsoleColor.Blue
                     Console.BackgroundColor = ConsoleColor.Blue
                     CurrentCell.Print("██")
-                    Console.ForegroundColor = ConsoleColor.White
-                    Console.BackgroundColor = ConsoleColor.White
+                    Console.ForegroundColor = back
+                    Console.BackgroundColor = back
                     PrevCell = CurrentCell
                 End If
             Else
@@ -2196,8 +2217,8 @@ Module Module1
         End While
         PrintMessageMiddle($"Time taken to generate the maze: {stopwatch.Elapsed.TotalSeconds}", 1, ConsoleColor.Yellow)
         If Not ShowMazeGeneration Then
-            Console.ForegroundColor = (ConsoleColor.White)
-            Console.BackgroundColor = (ConsoleColor.White)
+            Console.ForegroundColor = (back)
+            Console.BackgroundColor = (back)
             For Each node In ReturnablePath
                 node.Print("██")
             Next
@@ -2207,47 +2228,6 @@ Module Module1
         Console.SetCursorPosition(0, ypos)
         Return ReturnablePath
     End Function
-    Sub EliminateDeadEnds(ByRef Maze As List(Of Node))
-        Console.ForegroundColor = ConsoleColor.White
-        Console.BackgroundColor = ConsoleColor.White
-        Dim r As New Random
-        Dim start_v As New Node(Maze(Maze.Count - 2).X, Maze(Maze.Count - 2).Y)
-        Dim goal As New Node(Maze(Maze.Count - 1).X, Maze(Maze.Count - 1).Y)
-        Dim NodesToAdd As New List(Of Node)
-        For Each Node In Maze
-            If Node.Equals(start_v) Or Node.Equals(goal) Then Continue For
-            If Node.IsDeadEnd(Maze) Then
-                Dim AvailableNodes As New List(Of Node) From {
-                    New Node(Node.X, Node.Y - 2),'up
-                    New Node(Node.X + 4, Node.Y),'right
-                    New Node(Node.X, Node.Y + 2),'down
-                    New Node(Node.X - 4, Node.Y) 'left
-                }
-                Dim DirectNeighbour As New Node(Node.X, Node.Y - 1)
-                If Maze.Contains(DirectNeighbour) Then AvailableNodes.RemoveAt(0)
-                DirectNeighbour.update(Node.X + 2, Node.Y)
-                If Maze.Contains(DirectNeighbour) Then AvailableNodes.RemoveAt(1)
-                DirectNeighbour.update(Node.X, Node.Y + 1)
-                If Maze.Contains(DirectNeighbour) Then AvailableNodes.RemoveAt(2)
-                DirectNeighbour.update(Node.X - 2, Node.Y)
-                If Maze.Contains(DirectNeighbour) Then AvailableNodes.RemoveAt(3)
-                Dim NodesToRemove As New List(Of Node)
-                For i = 0 To AvailableNodes.Count - 1
-                    If Not Maze.Contains(AvailableNodes(i)) Then NodesToRemove.Add(AvailableNodes(i))
-                Next
-                For Each thing In NodesToRemove
-                    AvailableNodes.Remove(thing)
-                Next
-                Dim PositionInMaze As Node = AvailableNodes(r.Next(0, AvailableNodes.Count))
-                Dim PosToBeAdded As Node = MidPoint(PositionInMaze, Node)
-                NodesToAdd.Add(PosToBeAdded)
-                PosToBeAdded.Print("██")
-            End If
-        Next
-        For Each node In NodesToAdd
-            Maze.Add(node)
-        Next
-    End Sub
     Function SpiralBacktracker(ByVal Limits() As Integer, ByVal Delay As Integer, ByVal ShowMazeGeneration As Boolean)
         Dim r As New Random
         Dim CurrentCell As Cell = PickRandomStartingCell(Limits)
@@ -2256,14 +2236,15 @@ Module Module1
         Dim Stack As New List(Of Cell)
         Dim ReturnablePath As New List(Of Node)
         Dim RecentCells As New List(Of Cell)
-        Dim stopwatch As Stopwatch = Stopwatch.StartNew()
-        Dim CellReach As Integer = r.Next(0, 10)
         Dim Adding As Double = GetIntInputArrowKeys("Cell Reach: ", 100, 0, True)
         Dim CurrentCellReach As Double = 0
         Dim Dir As String = "UP"
         Console.ForegroundColor = ConsoleColor.White
         Console.BackgroundColor = ConsoleColor.White
         VisitedCells(CurrentCell) = True
+        If ShowMazeGeneration Then CurrentCell.Print("██")
+        ReturnablePath.Add(New Node(CurrentCell.X, CurrentCell.Y))
+        Dim stopwatch As Stopwatch = Stopwatch.StartNew()
         While True
             If ExitCase() Then Return Nothing
             If ShowMazeGeneration Then
@@ -2362,16 +2343,6 @@ Module Module1
         AddStartAndEnd(ReturnablePath, Limits, 0)
         Console.SetCursorPosition(0, ypos)
         Return ReturnablePath
-    End Function
-    Function InitialiseVisited(ByVal Limits() As Integer)
-        Dim dict As New Dictionary(Of Cell, Boolean)
-        For y = Limits(1) To Limits(3) Step 2
-            For x = Limits(0) + 3 To Limits(2) - 1 Step 4
-
-                dict(New Cell(x, y)) = False
-            Next
-        Next
-        Return dict
     End Function
     Function Wilsons(ByVal Limits() As Integer, ByVal Delay As Integer, ByVal ShowMazeGeneration As Boolean)
         Dim R As New Random
@@ -2637,6 +2608,56 @@ Module Module1
 
     End Function
     'Subs/functions for the algorithms
+    Function InitialiseVisited(ByVal Limits() As Integer)
+        Dim dict As New Dictionary(Of Cell, Boolean)
+        For y = Limits(1) To Limits(3) Step 2
+            For x = Limits(0) + 3 To Limits(2) - 1 Step 4
+                dict(New Cell(x, y)) = False
+            Next
+        Next
+        Return dict
+    End Function
+    Sub EliminateDeadEnds(ByRef Maze As List(Of Node))
+        Console.ForegroundColor = ConsoleColor.White
+        Console.BackgroundColor = ConsoleColor.White
+        Dim r As New Random
+        Dim start_v As New Node(Maze(Maze.Count - 2).X, Maze(Maze.Count - 2).Y)
+        Dim goal As New Node(Maze(Maze.Count - 1).X, Maze(Maze.Count - 1).Y)
+        Dim NodesToAdd As New List(Of Node)
+        For Each Node As Node In Maze
+            If Node.Equals(start_v) Or Node.Equals(goal) Then Continue For
+            If Node.IsDeadEnd(Maze) Then
+                Dim AvailableNodes As New List(Of Node) From {
+                    New Node(Node.X, Node.Y - 2),'up
+                    New Node(Node.X + 4, Node.Y),'right
+                    New Node(Node.X, Node.Y + 2),'down
+                    New Node(Node.X - 4, Node.Y) 'left
+                }
+                Dim DirectNeighbour As New Node(Node.X, Node.Y - 1)
+                If Maze.Contains(DirectNeighbour) Then AvailableNodes.RemoveAt(0)
+                DirectNeighbour.update(Node.X + 2, Node.Y)
+                If Maze.Contains(DirectNeighbour) Then AvailableNodes.RemoveAt(1)
+                DirectNeighbour.update(Node.X, Node.Y + 1)
+                If Maze.Contains(DirectNeighbour) Then AvailableNodes.RemoveAt(2)
+                DirectNeighbour.update(Node.X - 2, Node.Y)
+                If Maze.Contains(DirectNeighbour) Then AvailableNodes.RemoveAt(3)
+                Dim NodesToRemove As New List(Of Node)
+                For i = 0 To AvailableNodes.Count - 1
+                    If Not Maze.Contains(AvailableNodes(i)) Then NodesToRemove.Add(AvailableNodes(i))
+                Next
+                For Each thing In NodesToRemove
+                    AvailableNodes.Remove(thing)
+                Next
+                Dim PositionInMaze As Node = AvailableNodes(r.Next(0, AvailableNodes.Count))
+                Dim PosToBeAdded As Node = MidPoint(PositionInMaze, Node)
+                NodesToAdd.Add(PosToBeAdded)
+                PosToBeAdded.Print("██")
+            End If
+        Next
+        For Each node In NodesToAdd
+            Maze.Add(node)
+        Next
+    End Sub
     Sub SaveMazePNG(ByVal Path As List(Of Node), ByVal Algorithm As String, ByVal fileName As String)
         Dim solving As Boolean = HorizontalYesNo(0, "Do you want the outputted maze to have the solution on it  ", False, False, False)
         Console.Clear()
@@ -2825,11 +2846,11 @@ Module Module1
         Return ReturnCell
     End Function
     Function MidPoint(ByVal cell1 As Object, ByVal cell2 As Object)
-        Dim x, y As Integer
-        x = (cell1.X + cell2.X) / 2
-        y = (cell1.Y + cell2.Y) / 2
-        Dim newpoint As New Cell((cell1.X + cell2.X) / 2, (cell1.Y + cell2.Y) / 2)
-        Return newpoint
+        If cell1.GetType.ToString = "NEA_2019.Cell" Then
+            Return New Cell((cell1.X + cell2.X) / 2, (cell1.Y + cell2.Y) / 2)
+        Else
+            Return New Node((cell1.X + cell2.X) / 2, (cell1.Y + cell2.Y) / 2)
+        End If
     End Function
     Function RanNeighbour(ByVal current As Cell, ByVal Limits() As Integer)
         Dim neighbours As New List(Of Cell)
@@ -2873,7 +2894,6 @@ Module Module1
         Return neighbours
     End Function
 End Module
-
 Class Cell
     Public X, Y, CellSet As Integer
     Public Sub New(ByVal xpoint As Integer, ByVal ypoint As Integer)
@@ -2919,7 +2939,6 @@ Public Class Node
         Console.SetCursorPosition(X, Y)
         Console.Write(letter)
     End Sub
-
     Public Sub New(ByVal xpoint As Integer, ByVal ypoint As Integer)
         X = xpoint
         Y = ypoint
@@ -2968,35 +2987,44 @@ Public Class Node
         Return hashCode
     End Function
 End Class
+Class Value
+    Public IntValue As Integer
+    Public Node As Node
+    Public Sub New(ByVal _intvalue As Integer, ByVal _node As Node)
+        IntValue = _intvalue
+        Node = _node
+    End Sub
+End Class
 Class Tree
-    Public value As Integer
+    Public value As Value
     Public left, right As Tree
-    Public Function ContainsRecursive(ByVal current As Tree, ByVal value As Integer)
+    Public Function ContainsRecursive(ByVal current As Tree, ByVal value As Value)
         If IsNothing(current) Then Return False
-        If value = current.value Then Return True
-        Return value < current.value
+        If value.IntValue = current.value.IntValue Then Return True
+        Return value.IntValue < current.value.IntValue
         ContainsRecursive(current.left, value)
         ContainsRecursive(current.right, value)
     End Function
-    Public Function AddRecursive(ByVal current As Tree, ByVal value As Integer)
+    Public Function AddRecursive(ByVal current As Tree, ByVal value As Value)
         If IsNothing(current) Then Return New Tree(value)
-        If value < current.value Then
+        If value.IntValue < current.value.IntValue Then
             current.left = AddRecursive(current.left, value)
-        ElseIf current.value < value Then
+        ElseIf current.value.IntValue < value.IntValue Then
             current.right = AddRecursive(current.right, value)
         Else
             Return current
         End If
         Return current
     End Function
-    Function ExtractMin(ByVal node As Tree) As Integer
+    Function ExtractMin(ByVal node As Tree)
         Dim current As Tree = node
         While Not IsNothing(current.left)
             current = current.left
         End While
-        Return current.value
+        Dim ReturnNode As Node = current.value.Node
+        Return ReturnNode
     End Function
-    Public Sub New(ByVal valu As Integer)
+    Public Sub New(ByVal valu As Value)
         value = valu
         left = Nothing
         right = Nothing
