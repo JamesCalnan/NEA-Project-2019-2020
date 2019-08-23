@@ -945,16 +945,14 @@ Module Module1
     Function ExtractMin(ByVal list As List(Of Node), ByVal dist As Dictionary(Of Node, Integer))
         Dim returnnode As Node = list(0)
         For Each node In list
-            If dist(node) < dist(returnnode) Then
-                returnnode = node
-            End If
+            If dist(node) < dist(returnnode) Then returnnode = node
         Next
         Return returnnode
     End Function
-    Function ExtractMinCost(ByVal dist As Dictionary(Of Node, Double), ByVal openSet As List(Of Node))
-        Dim returnnode As Node = openSet(openSet.Count - 1)
+    Function ExtractMinCost(ByVal fScore As Dictionary(Of Node, Double), ByVal openSet As List(Of Node))
+        Dim returnnode As Node = openSet(0)
         For Each node In openSet
-            If dist(returnnode) > dist(node) Then returnnode = node
+            If fScore(node) <> Int32.MaxValue And fScore(returnnode) > fScore(node) Then returnnode = node
         Next
         Return returnnode
     End Function
@@ -969,7 +967,7 @@ Module Module1
             gScore(node) = INFINITY
             fScore(node) = INFINITY
         Next
-        Dim heuristic As Double = 0.1
+        Dim heuristic As Double = 5
         gScore(start) = 0
         fScore(start) = h(start, goal, heuristic)
         openSet.Add(start)
@@ -977,7 +975,7 @@ Module Module1
         Console.ForegroundColor = ConsoleColor.Red
         Console.BackgroundColor = ConsoleColor.Red
         While openSet.Count > 0
-            Dim current As Node = ExtractMinCost(gScore, openSet)
+            Dim current As Node = ExtractMinCost(fScore, openSet)
             If current.Equals(goal) Then
                 ReconstructPath(cameFrom, current, start, If(ShowSolveTime, $"Time Taken to solve: {stopwatch.Elapsed.TotalSeconds} seconds", ""))
                 Exit While
@@ -987,15 +985,13 @@ Module Module1
             If ShowPath Then : current.Print("██") : Threading.Thread.Sleep(Delay) : End If
             For Each Neighbour As Node In GetNeighbours(current, availablepath)
                 If closedSet.Contains(Neighbour) Then Continue For
-                Dim tentative_gScore = gScore(current) + 10
-                If Not openSet.Contains(Neighbour) Then
-                    openSet.Add(Neighbour)
-                ElseIf tentative_gScore > gScore(Neighbour) Then
-                    Continue For
+                Dim tentative_gScore = gScore(current) + 1
+                If tentative_gScore <= gScore(Neighbour) Then
+                    cameFrom(Neighbour) = current
+                    gScore(Neighbour) = tentative_gScore
+                    fScore(Neighbour) = gScore(Neighbour) + h(goal, Neighbour, heuristic)
+                    If Not openSet.Contains(Neighbour) Then openSet.Add(Neighbour)
                 End If
-                cameFrom(Neighbour) = current
-                gScore(Neighbour) = tentative_gScore
-                fScore(Neighbour) = gScore(Neighbour) + h(goal, Neighbour, heuristic)
             Next
         End While
     End Sub
@@ -1026,7 +1022,7 @@ Module Module1
     Function h(ByVal node As Node, ByVal goal As Node, ByVal D As Double)
         Dim dx As Integer = Math.Abs(node.X - goal.X)
         Dim dy As Integer = Math.Abs(node.Y - goal.Y)
-        Return Math.Sqrt((node.X - goal.X) ^ 2 + (node.Y - goal.Y) ^ 2) * D 'D * (dx + dy) ^ 2
+        Return D * (dx + dy) ^ 2
     End Function
     Function getBrushColours()
         Dim l As New List(Of Brush) From {
@@ -1139,11 +1135,13 @@ Module Module1
                                 If x = 2 And y = 1 Or x = 2 And y = 2 Then Continue For
                                 If x = -2 And y = -1 Or x = -2 And y = -2 Then Continue For
                                 If x = 2 And y = -1 Or x = 4 And y = -1 Then Continue For
+                                'swastika
                             Else
                                 If x = -2 And y = 2 Or x = -2 And y = 1 Then Continue For
                                 If x = 2 And y = 1 Or x = 4 And y = 1 Then Continue For
                                 If x = 2 And y = -1 Or x = 2 And y = -2 Then Continue For
                                 If x = -2 And y = -1 Or x = -4 And y = -1 Then Continue For
+                                'backwards swastika
                             End If
                             If x = 0 And y = 0 Then Continue For
                             Positions.Add(New Node(x + _x, y + _y))
@@ -1213,7 +1211,7 @@ Module Module1
         Console.SetCursorPosition(0, 1)
         Console.ForegroundColor = ConsoleColor.Green
         Console.BackgroundColor = ConsoleColor.Black
-        Console.Write($"---------------DONE---------------                      number of swastikas found: {numOfsFound}")
+        Console.Write($"---------------DONE---------------          {If(numOfsFound = 0, "No swastikas found", $"Number of Swastikas found: {numOfsFound}")}")
         Console.ReadKey()
     End Sub
     Function GetDistance(ByVal nodea As Node, ByVal nodeb As Node)
