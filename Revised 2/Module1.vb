@@ -856,6 +856,7 @@ Module Module1
         While S.Count > 0
             Dim u As Node = S.Pop
             If u.Equals(goal) Then Exit While
+            'g.FillRectangle(Brushes.SlateGray, (u.X) * Multiplier, (u.Y * 2) * Multiplier, 2 * Multiplier, 2 * Multiplier)
             If Not visited(u) Then
                 visited(u) = True
                 For Each w As Node In GetNeighbours(u, availablepath)
@@ -885,7 +886,7 @@ Module Module1
         While Q.Count > 0
             Dim v As Node = Q.Dequeue
             If ShowPath Then : v.Print("██") : Threading.Thread.Sleep(Delay) : End If
-            If v.Equals(goal) Then : ReconstructPath(cameFrom, v, start_v, If(ShowSolveTime, $"Time Taken to solve: {stopwatch.Elapsed.TotalSeconds} seconds", "")) : Exit While : End If
+            If v.Equals(goal) Then Exit While
             For Each w As Node In GetNeighbours(v, availablepath)
                 If Not Discovered(w) Then
                     Discovered(w) = True
@@ -894,11 +895,12 @@ Module Module1
                 End If
             Next
         End While
+        ReconstructPath(cameFrom, goal, start_v, If(ShowSolveTime, $"Time Taken to solve: {stopwatch.Elapsed.TotalSeconds} seconds", ""))
     End Sub
     Sub Dijkstras(ByVal availablepath As List(Of Node), ByVal ShowSolving As Boolean, ByVal SolvingDelay As Integer)
         Dim source As New Node(availablepath(availablepath.Count - 2).X, availablepath(availablepath.Count - 2).Y)
         Dim target As New Node(availablepath(availablepath.Count - 1).X, availablepath(availablepath.Count - 1).Y)
-        Dim dist As New Dictionary(Of Node, Integer)
+        Dim dist As New Dictionary(Of Node, Double)
         Dim prev As New Dictionary(Of Node, Node)
         Dim Q As New List(Of Node)
         Dim INFINITY As Integer = Int32.MaxValue
@@ -915,7 +917,7 @@ Module Module1
             If ExitCase() Then Exit While
             Dim u As Node = ExtractMin(Q, dist)
             If ShowSolving Then : u.Print("██") : Threading.Thread.Sleep(SolvingDelay) : End If
-            'If u.Equals(target) Then : Backtrack(prev, target, source, stopwatch) : Exit While : End If
+            If u.Equals(target) Then Exit While
             Q.Remove(u)
             For Each v As Node In GetNeighbours(u, availablepath)
                 Dim alt As Integer = dist(u) + 1
@@ -942,17 +944,10 @@ Module Module1
         PrintMessageMiddle($"Path length: {Pathlength}   {timetaken}", Console.WindowHeight - 1, ConsoleColor.Yellow)
         Console.ReadKey()
     End Sub
-    Function ExtractMin(ByVal list As List(Of Node), ByVal dist As Dictionary(Of Node, Integer))
+    Function ExtractMin(ByVal list As List(Of Node), ByVal dist As Dictionary(Of Node, Double))
         Dim returnnode As Node = list(0)
         For Each node In list
             If dist(node) < dist(returnnode) Then returnnode = node
-        Next
-        Return returnnode
-    End Function
-    Function ExtractMinCost(ByVal fScore As Dictionary(Of Node, Double), ByVal openSet As List(Of Node))
-        Dim returnnode As Node = openSet(0)
-        For Each node In openSet
-            If fScore(node) <> Int32.MaxValue And fScore(returnnode) > fScore(node) Then returnnode = node
         Next
         Return returnnode
     End Function
@@ -975,11 +970,8 @@ Module Module1
         Console.ForegroundColor = ConsoleColor.Red
         Console.BackgroundColor = ConsoleColor.Red
         While openSet.Count > 0
-            Dim current As Node = ExtractMinCost(fScore, openSet)
-            If current.Equals(goal) Then
-                ReconstructPath(cameFrom, current, start, If(ShowSolveTime, $"Time Taken to solve: {stopwatch.Elapsed.TotalSeconds} seconds", ""))
-                Exit While
-            End If
+            Dim current As Node = ExtractMin(openSet, fScore)
+            If current.Equals(goal) Then Exit While
             openSet.Remove(current)
             closedSet.Add(current)
             If ShowPath Then : current.Print("██") : Threading.Thread.Sleep(Delay) : End If
@@ -994,6 +986,7 @@ Module Module1
                 End If
             Next
         End While
+        ReconstructPath(cameFrom, goal, start, If(ShowSolveTime, $"Time Taken to solve: {stopwatch.Elapsed.TotalSeconds} seconds", ""))
     End Sub
     Function GetJunctionCount(ByVal availablePath As List(Of Node))
         Dim JunctionCount As Integer = 0
@@ -1104,7 +1097,7 @@ Module Module1
                 Dim tentative_gScore = current.gCost + 10
                 If tentative_gScore < Neighbour.gCost Or Not openSet.Contains(Neighbour) Then
                     Neighbour.gCost = tentative_gScore
-                    Neighbour.hCost = GetDistance(target, Neighbour)
+                    Neighbour.hCost = h(Neighbour, target, 1) 'GetDistance(target, Neighbour)
                     Neighbour.parent = current
                     openSet.Add(Neighbour)
                 End If
@@ -1388,8 +1381,7 @@ Module Module1
                         Dim CurrentCellSet As Integer = RowSet(CurCell)
                         Dim AdjacentCellSet As Integer = -1
                         If Row.Contains(NextCell) Then AdjacentCellSet = RowSet(NextCell)
-                        Dim RandomNum As Integer = R.Next(0, 101)
-                        If CurrentCellSet <> AdjacentCellSet And RandomNum > 50 And AdjacentCellSet <> -1 Then
+                        If AdjacentCellSet <> -1 AndAlso CurrentCellSet <> AdjacentCellSet And R.Next(0, 101) > 50 Then
                             'join sets together
                             Dim WallCell As Cell = MidPoint(CurCell, NextCell)
                             If ShowMazeGeneration Then WallCell.Print("██")
@@ -2221,6 +2213,7 @@ Module Module1
                 node.Print("██")
             Next
         End If
+        'EliminateDeadEnds(ReturnablePath)
         Dim ypos As Integer = Console.CursorTop
         AddStartAndEnd(ReturnablePath, Limits, 0)
         Console.SetCursorPosition(0, ypos)
@@ -2616,8 +2609,8 @@ Module Module1
         Return dict
     End Function
     Sub EliminateDeadEnds(ByRef Maze As List(Of Node))
-        Console.ForegroundColor = ConsoleColor.White
-        Console.BackgroundColor = ConsoleColor.White
+        Console.ForegroundColor = ConsoleColor.Black
+        Console.BackgroundColor = ConsoleColor.Black
         Dim r As New Random
         Dim start_v As New Node(Maze(Maze.Count - 2).X, Maze(Maze.Count - 2).Y)
         Dim goal As New Node(Maze(Maze.Count - 1).X, Maze(Maze.Count - 1).Y)
