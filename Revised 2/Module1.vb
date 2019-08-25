@@ -21,11 +21,9 @@ Module Module1
 
         'Dim node As Node = newtree.ExtractMin(newtree)
         'Console.WriteLine($"({node.X}, {node.Y})")
+        'Console.WriteLine($"value removed: {newtree.Remove(newtree, New Value(0, node))}")
         'node = newtree.ExtractMin(newtree)
         'Console.WriteLine($"({node.X}, {node.Y})")
-
-
-        'Console.ReadKey()
 
 
         Console.SetWindowSize(Console.LargestWindowWidth - 6, Console.LargestWindowHeight - 3)
@@ -241,7 +239,7 @@ Module Module1
         yposaftermaze = limits(3)
         DisplayAvailablePositions(availablepath.Count)
         Console.SetCursorPosition(0, yposaftermaze + 3)
-        Dim temparr() As String = {"Solve using the A* algorithm", "Solve using Dijkstra's algorithm", "Solve using Breadth-first search", "Solve using Depth-first search (using iteration)", "Solve using Depth-first search (using recursion)", "Play the maze", "Save the maze", "Output the maze as a png image", "Clear the maze and return to the menu"}
+        Dim temparr() As String = {"Solve using the A* algorithm", "Solve using Dijkstra's algorithm", "Solve using Breadth-first search", "Solve using Depth-first search (using iteration)", "Solve using Depth-first search (using recursion)", "Solve using the dead end filling method", "Play the maze", "Save the maze", "Output the maze as a png image", "Clear the maze and return to the menu"}
         input = SolvingMenu(temparr, "What would you like to do with the maze", limits(2) + 2, 3)
         previousmaze.Clear()
         previousmaze = availablepath
@@ -298,6 +296,10 @@ Module Module1
             SaveMazePNG(availablepath, Algorithm, filename)
         ElseIf input = "s" Then
             SD(availablepath)
+        ElseIf input = "Solve using the dead end filling method" Then
+            showpath = HorizontalYesNo(YposAfterMaze + 2, "Do you want to show the steps in solving the maze: ", True, False, False)
+            If showpath Then solvingdelay = GetIntInputArrowKeys("Delay when solving the maze: ", 100, 0, True)
+            DeadEndFiller(availablepath, showpath, True, solvingdelay)
         ElseIf input = "" Then
             Console.Clear
             Console.WriteLine("A critical error has occured that has caused the program to no longer work")
@@ -464,7 +466,7 @@ Module Module1
                             DisplayAvailablePositions(PreviousMaze.Count)
                             YPosAfterMaze = GreatestY - 1
                             Console.SetCursorPosition(0, YPosAfterMaze + 3)
-                            Dim temparr() As String = {"Solve using the A* algorithm", "Solve using Dijkstra's algorithm", "Solve using Breadth-first search", "Solve using Depth-first search (using iteration)", "Solve using Depth-first search (using recursion)", "Play the maze", "Clear the maze and return to the menu"}
+                            Dim temparr() As String = {"Solve using the A* algorithm", "Solve using Dijkstra's algorithm", "Solve using Breadth-first search", "Solve using Depth-first search (using iteration)", "Solve using Depth-first search (using recursion)", "Solve using the dead end filling method", "Play the maze", "Clear the maze and return to the menu"}
                             input = SolvingMenu(temparr, "What would you like to do with the maze", GreatestX + 3, 3)
                             SolvingInput(input, ShowPath, YPosAfterMaze, SolvingDelay, PreviousMaze, PreviousAlgorithm)
                         Else
@@ -564,7 +566,7 @@ Module Module1
                                 DisplayAvailablePositions(PreviousMaze.Count)
                                 Console.SetCursorPosition(0, YPosAfterMaze + 3)
                                 PreviousMaze = LoadedMaze
-                                Dim temparr() As String = {"Solve using the A* algorithm", "Solve using Dijkstra's algorithm", "Solve using Breadth-first search", "Solve using Depth-first search (using iteration)", "Solve using Depth-first search (using recursion)", "Play the maze", "Clear the maze and return to the menu"}
+                                Dim temparr() As String = {"Solve using the A* algorithm", "Solve using Dijkstra's algorithm", "Solve using Breadth-first search", "Solve using Depth-first search (using iteration)", "Solve using Depth-first search (using recursion)", "Solve using the dead end filling method", "Play the maze", "Clear the maze and return to the menu"}
                                 input = SolvingMenu(temparr, "What would you like to do with the maze", GreatestX + 3, 3)
                                 SolvingInput(input, ShowPath, YPosAfterMaze, SolvingDelay, PreviousMaze, UsedAlgorithm)
                             ElseIf ValidMaze = 0 Then
@@ -1079,14 +1081,14 @@ Module Module1
         Console.ForegroundColor = ConsoleColor.Red
         Console.BackgroundColor = ConsoleColor.Red
         openSet.Add(current)
+        current.gCost = 0
+        current.hCost = h(current, target, 1)
         Dim stopwatch As Stopwatch = Stopwatch.StartNew()
         While openSet.Count > 0
             If ExitCase() Then Exit While
             current = openSet(0)
             For i = 1 To openSet.Count - 1
-                If openSet(i).fCost() <= current.fCost() Or openSet(i).hCost = current.hCost Then
-                    If openSet(i).hCost < current.hCost Then current = openSet(i)
-                End If
+                If openSet(i).fCost() <= current.fCost() Or openSet(i).hCost = current.hCost Then If openSet(i).hCost < current.hCost Then current = openSet(i)
             Next
             openSet.Remove(current)
             closedSet.Add(current)
@@ -1094,7 +1096,7 @@ Module Module1
             If current.Equals(target) Then Exit While
             For Each Neighbour As Node In GetNeighbours(current, availablepath)
                 If closedSet.Contains(Neighbour) Then Continue For
-                Dim tentative_gScore = current.gCost + 10
+                Dim tentative_gScore = current.gCost + 1
                 If tentative_gScore < Neighbour.gCost Or Not openSet.Contains(Neighbour) Then
                     Neighbour.gCost = tentative_gScore
                     Neighbour.hCost = h(Neighbour, target, 1) 'GetDistance(target, Neighbour)
@@ -1104,6 +1106,88 @@ Module Module1
             Next
         End While
         RetracePath(start, current, If(ShowSolveTime, $"Time Taken to solve: {stopwatch.Elapsed.TotalSeconds} seconds", ""))
+        Console.ReadKey()
+    End Sub
+    Sub DeadEndFiller(ByVal List As List(Of Node), ByVal ShowPath As Boolean, ByVal ShowSolveTime As Boolean, ByVal Delay As Integer)
+        Dim DeadEnds As New List(Of Node)
+        Dim Start As New Node(List(List.Count - 2).X, List(List.Count - 2).Y)
+        Dim Goal As New Node(List(List.Count - 1).X, List(List.Count - 1).Y)
+        Dim Visited As New Dictionary(Of Node, Boolean)
+        Dim Maze As New List(Of Node)
+        Dim EditedMaze As New List(Of Node)
+        Dim NotPath As New List(Of Node)
+        Dim GreatestX, GreatestY As Integer
+        GreatestX = 0
+        GreatestY = 0
+        Console.ForegroundColor = ConsoleColor.White
+        Console.BackgroundColor = ConsoleColor.Black
+        Console.SetCursorPosition(1, 1)
+        Console.Write("Current Process: Finding dead ends")
+        Console.ForegroundColor = ConsoleColor.Red
+        Console.BackgroundColor = ConsoleColor.Red
+        For Each node In List
+            Maze.Add(node)
+            If node.X > GreatestX Then GreatestX = node.X
+            If node.Y > GreatestY Then GreatestY = node.Y
+            If node.IsDeadEnd(List) Then
+                If node.Equals(Start) Or node.Equals(Goal) Then Continue For
+                node.Print("██")
+                DeadEnds.Add(node)
+            End If
+            Visited(node) = False
+        Next
+        Console.ForegroundColor = ConsoleColor.White
+        Console.BackgroundColor = ConsoleColor.Black
+        Console.SetCursorPosition(1, 1)
+        Console.Write("Current Process: Filling dead ends      ")
+        Console.ForegroundColor = ConsoleColor.Black
+        Console.BackgroundColor = ConsoleColor.Black
+        For Each deadEnd In DeadEnds
+            Dim StartingCell As Node = deadEnd
+            Visited(StartingCell) = True
+            StartingCell.Print("██")
+            NotPath.Add(StartingCell)
+            While Not StartingCell.IsJunction(Maze)
+                Dim Neighbours As List(Of Node) = GetNeighbours(StartingCell, Maze)
+                For Each NeighbourNode In Neighbours
+                    If NeighbourNode.IsJunction(Maze) Then
+                        Maze.Remove(StartingCell)
+                        Exit While
+                    End If
+                    If Visited(NeighbourNode) Then Continue For
+                    StartingCell = NeighbourNode
+                    StartingCell.Print("██")
+                    NotPath.Add(StartingCell)
+                    Visited(NeighbourNode) = True
+                Next
+                Threading.Thread.Sleep(Delay)
+            End While
+        Next
+        Threading.Thread.Sleep(1000)
+        Console.ForegroundColor = ConsoleColor.White
+        Console.BackgroundColor = ConsoleColor.Black
+        Console.SetCursorPosition(1, 1)
+        Console.Write("                                             ")
+        Console.ForegroundColor = ConsoleColor.Green
+        Console.BackgroundColor = ConsoleColor.Green
+        Start.Print("██")
+        For __x = 1 To GreatestX + 1
+            For __y = 3 To GreatestY + 1
+                If List.Contains(New Node(__x, __y)) Then
+                    If Not NotPath.Contains(New Node(__x, __y)) Then
+                        Console.ForegroundColor = ConsoleColor.Green
+                        Console.BackgroundColor = ConsoleColor.Green
+                        Console.SetCursorPosition(__x, __y)
+                        Console.Write("██")
+                    Else
+                        Console.ForegroundColor = ConsoleColor.White
+                        Console.BackgroundColor = ConsoleColor.White
+                        Console.SetCursorPosition(__x, __y)
+                        Console.Write("██")
+                    End If
+                End If
+            Next
+        Next
         Console.ReadKey()
     End Sub
     Sub SD(ByVal availablePath As List(Of Node))
@@ -1241,8 +1325,7 @@ Module Module1
         Dim Li As New List(Of Cell)
         For y = Limits(1) To Limits(3) Step 2
             For x = Limits(0) + 3 To Limits(2) - 1 Step 4
-                Dim tempNode As New Cell(x, y)
-                Li.Add(tempNode)
+                Li.Add(New Cell(x, y))
             Next
         Next
         Dim r As New Random
@@ -2129,6 +2212,7 @@ Module Module1
             cameFrom = TemporaryCell
             visited(TemporaryCell) = True
             RecursiveBacktrackerRecursively(TemporaryCell, limits, path, visited, cameFrom, r, ShowMazeGeneration, Delay)
+            cameFrom = TemporaryCell
         Else
             Return Nothing
         End If
@@ -2989,12 +3073,15 @@ End Class
 Class Tree
     Public value As Value
     Public left, right As Tree
-    Public Function ContainsRecursive(ByVal current As Tree, ByVal value As Value)
+    Public Function Remove(ByVal current As Tree, ByVal value As Value)
         If IsNothing(current) Then Return False
-        If value.IntValue = current.value.IntValue Then Return True
-        Return value.IntValue < current.value.IntValue
-        ContainsRecursive(current.left, value)
-        ContainsRecursive(current.right, value)
+        If value.IntValue = current.value.IntValue Then
+            current = Nothing
+            Return True
+        End If
+        'Return value.IntValue < current.value.IntValue
+        Remove(current.left, value)
+        Remove(current.right, value)
     End Function
     Public Function AddRecursive(ByVal current As Tree, ByVal value As Value)
         If IsNothing(current) Then Return New Tree(value)
