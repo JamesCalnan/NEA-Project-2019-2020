@@ -300,6 +300,8 @@ Module Module1
             showpath = HorizontalYesNo(YposAfterMaze + 2, "Do you want to show the steps in solving the maze: ", True, False, False)
             If showpath Then solvingdelay = GetIntInputArrowKeys("Delay when solving the maze: ", 100, 0, True)
             DeadEndFiller(availablepath, showpath, True, solvingdelay)
+        ElseIf input = "Solve using the wall follower method" Then
+            WallFollower(availablepath, showpath, solvingdelay)
         ElseIf input = "" Then
             Console.Clear
             Console.WriteLine("A critical error has occured that has caused the program to no longer work")
@@ -332,7 +334,7 @@ Module Module1
         While 1
             Console.BackgroundColor = (ConsoleColor.Black)
             Console.ForegroundColor = (ConsoleColor.White)
-            Dim Info() As String = {"Information for using this program:", "Use arrow keys for navigating the menus", "Use the enter key to select an option", "", "When inputting integer values:", "The right and left arrow keys increment by 1", "The up and down arrow keys increment by 10", "The 'M' key will set the number to the maximum value it can be", "The 'H' key will set the number to half of the maximum value it can be"}
+            Dim Info() As String = {"Information for using this program:", "Use the up and down arrow keys for navigating the menus", "Use the enter or right arrow key to select an option", "", "When inputting integer values:", "The up and down arrow keys increment by 1", "The right and left arrow keys increment by 10", "The 'M' key will set the number to the maximum value it can be", "The 'H' key will set the number to half of the maximum value it can be"}
             For i = 0 To Info.Count - 1
                 Console.SetCursorPosition(ScreenWidth - Info(i).Length / 2, i)
                 If i <> 0 Then Console.ForegroundColor = (ConsoleColor.Magenta)
@@ -349,7 +351,7 @@ Module Module1
                     y -= 1
                     If y = -1 Then y = arr.Count - 1
                     If y = 15 Or y = 20 Then y -= 1
-                Case "Enter"
+                Case "Enter", "RightArrow"
                     Dim AvailablePath As List(Of Node)
                     If y = 0 Then
                         GetMazeInfo(Width, Height, DelayMS, Limits, ShowMazeGeneration, True, 0)
@@ -943,7 +945,7 @@ Module Module1
             Pathlength += 1
         End While
         Dim timetaken As String = $"Time Taken to solve: {watch.Elapsed.TotalSeconds} seconds"
-        PrintMessageMiddle($"Path length: {Pathlength}   {timetaken}", Console.WindowHeight - 1, ConsoleColor.Yellow)
+        PrintMessageMiddle($"Path length: {Pathlength}   {timetaken}", Console.WindowHeight - 1, ConsoleColor.Green)
         Console.ReadKey()
     End Sub
     Function ExtractMin(ByVal list As List(Of Node), ByVal dist As Dictionary(Of Node, Double))
@@ -1070,7 +1072,7 @@ Module Module1
             current.Print("██")
             PathLength += 1
         End While
-        PrintMessageMiddle($"Path length: {PathLength}   {timetaken}", Console.WindowHeight - 1, ConsoleColor.Yellow)
+        PrintMessageMiddle($"Path length: {PathLength}   {timetaken}", Console.WindowHeight - 1, ConsoleColor.Green)
         Console.ReadKey()
     End Sub
     Sub aStar(ByVal availablepath As List(Of Node), ByVal ShowPath As Boolean, ByVal ShowSolveTime As Boolean, ByVal Delay As Integer)
@@ -1113,6 +1115,7 @@ Module Module1
         Dim Start As New Node(List(List.Count - 2).X, List(List.Count - 2).Y)
         Dim Goal As New Node(List(List.Count - 1).X, List(List.Count - 1).Y)
         Dim Visited As New Dictionary(Of Node, Boolean)
+        Dim FillColour As ConsoleColor = ConsoleColor.DarkCyan
         Dim Maze As New List(Of Node)
         Dim EditedMaze As New List(Of Node)
         Dim NotPath As New List(Of Node)
@@ -1123,15 +1126,16 @@ Module Module1
         Console.BackgroundColor = ConsoleColor.Black
         Console.SetCursorPosition(1, 1)
         Console.Write("Current Process: Finding dead ends")
-        Console.ForegroundColor = ConsoleColor.Red
-        Console.BackgroundColor = ConsoleColor.Red
+        Console.ForegroundColor = FillColour
+        Console.BackgroundColor = FillColour
+        Dim stopwatch As Stopwatch = Stopwatch.StartNew()
         For Each node In List
             Maze.Add(node)
             If node.X > GreatestX Then GreatestX = node.X
             If node.Y > GreatestY Then GreatestY = node.Y
             If node.IsDeadEnd(List) Then
                 If node.Equals(Start) Or node.Equals(Goal) Then Continue For
-                node.Print("██")
+                If ShowPath Then node.Print("██")
                 DeadEnds.Add(node)
             End If
             Visited(node) = False
@@ -1140,12 +1144,12 @@ Module Module1
         Console.BackgroundColor = ConsoleColor.Black
         Console.SetCursorPosition(1, 1)
         Console.Write("Current Process: Filling dead ends      ")
-        Console.ForegroundColor = ConsoleColor.Black
-        Console.BackgroundColor = ConsoleColor.Black
+        Console.ForegroundColor = FillColour
+        Console.BackgroundColor = FillColour
         For Each deadEnd In DeadEnds
             Dim StartingCell As Node = deadEnd
             Visited(StartingCell) = True
-            StartingCell.Print("██")
+            If ShowPath Then StartingCell.Print("██")
             NotPath.Add(StartingCell)
             While Not StartingCell.IsJunction(Maze)
                 Dim Neighbours As List(Of Node) = GetNeighbours(StartingCell, Maze)
@@ -1156,38 +1160,48 @@ Module Module1
                     End If
                     If Visited(NeighbourNode) Then Continue For
                     StartingCell = NeighbourNode
-                    StartingCell.Print("██")
+                    If ShowPath Then StartingCell.Print("██")
                     NotPath.Add(StartingCell)
                     Visited(NeighbourNode) = True
                 Next
                 Threading.Thread.Sleep(Delay)
             End While
         Next
-        Threading.Thread.Sleep(1000)
         Console.ForegroundColor = ConsoleColor.White
         Console.BackgroundColor = ConsoleColor.Black
         Console.SetCursorPosition(1, 1)
         Console.Write("                                             ")
         Console.ForegroundColor = ConsoleColor.Green
         Console.BackgroundColor = ConsoleColor.Green
-        Start.Print("██")
-        For __x = 1 To GreatestX + 1
-            For __y = 3 To GreatestY + 1
-                If List.Contains(New Node(__x, __y)) Then
-                    If Not NotPath.Contains(New Node(__x, __y)) Then
-                        Console.ForegroundColor = ConsoleColor.Green
-                        Console.BackgroundColor = ConsoleColor.Green
-                        Console.SetCursorPosition(__x, __y)
-                        Console.Write("██")
-                    Else
-                        Console.ForegroundColor = ConsoleColor.White
-                        Console.BackgroundColor = ConsoleColor.White
-                        Console.SetCursorPosition(__x, __y)
-                        Console.Write("██")
+        If ShowPath Then Start.Print("██")
+        PrintMessageMiddle($"Time Taken to solve: {stopwatch.Elapsed.TotalSeconds} seconds", Console.WindowHeight - 1, ConsoleColor.Green)
+        If ShowPath Then
+            For __x = 1 To GreatestX + 1
+                For __y = 3 To GreatestY + 1
+                    If List.Contains(New Node(__x, __y)) Then
+                        If Not NotPath.Contains(New Node(__x, __y)) Then
+                            Console.ForegroundColor = ConsoleColor.Green
+                            Console.BackgroundColor = ConsoleColor.Green
+                            Console.SetCursorPosition(__x, __y)
+                            Console.Write("██")
+                        Else
+                            Console.ForegroundColor = ConsoleColor.White
+                            Console.BackgroundColor = ConsoleColor.White
+                            Console.SetCursorPosition(__x, __y)
+                            If ShowPath Then Console.Write("██")
+                        End If
                     End If
-                End If
+                Next
+                Threading.Thread.Sleep(Delay)
             Next
-        Next
+        Else
+            Console.ForegroundColor = ConsoleColor.Green
+            Console.BackgroundColor = ConsoleColor.Green
+            For Each Node In Maze
+                If Not NotPath.Contains(Node) Then Node.Print("██")
+            Next
+        End If
+
         Console.ReadKey()
     End Sub
     Sub SD(ByVal availablePath As List(Of Node))
@@ -1312,7 +1326,7 @@ Module Module1
             PathLength += 1
         End While
         startnode.Print("██")
-        PrintMessageMiddle($"Path length: {PathLength}   {timetaken}", Console.WindowHeight - 1, ConsoleColor.Yellow)
+        PrintMessageMiddle($"Path length: {PathLength}   {timetaken}", Console.WindowHeight - 1, ConsoleColor.Green)
         Console.BackgroundColor = (ConsoleColor.Black)
     End Sub
     Sub PrintMessageMiddle(ByVal message As String, ByVal y As Integer, ByVal colour As ConsoleColor)
@@ -1369,7 +1383,7 @@ Module Module1
         Dim stopwatch As Stopwatch = Stopwatch.StartNew()
         While EdgeWeights.Count > 0
             'find the edge with the lowest weight
-            Dim HighestWeightCell As Cell = EdgeWeights.Keys(0)
+            Dim HighestWeightCell As Cell = EdgeWeights.Keys(R.Next(0, EdgeWeights.Count))
             For Each cell In EdgeWeights
                 If EdgeWeights(HighestWeightCell) < EdgeWeights(cell.Key) Then HighestWeightCell = cell.Key
             Next
@@ -1503,7 +1517,9 @@ Module Module1
                             'need to carve south
                             Dim CurrentSet As New List(Of Cell)
                             Dim thingy As New List(Of List(Of Cell))
+                            Row.Reverse()
                             Dim FinalCell As Cell = Row(Row.Count - 1)
+
                             For j = 0 To Row.Count - 1
                                 If RowSet(Row(j)) = If(Row(j).Equals(FinalCell), True, RowSet(Row(j + 1))) Then
                                     'if the current cell is in the same set as the next cell then they are in the same set
@@ -1715,7 +1731,7 @@ Module Module1
                 If ShowMazeGeneration Then
                     Console.ForegroundColor = ConsoleColor.Yellow
                     Console.BackgroundColor = ConsoleColor.Yellow
-                    cell.Print("██")
+                    'cell.Print("██")
                 End If
             Next
             Dim RandomNumber As Integer
@@ -1836,8 +1852,7 @@ Module Module1
             End If
             VisitedCells(CurrentCell) = True
             FrontierSet.Remove(CurrentCell)
-            ReturnablePath.Add(New Node(WallCell.X, WallCell.Y))
-            ReturnablePath.Add(New Node(CurrentCell.X, CurrentCell.Y))
+            AddToPath(ReturnablePath, CurrentCell, WallCell)
             Threading.Thread.Sleep(delay)
             RecentFrontierSet.Clear()
             PreviousCell = CurrentCell
@@ -2212,7 +2227,6 @@ Module Module1
             cameFrom = TemporaryCell
             visited(TemporaryCell) = True
             RecursiveBacktrackerRecursively(TemporaryCell, limits, path, visited, cameFrom, r, ShowMazeGeneration, Delay)
-            cameFrom = TemporaryCell
         Else
             Return Nothing
         End If
