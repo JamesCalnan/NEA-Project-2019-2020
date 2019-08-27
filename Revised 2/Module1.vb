@@ -2,7 +2,7 @@
 Imports System.IO
 Module Module1
 
-    'TODO: use new menu when solving a maze that has just been loaded from a text file
+    'TODO: give user the option to print a path or carve through walls, implement wall follower algorithm
     Sub Main()
         Console.CursorVisible = False
         Console.ForegroundColor = (ConsoleColor.White)
@@ -1066,8 +1066,8 @@ Module Module1
         Console.BackgroundColor = ConsoleColor.Green
         Dim PathLength As Integer = 1
         current.Print("██")
-        goal.Print("██")
         While Not current.Equals(goal)
+
             current = camefrom(current)
             current.Print("██")
             PathLength += 1
@@ -1384,9 +1384,9 @@ Module Module1
         While EdgeWeights.Count > 0
             'find the edge with the lowest weight
             Dim HighestWeightCell As Cell = EdgeWeights.Keys(R.Next(0, EdgeWeights.Count))
-            For Each cell In EdgeWeights
-                If EdgeWeights(HighestWeightCell) < EdgeWeights(cell.Key) Then HighestWeightCell = cell.Key
-            Next
+            'For Each cell In EdgeWeights
+            '    If EdgeWeights(HighestWeightCell) < EdgeWeights(cell.Key) Then HighestWeightCell = cell.Key
+            'Next
             'TempLowest is now the key with the lowest value in the EdgeWeights dictionary
             Dim WallCell As Cell = HighestWeightCell
             'need to find the two adjacent cells
@@ -2311,7 +2311,6 @@ Module Module1
                 node.Print("██")
             Next
         End If
-        'EliminateDeadEnds(ReturnablePath)
         Dim ypos As Integer = Console.CursorTop
         AddStartAndEnd(ReturnablePath, Limits, 0)
         Console.SetCursorPosition(0, ypos)
