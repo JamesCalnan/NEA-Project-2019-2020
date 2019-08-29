@@ -2083,7 +2083,9 @@ Module Module1
                 ReturnablePath.Add(New Node(WallCell.X, WallCell.Y))
                 UsedCellPositions += 1
                 RecentCells.Clear()
+
                 If ShowMazeGeneration Then
+                    SetBoth(ConsoleColor.White)
                     WallCell.Print("██")
                     CurrentCell.Print("██")
                 End If
@@ -2194,13 +2196,6 @@ Module Module1
                 RecentCells.Clear()
                 RecentCells = Neighbour(CurrentCell, VisitedCells, Limits, True)
                 Dim TemporaryCell As Cell = RecentCells(r.Next(0, RecentCells.Count))
-                'If RecentCells.Count >= 3 Then
-                '    TemporaryCell = RecentCells(Bias(r.Next(0, Bias.Count)))
-                'Else
-                '    TemporaryCell = RecentCells(r.Next(0, RecentCells.Count))
-                'End If
-
-
                 VisitedCells(TemporaryCell) = True
                 Stack.Push(New Cell(TemporaryCell.X, TemporaryCell.Y))
                 Dim WallCell As Cell = MidPoint(CurrentCell, TemporaryCell)
@@ -2415,7 +2410,7 @@ Module Module1
                             SetBoth(ConsoleColor.White)
                             thing.Key.Print("  ")
                         Else
-                            SetBoth(ConsoleColor.Blue)
+                            SetBoth(ConsoleColor.Black)
                             thing.Key.Print("  ")
                         End If
                     Next
@@ -2743,12 +2738,10 @@ Module Module1
         For i = limits(0) + 3 To xCount + 2 Step 2
             Dim tempcell As New Node(i, y)
             If Not VisitedlistAndWall.Contains(tempcell) Then
-                Console.ForegroundColor = ConsoleColor.Black
-                Console.BackgroundColor = ConsoleColor.Black
+                SetBoth(ConsoleColor.Black)
                 tempcell.Print("  ")
             Else
-                Console.ForegroundColor = ConsoleColor.White
-                Console.BackgroundColor = ConsoleColor.White
+                SetBoth(ConsoleColor.White)
                 tempcell.Print("██")
             End If
         Next
