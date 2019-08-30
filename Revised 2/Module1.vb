@@ -1,5 +1,7 @@
 ﻿Imports System.Drawing
 Imports System.IO
+Imports NEA_2019
+
 Module Module1
 
     'TODO: give user the option to print a path or carve through walls, implement wall follower algorithm
@@ -251,12 +253,16 @@ Module Module1
             If HorizontalYesNo(YposAfterMaze + 2, "Do you want to use the optimised version of A*: ", True, False, False) Then
                 aStar(availablepath, showpath, True, solvingdelay)
             Else
-                aStarWiki(availablepath, showpath, True, solvingdelay)
+                Dim neededNodes As List(Of Node) = GetNeededNodes(availablepath)
+                Dim AdjacencyList As Dictionary(Of Node, List(Of Node)) = ConstructAdjacencyList(neededNodes, availablepath)
+                aStarWiki(AdjacencyList, showpath, True, solvingdelay)
             End If
         ElseIf input = "Solve using Dijkstra's algorithm" Then
             showpath = HorizontalYesNo(YposAfterMaze + 2, "Do you want to show the steps in solving the maze: ", True, False, False)
             If showpath Then solvingdelay = GetIntInputArrowKeys("Delay when solving the maze: ", 100, 0, True)
-            Dijkstras(availablepath, showpath, solvingdelay)
+            Dim neededNodes As List(Of Node) = GetNeededNodes(availablepath)
+            Dim AdjacencyList As Dictionary(Of Node, List(Of Node)) = ConstructAdjacencyList(neededNodes, availablepath)
+            Dijkstras(AdjacencyList, showpath, solvingdelay)
         ElseIf input = "Solve using Breadth-first search" Then
             showpath = HorizontalYesNo(YposAfterMaze + 2, "Do you want to show the steps in solving the maze: ", True, False, False)
             If showpath Then solvingdelay = GetIntInputArrowKeys("Delay when solving the maze: ", 100, 0, True)
@@ -264,7 +270,9 @@ Module Module1
         ElseIf input = "Solve using Depth-first search (using iteration)" Then
             showpath = HorizontalYesNo(YposAfterMaze + 2, "Do you want to show the steps in solving the maze: ", True, False, False)
             If showpath Then solvingdelay = GetIntInputArrowKeys("Delay when solving the maze: ", 100, 0, True)
-            DFS_Iterative(availablepath, showpath, True, solvingdelay)
+            Dim neededNodes As List(Of Node) = GetNeededNodes(availablepath)
+            Dim AdjacencyList As Dictionary(Of Node, List(Of Node)) = ConstructAdjacencyList(neededNodes, availablepath)
+            DFS_Iterative(AdjacencyList, showpath, True, solvingdelay)
         ElseIf input = "Solve using Depth-first search (using recursion)" Then
             showpath = HorizontalYesNo(YposAfterMaze + 2, "Do you want to show the steps in solving the maze: ", True, False, False)
             If showpath Then solvingdelay = GetIntInputArrowKeys("Delay when solving the maze: ", 100, 0, True)
@@ -814,15 +822,15 @@ Module Module1
             End If
         Next
     End Function
-    Sub DFS_Iterative(ByVal availablepath As List(Of Node), ByVal ShowPath As Boolean, ByVal ShowSolveTime As Boolean, ByVal Delay As Integer)
-        Dim start_v As New Node(availablepath(availablepath.Count - 2).X, availablepath(availablepath.Count - 2).Y)
-        Dim goal As New Node(availablepath(availablepath.Count - 1).X, availablepath(availablepath.Count - 1).Y)
+    Sub DFS_Iterative(ByVal availablepath As Dictionary(Of Node, List(Of Node)), ByVal ShowPath As Boolean, ByVal ShowSolveTime As Boolean, ByVal Delay As Integer)
+        Dim start_v As New Node(availablepath.Keys(availablepath.Count - 2).X, availablepath.Keys(availablepath.Count - 2).Y)
+        Dim goal As New Node(availablepath.Keys(availablepath.Count - 1).X, availablepath.Keys(availablepath.Count - 1).Y)
         Dim visited As New Dictionary(Of Node, Boolean)
         Dim stopwatch As Stopwatch = Stopwatch.StartNew()
         Dim li As New List(Of Node)
         Dim cameFrom As New Dictionary(Of Node, Node)
         Dim S As New Stack(Of Node)
-        For Each u In availablepath
+        For Each u In availablepath.Keys
             visited(u) = False
         Next
         S.Push(start_v)
@@ -833,7 +841,7 @@ Module Module1
             If ShowPath Then : u.Print("██") : Threading.Thread.Sleep(Delay) : End If
             If Not visited(u) Then
                 visited(u) = True
-                For Each w As Node In GetNeighbours(u, availablepath)
+                For Each w As Node In GetNeighboursAd(u, availablepath)
                     If Not visited(w) Then
                         S.Push(w)
                         cameFrom(w) = u
@@ -841,7 +849,7 @@ Module Module1
                 Next
             End If
         End While
-        ReconstructPath(cameFrom, goal, start_v, If(ShowSolveTime, $"Time Taken to solve: {stopwatch.Elapsed.TotalSeconds} seconds", ""))
+        ReconstructPath(cameFrom, goal, start_v, If(ShowSolveTime, $"{stopwatch.Elapsed.TotalSeconds}", ""))
     End Sub
     Sub DFS_IterativeFORFILE(ByVal availablepath As List(Of Node), ByRef bmp As Bitmap, ByRef g As Graphics, ByVal Multiplier As Integer)
         Dim start_v As New Node(availablepath(availablepath.Count - 2).X, availablepath(availablepath.Count - 2).Y)
@@ -898,14 +906,14 @@ Module Module1
         End While
         ReconstructPath(cameFrom, goal, start_v, If(ShowSolveTime, $"Time Taken to solve: {stopwatch.Elapsed.TotalSeconds} seconds", ""))
     End Sub
-    Sub Dijkstras(ByVal availablepath As List(Of Node), ByVal ShowSolving As Boolean, ByVal SolvingDelay As Integer)
-        Dim source As New Node(availablepath(availablepath.Count - 2).X, availablepath(availablepath.Count - 2).Y)
-        Dim target As New Node(availablepath(availablepath.Count - 1).X, availablepath(availablepath.Count - 1).Y)
+    Sub Dijkstras(ByVal availablepath As Dictionary(Of Node, List(Of Node)), ByVal ShowSolving As Boolean, ByVal SolvingDelay As Integer)
+        Dim source As New Node(availablepath.Keys(availablepath.Count - 2).X, availablepath.Keys(availablepath.Count - 2).Y)
+        Dim target As New Node(availablepath.Keys(availablepath.Count - 1).X, availablepath.Keys(availablepath.Count - 1).Y)
         Dim dist As New Dictionary(Of Node, Double)
         Dim prev As New Dictionary(Of Node, Node)
         Dim Q As New List(Of Node)
         Dim INFINITY As Integer = Int32.MaxValue
-        For Each v In availablepath
+        For Each v In availablepath.Keys
             dist(v) = INFINITY
             prev(v) = Nothing
             Q.Add(v)
@@ -919,7 +927,7 @@ Module Module1
             If ShowSolving Then : u.Print("██") : Threading.Thread.Sleep(SolvingDelay) : End If
             If u.Equals(target) Then Exit While
             Q.Remove(u)
-            For Each v As Node In GetNeighbours(u, availablepath)
+            For Each v As Node In GetNeighboursAd(u, availablepath)
                 Dim alt As Integer = dist(u) + 1
                 If alt < dist(v) Then
                     dist(v) = alt
@@ -932,10 +940,13 @@ Module Module1
     Sub Backtrack(ByVal prev As Dictionary(Of Node, Node), ByVal target As Node, ByVal source As Node, ByVal watch As Stopwatch)
         Dim u As Node = target
         Dim Pathlength As Integer = 1
+        Dim PrevNode As Node = u
         SetBoth(ConsoleColor.Green)
         u.Print("██")
         While prev(u) IsNot Nothing
             u = prev(u)
+            DrawBetween(u, PrevNode)
+            PrevNode = u
             u.Print("██")
             Pathlength += 1
         End While
@@ -950,14 +961,14 @@ Module Module1
         Next
         Return returnnode
     End Function
-    Sub aStarWiki(ByVal availablepath As List(Of Node), ByVal ShowPath As Boolean, ByVal ShowSolveTime As Boolean, ByVal Delay As Integer)
+    Sub aStarWiki(ByVal AdjacencyList As Dictionary(Of Node, List(Of Node)), ByVal ShowPath As Boolean, ByVal ShowSolveTime As Boolean, ByVal Delay As Integer)
         Dim openSet, closedSet As New List(Of Node)
-        Dim start As New Node(availablepath(availablepath.Count - 2).X, availablepath(availablepath.Count - 2).Y)
-        Dim goal As New Node(availablepath(availablepath.Count - 1).X, availablepath(availablepath.Count - 1).Y)
+        Dim start As New Node(AdjacencyList.Keys(AdjacencyList.Count - 2).X, AdjacencyList.Keys(AdjacencyList.Count - 2).Y)
+        Dim goal As New Node(AdjacencyList.Keys(AdjacencyList.Count - 1).X, AdjacencyList.Keys(AdjacencyList.Count - 1).Y)
         Dim gScore, fScore As New Dictionary(Of Node, Double)
         Dim cameFrom As New Dictionary(Of Node, Node)
         Dim INFINITY As Integer = Int32.MaxValue
-        For Each node In availablepath
+        For Each node In AdjacencyList.Keys
             gScore(node) = INFINITY
             fScore(node) = INFINITY
         Next
@@ -973,7 +984,7 @@ Module Module1
             openSet.Remove(current)
             closedSet.Add(current)
             If ShowPath Then : current.Print("██") : Threading.Thread.Sleep(Delay) : End If
-            For Each Neighbour As Node In GetNeighbours(current, availablepath)
+            For Each Neighbour As Node In GetNeighboursAd(current, AdjacencyList)
                 If closedSet.Contains(Neighbour) Then Continue For
                 Dim tentative_gScore = gScore(current) + 1
                 If tentative_gScore <= gScore(Neighbour) Then
@@ -984,7 +995,7 @@ Module Module1
                 End If
             Next
         End While
-        ReconstructPath(cameFrom, goal, start, If(ShowSolveTime, $"Time Taken to solve: {stopwatch.Elapsed.TotalSeconds} seconds", ""))
+        ReconstructPath(cameFrom, goal, start, If(ShowSolveTime, $"{stopwatch.Elapsed.TotalSeconds}", ""))
     End Sub
     Function GetJunctionCount(ByVal availablePath As List(Of Node))
         Dim JunctionCount As Integer = 0
@@ -1058,15 +1069,49 @@ Module Module1
     Sub ReconstructPath(ByVal camefrom As Dictionary(Of Node, Node), ByVal current As Node, ByVal goal As Node, ByVal timetaken As String)
         SetBoth(ConsoleColor.Green)
         Dim PathLength As Integer = 1
+        Dim PrevNode As Node = current
         current.Print("██")
         While Not current.Equals(goal)
-
             current = camefrom(current)
+            DrawBetween(current, PrevNode)
+            PrevNode = current
             current.Print("██")
             PathLength += 1
         End While
-        PrintMessageMiddle($"Path length: {PathLength}   {timetaken}", Console.WindowHeight - 1, ConsoleColor.Green)
+        PrintMessageMiddle($"Path length: {PathLength}", Console.WindowHeight - 1, ConsoleColor.Green)
+        Console.ForegroundColor = ConsoleColor.White
+        Console.SetCursorPosition(0, Console.WindowHeight - 2)
+        Console.Write($"Time taken to solve:                           {timetaken}")
         Console.ReadKey()
+    End Sub
+    Sub DrawBetween(ByVal Node1 As Node, ByVal Node2 As Node)
+        If Node1.X = Node2.X Then
+            SetBoth(ConsoleColor.Green)
+            If Node1.Y < Node2.Y Then
+                For i = Node1.Y To Node2.Y
+                    Console.SetCursorPosition(Node1.X, i)
+                    Console.Write("XX")
+                Next
+            Else
+                For i = Node1.Y To Node2.Y Step -1
+                    Console.SetCursorPosition(Node1.X, i)
+                    Console.Write("XX")
+                Next
+            End If
+        End If
+        If Node1.Y = Node2.Y Then
+            If Node1.X <= Node2.X Then
+                For i = Node1.X To Node2.X
+                    Console.SetCursorPosition(i, Node1.Y)
+                    Console.Write("XX")
+                Next
+            Else
+                For i = Node1.X To Node2.X Step -1
+                    Console.SetCursorPosition(i, Node1.Y)
+                    Console.Write("XX")
+                Next
+            End If
+        End If
     End Sub
     Sub aStar(ByVal availablepath As List(Of Node), ByVal ShowPath As Boolean, ByVal ShowSolveTime As Boolean, ByVal Delay As Integer)
         Dim start As New Node(availablepath(availablepath.Count - 2).X, availablepath(availablepath.Count - 2).Y)
@@ -1456,7 +1501,7 @@ Module Module1
                             SetNum += 1
                             RowSet(CurCell) = SetNum
                             If ShowMazeGeneration Then CurCell.Print($"██")
-                            ReturnPath.Add(New Node(CurCell.X, CurCell.Y))
+                            If Not ReturnPath.Contains(New Node(CurCell.X, CurCell.Y)) Then ReturnPath.Add(New Node(CurCell.X, CurCell.Y))
                         End If
                         availableCellPositions.Add(CurCell)
                     Else
@@ -1470,7 +1515,7 @@ Module Module1
                             'join sets together
                             Dim WallCell As Cell = MidPoint(CurCell, NextCell)
                             If ShowMazeGeneration Then WallCell.Print("██")
-                            ReturnPath.Add(New Node(WallCell.X, WallCell.Y))
+                            If Not ReturnPath.Contains(New Node(WallCell.X, WallCell.Y)) Then ReturnPath.Add(New Node(WallCell.X, WallCell.Y))
                             Dim SetNumToBeChanged As Integer = RowSet(NextCell)
                             Dim CellsToBeChanged As New List(Of Cell)
                             For Each thing In RowSet
@@ -1487,7 +1532,7 @@ Module Module1
                             'final row, need to join sets together
                             Dim WallCell As Cell = MidPoint(CurCell, NextCell)
                             If ShowMazeGeneration Then WallCell.Print("██")
-                            ReturnPath.Add(New Node(WallCell.X, WallCell.Y))
+                            If Not ReturnPath.Contains(New Node(WallCell.X, WallCell.Y)) Then ReturnPath.Add(New Node(WallCell.X, WallCell.Y))
                             Dim SetNumToBeChanged As Integer = RowSet(NextCell)
                             Dim CellsToBeChanged As New List(Of Cell)
                             For Each thing In RowSet
@@ -1519,8 +1564,8 @@ Module Module1
                                         'individual cell
                                         Dim SouthWallCell As New Cell(Row(j).X, Row(j).Y + 1)
                                         Dim southCell As New Cell(Row(j).X, Row(j).Y + 2)
-                                        ReturnPath.Add(New Node(southCell.X, southCell.Y))
-                                        ReturnPath.Add(New Node(SouthWallCell.X, SouthWallCell.Y))
+                                        If Not ReturnPath.Contains(New Node(southCell.X, southCell.Y)) Then ReturnPath.Add(New Node(southCell.X, southCell.Y))
+                                        If Not ReturnPath.Contains(New Node(SouthWallCell.X, SouthWallCell.Y)) Then ReturnPath.Add(New Node(SouthWallCell.X, SouthWallCell.Y))
                                         RowSet(southCell) = RowSet(Row(j))
                                         availableCells(southCell) = False
                                         If ShowMazeGeneration Then southCell.Print($"██")
@@ -1541,8 +1586,8 @@ Module Module1
                                             RowSet(southCell) = RowSet(Row(j))
                                             If ShowMazeGeneration Then southCell.Print($"██")
                                             If ShowMazeGeneration Then SouthWallCell.Print($"██")
-                                            ReturnPath.Add(New Node(southCell.X, southCell.Y))
-                                            ReturnPath.Add(New Node(SouthWallCell.X, SouthWallCell.Y))
+                                            If Not ReturnPath.Contains(New Node(southCell.X, southCell.Y)) Then ReturnPath.Add(New Node(southCell.X, southCell.Y))
+                                            If Not ReturnPath.Contains(New Node(SouthWallCell.X, SouthWallCell.Y)) Then ReturnPath.Add(New Node(SouthWallCell.X, SouthWallCell.Y))
                                         Next
                                         For Each position In Positions
                                             RowSet(position) = RowSet(Row(j))
@@ -2224,6 +2269,7 @@ Module Module1
             End If
             Threading.Thread.Sleep(Delay)
         End While
+        EliminateDeadEnds(ReturnablePath)
         PrintMessageMiddle($"Time taken to generate the maze: {stopwatch.Elapsed.TotalSeconds}", 1, ConsoleColor.Yellow)
         If Not ShowMazeGeneration Then
             SetBoth(back)
@@ -2233,6 +2279,77 @@ Module Module1
         AddStartAndEnd(ReturnablePath, Limits, 0)
         Console.SetCursorPosition(0, ypos)
         Return ReturnablePath
+    End Function
+    Function GetNeededNodes(ByVal Maze As List(Of Node))
+        Console.BackgroundColor = ConsoleColor.Black
+        Console.ForegroundColor = ConsoleColor.White
+        Console.SetCursorPosition(0, Console.WindowHeight - 4)
+        Console.Write("Finding relevant nodes")
+        SetBoth(ConsoleColor.DarkCyan)
+        Dim newlist As New List(Of Node)
+        Dim stopwatch As Stopwatch = Stopwatch.StartNew
+        For Each node In Maze
+            Dim neighbours As List(Of Node) = GetNeighbours(node, Maze)
+            If neighbours.Count >= 3 Or neighbours.Count = 1 Or Adjacent(node, Maze) Then
+                newlist.Add(node)
+                'node.Print("XX")
+            End If
+        Next
+        Console.BackgroundColor = ConsoleColor.Black
+        Console.ForegroundColor = ConsoleColor.White
+        Console.SetCursorPosition(35, Console.WindowHeight - 4)
+        Console.Write($"Time taken: {stopwatch.Elapsed.TotalSeconds}")
+        Return newlist
+    End Function
+    Function ConstructAdjacencyList(ByVal NeededNodes As List(Of Node), ByVal Maze As List(Of Node)) As Dictionary(Of Node, List(Of Node))
+        Console.BackgroundColor = ConsoleColor.Black
+        Console.ForegroundColor = ConsoleColor.White
+        Console.SetCursorPosition(0, Console.WindowHeight - 3)
+        Console.Write("Constructing adjacency list")
+        Dim newList As New List(Of Node)
+        Dim AdjacenyList As New Dictionary(Of Node, List(Of Node))
+        Dim stopwatch As Stopwatch = Stopwatch.StartNew
+        For Each Node In NeededNodes
+            Dim TempNode As New Node(Node.X, Node.Y)
+            Dim AdjacentNodes As New List(Of Node)
+            Dim NodeToAdd3 As Node = FindAdjacentNodes(Node, Maze, NeededNodes, 0, -1)
+            If Not IsNothing(NodeToAdd3) Then AdjacentNodes.Add(NodeToAdd3)
+            Dim NodeToAdd2 As Node = FindAdjacentNodes(Node, Maze, NeededNodes, 2, 0)
+            If Not IsNothing(NodeToAdd2) Then AdjacentNodes.Add(NodeToAdd2)
+            Dim NodeToAdd1 As Node = FindAdjacentNodes(Node, Maze, NeededNodes, 0, 1)
+            If Not IsNothing(NodeToAdd1) Then AdjacentNodes.Add(NodeToAdd1)
+            Dim NodeToAdd As Node = FindAdjacentNodes(Node, Maze, NeededNodes, -2, 0)
+            If Not IsNothing(NodeToAdd) Then AdjacentNodes.Add(NodeToAdd)
+            AdjacenyList.Add(Node, AdjacentNodes)
+        Next
+        Console.SetCursorPosition(35, Console.WindowHeight - 3)
+        Console.Write($"Time taken: {stopwatch.Elapsed.TotalSeconds}")
+        Return AdjacenyList
+    End Function
+    Function FindAdjacentNodes(ByVal CurrentNode As Node, ByVal Maze As List(Of Node), ByVal NeededNodes As List(Of Node), ByVal X As Integer, ByVal Y As Integer)
+        Dim tempnode As New Node(CurrentNode.X, CurrentNode.Y)
+        While 1
+            tempnode.update(tempnode.X + X, tempnode.Y + Y)
+            If Maze.Contains(tempnode) Then
+                If NeededNodes.Contains(tempnode) Then
+                    Return tempnode
+                End If
+            Else
+                Return Nothing
+            End If
+        End While
+        Return Nothing
+    End Function
+    Function Adjacent(ByVal CurrentNode As Node, ByVal AdjacentCells As List(Of Node))
+        Dim top As New Node(CurrentNode.X, CurrentNode.Y - 1)
+        Dim right As New Node(CurrentNode.X + 2, CurrentNode.Y)
+        Dim bottom As New Node(CurrentNode.X, CurrentNode.Y + 1)
+        Dim left As New Node(CurrentNode.X - 2, CurrentNode.Y)
+        If AdjacentCells.Contains(top) And AdjacentCells.Contains(right) Then Return True
+        If AdjacentCells.Contains(right) And AdjacentCells.Contains(bottom) Then Return True
+        If AdjacentCells.Contains(bottom) And AdjacentCells.Contains(left) Then Return True
+        If AdjacentCells.Contains(left) And AdjacentCells.Contains(top) Then Return True
+        Return False
     End Function
     Function SpiralBacktracker(ByVal Limits() As Integer, ByVal Delay As Integer, ByVal ShowMazeGeneration As Boolean)
         Dim r As New Random
@@ -2846,6 +2963,9 @@ Module Module1
         End If
         Return False
     End Function
+    Function GetNeighboursAd(ByRef current As Node, ByRef adjacencyList As Dictionary(Of Node, List(Of Node)))
+        Return adjacencyList(current)
+    End Function
     Function GetNeighbours(ByRef current As Node, ByRef availablepath As List(Of Node))
         Dim neighbours As New List(Of Node)
         Dim newnode As New Node(current.X, current.Y - 1)
@@ -2873,12 +2993,6 @@ Class Cell
         If Me.X >= limits(0) And Me.X <= limits(2) And Me.Y >= limits(1) And Me.Y <= limits(3) Then Return True
         Return False
     End Function
-    Public Function Pop(ByVal list As List(Of Cell))
-        Dim val As Cell = list(list.Count - 1)
-        list.RemoveAt(list.Count - 1)
-        Return val
-    End Function
-
     Public Sub Print(ByVal str As String)
         Console.SetCursorPosition(X, Y)
         Console.Write(str)
@@ -2898,6 +3012,8 @@ Class Cell
     End Function
 End Class
 Public Class Node
+    'Implements IEquatable(Of Node)
+
     Public X, Y, gCost, hCost As Integer
     Public parent As Node
     Public Sub Print(ByVal letter As String)
@@ -2908,6 +3024,10 @@ Public Class Node
         X = xpoint
         Y = ypoint
     End Sub
+    Function WithinLimits(ByVal limits() As Integer)
+        If Me.X >= limits(0) And Me.X <= limits(2) And Me.Y >= limits(1) And Me.Y <= limits(3) Then Return True
+        Return False
+    End Function
     Public Sub update(ByVal xpoint As Integer, ByVal ypoint As Integer)
         X = xpoint
         Y = ypoint
@@ -2951,7 +3071,12 @@ Public Class Node
         hashCode = (hashCode * -1521134295 + Y.GetHashCode()).GetHashCode()
         Return hashCode
     End Function
+
+    'Public Function CompareTo(other As Node) As Integer Implements IComparable(Of Node).CompareTo
+    '    Throw New NotImplementedException()
+    'End Function
 End Class
+
 Class Value
     Public IntValue As Integer
     Public Node As Node
@@ -2960,6 +3085,7 @@ Class Value
         Node = _node
     End Sub
 End Class
+
 Class Tree
     Public value As Value
     Public left, right As Tree
