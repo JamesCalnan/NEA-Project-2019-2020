@@ -17,7 +17,14 @@ Module Module1
 
 
 
-
+        'Console.SetCursorPosition(35, Console.WindowHeight - 3)
+        'Console.Write($"Progress: [") ' {Math.Floor((I / Maze.Count) * 100)}%")
+        'For j = 0 To (I / Maze.Count) * 10
+        '    Console.SetCursorPosition(j + 46, Console.WindowHeight - 3)
+        '    Console.Write("█")
+        'Next
+        'Console.SetCursorPosition(57, Console.WindowHeight - 3)
+        'Console.Write($"]")
 
 
 
@@ -28,7 +35,7 @@ Module Module1
         'Console.WriteLine($"({node.X}, {node.Y})")
 
 
-        Console.SetWindowSize(Console.LargestWindowWidth - 6, Console.LargestWindowHeight - 3)
+        'Console.SetWindowSize(Console.LargestWindowWidth - 6, Console.LargestWindowHeight - 3)
         Dim MenuOptions() As String = {"Recursive Backtracker Algorithm (using iteration)", "Recursive Backtracker Algorithm (using recursion)", "Hunt and Kill Algorithm", "Prim's Algorithm (simplified)", "Prim's Algorithm (true)", "Aldous-Broder Algorithm", "Growing Tree Algorithm", "Sidewinder Algorithm", "Binary Tree Algorithm", "Wilson's Algorithm", "Eller's Algorithm", "Kruskal's Algorithm", "Houston's Algorithm", "Spiral Backtracker Algorithm", "Custom Algorithm", "", "Load the previously generated maze", "Save the previously generated maze", "Output the previous maze as a png image", "Load a saved maze", "", "Exit"}
         Menu(MenuOptions)
         'Dim bmp As New Bitmap(350, 350)
@@ -942,15 +949,15 @@ Module Module1
         Dim Pathlength As Integer = 1
         Dim PrevNode As Node = u
         SetBoth(ConsoleColor.Green)
+        Dim timetaken As String = $"Time Taken to solve: {watch.Elapsed.TotalSeconds} seconds"
         u.Print("██")
         While prev(u) IsNot Nothing
             u = prev(u)
-            DrawBetween(u, PrevNode)
+            DrawBetween(PrevNode, u)
             PrevNode = u
             u.Print("██")
             Pathlength += 1
         End While
-        Dim timetaken As String = $"Time Taken to solve: {watch.Elapsed.TotalSeconds} seconds"
         PrintMessageMiddle($"Path length: {Pathlength}   {timetaken}", Console.WindowHeight - 1, ConsoleColor.Green)
         Console.ReadKey()
     End Sub
@@ -1073,15 +1080,15 @@ Module Module1
         current.Print("██")
         While Not current.Equals(goal)
             current = camefrom(current)
-            DrawBetween(current, PrevNode)
+            DrawBetween(PrevNode, current)
             PrevNode = current
             current.Print("██")
             PathLength += 1
         End While
         PrintMessageMiddle($"Path length: {PathLength}", Console.WindowHeight - 1, ConsoleColor.Green)
         Console.ForegroundColor = ConsoleColor.White
-        Console.SetCursorPosition(0, Console.WindowHeight - 2)
-        Console.Write($"Time taken to solve:                           {timetaken}")
+        Console.SetCursorPosition(0, Console.WindowHeight - 1)
+        Console.Write($"Solving:                           Time taken: {timetaken}")
         Console.ReadKey()
     End Sub
     Sub DrawBetween(ByVal Node1 As Node, ByVal Node2 As Node)
@@ -2269,7 +2276,7 @@ Module Module1
             End If
             Threading.Thread.Sleep(Delay)
         End While
-        EliminateDeadEnds(ReturnablePath)
+        'EliminateDeadEnds(ReturnablePath)
         PrintMessageMiddle($"Time taken to generate the maze: {stopwatch.Elapsed.TotalSeconds}", 1, ConsoleColor.Yellow)
         If Not ShowMazeGeneration Then
             SetBoth(back)
@@ -2280,35 +2287,35 @@ Module Module1
         Console.SetCursorPosition(0, ypos)
         Return ReturnablePath
     End Function
-    Function GetNeededNodes(ByVal Maze As List(Of Node))
+    Function GetNeededNodes(ByVal Maze As List(Of Node)) As List(Of Node)
         Console.BackgroundColor = ConsoleColor.Black
         Console.ForegroundColor = ConsoleColor.White
-        Console.SetCursorPosition(0, Console.WindowHeight - 4)
+        Console.SetCursorPosition(0, Console.WindowHeight - 3)
         Console.Write("Finding relevant nodes")
-        SetBoth(ConsoleColor.DarkCyan)
         Dim newlist As New List(Of Node)
+        Console.SetCursorPosition(35, Console.WindowHeight - 3)
+        Console.Write($"Progress:")
         Dim stopwatch As Stopwatch = Stopwatch.StartNew
+        Dim I As Integer = 0
         For Each node In Maze
-            Dim neighbours As List(Of Node) = GetNeighbours(node, Maze)
-            If neighbours.Count >= 3 Or neighbours.Count = 1 Or Adjacent(node, Maze) Then
-                newlist.Add(node)
-                'node.Print("XX")
-            End If
+            If Adjacent(node, Maze) Then newlist.Add(node)
+            I += 1
+            Console.SetCursorPosition(45, Console.WindowHeight - 3)
+            Console.Write($"{Math.Floor((I / Maze.Count) * 100)}%")
         Next
-        Console.BackgroundColor = ConsoleColor.Black
-        Console.ForegroundColor = ConsoleColor.White
-        Console.SetCursorPosition(35, Console.WindowHeight - 4)
-        Console.Write($"Time taken: {stopwatch.Elapsed.TotalSeconds}")
+        Console.SetCursorPosition(35, Console.WindowHeight - 3)
+        Console.Write($"Time taken: {stopwatch.Elapsed.TotalSeconds}              ")
         Return newlist
     End Function
     Function ConstructAdjacencyList(ByVal NeededNodes As List(Of Node), ByVal Maze As List(Of Node)) As Dictionary(Of Node, List(Of Node))
         Console.BackgroundColor = ConsoleColor.Black
         Console.ForegroundColor = ConsoleColor.White
-        Console.SetCursorPosition(0, Console.WindowHeight - 3)
+        Console.SetCursorPosition(0, Console.WindowHeight - 2)
         Console.Write("Constructing adjacency list")
         Dim newList As New List(Of Node)
         Dim AdjacenyList As New Dictionary(Of Node, List(Of Node))
         Dim stopwatch As Stopwatch = Stopwatch.StartNew
+        Dim I As Integer = 0
         For Each Node In NeededNodes
             Dim TempNode As New Node(Node.X, Node.Y)
             Dim AdjacentNodes As New List(Of Node)
@@ -2321,19 +2328,20 @@ Module Module1
             Dim NodeToAdd As Node = FindAdjacentNodes(Node, Maze, NeededNodes, -2, 0)
             If Not IsNothing(NodeToAdd) Then AdjacentNodes.Add(NodeToAdd)
             AdjacenyList.Add(Node, AdjacentNodes)
+            I += 1
+            Console.SetCursorPosition(35, Console.WindowHeight - 2)
+            Console.Write($"Progress: {Math.Floor((I / NeededNodes.Count) * 100)}%")
         Next
-        Console.SetCursorPosition(35, Console.WindowHeight - 3)
-        Console.Write($"Time taken: {stopwatch.Elapsed.TotalSeconds}")
+        Console.SetCursorPosition(35, Console.WindowHeight - 2)
+        Console.Write($"Time taken: {(stopwatch.Elapsed.TotalSeconds)}")
         Return AdjacenyList
     End Function
     Function FindAdjacentNodes(ByVal CurrentNode As Node, ByVal Maze As List(Of Node), ByVal NeededNodes As List(Of Node), ByVal X As Integer, ByVal Y As Integer)
         Dim tempnode As New Node(CurrentNode.X, CurrentNode.Y)
-        While 1
+        While true
             tempnode.update(tempnode.X + X, tempnode.Y + Y)
             If Maze.Contains(tempnode) Then
-                If NeededNodes.Contains(tempnode) Then
-                    Return tempnode
-                End If
+                If NeededNodes.Contains(tempnode) Then Return tempnode
             Else
                 Return Nothing
             End If
@@ -2341,10 +2349,16 @@ Module Module1
         Return Nothing
     End Function
     Function Adjacent(ByVal CurrentNode As Node, ByVal AdjacentCells As List(Of Node))
+        Dim L As New List(Of Node)
         Dim top As New Node(CurrentNode.X, CurrentNode.Y - 1)
         Dim right As New Node(CurrentNode.X + 2, CurrentNode.Y)
         Dim bottom As New Node(CurrentNode.X, CurrentNode.Y + 1)
         Dim left As New Node(CurrentNode.X - 2, CurrentNode.Y)
+        If AdjacentCells.Contains(top) Then L.Add(top)
+        If AdjacentCells.Contains(right) Then L.Add(right)
+        If AdjacentCells.Contains(bottom) Then L.Add(bottom)
+        If AdjacentCells.Contains(left) Then L.Add(left)
+        If L.Count = 3 Or L.Count = 1 Then Return True
         If AdjacentCells.Contains(top) And AdjacentCells.Contains(right) Then Return True
         If AdjacentCells.Contains(right) And AdjacentCells.Contains(bottom) Then Return True
         If AdjacentCells.Contains(bottom) And AdjacentCells.Contains(left) Then Return True
