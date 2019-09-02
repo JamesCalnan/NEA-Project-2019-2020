@@ -1015,6 +1015,8 @@ Module Module1
             Console.SetCursorPosition(45, Console.WindowHeight - 3)
             Console.Write($"{Math.Floor((I / Maze.Count) * 100)}%")
         Next
+        newlist.Add(Maze(Maze.Count - 2))
+        newlist.Add(Maze(Maze.Count - 1))
         Console.SetCursorPosition(35, Console.WindowHeight - 3)
         Console.Write($"Time taken: {stopwatch.Elapsed.TotalSeconds}              ")
         Return newlist
@@ -1069,8 +1071,8 @@ Module Module1
         If AdjacentCells.Contains(right) Then L.Add(right)
         If AdjacentCells.Contains(bottom) Then L.Add(bottom)
         If AdjacentCells.Contains(left) Then L.Add(left)
-        If L.Count = 3 Or L.Count = 1 Then Return True
-        If AdjacentCells.Contains(top) And AdjacentCells.Contains(right) Then Return True
+        If L.Count >= 3 Then Return True 'Is it a junction
+        If AdjacentCells.Contains(top) And AdjacentCells.Contains(right) Then Return True 'is it a corner:
         If AdjacentCells.Contains(right) And AdjacentCells.Contains(bottom) Then Return True
         If AdjacentCells.Contains(bottom) And AdjacentCells.Contains(left) Then Return True
         If AdjacentCells.Contains(left) And AdjacentCells.Contains(top) Then Return True
@@ -1471,7 +1473,7 @@ Class Tree
             current = Nothing
             Return True
         End If
-        'Return value.IntValue < current.value.IntValue
+        Return value.IntValue < current.value.IntValue
         Remove(current.left, value)
         Remove(current.right, value)
     End Function
