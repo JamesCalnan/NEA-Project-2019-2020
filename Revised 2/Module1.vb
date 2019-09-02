@@ -26,97 +26,8 @@ Module Module1
         'bmp.Save("name", System.Drawing.Imaging.ImageFormat.Png)
         'bmp.Dispose()
     End Sub
-    Sub Playmaze(ByVal AvailablePath As List(Of Node), ByVal ShowPath As Boolean)
-        Dim playerPath As New List(Of Node)
-        Dim currentPos As New Node(AvailablePath(AvailablePath.Count - 2).X, AvailablePath(AvailablePath.Count - 2).Y)
-        Dim start As New Node(AvailablePath(AvailablePath.Count - 2).X, AvailablePath(AvailablePath.Count - 2).Y)
-        If Not playerPath.Contains(currentPos) Then playerPath.Add(currentPos)
-        Console.ForegroundColor = (ConsoleColor.Magenta)
-        currentPos.Print("██")
-        Dim PreviousPos As Node = currentPos
-        Dim target As New Node(AvailablePath(AvailablePath.Count - 1).X, AvailablePath(AvailablePath.Count - 1).Y)
-        Console.ForegroundColor = (ConsoleColor.Green)
-        target.Print("██")
-        Console.CursorVisible = False
-        While Not currentPos.Equals(target)
-            Dim t As New Node(Console.CursorLeft, Console.CursorTop)
-            Dim s As New Node(Console.CursorLeft - 1, Console.CursorTop)
-            If AvailablePath.Contains(t) Or AvailablePath.Contains(s) Then
-                If ShowPath And AvailablePath.Contains(s) Or AvailablePath.Contains(t) Then
-                    If playerPath.Contains(t) Or playerPath.Contains(s) Then
-                        If AvailablePath.Contains(t) Or AvailablePath.Contains(s) Then
-                            If ShowPath Then
-                                Console.ForegroundColor = ConsoleColor.Blue
-                                Console.BackgroundColor = ConsoleColor.Blue
-                            Else
-                                Console.ForegroundColor = ConsoleColor.White
-                                Console.BackgroundColor = ConsoleColor.White
-                            End If
-                        Else
-                            Console.ForegroundColor = ConsoleColor.White
-                            Console.BackgroundColor = ConsoleColor.White
-                        End If
-                    Else
-                        Console.ForegroundColor = ConsoleColor.White
-                        Console.BackgroundColor = ConsoleColor.White
-                    End If
-                Else
-                    If AvailablePath.Contains(t) Or AvailablePath.Contains(s) Then
-                        Console.ForegroundColor = ConsoleColor.White
-                        Console.BackgroundColor = ConsoleColor.White
-                    Else
-                        Console.ForegroundColor = ConsoleColor.Blue
-                        Console.BackgroundColor = ConsoleColor.Blue
-                    End If
-                End If
-            Else
-                Console.ForegroundColor = ConsoleColor.Black
-                Console.BackgroundColor = ConsoleColor.Black
-            End If
-            Dim key = Console.ReadKey
-            Select Case key.Key.ToString
-                Case "RightArrow"
-                    Dim tempNode3 As New Node(currentPos.X + 2, currentPos.Y)
-                    PlayMazeKeyPress(currentPos, tempNode3, ShowPath, PreviousPos, playerPath, AvailablePath)
-                Case "LeftArrow"
-                    Dim tempNode2 As New Node(currentPos.X - 2, currentPos.Y)
-                    PlayMazeKeyPress(currentPos, tempNode2, ShowPath, PreviousPos, playerPath, AvailablePath)
-                Case "UpArrow"
-                    Dim tempNode1 As New Node(currentPos.X, currentPos.Y - 1)
-                    PlayMazeKeyPress(currentPos, tempNode1, ShowPath, PreviousPos, playerPath, AvailablePath)
-                Case "DownArrow"
-                    Dim tempNode As New Node(currentPos.X, currentPos.Y + 1)
-                    PlayMazeKeyPress(currentPos, tempNode, ShowPath, PreviousPos, playerPath, AvailablePath)
-                Case "Escape"
-                    Exit While
-                Case Else
-            End Select
-        End While
-        Console.ForegroundColor = (ConsoleColor.Yellow)
-        If currentPos.Equals(target) Then
-            playerPath.Add(start)
-            playerPath.Add(target)
-            aStar(playerPath, False, False, 0)
-            Console.Clear()
-            PrintMessageMiddle("EPIC VICTORY ROYALE", Console.WindowHeight / 2, ConsoleColor.Yellow)
-            Console.ReadKey()
-        End If
-    End Sub
-    Sub PlayMazeKeyPress(ByRef currentPos As Node, ByVal tempNode As Node, ByVal showpath As Boolean, ByRef PreviousPos As Node, ByRef playerPath As List(Of Node), ByVal AvailablePath As List(Of Node))
-        If AvailablePath.Contains(tempNode) Then
-            currentPos = tempNode
-            If showpath Then
-                Console.ForegroundColor = (ConsoleColor.Blue)
-            Else
-                Console.ForegroundColor = (ConsoleColor.White)
-            End If
-            PreviousPos.Print("██")
-            Console.ForegroundColor = (ConsoleColor.Magenta)
-            currentPos.Print("██")
-            PreviousPos = currentPos
-            If Not playerPath.Contains(currentPos) Then playerPath.Add(currentPos)
-        End If
-    End Sub
+
+
     Sub GetMazeInfo(ByRef Width As Integer, ByRef Height As Integer, ByRef DelayMS As Integer, ByRef Limits() As Integer, ByRef ShowGeneration As Boolean, ByVal Clear As Boolean, ByVal y As Integer)
         Console.SetCursorPosition(0, y)
         ShowGeneration = HorizontalYesNo(Console.CursorTop, "Do you want to see the maze being generated: ", False, If(Clear, True, False), False)
@@ -797,9 +708,6 @@ Module Module1
         Next
         Console.ReadKey()
     End Sub
-
-
-
     Sub Backtrack(ByVal prev As Dictionary(Of Node, Node), ByVal target As Node, ByVal source As Node, ByVal watch As Stopwatch)
         Dim u As Node = target
         Dim Pathlength As Integer = 1
@@ -824,7 +732,6 @@ Module Module1
         Next
         Return returnnode
     End Function
-
     Function GetJunctionCount(ByVal availablePath As List(Of Node))
         Dim JunctionCount As Integer = 0
         For Each node In availablePath
@@ -942,100 +849,6 @@ Module Module1
         End If
     End Sub
 
-    Sub DeadEndFiller(ByVal List As List(Of Node), ByVal ShowPath As Boolean, ByVal ShowSolveTime As Boolean, ByVal Delay As Integer)
-        Dim DeadEnds As New List(Of Node)
-        Dim Start As New Node(List(List.Count - 2).X, List(List.Count - 2).Y)
-        Dim Goal As New Node(List(List.Count - 1).X, List(List.Count - 1).Y)
-        Dim Visited As New Dictionary(Of Node, Boolean)
-        Dim FillColour As ConsoleColor = ConsoleColor.DarkCyan
-        Dim Maze As New List(Of Node)
-        Dim EditedMaze As New List(Of Node)
-        Dim NotPath As New List(Of Node)
-        Dim GreatestX, GreatestY As Integer
-        GreatestX = 0
-        GreatestY = 0
-        Console.ForegroundColor = ConsoleColor.White
-        Console.BackgroundColor = ConsoleColor.Black
-        Console.SetCursorPosition(1, 1)
-        Console.Write("Current Process: Finding dead ends")
-        Console.ForegroundColor = FillColour
-        Console.BackgroundColor = FillColour
-        Dim stopwatch As Stopwatch = Stopwatch.StartNew()
-        For Each node In List
-            Maze.Add(node)
-            If node.X > GreatestX Then GreatestX = node.X
-            If node.Y > GreatestY Then GreatestY = node.Y
-            If node.IsDeadEnd(List) Then
-                If node.Equals(Start) Or node.Equals(Goal) Then Continue For
-                If ShowPath Then node.Print("██")
-                DeadEnds.Add(node)
-            End If
-            Visited(node) = False
-        Next
-        Console.ForegroundColor = ConsoleColor.White
-        Console.BackgroundColor = ConsoleColor.Black
-        Console.SetCursorPosition(1, 1)
-        Console.Write("Current Process: Filling dead ends      ")
-        Console.ForegroundColor = FillColour
-        Console.BackgroundColor = FillColour
-        For Each deadEnd In DeadEnds
-            Dim StartingCell As Node = deadEnd
-            Visited(StartingCell) = True
-            If ShowPath Then StartingCell.Print("██")
-            NotPath.Add(StartingCell)
-            While Not StartingCell.IsJunction(Maze)
-                Dim Neighbours As List(Of Node) = GetNeighbours(StartingCell, Maze)
-                For Each NeighbourNode In Neighbours
-                    If NeighbourNode.IsJunction(Maze) Then
-                        Maze.Remove(StartingCell)
-                        Exit While
-                    End If
-                    If Visited(NeighbourNode) Then Continue For
-                    StartingCell = NeighbourNode
-                    If ShowPath Then StartingCell.Print("██")
-                    NotPath.Add(StartingCell)
-                    Visited(NeighbourNode) = True
-                Next
-                Threading.Thread.Sleep(Delay)
-            End While
-        Next
-        Console.ForegroundColor = ConsoleColor.White
-        Console.BackgroundColor = ConsoleColor.Black
-        Console.SetCursorPosition(1, 1)
-        Console.Write("                                             ")
-        Console.ForegroundColor = ConsoleColor.Green
-        Console.BackgroundColor = ConsoleColor.Green
-        If ShowPath Then Start.Print("██")
-        PrintMessageMiddle($"Time Taken to solve: {stopwatch.Elapsed.TotalSeconds} seconds", Console.WindowHeight - 1, ConsoleColor.Green)
-        If ShowPath Then
-            For __x = 1 To GreatestX + 1
-                For __y = 3 To GreatestY + 1
-                    If List.Contains(New Node(__x, __y)) Then
-                        If Not NotPath.Contains(New Node(__x, __y)) Then
-                            Console.ForegroundColor = ConsoleColor.Green
-                            Console.BackgroundColor = ConsoleColor.Green
-                            Console.SetCursorPosition(__x, __y)
-                            Console.Write("██")
-                        Else
-                            Console.ForegroundColor = ConsoleColor.White
-                            Console.BackgroundColor = ConsoleColor.White
-                            Console.SetCursorPosition(__x, __y)
-                            If ShowPath Then Console.Write("██")
-                        End If
-                    End If
-                Next
-                Threading.Thread.Sleep(Delay)
-            Next
-        Else
-            Console.ForegroundColor = ConsoleColor.Green
-            Console.BackgroundColor = ConsoleColor.Green
-            For Each Node In Maze
-                If Not NotPath.Contains(Node) Then Node.Print("██")
-            Next
-        End If
-
-        Console.ReadKey()
-    End Sub
     Sub SD(ByVal availablePath As List(Of Node))
         Console.SetCursorPosition(0, 1)
         Console.ForegroundColor = ConsoleColor.Red
@@ -1186,15 +999,6 @@ Module Module1
             Next
         Next
     End Sub
-    'maze algorithm functions
-
-
-
-
-
-
-
-
     Function GetNeededNodes(ByVal Maze As List(Of Node)) As List(Of Node)
         Console.BackgroundColor = ConsoleColor.Black
         Console.ForegroundColor = ConsoleColor.White
@@ -1272,9 +1076,6 @@ Module Module1
         If AdjacentCells.Contains(left) And AdjacentCells.Contains(top) Then Return True
         Return False
     End Function
-
-
-    'Subs/functions for the algorithms
     Function InitialiseVisited(ByVal Limits() As Integer)
         Dim dict As New Dictionary(Of Cell, Boolean)
         For y = Limits(1) To Limits(3) Step 2
@@ -1585,7 +1386,6 @@ Class Cell
                X = cell.X AndAlso
                Y = cell.Y
     End Function
-
     Public Overrides Function GetHashCode() As Integer
         Dim hashCode As Long = 1855483287
         hashCode = (hashCode * -1521134295 + X.GetHashCode()).GetHashCode()
@@ -1594,8 +1394,6 @@ Class Cell
     End Function
 End Class
 Public Class Node
-    'Implements IEquatable(Of Node)
-
     Public X, Y, gCost, hCost As Integer
     Public parent As Node
     Public Sub Print(ByVal letter As String)
@@ -1653,10 +1451,6 @@ Public Class Node
         hashCode = (hashCode * -1521134295 + Y.GetHashCode()).GetHashCode()
         Return hashCode
     End Function
-
-    'Public Function CompareTo(other As Node) As Integer Implements IComparable(Of Node).CompareTo
-    '    Throw New NotImplementedException()
-    'End Function
 End Class
 
 Class Value

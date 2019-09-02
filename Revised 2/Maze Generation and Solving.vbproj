@@ -104,6 +104,7 @@
     <Compile Include="Binary Tree Algorithm.vb" />
     <Compile Include="Breadth-First Search.vb" />
     <Compile Include="Custom Algorithm.vb" />
+    <Compile Include="Dead End Filler Method.vb" />
     <Compile Include="Depth-First Search.vb" />
     <Compile Include="Dijkstras Algorithm.vb" />
     <Compile Include="Ellers Algorithm.vb" />
@@ -127,6 +128,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Compile Include="Play Maze.vb" />
     <Compile Include="Prims Algorithm.vb" />
     <Compile Include="Recursive Backtracker Algorithm.vb" />
     <Compile Include="Sidewinder Algorithm.vb" />
