@@ -19,11 +19,6 @@
             For Each cell As Cell In Neighbour(CurrentCell, VisitedCells, Limits, True)
                 If Not FrontierSet.Contains(cell) Then FrontierSet.Add(cell)
                 RecentFrontierSet.Add(cell)
-                If ShowMazeGeneration Then
-                    Console.ForegroundColor = ConsoleColor.Yellow
-                    Console.BackgroundColor = ConsoleColor.Yellow
-                    'cell.Print("██")
-                End If
             Next
             Dim RandomNumber As Integer
             If CellSelectionMethod(0) = 1 Then

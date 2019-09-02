@@ -14,7 +14,7 @@ Module Module1
         '    newtree.AddRecursive(newtree, New Value(i, New Node(5, i)))
         '    Console.WriteLine($"i: {i}      node: (5, {i})")
         'Next
-        'Console.SetWindowSize(Console.LargestWindowWidth - 6, Console.LargestWindowHeight - 3)
+        Console.SetWindowSize(Console.LargestWindowWidth - 6, Console.LargestWindowHeight - 3)
         Dim MenuOptions() As String = {"Recursive Backtracker Algorithm (using iteration)", "Recursive Backtracker Algorithm (using recursion)", "Hunt and Kill Algorithm", "Prim's Algorithm (simplified)", "Prim's Algorithm (true)", "Aldous-Broder Algorithm", "Growing Tree Algorithm", "Sidewinder Algorithm", "Binary Tree Algorithm", "Wilson's Algorithm", "Eller's Algorithm", "Kruskal's Algorithm", "Houston's Algorithm", "Spiral Backtracker Algorithm", "Custom Algorithm", "", "Load the previously generated maze", "Save the previously generated maze", "Output the previous maze as a png image", "Load a saved maze", "", "Exit"}
         Menu(MenuOptions)
 
@@ -373,7 +373,7 @@ Module Module1
                             DisplayAvailablePositions(PreviousMaze.Count)
                             YPosAfterMaze = GreatestY - 1
                             Console.SetCursorPosition(0, YPosAfterMaze + 3)
-                            Dim temparr() As String = {"Solve using the A* algorithm", "Solve using Dijkstra's algorithm", "Solve using Breadth-first search", "Solve using Depth-first search (using iteration)", "Solve using Depth-first search (using recursion)", "Solve using the dead end filling method", "Play the maze", "Clear the maze and return to the menu"}
+                            Dim temparr() As String = {"Solve using the A* algorithm", "Solve using Dijkstra's algorithm", "Solve using Breadth-first search", "Solve using Depth-first search (using iteration)", "Solve using Depth-first search (using recursion)", "Solve using the dead end filling method", "Play the maze", "Save the maze", "Output the maze as a png image", "Clear the maze and return to the menu"}
                             input = SolvingMenu(temparr, "What would you like to do with the maze", GreatestX + 3, 3)
                             SolvingInput(input, ShowPath, YPosAfterMaze, SolvingDelay, PreviousMaze, PreviousAlgorithm)
                         Else
@@ -795,8 +795,27 @@ Module Module1
         totalPath.Reverse()
         Dim colourList As List(Of Brush) = getBrushColours()
         Dim c As Double = 0
+        Dim red, green, blue As Double
+        red = 0
+        green = 0
+        blue = 255
+        Dim Adding As Double = 0.2
+        'Algorithm: https://codepen.io/Codepixl/pen/ogWWaK
         For Each node In totalPath
-            g.FillRectangle(colourList(Math.Floor(c)), (node.X) * Multiplier, (node.Y * 2) * Multiplier, 2 * Multiplier, 2 * Multiplier)
+            Dim myBrush As New SolidBrush(Color.FromArgb(255, red, green, blue))
+            If red > 0 And blue = 0 Then
+                red -= Adding
+                green += Adding
+            End If
+            If green > 0 And red = 0 Then
+                green -= Adding
+                blue += Adding
+            End If
+            If blue > 0 And green = 0 Then
+                red += Adding
+                blue -= Adding
+            End If
+            g.FillRectangle(myBrush, (node.X) * Multiplier, (node.Y * 2) * Multiplier, 2 * Multiplier, 2 * Multiplier)
             c += 0.008
             If Math.Floor(c) = colourList.Count Then c = 0
         Next
@@ -1072,7 +1091,7 @@ Module Module1
         If AdjacentCells.Contains(bottom) Then L.Add(bottom)
         If AdjacentCells.Contains(left) Then L.Add(left)
         If L.Count >= 3 Then Return True 'Is it a junction
-        If AdjacentCells.Contains(top) And AdjacentCells.Contains(right) Then Return True 'is it a corner:
+        If AdjacentCells.Contains(top) And AdjacentCells.Contains(right) Then Return True 'is it a c
         If AdjacentCells.Contains(right) And AdjacentCells.Contains(bottom) Then Return True
         If AdjacentCells.Contains(bottom) And AdjacentCells.Contains(left) Then Return True
         If AdjacentCells.Contains(left) And AdjacentCells.Contains(top) Then Return True
@@ -1131,7 +1150,7 @@ Module Module1
         Dim solving As Boolean = HorizontalYesNo(0, "Do you want the outputted maze to have the solution on it  ", False, False, False)
         Console.Clear()
         Console.Write("Saving...")
-        Dim Multiplier As Integer = 5
+        Dim Multiplier As Integer = 10
         Dim Max_X, Max_Y As Integer
         For Each node In Path
             If node.X > Max_X Then Max_X = node.X
@@ -1146,14 +1165,17 @@ Module Module1
         For Each thing In Path
             g.FillRectangle(Brushes.White, (thing.X) * Multiplier, (thing.Y * 2) * Multiplier, 2 * Multiplier, 2 * Multiplier)
         Next
-        If solving Then DFS_IterativeFORFILE(Path, bmp, g, Multiplier)
-        g.FillRectangle(Brushes.Red, (Path(Path.Count - 2).X) * Multiplier, (Path(Path.Count - 2).Y + 2) * Multiplier, 2 * Multiplier, 2 * Multiplier)
-        g.FillRectangle(Brushes.Lime, (Path(Path.Count - 1).X) * Multiplier, (Path(Path.Count - 1).Y * 2) * Multiplier, 2 * Multiplier, 2 * Multiplier)
+        If solving Then
+            Dim myBrush As New SolidBrush(Color.FromArgb(255, 0, 0, 255))
+            DFS_IterativeFORFILE(Path, bmp, g, Multiplier)
+            g.FillRectangle(myBrush, (Path(Path.Count - 2).X) * Multiplier, (Path(Path.Count - 2).Y * 2) * Multiplier, 2 * Multiplier, 2 * Multiplier)
+        End If
+        'g.FillRectangle(Brushes.Lime, (Path(Path.Count - 1).X) * Multiplier, (Path(Path.Count - 1).Y * 2) * Multiplier, 2 * Multiplier, 2 * Multiplier)
         Dim f As New Font("Roboto", Width / 60)
         Dim point As New PointF(((Width) / 2) - (Algorithm.Length / 2) * Multiplier, 1)
-        g.DrawString(Algorithm, f, Brushes.White, point)
+        'g.DrawString(Algorithm, f, Brushes.White, point)
         g.Dispose()
-        bmp.Save($"{fileName}.PNG", System.Drawing.Imaging.ImageFormat.Png)
+        bmp.Save($"{fileName}.png", System.Drawing.Imaging.ImageFormat.Png)
         bmp.Dispose()
     End Sub
     Function PickRandomCell(ByVal availablepositions As List(Of Cell), ByVal ust As List(Of Cell), ByVal limits() As Integer)
@@ -1473,7 +1495,7 @@ Class Tree
             current = Nothing
             Return True
         End If
-        Return value.IntValue < current.value.IntValue
+        'Return value.IntValue < current.value.IntValue
         Remove(current.left, value)
         Remove(current.right, value)
     End Function

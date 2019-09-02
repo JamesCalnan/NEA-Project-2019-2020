@@ -13,8 +13,8 @@
         Dim stopwatch As Stopwatch = Stopwatch.StartNew()
         While UsedCellPositions <> totalcellcount
             If ExitCase() Then Return Nothing
-            If Neighbour(CurrentCell, VisitedCells, Limits, False) Then
-                Dim RecentCells As List(Of Cell) = Neighbour(CurrentCell, VisitedCells, Limits, True)
+            Dim RecentCells As List(Of Cell) = Neighbour(CurrentCell, VisitedCells, Limits, True)
+            If RecentCells.Count > 0 Then
                 Dim TemporaryCell As Cell = RecentCells(r.Next(0, RecentCells.Count))
                 Dim WallCell As Cell = MidPoint(CurrentCell, TemporaryCell)
                 CurrentCell = TemporaryCell
@@ -22,7 +22,6 @@
                 ReturnablePath.Add(New Node(WallCell.X, WallCell.Y))
                 UsedCellPositions += 1
                 RecentCells.Clear()
-
                 If ShowMazeGeneration Then
                     SetBoth(ConsoleColor.White)
                     WallCell.Print("██")

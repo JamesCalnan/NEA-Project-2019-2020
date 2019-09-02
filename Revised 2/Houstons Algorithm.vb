@@ -9,7 +9,6 @@
         Dim CurrentCell As Cell = PickRandomStartingCell(Limits) '(Limits(0) + 3, Limits(1) + 2)
         VisitedList.Add(CurrentCell)
         Dim PrevCell As Cell = PickRandomStartingCell(Limits)
-        Dim PreviousCell As Cell = CurrentCell
         Dim WallCell As Cell
         Dim ReturnablePath As New List(Of Node)
         Dim AvailableCells As New List(Of Cell)
@@ -21,6 +20,8 @@
         Next
         Dim stopwatch As Stopwatch = Stopwatch.StartNew()
         SetBoth(ConsoleColor.White)
+        If ShowMazeGeneration Then CurrentCell.Print("██")
+        ReturnablePath.Add(New Node(CurrentCell.X, CurrentCell.Y))
         While 1
             If TotalCellCount / 3 > VisitedList.Count Then
                 If ExitCase() Then Return Nothing

@@ -17,7 +17,6 @@
         Dim VisitedCells As Dictionary(Of Cell, Boolean) = InitialiseVisited(Limits)
         Dim Stack As New Stack(Of Cell)
         Dim ReturnablePath As New List(Of Node)
-        Dim RecentCells As New List(Of Cell)
         Dim stopwatch As Stopwatch = Stopwatch.StartNew()
         Dim Bias() As Integer = {0, 1}
         VisitedCells(CurrentCell) = True
@@ -29,9 +28,8 @@
                 PrevCell.Print("██")
                 SetBoth(back)
             End If
-            If Neighbour(CurrentCell, VisitedCells, Limits, False) Then 'done
-                RecentCells.Clear()
-                RecentCells = Neighbour(CurrentCell, VisitedCells, Limits, True)
+            Dim RecentCells As List(Of Cell) = Neighbour(CurrentCell, VisitedCells, Limits, True)
+            If RecentCells.Count > 0 Then 'done
                 Dim TemporaryCell As Cell = RecentCells(r.Next(0, RecentCells.Count))
                 VisitedCells(TemporaryCell) = True
                 Stack.Push(New Cell(TemporaryCell.X, TemporaryCell.Y))
@@ -61,7 +59,6 @@
             End If
             Threading.Thread.Sleep(Delay)
         End While
-        'EliminateDeadEnds(ReturnablePath)
         PrintMessageMiddle($"Time taken to generate the maze: {stopwatch.Elapsed.TotalSeconds}", 1, ConsoleColor.Yellow)
         If Not ShowMazeGeneration Then
             SetBoth(back)
@@ -73,8 +70,8 @@
         Return ReturnablePath
     End Function
     Function RecursiveBacktrackerRecursively(ByVal cell As Cell, ByVal limits() As Integer, ByVal path As List(Of Node), ByRef visited As Dictionary(Of Cell, Boolean), ByRef cameFrom As Cell, ByVal r As Random, ByVal ShowMazeGeneration As Boolean, ByVal Delay As Integer)
-        If Neighbour(cell, visited, limits, False) Then
-            Dim RecentCells As List(Of Cell) = Neighbour(cell, visited, limits, True)
+        Dim RecentCells As List(Of Cell) = Neighbour(cell, visited, limits, True)
+        If RecentCells.Count > 0 Then
             Dim TemporaryCell As Cell = RecentCells(r.Next(0, RecentCells.Count))
             Dim wall As Cell = MidPoint(cameFrom, TemporaryCell)
             If ShowMazeGeneration Then

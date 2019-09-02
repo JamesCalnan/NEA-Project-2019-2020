@@ -18,6 +18,7 @@
             StartingCell.Print("██")
         End If
         UST.Add(StartingCell)
+        ReturnablePath.Add(New Node(StartingCell.X, StartingCell.Y))
         Dim Direction, newdir As New Dictionary(Of Cell, String)
         Dim directions As New Dictionary(Of Cell, String)
         Dim stopwatch As Stopwatch = Stopwatch.StartNew()
