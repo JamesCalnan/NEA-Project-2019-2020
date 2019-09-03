@@ -696,7 +696,7 @@ Module Module1
                 If u.IsJunction(availablepath) Then JunctionNodes.Add(u)
             End If
             If u.Equals(goal) Then Exit While
-            'Threading.Thread.Sleep(20)
+            Threading.Thread.Sleep(Delay)
         End While
         Console.ForegroundColor = ConsoleColor.Green
         For Each node1 In JunctionNodes
@@ -793,13 +793,11 @@ Module Module1
         End While
         totalPath.Add(goal)
         totalPath.Reverse()
-        Dim colourList As List(Of Brush) = getBrushColours()
-        Dim c As Double = 0
         Dim red, green, blue As Double
         red = 0
         green = 0
         blue = 255
-        Dim Adding As Double = 0.2
+        Dim Adding As Double = 0.5
         'Algorithm: https://codepen.io/Codepixl/pen/ogWWaK
         For Each node In totalPath
             Dim myBrush As New SolidBrush(Color.FromArgb(255, red, green, blue))
@@ -816,10 +814,11 @@ Module Module1
                 blue -= Adding
             End If
             g.FillRectangle(myBrush, (node.X) * Multiplier, (node.Y * 2) * Multiplier, 2 * Multiplier, 2 * Multiplier)
-            c += 0.008
-            If Math.Floor(c) = colourList.Count Then c = 0
         Next
     End Sub
+    Function Floor(ByVal inputNum As Double)
+        Return Math.Floor(inputNum)
+    End Function
     Sub ReconstructPath(ByVal camefrom As Dictionary(Of Node, Node), ByVal current As Node, ByVal goal As Node, ByVal timetaken As String)
         SetBoth(ConsoleColor.Green)
         Dim PathLength As Integer = 1
@@ -1495,7 +1494,7 @@ Class Tree
             current = Nothing
             Return True
         End If
-        'Return value.IntValue < current.value.IntValue
+        Return value.IntValue < current.value.IntValue
         Remove(current.left, value)
         Remove(current.right, value)
     End Function

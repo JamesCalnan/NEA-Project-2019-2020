@@ -15,6 +15,7 @@ Module Depth_First_Search
         While S.Count > 0
             Dim u As Node = S.Pop
             If u.Equals(goal) Then Exit While
+            ' bmp.Save($"temp Save.png", System.Drawing.Imaging.ImageFormat.Png)
             'g.FillRectangle(Brushes.SlateGray, (u.X) * Multiplier, (u.Y * 2) * Multiplier, 2 * Multiplier, 2 * Multiplier)
             If Not visited(u) Then
                 visited(u) = True
