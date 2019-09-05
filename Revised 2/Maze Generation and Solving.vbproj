@@ -112,6 +112,8 @@
     <Compile Include="Houstons Algorithm.vb" />
     <Compile Include="Hunt and Kill Algorithm.vb" />
     <Compile Include="Kruskals Algorithm.vb" />
+    <Compile Include="Maze Generation Subroutines and Functions.vb" />
+    <Compile Include="Menus.vb" />
     <Compile Include="Module1.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="My Project\Application.Designer.vb">

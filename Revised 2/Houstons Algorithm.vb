@@ -22,6 +22,7 @@
         SetBoth(ConsoleColor.White)
         If ShowMazeGeneration Then CurrentCell.Print("██")
         ReturnablePath.Add(New Node(CurrentCell.X, CurrentCell.Y))
+        Dim InitialiseWilsonCell As Boolean = True
         While 1
             If TotalCellCount / 3 > VisitedList.Count Then
                 If ExitCase() Then Return Nothing
@@ -34,10 +35,10 @@
                 Dim TempNodeCell As New Node(TemporaryCell.X, TemporaryCell.Y)
                 If Not VisitedList.Contains(TemporaryCell) Then
                     VisitedList.Add(New Cell(TemporaryCell.X, TemporaryCell.Y))
+                    AvailableCells.Remove(TemporaryCell)
                     WallCell = MidPoint(CurrentCell, TemporaryCell)
                     CurrentCell = TemporaryCell
-                    ReturnablePath.Add(New Node(WallCell.X, WallCell.Y))
-                    ReturnablePath.Add(New Node(TemporaryCell.X, TemporaryCell.Y))
+                    AddToPath(ReturnablePath, WallCell, TemporaryCell)
                     If ShowMazeGeneration Then
                         SetBoth(ConsoleColor.White)
                         PrevCell.Print("██")
@@ -58,6 +59,14 @@
                 End If
                 Threading.Thread.Sleep(Delay)
             Else
+                If InitialiseWilsonCell Then
+                    CurrentCell = PickRandomCell(AvailableCells, VisitedList, Limits)
+                    If ShowMazeGeneration Then
+                        SetBoth(ConsoleColor.White)
+                        PrevCell.Print("██")
+                    End If
+                    InitialiseWilsonCell = False
+                End If
                 'wilsons
                 If ExitCase() Then Return Nothing
                 RecentCells.Clear()
@@ -68,11 +77,11 @@
                 TemporaryCell = RecentCells(R.Next(0, RecentCells.Count))
                 Dim dir As String = GetDirection(CurrentCell, TemporaryCell, directions, ShowMazeGeneration)
                 If VisitedList.Contains(TemporaryCell) Then 'Unvisited cell?
-                    Direction.Add(TemporaryCell, GetDirection(TemporaryCell, CurrentCell, directions, ShowMazeGeneration))
                     SetBoth(ConsoleColor.White)
                     Dim NewList As New List(Of Cell)
                     Dim current As Cell = directions.Keys(0)
                     Dim cur As Cell = current
+                    AvailableCells.Remove(current)
                     While 1
                         Dim prev111 As Cell = cur
                         cur = PickNextDir(prev111, directions, ShowMazeGeneration, Delay, ReturnablePath)
@@ -81,17 +90,16 @@
                         If VisitedList.Contains(cur) Then Exit While
                     End While
                     Dim newcell As Cell = MidPoint(NewList(0), directions.Keys(0))
-                    ReturnablePath.Add(New Node(newcell.X, newcell.Y))
+                    If Not ReturnablePath.Contains(New Node(newcell.X, newcell.Y)) Then ReturnablePath.Add(New Node(newcell.X, newcell.Y))
                     If ShowMazeGeneration Then newcell.Print("██")
                     For i = 1 To NewList.Count - 1
-                        If ShowMazeGeneration Then NewList(i).Print("██")
                         Dim wall As Cell = MidPoint(NewList(i), NewList(i - 1))
-                        If ShowMazeGeneration Then wall.Print("██")
-                        Dim tempNode As New Node(NewList(i).X, NewList(i).Y)
-                        If Not ReturnablePath.Contains(tempNode) Then ReturnablePath.Add(New Node(NewList(i).X, NewList(i).Y))
-                        tempNode.update(wall.X, wall.Y)
-                        If Not ReturnablePath.Contains(tempNode) Then ReturnablePath.Add(New Node(wall.X, wall.Y))
-                        Threading.Thread.Sleep(Delay)
+                        If ShowMazeGeneration Then
+                            NewList(i).Print("██")
+                            wall.Print("██")
+                            Threading.Thread.Sleep(Delay)
+                        End If
+                        AddToPath(ReturnablePath, NewList(i), wall)
                     Next
                     For Each value In NewList
                         If Not VisitedList.Contains(value) Then VisitedList.Add(value)
