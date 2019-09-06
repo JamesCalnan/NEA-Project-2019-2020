@@ -33,7 +33,7 @@
                 For y = Limits(1) To Limits(3) Step 2
                     For x = Limits(0) + 3 To Limits(2) - 1 Step 4
                         If ShowMazeGeneration Then
-                            SetBoth(ConsoleColor.Blue)
+                            SetBoth(ConsoleColor.DarkCyan)
                             Console.SetCursorPosition(x, y)
                             Console.Write("██")
                             If x + 2 < Limits(2) - 1 Then

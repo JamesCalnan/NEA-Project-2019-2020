@@ -26,11 +26,11 @@
             If ShowMazeGeneration Then
                 WallCell.Print("██")
                 CurrentCell.Print("██")
+                Threading.Thread.Sleep(delay)
             End If
             VisitedCells(CurrentCell) = True
             FrontierSet.Remove(CurrentCell)
             AddToPath(ReturnablePath, CurrentCell, WallCell)
-            Threading.Thread.Sleep(delay)
         End While
         PrintMessageMiddle($"Time taken to generate the maze: {stopwatch.Elapsed.TotalSeconds}", 1, ConsoleColor.Yellow)
         If Not ShowMazeGeneration Then

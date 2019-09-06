@@ -10,8 +10,10 @@
         Dim VisitedCells As Dictionary(Of Cell, Boolean) = InitialiseVisited(Limits)
         Dim ReturnablePath As New List(Of Node)
         VisitedCells(CurrentCell) = True
-        SetBoth(ConsoleColor.White)
-        If ShowMazeGeneration Then CurrentCell.Print("██")
+        If ShowMazeGeneration Then
+            SetBoth(ConsoleColor.White)
+            CurrentCell.Print("██")
+        End If
         ReturnablePath.Add(New Node(CurrentCell.X, CurrentCell.Y))
         Dim stopwatch As Stopwatch = Stopwatch.StartNew()
         While True

@@ -19,7 +19,7 @@ Module Menus
         While 1
             Console.BackgroundColor = (ConsoleColor.Black)
             Console.ForegroundColor = (ConsoleColor.White)
-            Dim Info() As String = {"Information for using this program:", "Use the up and down arrow keys for navigating the menus", "Use the enter or right arrow key to select an option", "", "When inputting integer values:", "The up and down arrow keys increment by 1", "The right and left arrow keys increment by 10", "The 'M' key will set the number to the maximum value it can be", "The 'H' key will set the number to half of the maximum value it can be"}
+            Dim Info() As String = {"Information for using this program:", "Use the up and down arrow keys for navigating the menus", "Use the enter or right arrow key to select an option", "Press 'I' to bring up information on the algorithm", "", "When inputting integer values:", "The up and down arrow keys increment by 1", "The right and left arrow keys increment by 10", "The 'M' key will set the number to the maximum value it can be", "The 'H' key will set the number to half of the maximum value it can be"}
             For i = 0 To Info.Count - 1
                 Console.SetCursorPosition(ScreenWidth - Info(i).Length / 2, i)
                 If i <> 0 Then Console.ForegroundColor = (ConsoleColor.Magenta)
@@ -279,18 +279,31 @@ Module Menus
                     ElseIf arr(y) = "Recursive Backtracker Algorithm (using recursion)" Then
                         RecrusiveBacktrackerRecursionINFO()
                     ElseIf arr(y) = "Hunt and Kill Algorithm" Then
+                        HuntAndKillINFO()
                     ElseIf arr(y) = "Prim's Algorithm (simplified)" Then
+                        Prims_SimplifiedINFO()
                     ElseIf arr(y) = "Prim's Algorithm (true)" Then
+                        Prims_TrueINFO()
                     ElseIf arr(y) = "Aldous-Broder Algorithm" Then
+                        AldousBroderINFO()
                     ElseIf arr(y) = "Growing Tree Algorithm" Then
+                        GrowingTreeINFO()
                     ElseIf arr(y) = "Sidewinder Algorithm" Then
+                        SidewinderINFO()
                     ElseIf arr(y) = "Binary Tree Algorithm" Then
+                        BinaryTreeINFO()
                     ElseIf arr(y) = "Wilson's Algorithm" Then
+                        WilsonsINFO()
                     ElseIf arr(y) = "Eller's Algorithm" Then
+                        EllersINFO()
                     ElseIf arr(y) = "Kruskal's Algorithm" Then
+                        KruskalsINFO()
                     ElseIf arr(y) = "Houston's Algorithm" Then
+                        HoustonsINFO()
                     ElseIf arr(y) = "Spiral Backtracker Algorithm" Then
+                        SpiralBacktrackerINFO()
                     ElseIf arr(y) = "Custom Algorithm" Then
+                        CustomAlgorithmINFO()
                     End If
                     Console.ReadKey()
                     Console.BackgroundColor = (ConsoleColor.Black)
