@@ -38,11 +38,11 @@ Module Menus
                     If y = 15 Or y = 20 Then y -= 1
                 Case "Enter", "RightArrow"
                     Dim AvailablePath As List(Of Node)
-                    If y = 0 Then
+                    If arr(y) = "Recursive Backtracker Algorithm (using iteration)" Then
                         GetMazeInfo(Width, Height, DelayMS, Limits, ShowMazeGeneration, True, 0)
                         AvailablePath = RecursiveBacktracker(Limits, DelayMS, ShowMazeGeneration)
                         Solving(AvailablePath, Limits, PreviousMaze, input, YPosAfterMaze, ShowPath, SolvingDelay, arr(y), PreviousAlgorithm)
-                    ElseIf y = 1 Then
+                    ElseIf arr(y) = "Recursive Backtracker Algorithm (using recursion)" Then
                         Dim r As New Random
                         GetMazeInfo(Width, Height, DelayMS, Limits, ShowMazeGeneration, True, 0)
                         Dim CurrentCell As Cell = PickRandomStartingCell(Limits) '(Limits(0) + 3, Limits(1) + 2)
@@ -63,63 +63,63 @@ Module Menus
                         AddStartAndEnd(path, Limits, 0)
                         Solving(path, Limits, PreviousMaze, input, YPosAfterMaze, ShowPath, SolvingDelay, arr(y), PreviousAlgorithm)
                         PreviousMaze = path
-                    ElseIf y = 2 Then
+                    ElseIf arr(y) = "Hunt and Kill Algorithm" Then
                         GetMazeInfo(Width, Height, DelayMS, Limits, ShowMazeGeneration, True, 0)
                         AvailablePath = HuntAndKillREFACTORED(Limits, DelayMS, ShowMazeGeneration)
                         Solving(AvailablePath, Limits, PreviousMaze, input, YPosAfterMaze, ShowPath, SolvingDelay, arr(y), PreviousAlgorithm)
-                    ElseIf y = 3 Then
+                    ElseIf arr(y) = "Prim's Algorithm (simplified)" Then
                         GetMazeInfo(Width, Height, DelayMS, Limits, ShowMazeGeneration, True, 0)
                         AvailablePath = Prims_Simplified(Limits, DelayMS, ShowMazeGeneration)
                         Solving(AvailablePath, Limits, PreviousMaze, input, YPosAfterMaze, ShowPath, SolvingDelay, arr(y), PreviousAlgorithm)
-                    ElseIf y = 4 Then
+                    ElseIf arr(y) = "Prim's Algorithm (true)" Then
                         GetMazeInfo(Width, Height, DelayMS, Limits, ShowMazeGeneration, True, 0)
                         AvailablePath = Prims_True(Limits, DelayMS, ShowMazeGeneration)
                         Solving(AvailablePath, Limits, PreviousMaze, input, YPosAfterMaze, ShowPath, SolvingDelay, arr(y), PreviousAlgorithm)
-                    ElseIf y = 5 Then
+                    ElseIf arr(y) = "Aldous-Broder Algorithm" Then
                         GetMazeInfo(Width, Height, DelayMS, Limits, ShowMazeGeneration, True, 0)
                         AvailablePath = AldousBroder(Limits, DelayMS, ShowMazeGeneration)
                         Solving(AvailablePath, Limits, PreviousMaze, input, YPosAfterMaze, ShowPath, SolvingDelay, arr(y), PreviousAlgorithm)
-                    ElseIf y = 6 Then
+                    ElseIf arr(y) = "Growing Tree Algorithm" Then
                         GetMazeInfo(Width, Height, DelayMS, Limits, ShowMazeGeneration, True, 0)
                         Dim ArrOptions() As String = {"Newest (Recursive Backtracker)", "Random (Prim's simplified)", "Newest/Random, 75/25 split", "Newest/Random, 50/50 split", "Newest/Random, 25/75 split", "Oldest", "Middle", "Newest/Oldest, 50/50 split", "Oldest/Random, 50/50 split"}
                         Dim CellSelectionMethod() As Integer = PreGenMenu(ArrOptions, "What Cell selection method would you like to use: ")
                         AvailablePath = GrowingTree(Limits, DelayMS, CellSelectionMethod, ShowMazeGeneration)
                         Solving(AvailablePath, Limits, PreviousMaze, input, YPosAfterMaze, ShowPath, SolvingDelay, arr(y), PreviousAlgorithm)
-                    ElseIf y = 7 Then
+                    ElseIf arr(y) = "Sidewinder Algorithm" Then
                         GetMazeInfo(Width, Height, DelayMS, Limits, ShowMazeGeneration, True, 0)
                         AvailablePath = Sidewinder(Limits, DelayMS, ShowMazeGeneration)
                         Solving(AvailablePath, Limits, PreviousMaze, input, YPosAfterMaze, ShowPath, SolvingDelay, arr(y), PreviousAlgorithm)
-                    ElseIf y = 8 Then
+                    ElseIf arr(y) = "Binary Tree Algorithm" Then
                         GetMazeInfo(Width, Height, DelayMS, Limits, ShowMazeGeneration, True, 0)
                         Dim ArrOptions() As String = {"Northwest", "Northeast", "Southwest", "Southeast"}
                         Dim Bias() As Integer = PreGenMenu(ArrOptions, "Cell bias: ")
                         AvailablePath = BinaryTree(Limits, DelayMS, ShowMazeGeneration, Bias)
                         Solving(AvailablePath, Limits, PreviousMaze, input, YPosAfterMaze, ShowPath, SolvingDelay, arr(y), PreviousAlgorithm)
-                    ElseIf y = 9 Then
+                    ElseIf arr(y) = "Wilson's Algorithm" Then
                         GetMazeInfo(Width, Height, DelayMS, Limits, ShowMazeGeneration, True, 0)
                         AvailablePath = Wilsons(Limits, DelayMS, ShowMazeGeneration)
                         Solving(AvailablePath, Limits, PreviousMaze, input, YPosAfterMaze, ShowPath, SolvingDelay, arr(y), PreviousAlgorithm)
-                    ElseIf y = 10 Then
+                    ElseIf arr(y) = "Eller's Algorithm" Then
                         GetMazeInfo(Width, Height, DelayMS, Limits, ShowMazeGeneration, True, 0)
                         AvailablePath = Ellers(Limits, DelayMS, ShowMazeGeneration)
                         Solving(AvailablePath, Limits, PreviousMaze, input, YPosAfterMaze, ShowPath, SolvingDelay, arr(y), PreviousAlgorithm)
-                    ElseIf y = 11 Then
+                    ElseIf arr(y) = "Kruskal's Algorithm" Then
                         GetMazeInfo(Width, Height, DelayMS, Limits, ShowMazeGeneration, True, 0)
                         AvailablePath = Kruskals(Limits, DelayMS, ShowMazeGeneration)
                         Solving(AvailablePath, Limits, PreviousMaze, input, YPosAfterMaze, ShowPath, SolvingDelay, arr(y), PreviousAlgorithm)
-                    ElseIf y = 12 Then
+                    ElseIf arr(y) = "Houston's Algorithm" Then
                         GetMazeInfo(Width, Height, DelayMS, Limits, ShowMazeGeneration, True, 0)
                         AvailablePath = Houstons(Limits, DelayMS, ShowMazeGeneration)
                         Solving(AvailablePath, Limits, PreviousMaze, input, YPosAfterMaze, ShowPath, SolvingDelay, arr(y), PreviousAlgorithm)
-                    ElseIf y = 13 Then
+                    ElseIf arr(y) = "Spiral Backtracker Algorithm" Then
                         GetMazeInfo(Width, Height, DelayMS, Limits, ShowMazeGeneration, True, 0)
                         AvailablePath = SpiralBacktracker(Limits, DelayMS, ShowMazeGeneration)
                         Solving(AvailablePath, Limits, PreviousMaze, input, YPosAfterMaze, ShowPath, SolvingDelay, arr(y), PreviousAlgorithm)
-                    ElseIf y = 14 Then
+                    ElseIf arr(y) = "Custom Algorithm" Then
                         GetMazeInfo(Width, Height, DelayMS, Limits, ShowMazeGeneration, True, 0)
                         AvailablePath = Custom(Limits, DelayMS, ShowMazeGeneration)
                         Solving(AvailablePath, Limits, PreviousMaze, input, YPosAfterMaze, ShowPath, SolvingDelay, arr(y), PreviousAlgorithm)
-                    ElseIf y = 16 Then
+                    ElseIf arr(y) = "Load the previously generated maze" Then
                         Dim GreatestX, GreatestY As Integer
                         If PreviousMaze.Count > 1 Then
                             Console.Clear()
@@ -155,7 +155,7 @@ Module Menus
                             MsgColour("No previous maze available", ConsoleColor.Red)
                             Console.ReadKey()
                         End If
-                    ElseIf y = 17 Then
+                    ElseIf arr(y) = "Save the previously generated maze" Then
                         If PreviousMaze.Count > 1 Then
                             SaveMaze(PreviousMaze, PreviousAlgorithm)
                         Else
@@ -163,7 +163,7 @@ Module Menus
                             MsgColour("No previous maze available", ConsoleColor.Red)
                             Console.ReadKey()
                         End If
-                    ElseIf y = 18 Then
+                    ElseIf arr(y) = "Output the previous maze as a png image" Then
                         If PreviousMaze.Count > 1 Then
                             Console.Clear()
                             Console.ForegroundColor = ConsoleColor.White
@@ -182,7 +182,7 @@ Module Menus
                             MsgColour("No previous maze available", ConsoleColor.Red)
                             Console.ReadKey()
                         End If
-                    ElseIf y = 19 Then
+                    ElseIf arr(y) = "Load a saved maze" Then
                         Dim ValidMaze, XMax, YMax As Integer
                         Dim GreatestY As Integer = 0
                         Dim GreatestX As Integer = 0
@@ -269,6 +269,30 @@ Module Menus
                     Else
                         OptionNotReady()
                     End If
+                    Console.BackgroundColor = (ConsoleColor.Black)
+                    Console.Clear()
+                    MsgColour("What Maze Generation Algorithm do you want to use: ", ConsoleColor.Yellow)
+                Case "I"
+                    InitialiseScreen()
+                    If arr(y) = "Recursive Backtracker Algorithm (using iteration)" Then
+                        RecrusiveBacktrackerINFO()
+                    ElseIf arr(y) = "Recursive Backtracker Algorithm (using recursion)" Then
+                        RecrusiveBacktrackerRecursionINFO()
+                    ElseIf arr(y) = "Hunt and Kill Algorithm" Then
+                    ElseIf arr(y) = "Prim's Algorithm (simplified)" Then
+                    ElseIf arr(y) = "Prim's Algorithm (true)" Then
+                    ElseIf arr(y) = "Aldous-Broder Algorithm" Then
+                    ElseIf arr(y) = "Growing Tree Algorithm" Then
+                    ElseIf arr(y) = "Sidewinder Algorithm" Then
+                    ElseIf arr(y) = "Binary Tree Algorithm" Then
+                    ElseIf arr(y) = "Wilson's Algorithm" Then
+                    ElseIf arr(y) = "Eller's Algorithm" Then
+                    ElseIf arr(y) = "Kruskal's Algorithm" Then
+                    ElseIf arr(y) = "Houston's Algorithm" Then
+                    ElseIf arr(y) = "Spiral Backtracker Algorithm" Then
+                    ElseIf arr(y) = "Custom Algorithm" Then
+                    End If
+                    Console.ReadKey()
                     Console.BackgroundColor = (ConsoleColor.Black)
                     Console.Clear()
                     MsgColour("What Maze Generation Algorithm do you want to use: ", ConsoleColor.Yellow)
