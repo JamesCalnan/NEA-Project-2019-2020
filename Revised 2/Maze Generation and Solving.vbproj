@@ -102,6 +102,7 @@
     <Compile Include="A Star Algorithm.vb" />
     <Compile Include="Aldous-Broder Algorithm.vb" />
     <Compile Include="Binary Tree Algorithm.vb" />
+    <Compile Include="Braid.vb" />
     <Compile Include="Breadth-First Search.vb" />
     <Compile Include="Custom Algorithm.vb" />
     <Compile Include="Dead End Filler Method.vb" />

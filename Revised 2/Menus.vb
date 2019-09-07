@@ -147,7 +147,7 @@ Module Menus
                             DisplayAvailablePositions(PreviousMaze.Count)
                             YPosAfterMaze = GreatestY - 1
                             Console.SetCursorPosition(0, YPosAfterMaze + 3)
-                            Dim temparr() As String = {"Solve using the A* algorithm", "Solve using Dijkstra's algorithm", "Solve using Breadth-first search", "Solve using Depth-first search (using iteration)", "Solve using Depth-first search (using recursion)", "Solve using the dead end filling method", "Play the maze", "Save the maze", "Output the maze as a png image", "Clear the maze and return to the menu"}
+                            Dim temparr() As String = {"Solve using the A* algorithm", "Solve using Dijkstra's algorithm", "Solve using Breadth-first search", "Solve using Depth-first search (using iteration)", "Solve using Depth-first search (using recursion)", "Solve using the dead end filling method", "Play the maze", "Braid the maze (remove dead ends)", "Save the maze", "Output the maze as a png image", "Clear the maze and return to the menu"}
                             input = SolvingMenu(temparr, "What would you like to do with the maze", GreatestX + 3, 3)
                             SolvingInput(input, ShowPath, YPosAfterMaze, SolvingDelay, PreviousMaze, PreviousAlgorithm)
                         Else
@@ -247,7 +247,7 @@ Module Menus
                                 DisplayAvailablePositions(PreviousMaze.Count)
                                 Console.SetCursorPosition(0, YPosAfterMaze + 3)
                                 PreviousMaze = LoadedMaze
-                                Dim temparr() As String = {"Solve using the A* algorithm", "Solve using Dijkstra's algorithm", "Solve using Breadth-first search", "Solve using Depth-first search (using iteration)", "Solve using Depth-first search (using recursion)", "Solve using the dead end filling method", "Play the maze", "Clear the maze and return to the menu"}
+                                Dim temparr() As String = {"Solve using the A* algorithm", "Solve using Dijkstra's algorithm", "Solve using Breadth-first search", "Solve using Depth-first search (using iteration)", "Solve using Depth-first search (using recursion)", "Solve using the dead end filling method", "Play the maze", "Braid the maze (remove dead ends)", "Output the maze as a png image", "Clear the maze and return to the menu"}
                                 input = SolvingMenu(temparr, "What would you like to do with the maze", GreatestX + 3, 3)
                                 SolvingInput(input, ShowPath, YPosAfterMaze, SolvingDelay, PreviousMaze, UsedAlgorithm)
                             ElseIf ValidMaze = 0 Then
@@ -327,6 +327,16 @@ Module Menus
             PreSolving(Limits, AvailablePath, PreviousMaze, Input, YPosAfterMaze)
             SolvingInput(Input, ShowPath, YPosAfterMaze, SolvingDelay, AvailablePath, Algorithm)
         End If
+    End Sub
+    Sub PreSolving(ByVal limits() As Integer, ByVal availablepath As List(Of Node), ByRef previousmaze As List(Of Node), ByRef input As String, ByRef yposaftermaze As Integer)
+        Console.BackgroundColor = (ConsoleColor.Black)
+        yposaftermaze = limits(3)
+        DisplayAvailablePositions(availablepath.Count)
+        Console.SetCursorPosition(0, yposaftermaze + 3)
+        Dim temparr() As String = {"Solve using the A* algorithm", "Solve using Dijkstra's algorithm", "Solve using Breadth-first search", "Solve using Depth-first search (using iteration)", "Solve using Depth-first search (using recursion)", "Solve using the dead end filling method", "Play the maze", "Save the maze", "Braid the maze (remove dead ends)", "Output the maze as a png image", "Clear the maze and return to the menu"}
+        input = SolvingMenu(temparr, "What would you like to do with the maze", limits(2) + 2, 3)
+        previousmaze.Clear()
+        previousmaze = availablepath
     End Sub
     Sub ClearHorizontal(ByVal y As Integer, ByVal ClearMessage As Boolean, ByVal setafter As Boolean)
         Console.ForegroundColor = ConsoleColor.White
@@ -480,70 +490,79 @@ Module Menus
         Console.ForegroundColor = (ConsoleColor.White)
         Return current
     End Function
-    Sub SolvingInput(ByVal input As String, ByVal showpath As Boolean, ByVal YposAfterMaze As Integer, ByVal solvingdelay As Integer, ByVal availablepath As List(Of Node), ByVal Algorithm As String)
+    Sub SolvingInput(ByVal input As String, ByVal showpath As Boolean, ByVal YposAfterMaze As Integer, ByVal solvingdelay As Integer, ByVal Maze As List(Of Node), ByVal Algorithm As String)
         If input = "Solve using the A* algorithm" Then
             showpath = HorizontalYesNo(YposAfterMaze + 2, "Do you want to show the steps in solving the maze: ", True, False, False)
             If showpath Then solvingdelay = GetIntInputArrowKeys("Delay when solving the maze: ", 100, 0, True)
             If HorizontalYesNo(YposAfterMaze + 2, "Do you want to use the optimised version of A*: ", True, False, False) Then
-                aStar(availablepath, showpath, True, solvingdelay)
+                aStar(Maze, showpath, True, solvingdelay)
             Else
-                Dim neededNodes As List(Of Node) = GetNeededNodes(availablepath)
-                Dim AdjacencyList As Dictionary(Of Node, List(Of Node)) = ConstructAdjacencyList(neededNodes, availablepath)
+                Dim neededNodes As List(Of Node) = GetNeededNodes(Maze)
+                Dim AdjacencyList As Dictionary(Of Node, List(Of Node)) = ConstructAdjacencyList(neededNodes, Maze)
                 aStarWiki(AdjacencyList, showpath, True, solvingdelay)
             End If
         ElseIf input = "Solve using Dijkstra's algorithm" Then
             showpath = HorizontalYesNo(YposAfterMaze + 2, "Do you want to show the steps in solving the maze: ", True, False, False)
             If showpath Then solvingdelay = GetIntInputArrowKeys("Delay when solving the maze: ", 100, 0, True)
-            Dim neededNodes As List(Of Node) = GetNeededNodes(availablepath)
-            Dim AdjacencyList As Dictionary(Of Node, List(Of Node)) = ConstructAdjacencyList(neededNodes, availablepath)
+            Dim neededNodes As List(Of Node) = GetNeededNodes(Maze)
+            Dim AdjacencyList As Dictionary(Of Node, List(Of Node)) = ConstructAdjacencyList(neededNodes, Maze)
             Dijkstras(AdjacencyList, showpath, solvingdelay)
         ElseIf input = "Solve using Breadth-first search" Then
             showpath = HorizontalYesNo(YposAfterMaze + 2, "Do you want to show the steps in solving the maze: ", True, False, False)
             If showpath Then solvingdelay = GetIntInputArrowKeys("Delay when solving the maze: ", 100, 0, True)
-            BFS(availablepath, showpath, True, solvingdelay)
+            BFS(Maze, showpath, True, solvingdelay)
         ElseIf input = "Solve using Depth-first search (using iteration)" Then
             showpath = HorizontalYesNo(YposAfterMaze + 2, "Do you want to show the steps in solving the maze: ", True, False, False)
             If showpath Then solvingdelay = GetIntInputArrowKeys("Delay when solving the maze: ", 100, 0, True)
-            Dim neededNodes As List(Of Node) = GetNeededNodes(availablepath)
-            Dim AdjacencyList As Dictionary(Of Node, List(Of Node)) = ConstructAdjacencyList(neededNodes, availablepath)
+            Dim neededNodes As List(Of Node) = GetNeededNodes(Maze)
+            Dim AdjacencyList As Dictionary(Of Node, List(Of Node)) = ConstructAdjacencyList(neededNodes, Maze)
             DFS_Iterative(AdjacencyList, showpath, True, solvingdelay)
         ElseIf input = "Solve using Depth-first search (using recursion)" Then
             showpath = HorizontalYesNo(YposAfterMaze + 2, "Do you want to show the steps in solving the maze: ", True, False, False)
             If showpath Then solvingdelay = GetIntInputArrowKeys("Delay when solving the maze: ", 100, 0, True)
-            Dim start_v As New Node(availablepath(availablepath.Count - 2).X, availablepath(availablepath.Count - 2).Y)
-            Dim goal As New Node(availablepath(availablepath.Count - 1).X, availablepath(availablepath.Count - 1).Y)
+            Dim start_v As New Node(Maze(Maze.Count - 2).X, Maze(Maze.Count - 2).Y)
+            Dim goal As New Node(Maze(Maze.Count - 1).X, Maze(Maze.Count - 1).Y)
             Dim discovered As New Dictionary(Of Node, Boolean)
-            For Each node In availablepath
+            For Each node In Maze
                 discovered(node) = False
             Next
             Dim cameFrom As New Dictionary(Of Node, Node)
             Dim timer As Stopwatch = Stopwatch.StartNew
             Console.ForegroundColor = ConsoleColor.Red
             Console.BackgroundColor = ConsoleColor.Red
-            DFS_Recursive(availablepath, start_v, discovered, cameFrom, goal, showpath, solvingdelay, False)
+            DFS_Recursive(Maze, start_v, discovered, cameFrom, goal, showpath, solvingdelay, False)
             ReconstructPath(cameFrom, goal, start_v, $"Time Taken to solve: {timer.Elapsed.TotalSeconds} seconds")
         ElseIf input = "Play the maze" Then
             showpath = HorizontalYesNo(YposAfterMaze + 2, "Do you want to show the steps you have taken in the maze: ", True, False, False)
-            Playmaze(availablepath, showpath)
+            Playmaze(Maze, showpath)
         ElseIf input = "Clear the maze and return to the menu" Then
             Console.Clear()
         ElseIf input = "Save the maze" Then
-            SaveMaze(availablepath, $"Algorithm used to generate this maze: {Algorithm}")
+            SaveMaze(Maze, $"Algorithm used to generate this maze: {Algorithm}")
         ElseIf input = "Output the maze as a png image" Then
             Console.Clear()
             Console.ForegroundColor = ConsoleColor.White
             Console.Write("File Name of the maze to load (don't include .png): ")
             Dim filename As String = Console.ReadLine
             Console.Clear()
-            SaveMazePNG(availablepath, Algorithm, filename)
+            SaveMazePNG(Maze, Algorithm, filename)
         ElseIf input = "s" Then
-            SD(availablepath)
+            SD(Maze)
         ElseIf input = "Solve using the dead end filling method" Then
             showpath = HorizontalYesNo(YposAfterMaze + 2, "Do you want to show the steps in solving the maze: ", True, False, False)
             If showpath Then solvingdelay = GetIntInputArrowKeys("Delay when solving the maze: ", 100, 0, True)
-            DeadEndFiller(availablepath, showpath, True, solvingdelay)
+            DeadEndFiller(Maze, showpath, True, solvingdelay)
         ElseIf input = "Solve using the wall follower method" Then
-            WallFollower(availablepath, showpath, solvingdelay)
+            WallFollower(Maze, showpath, solvingdelay)
+        ElseIf input = "Braid the maze (remove dead ends)" Then
+            EliminateDeadEnds(Maze)
+            Dim GreatestX As Integer
+            For Each node In Maze
+                If GreatestX < node.X Then GreatestX = node.X
+            Next
+            Dim temparr() As String = {"Solve using the A* algorithm", "Solve using Dijkstra's algorithm", "Solve using Breadth-first search", "Solve using Depth-first search (using iteration)", "Solve using Depth-first search (using recursion)", "Solve using the dead end filling method", "Play the maze", "Save the maze", "Output the maze as a png image", "Clear the maze and return to the menu"}
+            input = SolvingMenu(temparr, "What would you like to do with the maze", GreatestX + 3, 3)
+            SolvingInput(input, showpath, YposAfterMaze, solvingdelay, Maze, "")
         ElseIf input = "" Then
             Console.Clear()
             Console.WriteLine("A critical error has occured that has caused the program to no longer work")
@@ -560,7 +579,7 @@ Module Menus
             DelayMS = 0
         End If
         Width = (GetIntInputArrowKeys($"Width of the Maze: ", (Console.WindowWidth - 54) / 2, 20, False)) * 2
-        Height = GetIntInputArrowKeys($"Height of the Maze: ", Console.WindowHeight - 5, 20, False)
+        Height = GetIntInputArrowKeys($"Height of the Maze: ", Console.WindowHeight - 7, 20, False)
         If Width Mod 2 = 0 Then
             Width += 1
             Height += 1

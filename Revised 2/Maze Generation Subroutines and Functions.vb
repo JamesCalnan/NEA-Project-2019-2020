@@ -91,19 +91,24 @@
             End If
         Next
     End Sub
-    Sub AddStartAndEnd(ByRef ReturnablePath As List(Of Node), ByVal Limits() As Integer, ByVal EvenWidth As Integer)
-        ReturnablePath.Add(New Node(Limits(0) + 3, Limits(1) - 1))
-        Console.ForegroundColor = ConsoleColor.Red
-        Console.BackgroundColor = ConsoleColor.Red
-        ReturnablePath(ReturnablePath.Count - 1).Print("██")
-        Dim testnode As New Node(Limits(2) + 6, Limits(3))
-        Do
-            testnode.update(testnode.X - 1, testnode.Y)
-        Loop Until ReturnablePath.Contains(testnode)
-        ReturnablePath.Add(New Node(testnode.X, testnode.Y + 1))
-        Console.ForegroundColor = ConsoleColor.Green
-        Console.BackgroundColor = ConsoleColor.Green
-        ReturnablePath(ReturnablePath.Count - 1).Print("██")
+    Sub AddStartAndEnd(ByRef Maze As List(Of Node), ByVal Limits() As Integer, ByVal EvenWidth As Integer)
+        Dim AvailableStartPositions As New List(Of Node)
+        For x = Limits(0) + 3 To Limits(2)
+            If Maze.Contains(New Node(x, Limits(1))) Then AvailableStartPositions.Add(New Node(x, Limits(1)))
+        Next
+        Dim R As New Random
+        Dim Index As Integer = R.Next(0, AvailableStartPositions.Count)
+        Maze.Add(New Node(AvailableStartPositions(Index).X, AvailableStartPositions(Index).Y - 1))
+        SetBoth(ConsoleColor.Red)
+        Maze(Maze.Count - 1).Print("██")
+        AvailableStartPositions.Clear()
+        For x = Limits(0) + 3 To Limits(2)
+            If Maze.Contains(New Node(x, Limits(3))) Then AvailableStartPositions.Add(New Node(x, Limits(3)))
+        Next
+        Index = R.Next(0, AvailableStartPositions.Count)
+        Maze.Add(New Node(AvailableStartPositions(Index).X, AvailableStartPositions(Index).Y + 1))
+        SetBoth(ConsoleColor.Green)
+        Maze(Maze.Count - 1).Print("██")
         Console.BackgroundColor = (ConsoleColor.Black)
     End Sub
     Function AdjacentCheck(ByVal cell As Cell, ByVal visitedcells As Dictionary(Of Cell, Boolean))

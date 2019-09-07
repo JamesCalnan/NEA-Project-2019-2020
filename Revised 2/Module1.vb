@@ -6,9 +6,8 @@ Module Module1
 
     'TODO: give user the option to print a path or carve through walls, implement wall follower algorithm
     Sub Main()
-        Console.CursorVisible = False
+        ' Console.CursorVisible = False
         Console.ForegroundColor = (ConsoleColor.White)
-
         'Dim newtree As New Tree(New Value(20, New Node(5, 5)))
         'For i = 0 To 5
         '    newtree.AddRecursive(newtree, New Value(i, New Node(5, i)))
@@ -18,17 +17,14 @@ Module Module1
         Dim MenuOptions() As String = {"Recursive Backtracker Algorithm (using iteration)", "Recursive Backtracker Algorithm (using recursion)", "Hunt and Kill Algorithm", "Prim's Algorithm (simplified)", "Prim's Algorithm (true)", "Aldous-Broder Algorithm", "Growing Tree Algorithm", "Sidewinder Algorithm", "Binary Tree Algorithm", "Wilson's Algorithm", "Eller's Algorithm", "Kruskal's Algorithm", "Houston's Algorithm", "Spiral Backtracker Algorithm", "Custom Algorithm", "", "Load the previously generated maze", "Save the previously generated maze", "Output the previous maze as a png image", "Load a saved maze", "", "Exit"}
         Menu(MenuOptions)
 
-        Dim bmp As New Bitmap(350, 350)
-        Dim g As Graphics
-        g = Graphics.FromImage(bmp)
-        g.FillRectangle(Brushes.Aqua, 0, 0, 250, 250)
-        g.Dispose()
-        bmp.Save("name", System.Drawing.Imaging.ImageFormat.Png)
-        bmp.Dispose()
+        'Dim bmp As New Bitmap(350, 350)
+        'Dim g As Graphics
+        'g = Graphics.FromImage(bmp)
+        'g.FillRectangle(Brushes.Aqua, 0, 0, 250, 250)
+        'g.Dispose()
+        'bmp.Save("name", System.Drawing.Imaging.ImageFormat.Png)
+        'bmp.Dispose()
     End Sub
-
-
-
     Sub MsgColour(ByVal Msg As String, ByVal Colour As ConsoleColor)
         Console.ForegroundColor = (Colour)
         Console.WriteLine(Msg)
@@ -76,16 +72,7 @@ Module Module1
         End While
         Return Nothing
     End Function
-    Sub PreSolving(ByVal limits() As Integer, ByVal availablepath As List(Of Node), ByRef previousmaze As List(Of Node), ByRef input As String, ByRef yposaftermaze As Integer)
-        Console.BackgroundColor = (ConsoleColor.Black)
-        yposaftermaze = limits(3)
-        DisplayAvailablePositions(availablepath.Count)
-        Console.SetCursorPosition(0, yposaftermaze + 3)
-        Dim temparr() As String = {"Solve using the A* algorithm", "Solve using Dijkstra's algorithm", "Solve using Breadth-first search", "Solve using Depth-first search (using iteration)", "Solve using Depth-first search (using recursion)", "Solve using the dead end filling method", "Play the maze", "Save the maze", "Output the maze as a png image", "Clear the maze and return to the menu"}
-        input = SolvingMenu(temparr, "What would you like to do with the maze", limits(2) + 2, 3)
-        previousmaze.Clear()
-        previousmaze = availablepath
-    End Sub
+
 
     Sub SetBoth(ByVal colour As ConsoleColor)
         Console.ForegroundColor = colour
@@ -571,7 +558,7 @@ Module Module1
         If AdjacentCells.Contains(bottom) Then L.Add(bottom)
         If AdjacentCells.Contains(left) Then L.Add(left)
         If L.Count >= 3 Then Return True 'Is it a junction
-        If AdjacentCells.Contains(top) And AdjacentCells.Contains(right) Then Return True 'is it a c
+        If AdjacentCells.Contains(top) And AdjacentCells.Contains(right) Then Return True 'is it a corner
         If AdjacentCells.Contains(right) And AdjacentCells.Contains(bottom) Then Return True
         If AdjacentCells.Contains(bottom) And AdjacentCells.Contains(left) Then Return True
         If AdjacentCells.Contains(left) And AdjacentCells.Contains(top) Then Return True
@@ -586,51 +573,12 @@ Module Module1
         Next
         Return dict
     End Function
-    Sub EliminateDeadEnds(ByRef Maze As List(Of Node))
-        SetBoth(ConsoleColor.Black)
-        Dim r As New Random
-        Dim start_v As New Node(Maze(Maze.Count - 2).X, Maze(Maze.Count - 2).Y)
-        Dim goal As New Node(Maze(Maze.Count - 1).X, Maze(Maze.Count - 1).Y)
-        Dim NodesToAdd As New List(Of Node)
-        For Each Node As Node In Maze
-            If Node.Equals(start_v) Or Node.Equals(goal) Then Continue For
-            If Node.IsDeadEnd(Maze) Then
-                Dim AvailableNodes As New List(Of Node) From {
-                    New Node(Node.X, Node.Y - 2),'up
-                    New Node(Node.X + 4, Node.Y),'right
-                    New Node(Node.X, Node.Y + 2),'down
-                    New Node(Node.X - 4, Node.Y) 'left
-                }
-                Dim DirectNeighbour As New Node(Node.X, Node.Y - 1)
-                If Maze.Contains(DirectNeighbour) Then AvailableNodes.RemoveAt(0)
-                DirectNeighbour.update(Node.X + 2, Node.Y)
-                If Maze.Contains(DirectNeighbour) Then AvailableNodes.RemoveAt(1)
-                DirectNeighbour.update(Node.X, Node.Y + 1)
-                If Maze.Contains(DirectNeighbour) Then AvailableNodes.RemoveAt(2)
-                DirectNeighbour.update(Node.X - 2, Node.Y)
-                If Maze.Contains(DirectNeighbour) Then AvailableNodes.RemoveAt(3)
-                Dim NodesToRemove As New List(Of Node)
-                For i = 0 To AvailableNodes.Count - 1
-                    If Not Maze.Contains(AvailableNodes(i)) Then NodesToRemove.Add(AvailableNodes(i))
-                Next
-                For Each thing In NodesToRemove
-                    AvailableNodes.Remove(thing)
-                Next
-                Dim PositionInMaze As Node = AvailableNodes(r.Next(0, AvailableNodes.Count))
-                Dim PosToBeAdded As Node = MidPoint(PositionInMaze, Node)
-                NodesToAdd.Add(PosToBeAdded)
-                PosToBeAdded.Print("██")
-            End If
-        Next
-        For Each node In NodesToAdd
-            Maze.Add(node)
-        Next
-    End Sub
+
     Sub SaveMazePNG(ByVal Path As List(Of Node), ByVal Algorithm As String, ByVal fileName As String)
         Dim solving As Boolean = HorizontalYesNo(0, "Do you want the outputted maze to have the solution on it  ", False, False, False)
         Console.Clear()
         Console.Write("Saving...")
-        Dim Multiplier As Integer = 10
+        Dim Multiplier As Integer = 2
         Dim Max_X, Max_Y As Integer
         For Each node In Path
             If node.X > Max_X Then Max_X = node.X
@@ -655,17 +603,9 @@ Module Module1
         Dim point As New PointF(((Width) / 2) - (Algorithm.Length / 2) * Multiplier, 1)
         'g.DrawString(Algorithm, f, Brushes.White, point)
         g.Dispose()
-        bmp.Save($"{fileName}.png", System.Drawing.Imaging.ImageFormat.Png)
+        bmp.Save($"{fileName} m {Multiplier}.png", System.Drawing.Imaging.ImageFormat.Png)
         bmp.Dispose()
     End Sub
-
-
-
-
-
-
-
-
     Function MidPoint(ByVal cell1 As Object, ByVal cell2 As Object)
         If cell1.GetType.ToString = "NEA_2019.Cell" Then
             Return New Cell((cell1.X + cell2.X) / 2, (cell1.Y + cell2.Y) / 2)
