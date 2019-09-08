@@ -273,42 +273,44 @@ Module Menus
                     Console.Clear()
                     MsgColour("What Maze Generation Algorithm do you want to use: ", ConsoleColor.Yellow)
                 Case "I"
-                    InitialiseScreen()
-                    If arr(y) = "Recursive Backtracker Algorithm (using iteration)" Then
-                        RecrusiveBacktrackerINFO()
-                    ElseIf arr(y) = "Recursive Backtracker Algorithm (using recursion)" Then
-                        RecrusiveBacktrackerRecursionINFO()
-                    ElseIf arr(y) = "Hunt and Kill Algorithm" Then
-                        HuntAndKillINFO()
-                    ElseIf arr(y) = "Prim's Algorithm (simplified)" Then
-                        Prims_SimplifiedINFO()
-                    ElseIf arr(y) = "Prim's Algorithm (true)" Then
-                        Prims_TrueINFO()
-                    ElseIf arr(y) = "Aldous-Broder Algorithm" Then
-                        AldousBroderINFO()
-                    ElseIf arr(y) = "Growing Tree Algorithm" Then
-                        GrowingTreeINFO()
-                    ElseIf arr(y) = "Sidewinder Algorithm" Then
-                        SidewinderINFO()
-                    ElseIf arr(y) = "Binary Tree Algorithm" Then
-                        BinaryTreeINFO()
-                    ElseIf arr(y) = "Wilson's Algorithm" Then
-                        WilsonsINFO()
-                    ElseIf arr(y) = "Eller's Algorithm" Then
-                        EllersINFO()
-                    ElseIf arr(y) = "Kruskal's Algorithm" Then
-                        KruskalsINFO()
-                    ElseIf arr(y) = "Houston's Algorithm" Then
-                        HoustonsINFO()
-                    ElseIf arr(y) = "Spiral Backtracker Algorithm" Then
-                        SpiralBacktrackerINFO()
-                    ElseIf arr(y) = "Custom Algorithm" Then
-                        CustomAlgorithmINFO()
+                    If y < 15 Then
+                        InitialiseScreen()
+                        If arr(y) = "Recursive Backtracker Algorithm (using iteration)" Then
+                            RecrusiveBacktrackerINFO()
+                        ElseIf arr(y) = "Recursive Backtracker Algorithm (using recursion)" Then
+                            RecrusiveBacktrackerRecursionINFO()
+                        ElseIf arr(y) = "Hunt and Kill Algorithm" Then
+                            HuntAndKillINFO()
+                        ElseIf arr(y) = "Prim's Algorithm (simplified)" Then
+                            Prims_SimplifiedINFO()
+                        ElseIf arr(y) = "Prim's Algorithm (true)" Then
+                            Prims_TrueINFO()
+                        ElseIf arr(y) = "Aldous-Broder Algorithm" Then
+                            AldousBroderINFO()
+                        ElseIf arr(y) = "Growing Tree Algorithm" Then
+                            GrowingTreeINFO()
+                        ElseIf arr(y) = "Sidewinder Algorithm" Then
+                            SidewinderINFO()
+                        ElseIf arr(y) = "Binary Tree Algorithm" Then
+                            BinaryTreeINFO()
+                        ElseIf arr(y) = "Wilson's Algorithm" Then
+                            WilsonsINFO()
+                        ElseIf arr(y) = "Eller's Algorithm" Then
+                            EllersINFO()
+                        ElseIf arr(y) = "Kruskal's Algorithm" Then
+                            KruskalsINFO()
+                        ElseIf arr(y) = "Houston's Algorithm" Then
+                            HoustonsINFO()
+                        ElseIf arr(y) = "Spiral Backtracker Algorithm" Then
+                            SpiralBacktrackerINFO()
+                        ElseIf arr(y) = "Custom Algorithm" Then
+                            CustomAlgorithmINFO()
+                        End If
+                        Console.ReadKey()
+                        Console.BackgroundColor = (ConsoleColor.Black)
+                        Console.Clear()
+                        MsgColour("What Maze Generation Algorithm do you want to use: ", ConsoleColor.Yellow)
                     End If
-                    Console.ReadKey()
-                    Console.BackgroundColor = (ConsoleColor.Black)
-                    Console.Clear()
-                    MsgColour("What Maze Generation Algorithm do you want to use: ", ConsoleColor.Yellow)
             End Select
             Console.ForegroundColor = (ConsoleColor.White)
             Dim Count As Integer = 1
