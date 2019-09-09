@@ -6,13 +6,8 @@ Module Module1
 
     'TODO: give user the option to print a path or carve through walls, implement wall follower algorithm
     Sub Main()
-        ' Console.CursorVisible = False
+        Console.CursorVisible = False
         Console.ForegroundColor = (ConsoleColor.White)
-        'Dim newtree As New Tree(New Value(20, New Node(5, 5)))
-        'For i = 0 To 5
-        '    newtree.AddRecursive(newtree, New Value(i, New Node(5, i)))
-        '    Console.WriteLine($"i: {i}      node: (5, {i})")
-        'Next
         Console.SetWindowSize(Console.LargestWindowWidth - 6, Console.LargestWindowHeight - 3)
         Dim MenuOptions() As String = {"Recursive Backtracker Algorithm (using iteration)", "Recursive Backtracker Algorithm (using recursion)", "Hunt and Kill Algorithm", "Prim's Algorithm (simplified)", "Prim's Algorithm (true)", "Aldous-Broder Algorithm", "Growing Tree Algorithm", "Sidewinder Algorithm", "Binary Tree Algorithm", "Wilson's Algorithm", "Eller's Algorithm", "Kruskal's Algorithm", "Houston's Algorithm", "Spiral Backtracker Algorithm", "Custom Algorithm", "", "Load the previously generated maze", "Save the previously generated maze", "Output the previous maze as a png image", "Load a saved maze", "", "Exit"}
         Menu(MenuOptions)

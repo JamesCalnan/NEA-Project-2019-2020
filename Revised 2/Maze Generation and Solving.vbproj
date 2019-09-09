@@ -116,6 +116,7 @@
     <Compile Include="Maze Generation Subroutines and Functions.vb" />
     <Compile Include="Maze Info.vb" />
     <Compile Include="Menus.vb" />
+    <Compile Include="Merge Sort.vb" />
     <Compile Include="Module1.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="My Project\Application.Designer.vb">
