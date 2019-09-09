@@ -1,5 +1,5 @@
 ﻿Module Dijkstras_Algorithm
-    Sub Dijkstras(ByVal availablepath As Dictionary(Of Node, List(Of Node)), ByVal ShowSolving As Boolean, ByVal SolvingDelay As Integer)
+    Sub Dijkstras(ByVal availablepath As Dictionary(Of Node, List(Of Node)), ByVal ShowSolving As Boolean, ByVal SolvingDelay As Integer, ByVal Evaluation As Boolean)
         Dim source As New Node(availablepath.Keys(availablepath.Count - 2).X, availablepath.Keys(availablepath.Count - 2).Y)
         Dim target As New Node(availablepath.Keys(availablepath.Count - 1).X, availablepath.Keys(availablepath.Count - 1).Y)
         Dim dist As New Dictionary(Of Node, Double)
@@ -29,5 +29,6 @@
             Next
         End While
         Backtrack(prev, target, source, stopwatch)
+        If Not Evaluation Then Console.ReadKey()
     End Sub
 End Module

@@ -1,16 +1,35 @@
 ﻿Imports System.Drawing
 Imports System.IO
 Imports NEA_2019
-
 Module Module1
 
     'TODO: give user the option to print a path or carve through walls, implement wall follower algorithm
     Sub Main()
         Console.CursorVisible = False
         Console.ForegroundColor = (ConsoleColor.White)
-        Console.SetWindowSize(Console.LargestWindowWidth - 6, Console.LargestWindowHeight - 3)
-        Dim MenuOptions() As String = {"Recursive Backtracker Algorithm (using iteration)", "Recursive Backtracker Algorithm (using recursion)", "Hunt and Kill Algorithm", "Prim's Algorithm (simplified)", "Prim's Algorithm (true)", "Aldous-Broder Algorithm", "Growing Tree Algorithm", "Sidewinder Algorithm", "Binary Tree Algorithm", "Wilson's Algorithm", "Eller's Algorithm", "Kruskal's Algorithm", "Houston's Algorithm", "Spiral Backtracker Algorithm", "Custom Algorithm", "", "Load the previously generated maze", "Save the previously generated maze", "Output the previous maze as a png image", "Load a saved maze", "", "Exit"}
-        Menu(MenuOptions)
+        Dim r As New Random
+        While 1
+            Dim list As New List(Of Double)
+            For i = 0 To 9
+                list.Add(r.Next(1, 50))
+                Console.WriteLine(list(i))
+            Next
+            Console.WriteLine("Sorting")
+            Dim stopwatch As Stopwatch = Stopwatch.StartNew()
+            Dim sl As List(Of Double) = BogoSort(list)
+            Console.WriteLine($"Time taken to sort: {stopwatch.Elapsed.TotalSeconds}")
+            Console.WriteLine()
+            For Each num In sl
+                Console.WriteLine(num)
+            Next
+            Console.ReadKey()
+            Console.Clear()
+        End While
+        'list.Sort
+        'Console.SetWindowSize(Console.LargestWindowWidth - 6, Console.LargestWindowHeight - 3)
+        'Dim MenuOptions() As String = {"Recursive Backtracker Algorithm (using iteration)", "Recursive Backtracker Algorithm (using recursion)", "Hunt and Kill Algorithm", "Prim's Algorithm (simplified)", "Prim's Algorithm (true)", "Aldous-Broder Algorithm", "Growing Tree Algorithm", "Sidewinder Algorithm", "Binary Tree Algorithm", "Wilson's Algorithm", "Eller's Algorithm", "Kruskal's Algorithm", "Houston's Algorithm", "Spiral Backtracker Algorithm", "Custom Algorithm", "", "Load the previously generated maze", "Save the previously generated maze", "Output the previous maze as a png image", "Load a saved maze", "", "Exit"}
+        'Menu(MenuOptions)
+        Console.ReadKey()
 
         'Dim bmp As New Bitmap(350, 350)
         'Dim g As Graphics
@@ -19,6 +38,9 @@ Module Module1
         'g.Dispose()
         'bmp.Save("name", System.Drawing.Imaging.ImageFormat.Png)
         'bmp.Dispose()
+    End Sub
+    Sub CompareSolvingAlgorithms(ByVal Maze As List(Of Node))
+
     End Sub
     Sub MsgColour(ByVal Msg As String, ByVal Colour As ConsoleColor)
         Console.ForegroundColor = (Colour)
@@ -177,7 +199,6 @@ Module Module1
                 End If
             Next
         Next
-        Console.ReadKey()
     End Sub
     Sub Backtrack(ByVal prev As Dictionary(Of Node, Node), ByVal target As Node, ByVal source As Node, ByVal watch As Stopwatch)
         Dim u As Node = target
@@ -198,7 +219,6 @@ Module Module1
         Console.SetCursorPosition(0, Console.WindowHeight - 1)
         Console.Write($"Solving                            Time taken: {timetaken}")
         'PrintMessageMiddle($"Path length: {Pathlength}   {timetaken}", Console.WindowHeight - 1, ConsoleColor.Green)
-        Console.ReadKey()
     End Sub
     Function ExtractMin(ByVal list As List(Of Node), ByVal dist As Dictionary(Of Node, Double))
         Dim returnnode As Node = list(0)
@@ -307,7 +327,6 @@ Module Module1
         Console.ForegroundColor = ConsoleColor.White
         Console.SetCursorPosition(0, Console.WindowHeight - 1)
         Console.Write($"Solving                            Time taken: {timetaken}")
-        Console.ReadKey()
     End Sub
     Sub DrawBetween(ByVal Node1 As Node, ByVal Node2 As Node)
         If Node1.X = Node2.X Then
@@ -338,7 +357,6 @@ Module Module1
             End If
         End If
     End Sub
-
     Sub SD(ByVal availablePath As List(Of Node))
         Console.SetCursorPosition(0, 1)
         Console.ForegroundColor = ConsoleColor.Red
@@ -438,7 +456,6 @@ Module Module1
         Console.ForegroundColor = ConsoleColor.Green
         Console.BackgroundColor = ConsoleColor.Black
         Console.Write($"---------------DONE---------------          {If(numOfsFound = 0, "No swastikas found", $"Number of Swastikas found: {numOfsFound}")}")
-        Console.ReadKey()
     End Sub
     Function GetDistance(ByVal nodea As Node, ByVal nodeb As Node)
         Dim dstX As Single = Math.Abs(nodea.X - nodeb.X)
@@ -532,7 +549,7 @@ Module Module1
     End Function
     Function FindAdjacentNodes(ByVal CurrentNode As Node, ByVal Maze As List(Of Node), ByVal NeededNodes As List(Of Node), ByVal X As Integer, ByVal Y As Integer)
         Dim tempnode As New Node(CurrentNode.X, CurrentNode.Y)
-        While true
+        While True
             tempnode.update(tempnode.X + X, tempnode.Y + Y)
             If Maze.Contains(tempnode) Then
                 If NeededNodes.Contains(tempnode) Then Return tempnode
@@ -626,6 +643,14 @@ Module Module1
         Return neighbours
     End Function
 End Module
+Class Item
+    Public Time As Double
+    Public Algorithm As String
+    Public Sub New(ByVal _time As Double, ByVal _algorithm As String)
+        Time = _time
+        Algorithm = _algorithm
+    End Sub
+End Class
 Class Cell
     Public X, Y, CellSet As Integer
     Public Sub New(ByVal xpoint As Integer, ByVal ypoint As Integer)

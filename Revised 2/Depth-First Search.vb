@@ -29,7 +29,7 @@ Module Depth_First_Search
         End While
         ReconstructPathFORFILE(cameFrom, goal, start_v, bmp, g, Multiplier)
     End Sub
-    Sub DFS_Iterative(ByVal availablepath As Dictionary(Of Node, List(Of Node)), ByVal ShowPath As Boolean, ByVal ShowSolveTime As Boolean, ByVal Delay As Integer)
+    Sub DFS_Iterative(ByVal availablepath As Dictionary(Of Node, List(Of Node)), ByVal ShowPath As Boolean, ByVal ShowSolveTime As Boolean, ByVal Delay As Integer, ByVal Evaluation As Boolean)
         Dim start_v As New Node(availablepath.Keys(availablepath.Count - 2).X, availablepath.Keys(availablepath.Count - 2).Y)
         Dim goal As New Node(availablepath.Keys(availablepath.Count - 1).X, availablepath.Keys(availablepath.Count - 1).Y)
         Dim visited As New Dictionary(Of Node, Boolean)
@@ -57,6 +57,7 @@ Module Depth_First_Search
             End If
         End While
         ReconstructPath(cameFrom, goal, start_v, If(ShowSolveTime, $"{stopwatch.Elapsed.TotalSeconds}", ""))
+        If Not Evaluation Then Console.ReadKey()
     End Sub
     Function DFS_Recursive(ByVal availablepath As List(Of Node), ByVal v As Node, ByVal visited As Dictionary(Of Node, Boolean), ByRef cameFrom As Dictionary(Of Node, Node), ByVal goal As Node, ByVal showsolving As Boolean, ByVal solvingdelay As Integer, ByRef exitcase As Boolean)
         visited(v) = True

@@ -1,5 +1,5 @@
 ﻿Module Dead_End_Filler_Method
-    Sub DeadEndFiller(ByVal List As List(Of Node), ByVal ShowPath As Boolean, ByVal ShowSolveTime As Boolean, ByVal Delay As Integer)
+    Sub DeadEndFiller(ByVal List As List(Of Node), ByVal ShowPath As Boolean, ByVal ShowSolveTime As Boolean, ByVal Delay As Integer, ByVal Evaluation As Boolean)
         Dim DeadEnds As New List(Of Node)
         Dim Start As New Node(List(List.Count - 2).X, List(List.Count - 2).Y)
         Dim Goal As New Node(List(List.Count - 1).X, List(List.Count - 1).Y)
@@ -90,7 +90,6 @@
                 If Not NotPath.Contains(Node) Then Node.Print("██")
             Next
         End If
-
-        Console.ReadKey()
+        If Not Evaluation Then Console.ReadKey()
     End Sub
 End Module

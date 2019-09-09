@@ -497,28 +497,28 @@ Module Menus
             showpath = HorizontalYesNo(YposAfterMaze + 2, "Do you want to show the steps in solving the maze: ", True, False, False)
             If showpath Then solvingdelay = GetIntInputArrowKeys("Delay when solving the maze: ", 100, 0, True)
             If HorizontalYesNo(YposAfterMaze + 2, "Do you want to use the optimised version of A*: ", True, False, False) Then
-                aStar(Maze, showpath, True, solvingdelay)
+                aStar(Maze, showpath, True, solvingdelay, False)
             Else
                 Dim neededNodes As List(Of Node) = GetNeededNodes(Maze)
                 Dim AdjacencyList As Dictionary(Of Node, List(Of Node)) = ConstructAdjacencyList(neededNodes, Maze)
-                aStarWiki(AdjacencyList, showpath, True, solvingdelay)
+                aStarWiki(AdjacencyList, showpath, True, solvingdelay, False)
             End If
         ElseIf input = "Solve using Dijkstra's algorithm" Then
             showpath = HorizontalYesNo(YposAfterMaze + 2, "Do you want to show the steps in solving the maze: ", True, False, False)
             If showpath Then solvingdelay = GetIntInputArrowKeys("Delay when solving the maze: ", 100, 0, True)
             Dim neededNodes As List(Of Node) = GetNeededNodes(Maze)
             Dim AdjacencyList As Dictionary(Of Node, List(Of Node)) = ConstructAdjacencyList(neededNodes, Maze)
-            Dijkstras(AdjacencyList, showpath, solvingdelay)
+            Dijkstras(AdjacencyList, showpath, solvingdelay, False)
         ElseIf input = "Solve using Breadth-first search" Then
             showpath = HorizontalYesNo(YposAfterMaze + 2, "Do you want to show the steps in solving the maze: ", True, False, False)
             If showpath Then solvingdelay = GetIntInputArrowKeys("Delay when solving the maze: ", 100, 0, True)
-            BFS(Maze, showpath, True, solvingdelay)
+            BFS(Maze, showpath, True, solvingdelay, False)
         ElseIf input = "Solve using Depth-first search (using iteration)" Then
             showpath = HorizontalYesNo(YposAfterMaze + 2, "Do you want to show the steps in solving the maze: ", True, False, False)
             If showpath Then solvingdelay = GetIntInputArrowKeys("Delay when solving the maze: ", 100, 0, True)
             Dim neededNodes As List(Of Node) = GetNeededNodes(Maze)
             Dim AdjacencyList As Dictionary(Of Node, List(Of Node)) = ConstructAdjacencyList(neededNodes, Maze)
-            DFS_Iterative(AdjacencyList, showpath, True, solvingdelay)
+            DFS_Iterative(AdjacencyList, showpath, True, solvingdelay, False)
         ElseIf input = "Solve using Depth-first search (using recursion)" Then
             showpath = HorizontalYesNo(YposAfterMaze + 2, "Do you want to show the steps in solving the maze: ", True, False, False)
             If showpath Then solvingdelay = GetIntInputArrowKeys("Delay when solving the maze: ", 100, 0, True)
@@ -553,7 +553,7 @@ Module Menus
         ElseIf input = "Solve using the dead end filling method" Then
             showpath = HorizontalYesNo(YposAfterMaze + 2, "Do you want to show the steps in solving the maze: ", True, False, False)
             If showpath Then solvingdelay = GetIntInputArrowKeys("Delay when solving the maze: ", 100, 0, True)
-            DeadEndFiller(Maze, showpath, True, solvingdelay)
+            DeadEndFiller(Maze, showpath, True, solvingdelay, False)
         ElseIf input = "Solve using the wall follower method" Then
             WallFollower(Maze, showpath, solvingdelay)
         ElseIf input = "Braid the maze (remove dead ends)" Then

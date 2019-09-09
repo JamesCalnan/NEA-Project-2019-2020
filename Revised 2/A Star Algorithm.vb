@@ -1,5 +1,5 @@
 ﻿Module A_Star_Algorithm
-    Sub aStar(ByVal availablepath As List(Of Node), ByVal ShowPath As Boolean, ByVal ShowSolveTime As Boolean, ByVal Delay As Integer)
+    Sub aStar(ByVal availablepath As List(Of Node), ByVal ShowPath As Boolean, ByVal ShowSolveTime As Boolean, ByVal Delay As Integer, ByVal Evaluation As Boolean)
         Dim start As New Node(availablepath(availablepath.Count - 2).X, availablepath(availablepath.Count - 2).Y)
         Dim target As New Node(availablepath(availablepath.Count - 1).X, availablepath(availablepath.Count - 1).Y)
         Dim current As Node = start
@@ -31,9 +31,9 @@
             Next
         End While
         RetracePath(start, current, If(ShowSolveTime, $"Time Taken to solve: {stopwatch.Elapsed.TotalSeconds} seconds", ""))
-        Console.ReadKey()
+        If Not Evaluation Then Console.ReadKey()
     End Sub
-    Sub aStarWiki(ByVal AdjacencyList As Dictionary(Of Node, List(Of Node)), ByVal ShowPath As Boolean, ByVal ShowSolveTime As Boolean, ByVal Delay As Integer)
+    Sub aStarWiki(ByVal AdjacencyList As Dictionary(Of Node, List(Of Node)), ByVal ShowPath As Boolean, ByVal ShowSolveTime As Boolean, ByVal Delay As Integer, ByVal Evaluation As Boolean)
         Dim openSet, closedSet As New List(Of Node)
         Dim start As New Node(AdjacencyList.Keys(AdjacencyList.Count - 2).X, AdjacencyList.Keys(AdjacencyList.Count - 2).Y)
         Dim goal As New Node(AdjacencyList.Keys(AdjacencyList.Count - 1).X, AdjacencyList.Keys(AdjacencyList.Count - 1).Y)
@@ -68,5 +68,6 @@
             Next
         End While
         ReconstructPath(cameFrom, goal, start, If(ShowSolveTime, $"{stopwatch.Elapsed.TotalSeconds}", ""))
+        If Not Evaluation Then Console.ReadKey()
     End Sub
 End Module

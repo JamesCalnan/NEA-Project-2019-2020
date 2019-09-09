@@ -102,6 +102,7 @@
     <Compile Include="A Star Algorithm.vb" />
     <Compile Include="Aldous-Broder Algorithm.vb" />
     <Compile Include="Binary Tree Algorithm.vb" />
+    <Compile Include="Bogosort Algorithm.vb" />
     <Compile Include="Braid.vb" />
     <Compile Include="Breadth-First Search.vb" />
     <Compile Include="Custom Algorithm.vb" />
@@ -110,13 +111,15 @@
     <Compile Include="Dijkstras Algorithm.vb" />
     <Compile Include="Ellers Algorithm.vb" />
     <Compile Include="Growing Tree Algorithm.vb" />
+    <Compile Include="Heap Sort Algorithm.vb" />
     <Compile Include="Houstons Algorithm.vb" />
     <Compile Include="Hunt and Kill Algorithm.vb" />
+    <Compile Include="Insertion Sort Algorithm.vb" />
     <Compile Include="Kruskals Algorithm.vb" />
     <Compile Include="Maze Generation Subroutines and Functions.vb" />
     <Compile Include="Maze Info.vb" />
     <Compile Include="Menus.vb" />
-    <Compile Include="Merge Sort.vb" />
+    <Compile Include="Merge Sort Algorithm.vb" />
     <Compile Include="Module1.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="My Project\Application.Designer.vb">
@@ -135,6 +138,7 @@
     </Compile>
     <Compile Include="Play Maze.vb" />
     <Compile Include="Prims Algorithm.vb" />
+    <Compile Include="Quicksort Algorithm.vb" />
     <Compile Include="Recursive Backtracker Algorithm.vb" />
     <Compile Include="Sidewinder Algorithm.vb" />
     <Compile Include="Spiral Backtracker Algorithm.vb" />

@@ -69,7 +69,7 @@
         If currentPos.Equals(target) Then
             playerPath.Add(start)
             playerPath.Add(target)
-            aStar(playerPath, False, False, 0)
+            aStar(playerPath, False, False, 0, False)
             Console.Clear()
             PrintMessageMiddle("EPIC VICTORY ROYALE", Console.WindowHeight / 2, ConsoleColor.Yellow)
             Console.ReadKey()

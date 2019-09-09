@@ -1,5 +1,5 @@
 ﻿Module Breadth_First_Search
-    Sub BFS(ByVal availablepath As List(Of Node), ByVal ShowPath As Boolean, ByVal ShowSolveTime As Boolean, ByVal Delay As Integer)
+    Sub BFS(ByVal availablepath As List(Of Node), ByVal ShowPath As Boolean, ByVal ShowSolveTime As Boolean, ByVal Delay As Integer, ByVal Evaluation As Boolean)
         Dim start_v As New Node(availablepath(availablepath.Count - 2).X, availablepath(availablepath.Count - 2).Y)
         Dim goal As New Node(availablepath(availablepath.Count - 1).X, availablepath(availablepath.Count - 1).Y)
         Dim Discovered As New Dictionary(Of Node, Boolean)
@@ -25,5 +25,6 @@
             Next
         End While
         ReconstructPath(cameFrom, goal, start_v, If(ShowSolveTime, $"Time Taken to solve: {stopwatch.Elapsed.TotalSeconds} seconds", ""))
+        If Not Evaluation Then Console.ReadKey()
     End Sub
 End Module
