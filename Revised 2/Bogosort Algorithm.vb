@@ -1,5 +1,4 @@
 ﻿Module Bogosort_Algorithm
-
     Function BogoSort(ByRef lista As List(Of Double))
         Dim r As New Random
         Do

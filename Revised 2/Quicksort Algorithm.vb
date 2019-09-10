@@ -1,5 +1,6 @@
 ﻿Module Quicksort_Algorithm
     Function quicksort(ByVal A As List(Of Double), ByVal lo As Integer, ByVal hi As Integer)
+        'Initial call would be quicksort(list,0,list.count-1)
         If lo < hi Then
             Dim p As Integer = partition(A, lo, hi)
             quicksort(A, lo, p - 1)
@@ -12,9 +13,7 @@
         Dim i As Integer = lo
         For j = lo To hi
             If A(j) < pivot Then
-                Dim temp As Double = A(i)
-                A(i) = A(j)
-                A(j) = temp
+                swap(A, i, j)
                 i += 1
             End If
         Next

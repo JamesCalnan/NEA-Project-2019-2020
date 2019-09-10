@@ -2,7 +2,7 @@
 Imports System.IO
 Imports NEA_2019
 Module Module1
-
+    'implement this: https://en.wikipedia.org/wiki/Talk:Selection_sort#Implementations
     'TODO: give user the option to print a path or carve through walls, implement wall follower algorithm
     Sub Main()
         Console.CursorVisible = False
@@ -16,7 +16,7 @@ Module Module1
             Next
             Console.WriteLine("Sorting")
             Dim stopwatch As Stopwatch = Stopwatch.StartNew()
-            Dim sl As List(Of Double) = BogoSort(list)
+            Dim sl As List(Of Double) = BubbleSortOptimisedAlternate(list) ', 0, list.Count - 1)
             Console.WriteLine($"Time taken to sort: {stopwatch.Elapsed.TotalSeconds}")
             Console.WriteLine()
             For Each num In sl
@@ -221,7 +221,7 @@ Module Module1
         'PrintMessageMiddle($"Path length: {Pathlength}   {timetaken}", Console.WindowHeight - 1, ConsoleColor.Green)
     End Sub
     Function ExtractMin(ByVal list As List(Of Node), ByVal dist As Dictionary(Of Node, Double))
-        Dim returnnode As Node = list(0)
+        Dim returnnode As Node = list(list.Count - 1)
         For Each node In list
             If dist(node) < dist(returnnode) Then returnnode = node
         Next
