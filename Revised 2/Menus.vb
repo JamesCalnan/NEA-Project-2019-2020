@@ -32,11 +32,11 @@ Module Menus
                 Case "DownArrow"
                     y += 1
                     If y = arr.Count Then y = 0
-                    If y = 15 Or y = 20 Then y += 1
+                    If y = 15 Or y = 21 Then y += 1
                 Case "UpArrow"
                     y -= 1
                     If y = -1 Then y = arr.Count - 1
-                    If y = 15 Or y = 20 Then y -= 1
+                    If y = 15 Or y = 21 Then y -= 1
                 Case "Enter", "RightArrow"
                     Console.ForegroundColor = ConsoleColor.White
 
@@ -126,7 +126,7 @@ Module Menus
                     ElseIf arr(y) = "Load the previously generated maze" Then
 
                         Dim GreatestX, GreatestY As Integer
-                        If PreviousMaze.Count > 1 Then
+                        If PreviousMaze.Count > 1 And Not IsNothing(PreviousMaze) Then
                             Console.Clear()
                             Console.SetCursorPosition(0, 0)
                             Dim mess As String = "Algorithm used to generate this maze: "
@@ -162,7 +162,7 @@ Module Menus
                         End If
                     ElseIf arr(y) = "Save the previously generated maze" Then
                         If PreviousMaze.Count > 1 Then
-                            SaveMaze(PreviousMaze, PreviousAlgorithm)
+                            SaveMazeTextFile(PreviousMaze, PreviousAlgorithm)
                         Else
                             Console.Clear()
                             MsgColour("No previous maze available", ConsoleColor.Red)
@@ -187,7 +187,7 @@ Module Menus
                             MsgColour("No previous maze available", ConsoleColor.Red)
                             Console.ReadKey()
                         End If
-                    ElseIf arr(y) = "Load a saved maze" Then
+                    ElseIf arr(y) = "Load a maze from a text file" Then
                         Dim ValidMaze, XMax, YMax As Integer
                         Dim GreatestY As Integer = 0
                         Dim GreatestX As Integer = 0
@@ -269,6 +269,17 @@ Module Menus
                             Console.Clear()
                             MsgColour("File doesn't exist", ConsoleColor.Red)
                             Console.ReadKey()
+                        End If
+                    ElseIf arr(y) = "Load a maze from an image file" Then
+                        Dim tempMaze As List(Of Node) = LoadMazePNG()
+                        If IsNothing(tempMaze) Then
+                            Console.Clear()
+                            Console.ForegroundColor = ConsoleColor.Red
+                            Console.BackgroundColor = ConsoleColor.Black
+                            Console.WriteLine("The maze that you tried to load is too big for the console window, please decrease font size and try again")
+                            Console.ReadKey()
+                        Else
+                            PreviousMaze = tempMaze
                         End If
                     ElseIf y = arr.Count - 1 Then
                         End
@@ -546,7 +557,7 @@ Module Menus
         ElseIf input = "Clear the maze and return to the menu" Then
             Console.Clear()
         ElseIf input = "Save the maze" Then
-            SaveMaze(Maze, $"Algorithm used to generate this maze: {Algorithm}")
+            SaveMazeTextFile(Maze, $"Algorithm used to generate this maze: {Algorithm}")
         ElseIf input = "Output the maze as a png image" Then
             Console.Clear()
             Console.ForegroundColor = ConsoleColor.White
