@@ -8,27 +8,27 @@ Module Module1
         Console.CursorVisible = False
         Console.ForegroundColor = (ConsoleColor.White)
         Dim r As New Random
-        While 1
-            Dim list As New List(Of Double)
-            For i = 0 To 9
-                list.Add(r.Next(1, 50))
-                Console.WriteLine(list(i))
-            Next
-            Console.WriteLine("Sorting")
-            Dim stopwatch As Stopwatch = Stopwatch.StartNew()
-            Dim sl As List(Of Double) = BubbleSortOptimisedAlternate(list) ', 0, list.Count - 1)
-            Console.WriteLine($"Time taken to sort: {stopwatch.Elapsed.TotalSeconds}")
-            Console.WriteLine()
-            For Each num In sl
-                Console.WriteLine(num)
-            Next
-            Console.ReadKey()
-            Console.Clear()
-        End While
+        'While 1
+        '    Dim list As New List(Of Double)
+        '    For i = 0 To 9
+        '        list.Add(r.Next(1, 50))
+        '        Console.WriteLine(list(i))
+        '    Next
+        '    Console.WriteLine("Sorting")
+        '    Dim stopwatch As Stopwatch = Stopwatch.StartNew()
+        '    Dim sl As List(Of Double) = BubbleSortOptimisedAlternate(list) ', 0, list.Count - 1)
+        '    Console.WriteLine($"Time taken to sort: {stopwatch.Elapsed.TotalSeconds}")
+        '    Console.WriteLine()
+        '    For Each num In sl
+        '        Console.WriteLine(num)
+        '    Next
+        '    Console.ReadKey()
+        '    Console.Clear()
+        'End While
         'list.Sort
-        'Console.SetWindowSize(Console.LargestWindowWidth - 6, Console.LargestWindowHeight - 3)
-        'Dim MenuOptions() As String = {"Recursive Backtracker Algorithm (using iteration)", "Recursive Backtracker Algorithm (using recursion)", "Hunt and Kill Algorithm", "Prim's Algorithm (simplified)", "Prim's Algorithm (true)", "Aldous-Broder Algorithm", "Growing Tree Algorithm", "Sidewinder Algorithm", "Binary Tree Algorithm", "Wilson's Algorithm", "Eller's Algorithm", "Kruskal's Algorithm", "Houston's Algorithm", "Spiral Backtracker Algorithm", "Custom Algorithm", "", "Load the previously generated maze", "Save the previously generated maze", "Output the previous maze as a png image", "Load a saved maze", "", "Exit"}
-        'Menu(MenuOptions)
+        Console.SetWindowSize(Console.LargestWindowWidth - 6, Console.LargestWindowHeight - 3)
+        Dim MenuOptions() As String = {"Recursive Backtracker Algorithm (using iteration)", "Recursive Backtracker Algorithm (using recursion)", "Hunt and Kill Algorithm", "Prim's Algorithm (simplified)", "Prim's Algorithm (true)", "Aldous-Broder Algorithm", "Growing Tree Algorithm", "Sidewinder Algorithm", "Binary Tree Algorithm", "Wilson's Algorithm", "Eller's Algorithm", "Kruskal's Algorithm", "Houston's Algorithm", "Spiral Backtracker Algorithm", "Custom Algorithm", "", "Load the previously generated maze", "Save the previously generated maze", "Output the previous maze as a png image", "Load a saved maze", "", "Exit"}
+        Menu(MenuOptions)
         Console.ReadKey()
 
         'Dim bmp As New Bitmap(350, 350)
@@ -590,7 +590,7 @@ Module Module1
         Dim solving As Boolean = HorizontalYesNo(0, "Do you want the outputted maze to have the solution on it  ", False, False, False)
         Console.Clear()
         Console.Write("Saving...")
-        Dim Multiplier As Integer = 2
+        Dim Multiplier As Integer = 8
         Dim Max_X, Max_Y As Integer
         For Each node In Path
             If node.X > Max_X Then Max_X = node.X
@@ -613,6 +613,9 @@ Module Module1
         'g.FillRectangle(Brushes.Lime, (Path(Path.Count - 1).X) * Multiplier, (Path(Path.Count - 1).Y * 2) * Multiplier, 2 * Multiplier, 2 * Multiplier)
         Dim f As New Font("Roboto", Width / 60)
         Dim point As New PointF(((Width) / 2) - (Algorithm.Length / 2) * Multiplier, 1)
+        'Dim mnum As Byte = Multiplier
+        'Dim mulNum() As Byte = mnum
+        'g.AddMetafileComment(mulNum)
         'g.DrawString(Algorithm, f, Brushes.White, point)
         g.Dispose()
         bmp.Save($"{fileName} m {Multiplier}.png", System.Drawing.Imaging.ImageFormat.Png)
