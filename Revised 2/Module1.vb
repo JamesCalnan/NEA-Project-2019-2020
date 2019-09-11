@@ -7,38 +7,34 @@ Module Module1
     Sub Main()
         Console.CursorVisible = False
         Console.ForegroundColor = (ConsoleColor.White)
-        Dim r As New Random
-        Console.ReadKey()
+        'Dim r As New Random
+        'Console.ReadKey()
+        'Dim ind As Integer = 0
+        'While 1
+        '    Console.CursorVisible = False
+        '    Dim list As New List(Of Double)
+        '    For i = 1 To Console.WindowHeight - 1
+        '        list.Add(i)
+        '    Next
 
-        While 1
-            Console.CursorVisible = False
-            Dim list As New List(Of Double)
-            For i = 0 To Console.WindowHeight - 2
-                list.Add(i * 2)
-            Next
-            Dim listb As New List(Of Double)
-            For i = 0 To list.Count - 1
-                Dim temp As Integer = r.Next(0, list.Count)
-                listb.Add(list(temp))
-                list.RemoveAt(temp)
-            Next
-            list = listb
+        '    Shuffle(list)
+        '    Console.WriteLine()
+        '    For Each num In list
+        '        'Console.WriteLine(num)
+        '    Next
 
-            'Console.WriteLine("Sorting")
-            Dim stopwatch As Stopwatch = Stopwatch.StartNew()
-            Dim sl As List(Of Double) = BubbleSortOptimisedAlternate(list) ', 0, list.Count - 1)
-            'Console.WriteLine($"Time taken to sort: {stopwatch.Elapsed.TotalSeconds}")
-            'For Each num In sl
-            '    Console.WriteLine(num)
-            'Next
-            'Console.ReadKey()
-            Threading.Thread.Sleep(200)
-            SetBoth(ConsoleColor.Black)
-            Console.Clear()
-        End While
-        'Console.SetWindowSize(Console.LargestWindowWidth - 6, Console.LargestWindowHeight - 3)
-        'Dim MenuOptions() As String = {"Recursive Backtracker Algorithm (using iteration)", "Recursive Backtracker Algorithm (using recursion)", "Hunt and Kill Algorithm", "Prim's Algorithm (simplified)", "Prim's Algorithm (true)", "Aldous-Broder Algorithm", "Growing Tree Algorithm", "Sidewinder Algorithm", "Binary Tree Algorithm", "Wilson's Algorithm", "Eller's Algorithm", "Kruskal's Algorithm", "Houston's Algorithm", "Spiral Backtracker Algorithm", "Custom Algorithm", "", "Load the previously generated maze", "Save the previously generated maze", "Output the previous maze as a png image", "Load a maze from a text file", "Load a maze from an image file", "", "Exit"}
-        'Menu(MenuOptions)
+        '    'Console.WriteLine($"post shuffling: {list.Count}")
+        '    Console.WriteLine()
+        '    Dim sl As List(Of Double) = mergesort(list) ', 0, list.Count - 1)
+        '    'For Each num In sl
+        '    '    Console.WriteLine(num)
+        '    'Next
+        '    Console.ReadKey()
+        '    Console.Clear()
+        'End While
+        Console.SetWindowSize(Console.LargestWindowWidth - 6, Console.LargestWindowHeight - 3)
+        Dim MenuOptions() As String = {"Recursive Backtracker Algorithm (using iteration)", "Recursive Backtracker Algorithm (using recursion)", "Hunt and Kill Algorithm", "Prim's Algorithm (simplified)", "Prim's Algorithm (true)", "Aldous-Broder Algorithm", "Growing Tree Algorithm", "Sidewinder Algorithm", "Binary Tree Algorithm", "Wilson's Algorithm", "Eller's Algorithm", "Kruskal's Algorithm", "Houston's Algorithm", "Spiral Backtracker Algorithm", "Custom Algorithm", "", "Load the previously generated maze", "Save the previously generated maze", "Output the previous maze as a png image", "Load a maze from a text file", "Load a maze from an image file", "", "Exit"}
+        Menu(MenuOptions)
         'Console.ReadKey()
 
         'Dim bmp As New Bitmap(350, 350)
@@ -48,6 +44,26 @@ Module Module1
         'g.Dispose()
         'bmp.Save("name", System.Drawing.Imaging.ImageFormat.Png)
         'bmp.Dispose()
+    End Sub
+    Sub Shuffle(ByRef lista As List(Of Double))
+        Dim r As New Random
+        Dim listb As New List(Of Double)
+        For i = 0 To lista.Count - 1
+            Dim temp As Integer = r.Next(0, lista.Count)
+            listb.Add(lista(temp))
+            lista.RemoveAt(temp)
+        Next
+        lista = listb
+    End Sub
+    Sub AnimateSort(ByVal a As List(Of Double))
+        Console.SetCursorPosition(0, 0)
+        For Each number In a
+            SetBoth(ConsoleColor.White)
+            Console.Write("".PadLeft(number, "X"c))
+            SetBoth(ConsoleColor.Black)
+            Console.Write("".PadLeft((Console.WindowWidth - number) - 5, "X"c))
+            Console.WriteLine()
+        Next
     End Sub
     Sub MsgColour(ByVal Msg As String, ByVal Colour As ConsoleColor)
         Console.ForegroundColor = (Colour)
@@ -151,7 +167,6 @@ Module Module1
         Dim GreatestAllowedY As Integer = Console.WindowHeight - 5
         For y = 1 To image.Height Step multiplier * 2
             For x = 1 To image.Width Step multiplier * 2
-
                 Dim pixel As Color = image.GetPixel(x, y)
                 If pixel.GetBrightness = 1 Then
                     Dim b As Integer = pixel.GetBrightness

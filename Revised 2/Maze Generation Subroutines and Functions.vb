@@ -97,7 +97,7 @@
             If Maze.Contains(New Node(x, Limits(1))) Then AvailableStartPositions.Add(New Node(x, Limits(1)))
         Next
         Dim R As New Random
-        Dim Index As Integer = 0 'R.Next(0, AvailableStartPositions.Count)
+        Dim Index As Integer = R.Next(0, AvailableStartPositions.Count)
         Maze.Add(New Node(AvailableStartPositions(Index).X, AvailableStartPositions(Index).Y - 1))
         SetBoth(ConsoleColor.Red)
         Maze(Maze.Count - 1).Print("██")
@@ -105,7 +105,7 @@
         For x = Limits(0) + 3 To Limits(2)
             If Maze.Contains(New Node(x, Limits(3))) Then AvailableStartPositions.Add(New Node(x, Limits(3)))
         Next
-        Index = AvailableStartPositions.Count - 1 ' R.Next(0, AvailableStartPositions.Count)
+        Index = R.Next(0, AvailableStartPositions.Count)
         Maze.Add(New Node(AvailableStartPositions(Index).X, AvailableStartPositions(Index).Y + 1))
         SetBoth(ConsoleColor.Green)
         Maze(Maze.Count - 1).Print("██")
