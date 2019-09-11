@@ -10,7 +10,10 @@
         current.hCost = h(current, target, 1)
         Dim stopwatch As Stopwatch = Stopwatch.StartNew()
         While openSet.Count > 0
-            If ExitCase() Then Exit While
+            If ExitCase() Then
+                Evaluation = True
+                Exit While
+            End If
             current = openSet(0)
             For i = 1 To openSet.Count - 1
                 If openSet(i).fCost() <= current.fCost() Or openSet(i).hCost = current.hCost Then If openSet(i).hCost < current.hCost Then current = openSet(i)
@@ -18,7 +21,10 @@
             openSet.Remove(current)
             closedSet.Add(current)
             If ShowPath Then : current.Print("██") : Threading.Thread.Sleep(Delay) : End If
-            If current.Equals(target) Then Exit While
+            If current.Equals(target) Then
+                RetracePath(start, current, If(ShowSolveTime, $"Time Taken to solve: {stopwatch.Elapsed.TotalSeconds} seconds", ""))
+                Exit While
+            End If
             For Each Neighbour As Node In GetNeighbours(current, availablepath)
                 If closedSet.Contains(Neighbour) Then Continue For
                 Dim tentative_gScore = current.gCost + 1
@@ -30,7 +36,6 @@
                 End If
             Next
         End While
-        RetracePath(start, current, If(ShowSolveTime, $"Time Taken to solve: {stopwatch.Elapsed.TotalSeconds} seconds", ""))
         If Not Evaluation Then Console.ReadKey()
     End Sub
     Sub aStarWiki(ByVal AdjacencyList As Dictionary(Of Node, List(Of Node)), ByVal ShowPath As Boolean, ByVal ShowSolveTime As Boolean, ByVal Delay As Integer, ByVal Evaluation As Boolean)

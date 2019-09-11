@@ -7,28 +7,28 @@ Module Module1
     Sub Main()
         Console.CursorVisible = False
         Console.ForegroundColor = (ConsoleColor.White)
-        Dim r As New Random
-        While 1
-            Dim list As New List(Of Double)
-            For i = 0 To 9
-                list.Add(r.Next(1, 50))
-                Console.WriteLine(list(i))
-            Next
-            Console.WriteLine("Sorting")
-            Dim stopwatch As Stopwatch = Stopwatch.StartNew()
-            Dim sl As List(Of Double) = BubbleSortOptimisedAlternate(list) ', 0, list.Count - 1)
-            Console.WriteLine($"Time taken to sort: {stopwatch.Elapsed.TotalSeconds}")
-            Console.WriteLine()
-            For Each num In sl
-                Console.WriteLine(num)
-            Next
-            Console.ReadKey()
-            Console.Clear()
-        End While
+        'Dim r As New Random
+        'While 1
+        '    Dim list As New List(Of Double)
+        '    For i = 0 To 9
+        '        list.Add(r.Next(1, 50))
+        '        Console.WriteLine(list(i))
+        '    Next
+        '    Console.WriteLine("Sorting")
+        '    Dim stopwatch As Stopwatch = Stopwatch.StartNew()
+        '    Dim sl As List(Of Double) = BubbleSortOptimisedAlternate(list) ', 0, list.Count - 1)
+        '    Console.WriteLine($"Time taken to sort: {stopwatch.Elapsed.TotalSeconds}")
+        '    Console.WriteLine()
+        '    For Each num In sl
+        '        Console.WriteLine(num)
+        '    Next
+        '    Console.ReadKey()
+        '    Console.Clear()
+        'End While
         'list.Sort
-        'Console.SetWindowSize(Console.LargestWindowWidth - 6, Console.LargestWindowHeight - 3)
-        'Dim MenuOptions() As String = {"Recursive Backtracker Algorithm (using iteration)", "Recursive Backtracker Algorithm (using recursion)", "Hunt and Kill Algorithm", "Prim's Algorithm (simplified)", "Prim's Algorithm (true)", "Aldous-Broder Algorithm", "Growing Tree Algorithm", "Sidewinder Algorithm", "Binary Tree Algorithm", "Wilson's Algorithm", "Eller's Algorithm", "Kruskal's Algorithm", "Houston's Algorithm", "Spiral Backtracker Algorithm", "Custom Algorithm", "", "Load the previously generated maze", "Save the previously generated maze", "Output the previous maze as a png image", "Load a saved maze", "", "Exit"}
-        'Menu(MenuOptions)
+        Console.SetWindowSize(Console.LargestWindowWidth - 6, Console.LargestWindowHeight - 3)
+        Dim MenuOptions() As String = {"Recursive Backtracker Algorithm (using iteration)", "Recursive Backtracker Algorithm (using recursion)", "Hunt and Kill Algorithm", "Prim's Algorithm (simplified)", "Prim's Algorithm (true)", "Aldous-Broder Algorithm", "Growing Tree Algorithm", "Sidewinder Algorithm", "Binary Tree Algorithm", "Wilson's Algorithm", "Eller's Algorithm", "Kruskal's Algorithm", "Houston's Algorithm", "Spiral Backtracker Algorithm", "Custom Algorithm", "", "Load the previously generated maze", "Save the previously generated maze", "Output the previous maze as a png image", "Load a saved maze", "", "Exit"}
+        Menu(MenuOptions)
         Console.ReadKey()
 
         'Dim bmp As New Bitmap(350, 350)
@@ -38,9 +38,6 @@ Module Module1
         'g.Dispose()
         'bmp.Save("name", System.Drawing.Imaging.ImageFormat.Png)
         'bmp.Dispose()
-    End Sub
-    Sub CompareSolvingAlgorithms(ByVal Maze As List(Of Node))
-
     End Sub
     Sub MsgColour(ByVal Msg As String, ByVal Colour As ConsoleColor)
         Console.ForegroundColor = (Colour)
@@ -221,7 +218,7 @@ Module Module1
         'PrintMessageMiddle($"Path length: {Pathlength}   {timetaken}", Console.WindowHeight - 1, ConsoleColor.Green)
     End Sub
     Function ExtractMin(ByVal list As List(Of Node), ByVal dist As Dictionary(Of Node, Double))
-        Dim returnnode As Node = list(list.Count - 1)
+        Dim returnnode As Node = list(0)
         For Each node In list
             If dist(node) < dist(returnnode) Then returnnode = node
         Next

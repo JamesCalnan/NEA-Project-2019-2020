@@ -24,6 +24,7 @@
         SetBoth(ConsoleColor.White)
         Dim stopwatch As Stopwatch = Stopwatch.StartNew()
         While EdgeWeights.Count > 0
+            If ExitCase() Then Return Nothing
             'find the edge with the lowest weight
             Dim HighestWeightEdge As Cell = EdgeWeights.Keys(R.Next(0, EdgeWeights.Count))
             'For Each cell In EdgeWeights

@@ -25,6 +25,7 @@ Module Menus
                 If i <> 0 Then Console.ForegroundColor = (ConsoleColor.Magenta)
                 Console.Write(Info(i))
             Next
+            SetBoth(ConsoleColor.Black)
             Dim key = Console.ReadKey
             Console.CursorVisible = False
             Select Case key.Key.ToString
@@ -37,6 +38,8 @@ Module Menus
                     If y = -1 Then y = arr.Count - 1
                     If y = 15 Or y = 20 Then y -= 1
                 Case "Enter", "RightArrow"
+                    Console.ForegroundColor = ConsoleColor.White
+
                     Dim AvailablePath As List(Of Node)
                     If arr(y) = "Recursive Backtracker Algorithm (using iteration)" Then
                         GetMazeInfo(Width, Height, DelayMS, Limits, ShowMazeGeneration, True, 0)
@@ -62,6 +65,7 @@ Module Menus
                         End If
                         AddStartAndEnd(path, Limits, 0)
                         Solving(path, Limits, PreviousMaze, input, YPosAfterMaze, ShowPath, SolvingDelay, arr(y), PreviousAlgorithm)
+                        Console.ReadKey()
                         PreviousMaze = path
                     ElseIf arr(y) = "Hunt and Kill Algorithm" Then
                         GetMazeInfo(Width, Height, DelayMS, Limits, ShowMazeGeneration, True, 0)
@@ -120,6 +124,7 @@ Module Menus
                         AvailablePath = Custom(Limits, DelayMS, ShowMazeGeneration)
                         Solving(AvailablePath, Limits, PreviousMaze, input, YPosAfterMaze, ShowPath, SolvingDelay, arr(y), PreviousAlgorithm)
                     ElseIf arr(y) = "Load the previously generated maze" Then
+
                         Dim GreatestX, GreatestY As Integer
                         If PreviousMaze.Count > 1 Then
                             Console.Clear()
@@ -239,6 +244,7 @@ Module Menus
                                 Console.Write(mess)
                                 Console.SetCursorPosition(mess.Length, 0)
                                 MsgColour(UsedAlgorithm, ConsoleColor.Green)
+                                SetBoth(ConsoleColor.White)
                                 For Each node In LoadedMaze
                                     node.Print("██")
                                 Next
@@ -533,7 +539,7 @@ Module Menus
             Console.ForegroundColor = ConsoleColor.Red
             Console.BackgroundColor = ConsoleColor.Red
             DFS_Recursive(Maze, start_v, discovered, cameFrom, goal, showpath, solvingdelay, False)
-            ReconstructPath(cameFrom, goal, start_v, $"Time Taken to solve: {timer.Elapsed.TotalSeconds} seconds")
+            ReconstructPath(cameFrom, goal, start_v, $"{timer.Elapsed.TotalSeconds}")
         ElseIf input = "Play the maze" Then
             showpath = HorizontalYesNo(YposAfterMaze + 2, "Do you want to show the steps you have taken in the maze: ", True, False, False)
             Playmaze(Maze, showpath)
