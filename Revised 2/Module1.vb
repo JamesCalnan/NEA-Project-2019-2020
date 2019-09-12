@@ -65,6 +65,35 @@ Module Module1
             Console.WriteLine()
         Next
     End Sub
+    Sub SaveMazeAscii(ByVal Maze As List(Of Node))
+        Dim GX, GY As Integer
+        GX = 0
+        GY = 0
+        For Each node In Maze
+            If node.X > GX Then GX = node.X
+            If node.Y > GY Then GY = node.Y
+        Next
+        Dim lineText As New List(Of String)
+        Dim currentLine As String = ""
+        For y = 1 To GY + 1
+            currentLine = ""
+            For x = 6 To GX + 2 Step 2
+                Dim newnode As New Node(x, y)
+
+                If Maze.Contains(newnode) Then
+                    currentLine += ("XX")
+                Else
+                    currentLine += ("  ")
+                End If
+            Next
+            lineText.Add(currentLine)
+        Next
+        Using writer As StreamWriter = New StreamWriter("ascii test10.txt", True)
+            For Each Str1 In lineText
+                writer.WriteLine(Str1)
+            Next
+        End Using
+    End Sub
     Sub MsgColour(ByVal Msg As String, ByVal Colour As ConsoleColor)
         Console.ForegroundColor = (Colour)
         Console.WriteLine(Msg)
@@ -120,22 +149,23 @@ Module Module1
     End Sub
     Sub SaveMazeTextFile(ByVal path As List(Of Node), ByVal Algorithm As String)
         Console.Clear()
-        Dim filename As String
-        Do
-            Console.Write("File Name (don't include .txt): ")
-            filename = Console.ReadLine
-            filename += ".txt"
-            If System.IO.File.Exists(filename) Then
-                MsgColour("Invalid filename", ConsoleColor.Red)
-            End If
-        Loop Until Not System.IO.File.Exists(filename)
-        Using writer As StreamWriter = New StreamWriter(filename, True)
-            writer.WriteLine($"{Algorithm}")
-            For i = 0 To path.Count - 1
-                writer.WriteLine(path(i).X)
-                writer.WriteLine(path(i).Y)
-            Next
-        End Using
+        SaveMazeAscii(path)
+        'Dim filename As String
+        'Do
+        '    Console.Write("File Name (don't include .txt): ")
+        '    filename = Console.ReadLine
+        '    filename += ".txt"
+        '    If System.IO.File.Exists(filename) Then
+        '        MsgColour("Invalid filename", ConsoleColor.Red)
+        '    End If
+        'Loop Until Not System.IO.File.Exists(filename)
+        'Using writer As StreamWriter = New StreamWriter(filename, True)
+        '    writer.WriteLine($"{Algorithm}")
+        '    For i = 0 To path.Count - 1
+        '        writer.WriteLine(path(i).X)
+        '        writer.WriteLine(path(i).Y)
+        '    Next
+        'End Using
     End Sub
     Sub PrintStartandEnd(ByVal mazePositions As List(Of Node))
         Console.ForegroundColor = (ConsoleColor.Red)
