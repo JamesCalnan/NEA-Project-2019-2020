@@ -597,7 +597,7 @@ Module Menus
             If showpath Then solvingdelay = GetIntInputArrowKeys("Delay when solving the maze: ", 100, 0, True)
             DeadEndFiller(Maze, showpath, True, solvingdelay, False)
         ElseIf input = "Solve using the wall follower method" Then
-            WallFollower(Maze, showpath, solvingdelay)
+            'WallFollower(Maze, showpath, solvingdelay)
         ElseIf input = "Braid the maze (remove dead ends)" Then
             EliminateDeadEnds(Maze)
             Dim GreatestX As Integer

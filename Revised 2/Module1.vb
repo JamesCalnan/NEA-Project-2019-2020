@@ -32,7 +32,6 @@ Module Module1
         '    Console.ReadKey()
         '    Console.Clear()
         'End While
-        Console.SetWindowSize(Console.LargestWindowWidth - 6, Console.LargestWindowHeight - 3)
         Dim MenuOptions() As String = {"Recursive Backtracker Algorithm (using iteration)", "Recursive Backtracker Algorithm (using recursion)", "Hunt and Kill Algorithm", "Prim's Algorithm (simplified)", "Prim's Algorithm (true)", "Aldous-Broder Algorithm", "Growing Tree Algorithm", "Sidewinder Algorithm", "Binary Tree Algorithm", "Wilson's Algorithm", "Eller's Algorithm", "Kruskal's Algorithm", "Houston's Algorithm", "Spiral Backtracker Algorithm", "Custom Algorithm", "", "Load the previously generated maze", "Save the previously generated maze", "Output the previous maze as a png image", "Load a maze from a text file", "Load a maze from an image file", "", "Exit"}
         Menu(MenuOptions)
         'Console.ReadKey()
@@ -310,65 +309,90 @@ Module Module1
         End If
         Return False
     End Function
-    Sub WallFollower(ByVal availablepath As List(Of Node), ByVal ShowPath As Boolean, ByVal Delay As Integer)
-        Dim start_v As New Node(availablepath(availablepath.Count - 2).X, availablepath(availablepath.Count - 2).Y)
-        Dim goal As New Node(availablepath(availablepath.Count - 1).X, availablepath(availablepath.Count - 1).Y)
-        Dim visited, FinishedNodes As New Dictionary(Of Node, Boolean)
-        Dim s As New Stack(Of Node)
+    Sub WallFollower(ByVal Maze As List(Of Node), ByVal ShowPath As Boolean, ByVal Delay As Integer, ByVal rule As String)
+        Dim start_v As New Node(Maze(Maze.Count - 2).X, Maze(Maze.Count - 2).Y)
+        Dim goal As New Node(Maze(Maze.Count - 1).X, Maze(Maze.Count - 1).Y)
         Dim u As Node = start_v
-        s.Push(start_v)
-        For Each node In availablepath
-            visited(node) = False
-        Next
-        visited(start_v) = True
-        Dim JunctionNodes As New List(Of Node)
-        While s.Count > 0
-            'can the node go anywhere?
-            '   pick neighbour make it the current node
-            '   push it onto the stack
-            '   repeat
-            'if not then pop off the stack to go back
-            Dim neighbours As List(Of Node) = GetNeighbours(u, availablepath)
-            'getting the neighbours
-            Dim Unvisitedneighbours As Integer = 0
-            For Each node In neighbours
-                If Not visited(node) Then Unvisitedneighbours += 1
-            Next
-            'getting the amount of unvisited neighbours
-            If Unvisitedneighbours > 0 Then
-                'if there are unvisited neighbours then consider the neighbours
-                For Each neighbourOfCurrent In neighbours
-                    If visited(neighbourOfCurrent) Then Continue For
-                    'if the neighbour has already been visited dont look at it
-                    u = neighbourOfCurrent
-                    'make the current node the neighbour
-                    visited(neighbourOfCurrent) = True
-                    'mark the neighbour of the current node as visited
-                    s.Push(neighbourOfCurrent)
-                    'push the neighbour onto the stack
-                    Console.ForegroundColor = (ConsoleColor.Green)
-                    u.Print("██")
-                    Exit For
-                Next
-            Else
-                'if there are no unvisited neighbours available
-                u = s.Pop
-                Console.ForegroundColor = ConsoleColor.White
-                u.Print("██")
-                If u.IsJunction(availablepath) Then JunctionNodes.Add(u)
+        Dim prev As Node = u
+        SetBoth(ConsoleColor.Green)
+        u.Print("XX")
+        Console.ReadKey()
+        Dim CurrentDirection As String = "down"
+        Do
+            SetBoth(ConsoleColor.DarkCyan)
+            prev.Print("XX")
+            CurrentDirection = GetNextDirection(Maze, u, CurrentDirection,rule)
+            If CurrentDirection = "left" Then
+                u.update(u.X - 2, u.Y)
+            ElseIf CurrentDirection = "right" Then
+                u.update(u.X + 2, u.Y)
+            ElseIf CurrentDirection = "up" Then
+                u.update(u.X, u.Y - 1)
+            ElseIf CurrentDirection = "down" Then
+                u.update(u.X, u.Y + 1)
             End If
-            If u.Equals(goal) Then Exit While
-            Threading.Thread.Sleep(Delay)
-        End While
-        Console.ForegroundColor = ConsoleColor.Green
-        For Each node1 In JunctionNodes
-            For Each node2 In s
-                If node1.Adjacent(node2) Then
-                    node1.Print("██")
-                End If
-            Next
-        Next
+            'If u.Adjacent(goal) Then Exit Do
+            Console.BackgroundColor = ConsoleColor.Black
+            Console.ForegroundColor = ConsoleColor.White
+            Console.SetCursorPosition(0, 1)
+            Console.Write($"Current direction: {CurrentDirection.Substring(0, 1).ToUpper}{CurrentDirection.Substring(1, CurrentDirection.Count - 1)}      ")
+            SetBoth(ConsoleColor.Green)
+            u.Print("XX")
+            prev = u
+            Threading.Thread.Sleep(100)
+        Loop Until u.Equals(goal)
+        SetBoth(ConsoleColor.DarkCyan)
+        prev.Print("XX")
     End Sub
+    Function GetNextDirection(ByVal Maze As List(Of Node), ByVal CurrentNode As Node, ByVal CurrentDirection As String, ByVal Rule As String)
+        Dim HorizontalDirections As New List(Of String) From {"left", "right"}
+        Dim VerticalDirections As New List(Of String) From {"up", "down"}
+        If CurrentDirection = "right" Then
+            Dim tempNode As New Node(CurrentNode.X, CurrentNode.Y - 1)
+            If Maze.Contains(tempNode) Then Return VerticalDirections(0)
+            tempNode.update(CurrentNode.X + 2, CurrentNode.Y)
+            If Maze.Contains(tempNode) Then Return "right"
+            tempNode.update(CurrentNode.X, CurrentNode.Y + 1)
+            If Maze.Contains(tempNode) Then Return VerticalDirections(1)
+        End If
+        If CurrentDirection = "down" Then
+            Dim tempNode As New Node(CurrentNode.X + 2, CurrentNode.Y)
+            If Maze.Contains(tempNode) Then Return HorizontalDirections(1)
+            tempNode.update(CurrentNode.X, CurrentNode.Y + 1)
+            If Maze.Contains(tempNode) Then Return "down"
+            tempNode.update(CurrentNode.X - 2, CurrentNode.Y)
+            If Maze.Contains(tempNode) Then Return HorizontalDirections(0)
+        End If
+        If CurrentDirection = "left" Then
+            Dim tempNode As New Node(CurrentNode.X, CurrentNode.Y + 1)
+            If Maze.Contains(tempNode) Then Return VerticalDirections(1)
+            tempNode.update(CurrentNode.X - 2, CurrentNode.Y)
+            If Maze.Contains(tempNode) Then Return "left"
+            tempNode.update(CurrentNode.X, CurrentNode.Y - 1)
+            If Maze.Contains(tempNode) Then Return VerticalDirections(0)
+        End If
+        If CurrentDirection = "up" Then
+            Dim tempNode As New Node(CurrentNode.X - 2, CurrentNode.Y)
+            If Maze.Contains(tempNode) Then Return HorizontalDirections(0)
+            tempNode.update(CurrentNode.X, CurrentNode.Y - 1)
+            If Maze.Contains(tempNode) Then Return "up"
+            tempNode.update(CurrentNode.X + 2, CurrentNode.Y)
+            If Maze.Contains(tempNode) Then Return HorizontalDirections(1)
+        End If
+        Return ReverseDirection(CurrentDirection)
+        Return CurrentDirection
+    End Function
+    Function ReverseDirection(ByVal currentdirection As String)
+        If currentdirection = "right" Then
+            Return "left"
+        ElseIf currentdirection = "left" Then
+            Return "right"
+        ElseIf currentdirection = "up" Then
+            Return "down"
+        ElseIf currentdirection = "down" Then
+            Return "up"
+        End If
+    End Function
     Sub Backtrack(ByVal prev As Dictionary(Of Node, Node), ByVal target As Node, ByVal source As Node, ByVal watch As Stopwatch)
         Dim u As Node = target
         Dim Pathlength As Integer = 1
