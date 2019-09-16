@@ -32,14 +32,13 @@ Module Menus
                 Case "DownArrow"
                     y += 1
                     If y = arr.Count Then y = 0
-                    If y = 15 Or y = 21 Then y += 1
+                    If arr(y) = "" Then y += 1
                 Case "UpArrow"
                     y -= 1
                     If y = -1 Then y = arr.Count - 1
-                    If y = 15 Or y = 21 Then y -= 1
+                    If arr(y) = "" Then y -= 1
                 Case "Enter", "RightArrow"
                     Console.ForegroundColor = ConsoleColor.White
-
                     Dim AvailablePath As List(Of Node)
                     If arr(y) = "Recursive Backtracker Algorithm (using iteration)" Then
                         GetMazeInfo(Width, Height, DelayMS, Limits, ShowMazeGeneration, True, 0)
@@ -124,7 +123,6 @@ Module Menus
                         AvailablePath = Custom(Limits, DelayMS, ShowMazeGeneration)
                         Solving(AvailablePath, Limits, PreviousMaze, input, YPosAfterMaze, ShowPath, SolvingDelay, arr(y), PreviousAlgorithm)
                     ElseIf arr(y) = "Load the previously generated maze" Then
-
                         Dim GreatestX, GreatestY As Integer
                         If PreviousMaze.Count > 1 And Not IsNothing(PreviousMaze) Then
                             Console.Clear()
@@ -152,7 +150,7 @@ Module Menus
                             DisplayAvailablePositions(PreviousMaze.Count)
                             YPosAfterMaze = GreatestY - 1
                             Console.SetCursorPosition(0, YPosAfterMaze + 3)
-                            Dim temparr() As String = {"Solve using the A* algorithm", "Solve using Dijkstra's algorithm", "Solve using Breadth-first search", "Solve using Depth-first search (using iteration)", "Solve using Depth-first search (using recursion)", "Solve using the dead end filling method", "Solve using a recursive algorithm", "Play the maze", "Braid the maze (remove dead ends)", "Save the maze", "Output the maze as a png image", "Clear the maze and return to the menu"}
+                            Dim temparr() As String = {"Solve using the A* algorithm", "Solve using Dijkstra's algorithm", "Solve using Breadth-first search", "Solve using Depth-first search (using iteration)", "Solve using Depth-first search (using recursion)", "Solve using a recursive algorithm", "Solve using the Lee Algorithm (Wave Propagation)", "Solve using the dead end filling method", "Solve using the left-hand rule", "Solve using the right-hand rule", "Play the maze", "Braid the maze (remove dead ends)", "Save the maze as points", "Save the maze as a png image", "Save the maze as an ascii text file", "Clear the maze and return to the menu"}
                             input = SolvingMenu(temparr, "What would you like to do with the maze", GreatestX + 3, 3)
                             SolvingInput(input, ShowPath, YPosAfterMaze, SolvingDelay, PreviousMaze, PreviousAlgorithm)
                         Else
@@ -160,7 +158,7 @@ Module Menus
                             MsgColour("No previous maze available", ConsoleColor.Red)
                             Console.ReadKey()
                         End If
-                    ElseIf arr(y) = "Save the previously generated maze" Then
+                    ElseIf arr(y) = "Save the previously generated maze as a list of points" Then
                         If PreviousMaze.Count > 1 Then
                             SaveMazeTextFile(PreviousMaze, PreviousAlgorithm)
                         Else
@@ -168,7 +166,7 @@ Module Menus
                             MsgColour("No previous maze available", ConsoleColor.Red)
                             Console.ReadKey()
                         End If
-                    ElseIf arr(y) = "Output the previous maze as a png image" Then
+                    ElseIf arr(y) = "Save the previous maze as a png image" Then
                         If PreviousMaze.Count > 1 Then
                             Console.Clear()
                             Console.ForegroundColor = ConsoleColor.White
@@ -187,7 +185,7 @@ Module Menus
                             MsgColour("No previous maze available", ConsoleColor.Red)
                             Console.ReadKey()
                         End If
-                    ElseIf arr(y) = "Load a maze from a text file" Then
+                    ElseIf arr(y) = "Load a maze from a text file (list of points)" Then
                         Dim ValidMaze, XMax, YMax As Integer
                         Dim GreatestY As Integer = 0
                         Dim GreatestX As Integer = 0
@@ -198,8 +196,7 @@ Module Menus
                         Console.Clear()
                         Dim _x, _y As Integer
                         Console.Write("File Name of the maze to load (don't include .txt): ")
-                        Dim filename As String = Console.ReadLine
-                        filename += ".txt"
+                        Dim filename As String = Console.ReadLine + ".txt"
                         If System.IO.File.Exists(filename) Then
                             Dim UsedAlgorithm As String = ""
                             Dim c As Integer = 0
@@ -253,7 +250,7 @@ Module Menus
                                 DisplayAvailablePositions(PreviousMaze.Count)
                                 Console.SetCursorPosition(0, YPosAfterMaze + 3)
                                 PreviousMaze = LoadedMaze
-                                Dim temparr() As String = {"Solve using the A* algorithm", "Solve using Dijkstra's algorithm", "Solve using Breadth-first search", "Solve using Depth-first search (using iteration)", "Solve using Depth-first search (using recursion)", "Solve using the dead end filling method", "Solve using a recursive algorithm", "Play the maze", "Braid the maze (remove dead ends)", "Output the maze as a png image", "Clear the maze and return to the menu"}
+                                Dim temparr() As String = {"Solve using the A* algorithm", "Solve using Dijkstra's algorithm", "Solve using Breadth-first search", "Solve using Depth-first search (using iteration)", "Solve using Depth-first search (using recursion)", "Solve using a recursive algorithm", "Solve using the Lee Algorithm (Wave Propagation)", "Solve using the dead end filling method", "Solve using the left-hand rule", "Solve using the right-hand rule", "Play the maze", "Braid the maze (remove dead ends)", "Output the maze as a png image", "Clear the maze and return to the menu"}
                                 input = SolvingMenu(temparr, "What would you like to do with the maze", GreatestX + 3, 3)
                                 SolvingInput(input, ShowPath, YPosAfterMaze, SolvingDelay, PreviousMaze, UsedAlgorithm)
                             ElseIf ValidMaze = 0 Then
@@ -280,6 +277,38 @@ Module Menus
                             Console.ReadKey()
                         Else
                             PreviousMaze = tempMaze
+                        End If
+                    ElseIf arr(y) = "Save the previous maze to ascii text file" Then
+                        If PreviousMaze.Count > 0 Then
+                            Console.Clear()
+                            Console.ForegroundColor = ConsoleColor.White
+                            Console.Write("File Name of the maze to load (don't include .png): ")
+                            Dim filename As String = Console.ReadLine
+                            If Not System.IO.File.Exists(filename) Then
+                                SaveMazeAscii(PreviousMaze, filename)
+                            Else
+                                Console.Clear()
+                                Console.ForegroundColor = ConsoleColor.Red
+                                Console.WriteLine($"A file with the name {filename} already exists")
+                                Console.ReadKey()
+                            End If
+                        Else
+                            Console.Clear()
+                            Console.ForegroundColor = ConsoleColor.Red
+                            Console.WriteLine($"No previous maze available")
+                            Console.ReadKey()
+                        End If
+                    ElseIf arr(y) = "Load a maze from an ascii text file" Then
+                        Dim tempMaze As List(Of Node) = LoadMazeAscii()
+                        If IsNothing(tempMaze) Then
+                            Console.Clear()
+                            Console.ForegroundColor = ConsoleColor.Red
+                            Console.BackgroundColor = ConsoleColor.Black
+                            Console.WriteLine("The maze that you tried to load is too big for the console window, please decrease font size and try again")
+                            Console.ReadKey()
+                        Else
+                            PreviousMaze = tempMaze
+
                         End If
                     ElseIf y = arr.Count - 1 Then
                         End
@@ -352,7 +381,7 @@ Module Menus
         yposaftermaze = limits(3)
         DisplayAvailablePositions(availablepath.Count)
         Console.SetCursorPosition(0, yposaftermaze + 3)
-        Dim temparr() As String = {"Solve using the A* algorithm", "Solve using Dijkstra's algorithm", "Solve using Breadth-first search", "Solve using Depth-first search (using iteration)", "Solve using Depth-first search (using recursion)", "Solve using the dead end filling method", "Solve using a recursive algorithm", "Play the maze", "Save the maze", "Braid the maze (remove dead ends)", "Output the maze as a png image", "Clear the maze and return to the menu"}
+        Dim temparr() As String = {"Solve using the A* algorithm", "Solve using Dijkstra's algorithm", "Solve using Breadth-first search", "Solve using Depth-first search (using iteration)", "Solve using Depth-first search (using recursion)", "Solve using a recursive algorithm", "Solve using the Lee Algorithm (Wave Propagation)", "Solve using the dead end filling method", "Solve using the left-hand rule", "Solve using the right-hand rule", "Play the maze", "Braid the maze (remove dead ends)", "Save the maze as points", "Save the maze as a png image", "Save the maze as an ascii text file", "Clear the maze and return to the menu"}
         input = SolvingMenu(temparr, "What would you like to do with the maze", limits(2) + 2, 3)
         previousmaze.Clear()
         previousmaze = availablepath
@@ -581,9 +610,9 @@ Module Menus
             Playmaze(Maze, showpath)
         ElseIf input = "Clear the maze and return to the menu" Then
             Console.Clear()
-        ElseIf input = "Save the maze" Then
+        ElseIf input = "Save the maze as points" Then
             SaveMazeTextFile(Maze, $"Algorithm used to generate this maze: {Algorithm}")
-        ElseIf input = "Output the maze as a png image" Then
+        ElseIf input = "Save the maze as a png image" Then
             Console.Clear()
             Console.ForegroundColor = ConsoleColor.White
             Console.Write("File Name of the maze to load (don't include .png): ")
@@ -596,17 +625,40 @@ Module Menus
             showpath = HorizontalYesNo(YposAfterMaze + 2, "Do you want to show the steps in solving the maze: ", True, False, False)
             If showpath Then solvingdelay = GetIntInputArrowKeys("Delay when solving the maze: ", 100, 0, True)
             DeadEndFiller(Maze, showpath, True, solvingdelay, False)
-        ElseIf input = "Solve using the wall follower method" Then
-            'WallFollower(Maze, showpath, solvingdelay)
+        ElseIf input = "Solve using the left-hand rule" Then
+            Console.SetCursorPosition(0, YposAfterMaze + 2)
+            solvingdelay = GetIntInputArrowKeys("Delay when solving the maze: ", 100, 0, True)
+            WallFollower(Maze, showpath, solvingdelay, "LHR")
+        ElseIf input = "Solve using the right-hand rule" Then
+            Console.SetCursorPosition(0, YposAfterMaze + 2)
+            solvingdelay = GetIntInputArrowKeys("Delay when solving the maze: ", 100, 0, True)
+            WallFollower(Maze, showpath, solvingdelay, "RHR")
+        ElseIf input = "Solve using the Lee Algorithm (Wave Propagation)" Then
+            showpath = HorizontalYesNo(YposAfterMaze + 2, "Do you want to show the steps in solving the maze: ", True, False, False)
+            If showpath Then solvingdelay = GetIntInputArrowKeys("Delay when solving the maze: ", 100, 0, True)
+            Lee(Maze, showpath, solvingdelay)
         ElseIf input = "Braid the maze (remove dead ends)" Then
             EliminateDeadEnds(Maze)
             Dim GreatestX As Integer
             For Each node In Maze
                 If GreatestX < node.X Then GreatestX = node.X
             Next
-            Dim temparr() As String = {"Solve using the A* algorithm", "Solve using Dijkstra's algorithm", "Solve using Breadth-first search", "Solve using Depth-first search (using iteration)", "Solve using Depth-first search (using recursion)", "Solve using the dead end filling method", "Solve using a recursive algorithm", "Play the maze", "Save the maze", "Output the maze as a png image", "Clear the maze and return to the menu"}
+            Dim temparr() As String = {"Solve using the A* algorithm", "Solve using Dijkstra's algorithm", "Solve using Breadth-first search", "Solve using Depth-first search (using iteration)", "Solve using Depth-first search (using recursion)", "Solve using a recursive algorithm", "Solve using the Lee Algorithm (Wave Propagation)", "Solve using the dead end filling method", "Solve using the left-hand rule", "Solve using the right-hand rule", "Play the maze", "Save the maze as points", "Save the maze as a png image", "Save the maze as an ascii text file", "Clear the maze and return to the menu"}
             input = SolvingMenu(temparr, "What would you like to do with the maze", GreatestX + 3, 3)
             SolvingInput(input, showpath, YposAfterMaze, solvingdelay, Maze, "")
+        ElseIf input = "Save the maze as an ascii text file" Then
+            Console.Clear()
+            Console.ForegroundColor = ConsoleColor.White
+            Console.Write("File Name of the maze to load (don't include .png): ")
+            Dim filename As String = Console.ReadLine
+            If Not System.IO.File.Exists(filename) Then
+                SaveMazeAscii(Maze, filename)
+            Else
+                Console.Clear()
+                Console.ForegroundColor = ConsoleColor.Red
+                Console.WriteLine($"A file with the name {filename} already exists")
+                Console.ReadKey()
+            End If
         ElseIf input = "" Then
             Console.Clear()
             Console.WriteLine("A critical error has occured that has caused the program to no longer work")
@@ -622,7 +674,7 @@ Module Menus
         Else
             DelayMS = 0
         End If
-        Width = (GetIntInputArrowKeys($"Width of the Maze: ", (Console.WindowWidth - 54) / 2, 20, False)) * 2
+        Width = GetIntInputArrowKeys($"Width of the Maze: ", (Console.WindowWidth - 58) / 2, 20, False) * 2
         Height = GetIntInputArrowKeys($"Height of the Maze: ", Console.WindowHeight - 7, 20, False)
         If Width Mod 2 = 0 Then
             Width += 1

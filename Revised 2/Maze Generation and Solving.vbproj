@@ -103,6 +103,7 @@
     <Compile Include="Aldous-Broder Algorithm.vb" />
     <Compile Include="Binary Tree Algorithm.vb" />
     <Compile Include="Bogosort Algorithm.vb" />
+    <Compile Include="Bozo Sort Algorithm.vb" />
     <Compile Include="Braid.vb" />
     <Compile Include="Breadth-First Search.vb" />
     <Compile Include="Bubble Sort Algorithm.vb" />
@@ -117,6 +118,7 @@
     <Compile Include="Hunt and Kill Algorithm.vb" />
     <Compile Include="Insertion Sort Algorithm.vb" />
     <Compile Include="Kruskals Algorithm.vb" />
+    <Compile Include="Lee Algorithm.vb" />
     <Compile Include="Maze Generation Subroutines and Functions.vb" />
     <Compile Include="Maze Info.vb" />
     <Compile Include="Menus.vb" />
@@ -143,6 +145,7 @@
     <Compile Include="Recursive Backtracker Algorithm.vb" />
     <Compile Include="Sidewinder Algorithm.vb" />
     <Compile Include="Spiral Backtracker Algorithm.vb" />
+    <Compile Include="Wall Follower.vb" />
     <Compile Include="Wilsons Algorithm.vb" />
   </ItemGroup>
   <ItemGroup>

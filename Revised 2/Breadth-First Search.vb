@@ -24,7 +24,7 @@
                 End If
             Next
         End While
-        ReconstructPath(cameFrom, goal, start_v, If(ShowSolveTime, $"Time Taken to solve: {stopwatch.Elapsed.TotalSeconds} seconds", ""))
+        ReconstructPath(cameFrom, goal, start_v, If(ShowSolveTime, $"{stopwatch.Elapsed.TotalSeconds}", ""))
         If Not Evaluation Then Console.ReadKey()
     End Sub
 End Module

@@ -66,7 +66,6 @@
         End If
         Dim ypos As Integer = Console.CursorTop
         AddStartAndEnd(ReturnablePath, Limits, 0)
-        WallFollower(ReturnablePath, True, 0, "rhr")
         Console.SetCursorPosition(0, ypos)
         Return ReturnablePath
     End Function

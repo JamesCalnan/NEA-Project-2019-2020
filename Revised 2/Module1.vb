@@ -2,8 +2,8 @@
 Imports System.IO
 Imports NEA_2019
 Module Module1
-    'implement this: https://en.wikipedia.org/wiki/Talk:Selection_sort#Implementations
-    'TODO: give user the option to print a path or carve through walls, implement wall follower algorithm
+    'implement this: https://en.wikipedia.org/wiki/Talk:Selection_sort#Implementations, http://users.eecs.northwestern.edu/~haizhou/357/lec6.pdf
+    'TODO: give user the option to print a path or carve through walls, put in solving menu when the user has loaded an ascii maze from a text file
     Sub Main()
         Console.CursorVisible = False
         Console.ForegroundColor = (ConsoleColor.White)
@@ -13,7 +13,7 @@ Module Module1
         'While 1
         '    Console.CursorVisible = False
         '    Dim list As New List(Of Double)
-        '    For i = 1 To Console.WindowHeight - 1
+        '    For i = 1 To (Console.WindowHeight - 1) / 8
         '        list.Add(i)
         '    Next
 
@@ -25,17 +25,48 @@ Module Module1
 
         '    'Console.WriteLine($"post shuffling: {list.Count}")
         '    Console.WriteLine()
-        '    Dim sl As List(Of Double) = mergesort(list) ', 0, list.Count - 1)
+        '    Dim sl As List(Of Double) = BozoSort(list) ', 0, list.Count - 1)
         '    'For Each num In sl
         '    '    Console.WriteLine(num)
         '    'Next
         '    Console.ReadKey()
         '    Console.Clear()
         'End While
-        Dim MenuOptions() As String = {"Recursive Backtracker Algorithm (using iteration)", "Recursive Backtracker Algorithm (using recursion)", "Hunt and Kill Algorithm", "Prim's Algorithm (simplified)", "Prim's Algorithm (true)", "Aldous-Broder Algorithm", "Growing Tree Algorithm", "Sidewinder Algorithm", "Binary Tree Algorithm", "Wilson's Algorithm", "Eller's Algorithm", "Kruskal's Algorithm", "Houston's Algorithm", "Spiral Backtracker Algorithm", "Custom Algorithm", "", "Load the previously generated maze", "Save the previously generated maze", "Output the previous maze as a png image", "Load a maze from a text file", "Load a maze from an image file", "", "Exit"}
+        Dim MenuOptions() As String = {
+            "Recursive Backtracker Algorithm (using iteration)",
+            "Recursive Backtracker Algorithm (using recursion)",
+            "Hunt and Kill Algorithm",
+            "Prim's Algorithm (simplified)",
+            "Prim's Algorithm (true)",
+            "Aldous-Broder Algorithm",
+            "Growing Tree Algorithm",
+            "Sidewinder Algorithm",
+            "Binary Tree Algorithm",
+            "Wilson's Algorithm",
+            "Eller's Algorithm",
+            "Kruskal's Algorithm",
+            "Houston's Algorithm",
+            "Spiral Backtracker Algorithm",
+            "Custom Algorithm",
+            "",
+            "Load the previously generated maze",
+            "",
+            "Load a maze from a text file (list of points)",
+            "Load a maze from an image file",
+            "Load a maze from an ascii text file",
+            "",
+            "Save the previously generated maze as a list of points",
+            "Save the previous maze as a png image",
+            "Save the previous maze to ascii text file",
+            "",
+            "Exit"
+        }
         Menu(MenuOptions)
-        'Console.ReadKey()
 
+
+
+
+        'Console.ReadKey()
         'Dim bmp As New Bitmap(350, 350)
         'Dim g As Graphics
         'g = Graphics.FromImage(bmp)
@@ -64,6 +95,53 @@ Module Module1
             Console.WriteLine()
         Next
     End Sub
+    Function LoadMazeAscii() As List(Of Node)
+        Console.Clear()
+        Dim x, y As Integer
+        Console.Write("File Name of the maze to load (don't include .txt): ")
+        Dim filename As String = Console.ReadLine + ".txt"
+        If System.IO.File.Exists(filename) Then
+            Dim Maze As New List(Of Node)
+            Using reader As StreamReader = New StreamReader(filename)
+                Do Until reader.EndOfStream
+                    Dim CurrentLine As String = reader.ReadLine
+                    For i = 0 To CurrentLine.Count - 1 Step 2
+                        If CurrentLine.Chars(i) = "X" Then
+                            Maze.Add(New Node(i, y))
+                        End If
+                    Next
+                    y += 1
+                Loop
+            End Using
+            Dim start As Node = Maze(0)
+            Dim finish As Node = Maze(Maze.Count - 1)
+            Maze.RemoveAt(0)
+            Maze.RemoveAt(Maze.Count - 1)
+            Maze.Add(start)
+            Maze.Add(finish)
+            SetBoth(ConsoleColor.White)
+            Dim gX, gY As Integer
+            gX = 0
+            gY = 0
+            For Each node In Maze
+                If node.X > gX Then gX = node.X
+                If node.Y > gY Then gY = node.Y
+            Next
+            PrintMazeHorizontally(Maze, gX, gY)
+            PrintStartandEnd(Maze)
+            Console.BackgroundColor = ConsoleColor.Black
+            Console.ForegroundColor = ConsoleColor.White
+            Dim temparr() As String = {"Solve using the A* algorithm", "Solve using Dijkstra's algorithm", "Solve using Breadth-first search", "Solve using Depth-first search (using iteration)", "Solve using Depth-first search (using recursion)", "Solve using a recursive algorithm", "Solve using the Lee Algorithm (Wave Propagation)", "Solve using the dead end filling method", "Solve using the left-hand rule", "Solve using the right-hand rule", "Play the maze", "Braid the maze (remove dead ends)", "Save the maze as points", "Save the maze as a png image", "Save the maze as an ascii text file", "Clear the maze and return to the menu"}
+            Dim input As String = SolvingMenu(temparr, "What would you like to do with the maze", gX + 3, 3)
+            SolvingInput(input, True, gY + 2, 0, Maze, "")
+            Return Maze
+        Else
+            Console.Clear()
+            MsgColour("File doesn't exist", ConsoleColor.Red)
+            Console.ReadKey()
+        End If
+        Return Nothing
+    End Function
     Function recursiveSolve(ByVal maze As List(Of Node), ByVal Visited As Dictionary(Of Node, Boolean), ByVal correctPath As Dictionary(Of Node, Boolean), ByVal X As Integer, ByVal Y As Integer, ByVal Target As Node, ByVal ShowSteps As Boolean, ByVal Delay As Integer)
         Dim CurrentNode As New Node(X, Y)
         If CurrentNode.Equals(Target) Then Return True
@@ -91,7 +169,7 @@ Module Module1
         End If
         Return False
     End Function
-    Sub SaveMazeAscii(ByVal Maze As List(Of Node))
+    Sub SaveMazeAscii(ByVal Maze As List(Of Node), ByVal FileName As String)
         Dim GX, GY As Integer
         GX = 0
         GY = 0
@@ -101,11 +179,10 @@ Module Module1
         Next
         Dim lineText As New List(Of String)
         Dim currentLine As String = ""
-        For y = 1 To GY + 1
+        For y = 0 To GY + 1
             currentLine = ""
-            For x = 6 To GX + 2 Step 2
+            For x = 0 To GX + 2 Step 2
                 Dim newnode As New Node(x, y)
-
                 If Maze.Contains(newnode) Then
                     currentLine += ("XX")
                 Else
@@ -114,7 +191,7 @@ Module Module1
             Next
             lineText.Add(currentLine)
         Next
-        Using writer As StreamWriter = New StreamWriter("ascii test10.txt", True)
+        Using writer As StreamWriter = New StreamWriter($"{FileName}.txt", True)
             For Each Str1 In lineText
                 writer.WriteLine(Str1)
             Next
@@ -125,7 +202,6 @@ Module Module1
         Console.WriteLine(Msg)
         Console.ForegroundColor = (ConsoleColor.White)
     End Sub
-
     Sub DisplayAvailablePositions(ByVal count As Integer)
         PrintMessageMiddle($"There are {count} available positions in the maze", 0, ConsoleColor.Magenta)
     End Sub
@@ -167,31 +243,28 @@ Module Module1
         End While
         Return Nothing
     End Function
-
-
     Sub SetBoth(ByVal colour As ConsoleColor)
         Console.ForegroundColor = colour
         Console.BackgroundColor = colour
     End Sub
     Sub SaveMazeTextFile(ByVal path As List(Of Node), ByVal Algorithm As String)
         Console.Clear()
-        SaveMazeAscii(path)
-        'Dim filename As String
-        'Do
-        '    Console.Write("File Name (don't include .txt): ")
-        '    filename = Console.ReadLine
-        '    filename += ".txt"
-        '    If System.IO.File.Exists(filename) Then
-        '        MsgColour("Invalid filename", ConsoleColor.Red)
-        '    End If
-        'Loop Until Not System.IO.File.Exists(filename)
-        'Using writer As StreamWriter = New StreamWriter(filename, True)
-        '    writer.WriteLine($"{Algorithm}")
-        '    For i = 0 To path.Count - 1
-        '        writer.WriteLine(path(i).X)
-        '        writer.WriteLine(path(i).Y)
-        '    Next
-        'End Using
+        Dim filename As String
+        Do
+            Console.Write("File Name (don't include .txt): ")
+            filename = Console.ReadLine
+            filename += ".txt"
+            If System.IO.File.Exists(filename) Then
+                MsgColour("Invalid filename", ConsoleColor.Red)
+            End If
+        Loop Until Not System.IO.File.Exists(filename)
+        Using writer As StreamWriter = New StreamWriter(filename, True)
+            writer.WriteLine($"{Algorithm}")
+            For i = 0 To path.Count - 1
+                writer.WriteLine(path(i).X)
+                writer.WriteLine(path(i).Y)
+            Next
+        End Using
     End Sub
     Sub PrintStartandEnd(ByVal mazePositions As List(Of Node))
         Console.ForegroundColor = (ConsoleColor.Red)
@@ -276,7 +349,7 @@ Module Module1
                 'Solving of the maze goes here
                 Console.BackgroundColor = ConsoleColor.Black
                 Console.ForegroundColor = ConsoleColor.White
-                Dim temparr() As String = {"Solve using the A* algorithm", "Solve using Dijkstra's algorithm", "Solve using Breadth-first search", "Solve using Depth-first search (using iteration)", "Solve using Depth-first search (using recursion)", "Solve using the dead end filling method", "Play the maze", "Braid the maze (remove dead ends)", "Clear the maze and return to the menu"}
+                Dim temparr() As String = {"Solve using the A* algorithm", "Solve using Dijkstra's algorithm", "Solve using Breadth-first search", "Solve using Depth-first search (using iteration)", "Solve using Depth-first search (using recursion)", "Solve using the dead end filling method", "Solve using the left-hand rule", "Solve using the right-hand rule", "Play the maze", "Braid the maze (remove dead ends)", "Save the maze as points", "Save the maze as a png image", "Save the maze as an ascii text file", "Clear the maze and return to the menu"}
                 Dim Input As String = SolvingMenu(temparr, "What would you like to do with the maze", GreatestX + 3, 3)
                 SolvingInput(Input, True, GreatestY, 0, Maze, "")
             End If
@@ -293,7 +366,7 @@ Module Module1
             'Solving of the maze goes here
             Console.BackgroundColor = ConsoleColor.Black
             Console.ForegroundColor = ConsoleColor.White
-            Dim temparr() As String = {"Solve using the A* algorithm", "Solve using Dijkstra's algorithm", "Solve using Breadth-first search", "Solve using Depth-first search (using iteration)", "Solve using Depth-first search (using recursion)", "Solve using the dead end filling method", "Play the maze", "Braid the maze (remove dead ends)", "Clear the maze and return to the menu"}
+            Dim temparr() As String = {"Solve using the A* algorithm", "Solve using Dijkstra's algorithm", "Solve using Breadth-first search", "Solve using Depth-first search (using iteration)", "Solve using Depth-first search (using recursion)", "Solve using the dead end filling method", "Play the maze", "Braid the maze (remove dead ends)", "Save the maze as points", "Save the maze as a png image", "Save the maze as an ascii text file", "Clear the maze and return to the menu"}
             Dim Input As String = SolvingMenu(temparr, "What would you like to do with the maze", GreatestX + 3, 3)
             SolvingInput(Input, True, GreatestY, 0, Maze, "")
         End If
@@ -309,90 +382,7 @@ Module Module1
         End If
         Return False
     End Function
-    Sub WallFollower(ByVal Maze As List(Of Node), ByVal ShowPath As Boolean, ByVal Delay As Integer, ByVal rule As String)
-        Dim start_v As New Node(Maze(Maze.Count - 2).X, Maze(Maze.Count - 2).Y)
-        Dim goal As New Node(Maze(Maze.Count - 1).X, Maze(Maze.Count - 1).Y)
-        Dim u As Node = start_v
-        Dim prev As Node = u
-        SetBoth(ConsoleColor.Green)
-        u.Print("XX")
-        Console.ReadKey()
-        Dim CurrentDirection As String = "down"
-        Do
-            SetBoth(ConsoleColor.DarkCyan)
-            prev.Print("XX")
-            CurrentDirection = GetNextDirection(Maze, u, CurrentDirection,rule)
-            If CurrentDirection = "left" Then
-                u.update(u.X - 2, u.Y)
-            ElseIf CurrentDirection = "right" Then
-                u.update(u.X + 2, u.Y)
-            ElseIf CurrentDirection = "up" Then
-                u.update(u.X, u.Y - 1)
-            ElseIf CurrentDirection = "down" Then
-                u.update(u.X, u.Y + 1)
-            End If
-            'If u.Adjacent(goal) Then Exit Do
-            Console.BackgroundColor = ConsoleColor.Black
-            Console.ForegroundColor = ConsoleColor.White
-            Console.SetCursorPosition(0, 1)
-            Console.Write($"Current direction: {CurrentDirection.Substring(0, 1).ToUpper}{CurrentDirection.Substring(1, CurrentDirection.Count - 1)}      ")
-            SetBoth(ConsoleColor.Green)
-            u.Print("XX")
-            prev = u
-            Threading.Thread.Sleep(100)
-        Loop Until u.Equals(goal)
-        SetBoth(ConsoleColor.DarkCyan)
-        prev.Print("XX")
-    End Sub
-    Function GetNextDirection(ByVal Maze As List(Of Node), ByVal CurrentNode As Node, ByVal CurrentDirection As String, ByVal Rule As String)
-        Dim HorizontalDirections As New List(Of String) From {"left", "right"}
-        Dim VerticalDirections As New List(Of String) From {"up", "down"}
-        If CurrentDirection = "right" Then
-            Dim tempNode As New Node(CurrentNode.X, CurrentNode.Y - 1)
-            If Maze.Contains(tempNode) Then Return VerticalDirections(0)
-            tempNode.update(CurrentNode.X + 2, CurrentNode.Y)
-            If Maze.Contains(tempNode) Then Return "right"
-            tempNode.update(CurrentNode.X, CurrentNode.Y + 1)
-            If Maze.Contains(tempNode) Then Return VerticalDirections(1)
-        End If
-        If CurrentDirection = "down" Then
-            Dim tempNode As New Node(CurrentNode.X + 2, CurrentNode.Y)
-            If Maze.Contains(tempNode) Then Return HorizontalDirections(1)
-            tempNode.update(CurrentNode.X, CurrentNode.Y + 1)
-            If Maze.Contains(tempNode) Then Return "down"
-            tempNode.update(CurrentNode.X - 2, CurrentNode.Y)
-            If Maze.Contains(tempNode) Then Return HorizontalDirections(0)
-        End If
-        If CurrentDirection = "left" Then
-            Dim tempNode As New Node(CurrentNode.X, CurrentNode.Y + 1)
-            If Maze.Contains(tempNode) Then Return VerticalDirections(1)
-            tempNode.update(CurrentNode.X - 2, CurrentNode.Y)
-            If Maze.Contains(tempNode) Then Return "left"
-            tempNode.update(CurrentNode.X, CurrentNode.Y - 1)
-            If Maze.Contains(tempNode) Then Return VerticalDirections(0)
-        End If
-        If CurrentDirection = "up" Then
-            Dim tempNode As New Node(CurrentNode.X - 2, CurrentNode.Y)
-            If Maze.Contains(tempNode) Then Return HorizontalDirections(0)
-            tempNode.update(CurrentNode.X, CurrentNode.Y - 1)
-            If Maze.Contains(tempNode) Then Return "up"
-            tempNode.update(CurrentNode.X + 2, CurrentNode.Y)
-            If Maze.Contains(tempNode) Then Return HorizontalDirections(1)
-        End If
-        Return ReverseDirection(CurrentDirection)
-        Return CurrentDirection
-    End Function
-    Function ReverseDirection(ByVal currentdirection As String)
-        If currentdirection = "right" Then
-            Return "left"
-        ElseIf currentdirection = "left" Then
-            Return "right"
-        ElseIf currentdirection = "up" Then
-            Return "down"
-        ElseIf currentdirection = "down" Then
-            Return "up"
-        End If
-    End Function
+
     Sub Backtrack(ByVal prev As Dictionary(Of Node, Node), ByVal target As Node, ByVal source As Node, ByVal watch As Stopwatch)
         Dim u As Node = target
         Dim Pathlength As Integer = 1
@@ -448,27 +438,6 @@ Module Module1
         Dim dx As Integer = Math.Abs(node.X - goal.X)
         Dim dy As Integer = Math.Abs(node.Y - goal.Y)
         Return D * (dx + dy) ^ 2
-    End Function
-    Function getBrushColours()
-        Dim l As New List(Of Brush) From {
-            Brushes.Red,
-            Brushes.OrangeRed,
-            Brushes.Orange,
-            Brushes.Yellow,
-            Brushes.YellowGreen,
-            Brushes.Green,
-            Brushes.SeaGreen,
-            Brushes.LightSeaGreen,
-            Brushes.RoyalBlue,
-            Brushes.Blue,
-            Brushes.BlueViolet,
-            Brushes.DarkViolet,
-            Brushes.Violet,
-            Brushes.PaleVioletRed,
-            Brushes.PaleVioletRed,
-            Brushes.MediumVioletRed
-        }
-        Return l
     End Function
     Sub ReconstructPathFORFILE(ByVal camefrom As Dictionary(Of Node, Node), ByVal current As Node, ByVal goal As Node, ByRef bmp As Bitmap, ByRef g As Graphics, ByVal Multiplier As Integer)
         Dim totalPath As New List(Of Node) From {
@@ -811,7 +780,7 @@ Module Module1
         'g.AddMetafileComment(mulNum)
         'g.DrawString(Algorithm, f, Brushes.White, point)
         g.Dispose()
-        bmp.Save($"{fileName} m {Multiplier}.png", System.Drawing.Imaging.ImageFormat.Png)
+        bmp.Save($"{fileName}.png", System.Drawing.Imaging.ImageFormat.Png)
         bmp.Dispose()
     End Sub
     Function MidPoint(ByVal cell1 As Object, ByVal cell2 As Object)
