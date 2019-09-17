@@ -1,25 +1,29 @@
 ﻿Imports System.IO
 Module Menus
-    Sub Menu(ByVal arr() As String)
+    Sub Menu(ByVal arr() As String, ByVal topitem As String)
         Dim input As String = ""
         Dim PreviousAlgorithm As String = ""
         Dim PreviousMaze, LoadedMaze As New List(Of Node)
         Dim Width, Height, DelayMS, SolvingDelay, YPosAfterMaze, y As Integer
+        y = 1
         Dim Limits(3) As Integer
         Dim ScreenWidth As Integer = Console.WindowWidth / 2
         Dim ShowMazeGeneration, ShowPath As Boolean
         Console.Clear()
         Dim CurrentCol As Integer = Console.CursorTop
         Dim NumOfOptions As Integer = arr.Count
-        MsgColour("What Maze Generation Algorithm do you want to use: ", ConsoleColor.Yellow)
-        MsgColour($"> {arr(0)}  ", ConsoleColor.Green)
-        For i = 1 To arr.Count - 1
-            Console.WriteLine($" {arr(i)}")
+        MsgColour($"{topitem}: ", ConsoleColor.Yellow)
+        For i = 0 To arr.Count - 1
+            If arr(i) = arr(y) Then
+                MsgColour($"> {arr(1)}  ", ConsoleColor.Green)
+            Else
+                Console.WriteLine($" {arr(i)}")
+            End If
         Next
         While 1
             Console.BackgroundColor = (ConsoleColor.Black)
             Console.ForegroundColor = (ConsoleColor.White)
-            Dim Info() As String = {"Information for using this program:", "Use the up and down arrow keys for navigating the menus", "Use the enter or right arrow key to select an option", "Press 'I' to bring up information on the algorithm", "", "When inputting integer values:", "The up and down arrow keys increment by 1", "The right and left arrow keys increment by 10", "The 'M' key will set the number to the maximum value it can be", "The 'H' key will set the number to half of the maximum value it can be"}
+            Dim Info() As String = {"Information for using this program:", "Use the up and down arrow keys for navigating the menus", "Use the enter key to select an option", "Press 'I' to bring up information on the algorithm", "", "When inputting integer values:", "The up and down arrow keys increment by 1", "The right and left arrow keys increment by 10", "The 'M' key will set the number to the maximum value it can be", "The 'H' key will set the number to half of the maximum value it can be"}
             For i = 0 To Info.Count - 1
                 Console.SetCursorPosition(ScreenWidth - Info(i).Length / 2, i)
                 If i <> 0 Then Console.ForegroundColor = (ConsoleColor.Magenta)
@@ -31,20 +35,20 @@ Module Menus
             Select Case key.Key.ToString
                 Case "DownArrow"
                     y += 1
-                    If y = arr.Count Then y = 0
-                    If arr(y) = "" Then y += 1
+                    If y = arr.Count Then y = 1
+                    If arr(y) = "" Or arr(y) = "Generate a maze using one of the following algorithms" Then y += 1
                 Case "UpArrow"
                     y -= 1
-                    If y = -1 Then y = arr.Count - 1
-                    If arr(y) = "" Then y -= 1
-                Case "Enter", "RightArrow"
+                    If y = 0 Then y = arr.Count - 1
+                    If arr(y) = "" Or arr(y) = "Generate a maze using one of the following algorithms" Then y -= 1
+                Case "Enter"
                     Console.ForegroundColor = ConsoleColor.White
                     Dim AvailablePath As List(Of Node)
-                    If arr(y) = "Recursive Backtracker Algorithm (using iteration)" Then
+                    If arr(y) = "   Recursive Backtracker Algorithm (using iteration)" Then
                         GetMazeInfo(Width, Height, DelayMS, Limits, ShowMazeGeneration, True, 0)
                         AvailablePath = RecursiveBacktracker(Limits, DelayMS, ShowMazeGeneration)
                         Solving(AvailablePath, Limits, PreviousMaze, input, YPosAfterMaze, ShowPath, SolvingDelay, arr(y), PreviousAlgorithm)
-                    ElseIf arr(y) = "Recursive Backtracker Algorithm (using recursion)" Then
+                    ElseIf arr(y) = "   Recursive Backtracker Algorithm (using recursion)" Then
                         Dim r As New Random
                         GetMazeInfo(Width, Height, DelayMS, Limits, ShowMazeGeneration, True, 0)
                         Dim CurrentCell As Cell = PickRandomStartingCell(Limits) '(Limits(0) + 3, Limits(1) + 2)
@@ -64,61 +68,60 @@ Module Menus
                         End If
                         AddStartAndEnd(path, Limits, 0)
                         Solving(path, Limits, PreviousMaze, input, YPosAfterMaze, ShowPath, SolvingDelay, arr(y), PreviousAlgorithm)
-                        Console.ReadKey()
                         PreviousMaze = path
-                    ElseIf arr(y) = "Hunt and Kill Algorithm" Then
+                    ElseIf arr(y) = "   Hunt and Kill Algorithm" Then
                         GetMazeInfo(Width, Height, DelayMS, Limits, ShowMazeGeneration, True, 0)
                         AvailablePath = HuntAndKillREFACTORED(Limits, DelayMS, ShowMazeGeneration)
                         Solving(AvailablePath, Limits, PreviousMaze, input, YPosAfterMaze, ShowPath, SolvingDelay, arr(y), PreviousAlgorithm)
-                    ElseIf arr(y) = "Prim's Algorithm (simplified)" Then
+                    ElseIf arr(y) = "   Prim's Algorithm (simplified)" Then
                         GetMazeInfo(Width, Height, DelayMS, Limits, ShowMazeGeneration, True, 0)
                         AvailablePath = Prims_Simplified(Limits, DelayMS, ShowMazeGeneration)
                         Solving(AvailablePath, Limits, PreviousMaze, input, YPosAfterMaze, ShowPath, SolvingDelay, arr(y), PreviousAlgorithm)
-                    ElseIf arr(y) = "Prim's Algorithm (true)" Then
+                    ElseIf arr(y) = "   Prim's Algorithm (true)" Then
                         GetMazeInfo(Width, Height, DelayMS, Limits, ShowMazeGeneration, True, 0)
                         AvailablePath = Prims_True(Limits, DelayMS, ShowMazeGeneration)
                         Solving(AvailablePath, Limits, PreviousMaze, input, YPosAfterMaze, ShowPath, SolvingDelay, arr(y), PreviousAlgorithm)
-                    ElseIf arr(y) = "Aldous-Broder Algorithm" Then
+                    ElseIf arr(y) = "   Aldous-Broder Algorithm" Then
                         GetMazeInfo(Width, Height, DelayMS, Limits, ShowMazeGeneration, True, 0)
                         AvailablePath = AldousBroder(Limits, DelayMS, ShowMazeGeneration)
                         Solving(AvailablePath, Limits, PreviousMaze, input, YPosAfterMaze, ShowPath, SolvingDelay, arr(y), PreviousAlgorithm)
-                    ElseIf arr(y) = "Growing Tree Algorithm" Then
+                    ElseIf arr(y) = "   Growing Tree Algorithm" Then
                         GetMazeInfo(Width, Height, DelayMS, Limits, ShowMazeGeneration, True, 0)
                         Dim ArrOptions() As String = {"Newest (Recursive Backtracker)", "Random (Prim's simplified)", "Newest/Random, 75/25 split", "Newest/Random, 50/50 split", "Newest/Random, 25/75 split", "Oldest", "Middle", "Newest/Oldest, 50/50 split", "Oldest/Random, 50/50 split"}
                         Dim CellSelectionMethod() As Integer = PreGenMenu(ArrOptions, "What Cell selection method would you like to use: ")
                         AvailablePath = GrowingTree(Limits, DelayMS, CellSelectionMethod, ShowMazeGeneration)
                         Solving(AvailablePath, Limits, PreviousMaze, input, YPosAfterMaze, ShowPath, SolvingDelay, arr(y), PreviousAlgorithm)
-                    ElseIf arr(y) = "Sidewinder Algorithm" Then
+                    ElseIf arr(y) = "   Sidewinder Algorithm" Then
                         GetMazeInfo(Width, Height, DelayMS, Limits, ShowMazeGeneration, True, 0)
                         AvailablePath = Sidewinder(Limits, DelayMS, ShowMazeGeneration)
                         Solving(AvailablePath, Limits, PreviousMaze, input, YPosAfterMaze, ShowPath, SolvingDelay, arr(y), PreviousAlgorithm)
-                    ElseIf arr(y) = "Binary Tree Algorithm" Then
+                    ElseIf arr(y) = "   Binary Tree Algorithm" Then
                         GetMazeInfo(Width, Height, DelayMS, Limits, ShowMazeGeneration, True, 0)
                         Dim ArrOptions() As String = {"Northwest", "Northeast", "Southwest", "Southeast"}
                         Dim Bias() As Integer = PreGenMenu(ArrOptions, "Cell bias: ")
                         AvailablePath = BinaryTree(Limits, DelayMS, ShowMazeGeneration, Bias)
                         Solving(AvailablePath, Limits, PreviousMaze, input, YPosAfterMaze, ShowPath, SolvingDelay, arr(y), PreviousAlgorithm)
-                    ElseIf arr(y) = "Wilson's Algorithm" Then
+                    ElseIf arr(y) = "   Wilson's Algorithm" Then
                         GetMazeInfo(Width, Height, DelayMS, Limits, ShowMazeGeneration, True, 0)
                         AvailablePath = Wilsons(Limits, DelayMS, ShowMazeGeneration)
                         Solving(AvailablePath, Limits, PreviousMaze, input, YPosAfterMaze, ShowPath, SolvingDelay, arr(y), PreviousAlgorithm)
-                    ElseIf arr(y) = "Eller's Algorithm" Then
+                    ElseIf arr(y) = "   Eller's Algorithm" Then
                         GetMazeInfo(Width, Height, DelayMS, Limits, ShowMazeGeneration, True, 0)
                         AvailablePath = Ellers(Limits, DelayMS, ShowMazeGeneration)
                         Solving(AvailablePath, Limits, PreviousMaze, input, YPosAfterMaze, ShowPath, SolvingDelay, arr(y), PreviousAlgorithm)
-                    ElseIf arr(y) = "Kruskal's Algorithm" Then
+                    ElseIf arr(y) = "   Kruskal's Algorithm" Then
                         GetMazeInfo(Width, Height, DelayMS, Limits, ShowMazeGeneration, True, 0)
                         AvailablePath = Kruskals(Limits, DelayMS, ShowMazeGeneration)
                         Solving(AvailablePath, Limits, PreviousMaze, input, YPosAfterMaze, ShowPath, SolvingDelay, arr(y), PreviousAlgorithm)
-                    ElseIf arr(y) = "Houston's Algorithm" Then
+                    ElseIf arr(y) = "   Houston's Algorithm" Then
                         GetMazeInfo(Width, Height, DelayMS, Limits, ShowMazeGeneration, True, 0)
                         AvailablePath = Houstons(Limits, DelayMS, ShowMazeGeneration)
                         Solving(AvailablePath, Limits, PreviousMaze, input, YPosAfterMaze, ShowPath, SolvingDelay, arr(y), PreviousAlgorithm)
-                    ElseIf arr(y) = "Spiral Backtracker Algorithm" Then
+                    ElseIf arr(y) = "   Spiral Backtracker Algorithm" Then
                         GetMazeInfo(Width, Height, DelayMS, Limits, ShowMazeGeneration, True, 0)
                         AvailablePath = SpiralBacktracker(Limits, DelayMS, ShowMazeGeneration)
                         Solving(AvailablePath, Limits, PreviousMaze, input, YPosAfterMaze, ShowPath, SolvingDelay, arr(y), PreviousAlgorithm)
-                    ElseIf arr(y) = "Custom Algorithm" Then
+                    ElseIf arr(y) = "   Custom Algorithm" Then
                         GetMazeInfo(Width, Height, DelayMS, Limits, ShowMazeGeneration, True, 0)
                         AvailablePath = Custom(Limits, DelayMS, ShowMazeGeneration)
                         Solving(AvailablePath, Limits, PreviousMaze, input, YPosAfterMaze, ShowPath, SolvingDelay, arr(y), PreviousAlgorithm)
@@ -161,8 +164,7 @@ Module Menus
                                 "Solve using the left-hand rule",
                                 "Solve using the right-hand rule",
                                 "",
-                                "Play the maze",
-                                "Braid the maze (remove dead ends)",
+                                "Play the maze", "Braid the maze (remove dead ends)",
                                 "",
                                 "Save the maze as points",
                                 "Save the maze as a png image",
@@ -188,16 +190,8 @@ Module Menus
                         If PreviousMaze.Count > 1 Then
                             Console.Clear()
                             Console.ForegroundColor = ConsoleColor.White
-                            Console.Write("File Name of the maze to load (don't include .png): ")
-                            Dim filename As String = Console.ReadLine
-                            If Not System.IO.File.Exists(filename) Then
-                                SaveMazePNG(PreviousMaze, $"Algorithm used to generate this maze: {PreviousAlgorithm}", filename)
-                            Else
-                                Console.Clear()
-                                Console.ForegroundColor = ConsoleColor.Red
-                                Console.WriteLine($"A file with the name {filename} already exists")
-                                Console.ReadKey()
-                            End If
+                            Dim filename As String = GetValidFileName()
+                            SaveMazePNG(PreviousMaze, $"Algorithm used to generate this maze: {PreviousAlgorithm}", filename)
                         Else
                             Console.Clear()
                             MsgColour("No previous maze available", ConsoleColor.Red)
@@ -268,7 +262,24 @@ Module Menus
                                 DisplayAvailablePositions(PreviousMaze.Count)
                                 Console.SetCursorPosition(0, YPosAfterMaze + 3)
                                 PreviousMaze = LoadedMaze
-                                Dim temparr() As String = {"Solve using the A* algorithm", "Solve using Dijkstra's algorithm", "Solve using Breadth-first search", "Solve using Depth-first search (using iteration)", "Solve using Depth-first search (using recursion)", "Solve using a recursive algorithm", "Solve using the Lee Algorithm (Wave Propagation)", "Solve using the dead end filling method", "Solve using the left-hand rule", "Solve using the right-hand rule", "Play the maze", "Braid the maze (remove dead ends)", "Output the maze as a png image", "Clear the maze and return to the menu"}
+                                Dim temparr() As String = {"Solve using the A* algorithm",
+                                "Solve using Dijkstra's algorithm",
+                                "Solve using Breadth-first search",
+                                "Solve using Depth-first search (using iteration)",
+                                "Solve using Depth-first search (using recursion)",
+                                "Solve using a recursive algorithm",
+                                "Solve using the Lee Algorithm (Wave Propagation)",
+                                "Solve using the dead end filling method",
+                                "Solve using the left-hand rule",
+                                "Solve using the right-hand rule",
+                                "",
+                                "Play the maze", "Braid the maze (remove dead ends)",
+                                "",
+                                "Save the maze as points",
+                                "Save the maze as a png image",
+                                "Save the maze as an ascii text file",
+                                "",
+                                "Clear the maze and return to the menu"}
                                 input = SolvingMenu(temparr, "What would you like to do with the maze", GreatestX + 3, 3)
                                 SolvingInput(input, ShowPath, YPosAfterMaze, SolvingDelay, PreviousMaze, UsedAlgorithm)
                             ElseIf ValidMaze = 0 Then
@@ -291,25 +302,14 @@ Module Menus
                             Console.Clear()
                             Console.ForegroundColor = ConsoleColor.Red
                             Console.BackgroundColor = ConsoleColor.Black
-                            Console.WriteLine("The maze that you tried to load is too big for the console window, please decrease font size and try again")
+                            Console.WriteLine("The maze that you tried to load is invalid")
                             Console.ReadKey()
                         Else
                             PreviousMaze = tempMaze
                         End If
                     ElseIf arr(y) = "Save the previous maze to ascii text file" Then
                         If PreviousMaze.Count > 0 Then
-                            Console.Clear()
-                            Console.ForegroundColor = ConsoleColor.White
-                            Console.Write("File Name of the maze to load (don't include .png): ")
-                            Dim filename As String = Console.ReadLine
-                            If Not System.IO.File.Exists(filename) Then
-                                SaveMazeAscii(PreviousMaze, filename)
-                            Else
-                                Console.Clear()
-                                Console.ForegroundColor = ConsoleColor.Red
-                                Console.WriteLine($"A file with the name {filename} already exists")
-                                Console.ReadKey()
-                            End If
+                            SaveMazeAscii(PreviousMaze)
                         Else
                             Console.Clear()
                             Console.ForegroundColor = ConsoleColor.Red
@@ -317,6 +317,7 @@ Module Menus
                             Console.ReadKey()
                         End If
                     ElseIf arr(y) = "Load a maze from an ascii text file" Then
+                        Console.Clear()
                         Dim tempMaze As List(Of Node) = LoadMazeAscii()
                         If IsNothing(tempMaze) Then
                             Console.Clear()
@@ -335,39 +336,39 @@ Module Menus
                     End If
                     Console.BackgroundColor = (ConsoleColor.Black)
                     Console.Clear()
-                    MsgColour("What Maze Generation Algorithm do you want to use: ", ConsoleColor.Yellow)
+                    MsgColour($"{topitem}: ", ConsoleColor.Yellow)
                 Case "I"
-                    If y < 15 Then
+                    If y < 16 Then
                         InitialiseScreen()
-                        If arr(y) = "Recursive Backtracker Algorithm (using iteration)" Then
+                        If arr(y) = "   Recursive Backtracker Algorithm (using iteration)" Then
                             RecrusiveBacktrackerINFO()
-                        ElseIf arr(y) = "Recursive Backtracker Algorithm (using recursion)" Then
+                        ElseIf arr(y) = "   Recursive Backtracker Algorithm (using recursion)" Then
                             RecrusiveBacktrackerRecursionINFO()
-                        ElseIf arr(y) = "Hunt and Kill Algorithm" Then
+                        ElseIf arr(y) = "   Hunt and Kill Algorithm" Then
                             HuntAndKillINFO()
-                        ElseIf arr(y) = "Prim's Algorithm (simplified)" Then
+                        ElseIf arr(y) = "   Prim's Algorithm (simplified)" Then
                             Prims_SimplifiedINFO()
-                        ElseIf arr(y) = "Prim's Algorithm (true)" Then
+                        ElseIf arr(y) = "   Prim's Algorithm (true)" Then
                             Prims_TrueINFO()
-                        ElseIf arr(y) = "Aldous-Broder Algorithm" Then
+                        ElseIf arr(y) = "   Aldous-Broder Algorithm" Then
                             AldousBroderINFO()
-                        ElseIf arr(y) = "Growing Tree Algorithm" Then
+                        ElseIf arr(y) = "   Growing Tree Algorithm" Then
                             GrowingTreeINFO()
-                        ElseIf arr(y) = "Sidewinder Algorithm" Then
+                        ElseIf arr(y) = "   Sidewinder Algorithm" Then
                             SidewinderINFO()
-                        ElseIf arr(y) = "Binary Tree Algorithm" Then
+                        ElseIf arr(y) = "   Binary Tree Algorithm" Then
                             BinaryTreeINFO()
-                        ElseIf arr(y) = "Wilson's Algorithm" Then
+                        ElseIf arr(y) = "   Wilson's Algorithm" Then
                             WilsonsINFO()
-                        ElseIf arr(y) = "Eller's Algorithm" Then
+                        ElseIf arr(y) = "   Eller's Algorithm" Then
                             EllersINFO()
-                        ElseIf arr(y) = "Kruskal's Algorithm" Then
+                        ElseIf arr(y) = "   Kruskal's Algorithm" Then
                             KruskalsINFO()
-                        ElseIf arr(y) = "Houston's Algorithm" Then
+                        ElseIf arr(y) = "   Houston's Algorithm" Then
                             HoustonsINFO()
-                        ElseIf arr(y) = "Spiral Backtracker Algorithm" Then
+                        ElseIf arr(y) = "   Spiral Backtracker Algorithm" Then
                             SpiralBacktrackerINFO()
-                        ElseIf arr(y) = "Custom Algorithm" Then
+                        ElseIf arr(y) = "   Custom Algorithm" Then
                             CustomAlgorithmINFO()
                         End If
                         Console.ReadKey()
@@ -653,9 +654,7 @@ Module Menus
         ElseIf input = "Save the maze as a png image" Then
             Console.Clear()
             Console.ForegroundColor = ConsoleColor.White
-            Console.Write("File Name of the maze to load (don't include .png): ")
-            Dim filename As String = Console.ReadLine
-            Console.Clear()
+            Dim filename As String = GetValidFileName()
             SaveMazePNG(Maze, Algorithm, filename)
         ElseIf input = "s" Then
             SD(Maze)
@@ -682,38 +681,27 @@ Module Menus
                 If GreatestX < node.X Then GreatestX = node.X
             Next
             Dim temparr() As String = {"Solve using the A* algorithm",
-                "Solve using Dijkstra's algorithm",
-                "Solve using Breadth-first search",
-                "Solve using Depth-first search (using iteration)",
-                "Solve using Depth-first search (using recursion)",
-                "Solve using a recursive algorithm",
-                "Solve using the Lee Algorithm (Wave Propagation)",
-                "Solve using the dead end filling method",
-                "Solve using the left-hand rule",
-                "Solve using the right-hand rule",
-                "",
-                "Play the maze",
-                "",
-                "Save the maze as points",
-                "Save the maze as a png image",
-                "Save the maze as an ascii text file",
-                "",
-                "Clear the maze and return to the menu"}
+            "Solve using Dijkstra's algorithm",
+            "Solve using Breadth-first search",
+            "Solve using Depth-first search (using iteration)",
+            "Solve using Depth-first search (using recursion)",
+            "Solve using a recursive algorithm",
+            "Solve using the Lee Algorithm (Wave Propagation)",
+            "Solve using the dead end filling method",
+            "Solve using the left-hand rule",
+            "Solve using the right-hand rule",
+            "",
+            "Play the maze",
+            "",
+            "Save the maze as points",
+            "Save the maze as a png image",
+            "Save the maze as an ascii text file",
+            "",
+            "Clear the maze and return to the menu"}
             input = SolvingMenu(temparr, "What would you like to do with the maze", GreatestX + 3, 3)
             SolvingInput(input, showpath, YposAfterMaze, solvingdelay, Maze, "")
         ElseIf input = "Save the maze as an ascii text file" Then
-            Console.Clear()
-            Console.ForegroundColor = ConsoleColor.White
-            Console.Write("File Name of the maze to load (don't include .png): ")
-            Dim filename As String = Console.ReadLine
-            If Not System.IO.File.Exists(filename) Then
-                SaveMazeAscii(Maze, filename)
-            Else
-                Console.Clear()
-                Console.ForegroundColor = ConsoleColor.Red
-                Console.WriteLine($"A file with the name {filename} already exists")
-                Console.ReadKey()
-            End If
+            SaveMazeAscii(Maze)
         ElseIf input = "" Then
             Console.Clear()
             Console.WriteLine("A critical error has occured that has caused the program to no longer work")

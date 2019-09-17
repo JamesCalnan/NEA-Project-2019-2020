@@ -143,6 +143,7 @@
     <Compile Include="Prims Algorithm.vb" />
     <Compile Include="Quicksort Algorithm.vb" />
     <Compile Include="Recursive Backtracker Algorithm.vb" />
+    <Compile Include="Recursive Solving Method.vb" />
     <Compile Include="Sidewinder Algorithm.vb" />
     <Compile Include="Spiral Backtracker Algorithm.vb" />
     <Compile Include="Wall Follower.vb" />
