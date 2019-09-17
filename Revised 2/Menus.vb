@@ -150,7 +150,25 @@ Module Menus
                             DisplayAvailablePositions(PreviousMaze.Count)
                             YPosAfterMaze = GreatestY - 1
                             Console.SetCursorPosition(0, YPosAfterMaze + 3)
-                            Dim temparr() As String = {"Solve using the A* algorithm", "Solve using Dijkstra's algorithm", "Solve using Breadth-first search", "Solve using Depth-first search (using iteration)", "Solve using Depth-first search (using recursion)", "Solve using a recursive algorithm", "Solve using the Lee Algorithm (Wave Propagation)", "Solve using the dead end filling method", "Solve using the left-hand rule", "Solve using the right-hand rule", "Play the maze", "Braid the maze (remove dead ends)", "Save the maze as points", "Save the maze as a png image", "Save the maze as an ascii text file", "Clear the maze and return to the menu"}
+                            Dim temparr() As String = {"Solve using the A* algorithm",
+                                "Solve using Dijkstra's algorithm",
+                                "Solve using Breadth-first search",
+                                "Solve using Depth-first search (using iteration)",
+                                "Solve using Depth-first search (using recursion)",
+                                "Solve using a recursive algorithm",
+                                "Solve using the Lee Algorithm (Wave Propagation)",
+                                "Solve using the dead end filling method",
+                                "Solve using the left-hand rule",
+                                "Solve using the right-hand rule",
+                                "",
+                                "Play the maze",
+                                "Braid the maze (remove dead ends)",
+                                "",
+                                "Save the maze as points",
+                                "Save the maze as a png image",
+                                "Save the maze as an ascii text file",
+                                "",
+                                "Clear the maze and return to the menu"}
                             input = SolvingMenu(temparr, "What would you like to do with the maze", GreatestX + 3, 3)
                             SolvingInput(input, ShowPath, YPosAfterMaze, SolvingDelay, PreviousMaze, PreviousAlgorithm)
                         Else
@@ -381,7 +399,25 @@ Module Menus
         yposaftermaze = limits(3)
         DisplayAvailablePositions(availablepath.Count)
         Console.SetCursorPosition(0, yposaftermaze + 3)
-        Dim temparr() As String = {"Solve using the A* algorithm", "Solve using Dijkstra's algorithm", "Solve using Breadth-first search", "Solve using Depth-first search (using iteration)", "Solve using Depth-first search (using recursion)", "Solve using a recursive algorithm", "Solve using the Lee Algorithm (Wave Propagation)", "Solve using the dead end filling method", "Solve using the left-hand rule", "Solve using the right-hand rule", "Play the maze", "Braid the maze (remove dead ends)", "Save the maze as points", "Save the maze as a png image", "Save the maze as an ascii text file", "Clear the maze and return to the menu"}
+        Dim temparr() As String = {"Solve using the A* algorithm",
+            "Solve using Dijkstra's algorithm",
+            "Solve using Breadth-first search",
+            "Solve using Depth-first search (using iteration)",
+            "Solve using Depth-first search (using recursion)",
+            "Solve using a recursive algorithm",
+            "Solve using the Lee Algorithm (Wave Propagation)",
+            "Solve using the dead end filling method",
+            "Solve using the left-hand rule",
+            "Solve using the right-hand rule",
+            "",
+            "Play the maze",
+            "Braid the maze (remove dead ends)",
+            "",
+            "Save the maze as points",
+            "Save the maze as a png image",
+            "Save the maze as an ascii text file",
+            "",
+            "Clear the maze and return to the menu"}
         input = SolvingMenu(temparr, "What would you like to do with the maze", limits(2) + 2, 3)
         previousmaze.Clear()
         previousmaze = availablepath
@@ -466,9 +502,11 @@ Module Menus
                 Case "DownArrow"
                     y += 1
                     If y = arr.Count Then y = 0
+                    If arr(y) = "" Then y += 1
                 Case "UpArrow"
                     y -= 1
                     If y = -1 Then y = arr.Count - 1
+                    If arr(y) = "" Then y -= 1
                 Case "S"
                     For i = 0 To arr.Count
                         Console.SetCursorPosition(X, i + Y_)
@@ -643,7 +681,24 @@ Module Menus
             For Each node In Maze
                 If GreatestX < node.X Then GreatestX = node.X
             Next
-            Dim temparr() As String = {"Solve using the A* algorithm", "Solve using Dijkstra's algorithm", "Solve using Breadth-first search", "Solve using Depth-first search (using iteration)", "Solve using Depth-first search (using recursion)", "Solve using a recursive algorithm", "Solve using the Lee Algorithm (Wave Propagation)", "Solve using the dead end filling method", "Solve using the left-hand rule", "Solve using the right-hand rule", "Play the maze", "Save the maze as points", "Save the maze as a png image", "Save the maze as an ascii text file", "Clear the maze and return to the menu"}
+            Dim temparr() As String = {"Solve using the A* algorithm",
+                "Solve using Dijkstra's algorithm",
+                "Solve using Breadth-first search",
+                "Solve using Depth-first search (using iteration)",
+                "Solve using Depth-first search (using recursion)",
+                "Solve using a recursive algorithm",
+                "Solve using the Lee Algorithm (Wave Propagation)",
+                "Solve using the dead end filling method",
+                "Solve using the left-hand rule",
+                "Solve using the right-hand rule",
+                "",
+                "Play the maze",
+                "",
+                "Save the maze as points",
+                "Save the maze as a png image",
+                "Save the maze as an ascii text file",
+                "",
+                "Clear the maze and return to the menu"}
             input = SolvingMenu(temparr, "What would you like to do with the maze", GreatestX + 3, 3)
             SolvingInput(input, showpath, YposAfterMaze, solvingdelay, Maze, "")
         ElseIf input = "Save the maze as an ascii text file" Then
