@@ -144,6 +144,7 @@
     <Compile Include="Quicksort Algorithm.vb" />
     <Compile Include="Recursive Backtracker Algorithm.vb" />
     <Compile Include="Recursive Solving Method.vb" />
+    <Compile Include="Selection Sort Algorithm.vb" />
     <Compile Include="Sidewinder Algorithm.vb" />
     <Compile Include="Spiral Backtracker Algorithm.vb" />
     <Compile Include="Wall Follower.vb" />
