@@ -19,7 +19,9 @@
             While j > 0 AndAlso A(j - 1) > A(j)
                 swap(A, j, j - 1)
                 j -= 1
+
             End While
+            AnimateSort(A, 1)
             i += 1
         End While
         Return A

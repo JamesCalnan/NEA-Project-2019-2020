@@ -166,6 +166,11 @@ Module Menus
                                 "",
                                 "Play the maze", "Braid the maze (remove dead ends)",
                                 "",
+            "Get the average corridor length",
+            "Get the amount of corners in the maze",
+            "Get the amount of junctions in the maze",
+            "Get the amount of Dead-ends in the maze",
+            "",
                                 "Save the maze as points",
                                 "Save the maze as a png image",
                                 "Save the maze as an ascii text file",
@@ -275,6 +280,11 @@ Module Menus
                                 "",
                                 "Play the maze", "Braid the maze (remove dead ends)",
                                 "",
+            "Get the average corridor length",
+            "Get the amount of corners in the maze",
+            "Get the amount of junctions in the maze",
+            "Get the amount of Dead-ends in the maze",
+            "",
                                 "Save the maze as points",
                                 "Save the maze as a png image",
                                 "Save the maze as an ascii text file",
@@ -413,6 +423,11 @@ Module Menus
             "",
             "Play the maze",
             "Braid the maze (remove dead ends)",
+            "",
+            "Get the average corridor length",
+            "Get the amount of corners in the maze",
+            "Get the amount of junctions in the maze",
+            "Get the amount of Dead-ends in the maze",
             "",
             "Save the maze as points",
             "Save the maze as a png image",
@@ -693,6 +708,11 @@ Module Menus
             "",
             "Play the maze",
             "",
+            "Get the average corridor length",
+            "Get the amount of corners in the maze",
+            "Get the amount of junctions in the maze",
+            "Get the amount of Dead-ends in the maze",
+            "",
             "Save the maze as points",
             "Save the maze as a png image",
             "Save the maze as an ascii text file",
@@ -700,6 +720,33 @@ Module Menus
             "Clear the maze and return to the menu"}
             input = SolvingMenu(temparr, "What would you like to do with the maze", GreatestX + 3, 3)
             SolvingInput(input, showpath, YposAfterMaze, solvingdelay, Maze, "")
+        ElseIf input = "Get the amount of Dead-ends in the maze" Then
+            Console.SetCursorPosition(0, Console.WindowHeight - 1)
+            SetBoth(ConsoleColor.Black)
+            Console.ForegroundColor = ConsoleColor.White
+            Dim deCount As Integer = GetDeadEndCount(Maze)
+            Console.Write($"Number of dead-ends: {deCount}     Percentage of the maze: {Math.Ceiling((deCount / Maze.Count) * 100)}%")
+            Console.ReadKey()
+        ElseIf input = "Get the amount of junctions in the maze" Then
+            Console.SetCursorPosition(0, Console.WindowHeight - 1)
+            SetBoth(ConsoleColor.Black)
+            Console.ForegroundColor = ConsoleColor.White
+            Dim jCount As Integer = GetJunctionCount(Maze)
+            Console.Write($"Number of junctions: {jCount}       Percentage of the maze: {Math.Ceiling((jCount / Maze.Count) * 100)}%")
+            Console.ReadKey()
+        ElseIf input = "Get the amount of corners in the maze" Then
+            Console.SetCursorPosition(0, Console.WindowHeight - 1)
+            SetBoth(ConsoleColor.Black)
+            Console.ForegroundColor = ConsoleColor.White
+            Dim cCount As Integer = GetCornerCount(Maze)
+            Console.Write($"Number of corners: {cCount}     Percentage of the maze: {Math.Ceiling((cCount / Maze.Count) * 100)}%")
+            Console.ReadKey()
+        ElseIf input = "Get the average corridor length" Then
+            Console.SetCursorPosition(0, Console.WindowHeight - 1)
+            SetBoth(ConsoleColor.Black)
+            Console.ForegroundColor = ConsoleColor.White
+            Console.Write($"Average corridor length: {Math.Ceiling(StraightWays(Maze))}")
+            Console.ReadKey()
         ElseIf input = "Save the maze as an ascii text file" Then
             SaveMazeAscii(Maze)
         ElseIf input = "" Then

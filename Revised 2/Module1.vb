@@ -13,23 +13,20 @@ Module Module1
         'While 1
         '    Console.CursorVisible = False
         '    Dim list As New List(Of Double)
-        '    For i = 1 To (Console.WindowHeight - 1) / 8
-        '        list.Add(i)
+        '    For i = 1 To (Console.WindowHeight - 1)
+        '        list.Add(i * 1)
         '    Next
-
+        '    AnimateSort(list, 1)
+        '    Threading.Thread.Sleep(20)
         '    Shuffle(list)
-        '    Console.WriteLine()
-        '    For Each num In list
-        '        'Console.WriteLine(num)
-        '    Next
-
-        '    'Console.WriteLine($"post shuffling: {list.Count}")
-        '    Console.WriteLine()
-        '    Dim sl As List(Of Double) = BozoSort(list) ', 0, list.Count - 1)
+        '    AnimateSort(list, 1)
+        '    Threading.Thread.Sleep(20)
+        '    Dim sl As List(Of Double) = BubbleSortOptimisedAlternate(list) ', 0, list.Count - 1)
+        '    AnimateSort(sl, 1)
         '    'For Each num In sl
         '    '    Console.WriteLine(num)
         '    'Next
-        '    Console.ReadKey()
+        '    Threading.Thread.Sleep(80)
         '    Console.Clear()
         'End While
         Console.BackgroundColor = ConsoleColor.Black
@@ -81,6 +78,40 @@ Module Module1
         'bmp.Save("name", System.Drawing.Imaging.ImageFormat.Png)
         'bmp.Dispose()
     End Sub
+    Function StraightWays(ByVal maze As List(Of Node))
+        Dim gx As Integer = 0
+        Dim gy As Integer = 0
+        For Each node In maze
+            If node.X > gx Then gx = node.X
+            If node.Y > gy Then gy = node.Y
+        Next
+        Dim corridorCount As New List(Of Integer)
+        For x = 8 To gx + 1 Step 2
+            Dim StraightCount As Integer = 0
+            For y = 3 To gy
+                Dim tempNode As New Node(x, y)
+                If maze.Contains(tempNode) Then
+                    StraightCount += 1
+                Else
+                    If StraightCount > 1 Then corridorCount.Add(StraightCount)
+                    StraightCount = 0
+                End If
+            Next
+        Next
+        For y = 3 To gy
+            Dim StraightCount As Integer = 0
+            For x = 8 To gx + 1 Step 2
+                Dim tempNode As New Node(x, y)
+                If maze.Contains(tempNode) Then
+                    StraightCount += 1
+                Else
+                    If StraightCount > 1 Then corridorCount.Add(StraightCount)
+                    StraightCount = 0
+                End If
+            Next
+        Next
+        Return corridorCount.Average
+    End Function
     Sub Shuffle(ByRef lista As List(Of Double))
         Dim r As New Random
         Dim listb As New List(Of Double)
@@ -91,14 +122,17 @@ Module Module1
         Next
         lista = listb
     End Sub
-    Sub AnimateSort(ByVal a As List(Of Double))
+    Sub AnimateSort(ByVal a As List(Of Double), ByVal n As Integer)
         Console.SetCursorPosition(0, 0)
+        Dim c As Integer = 0
         For Each number In a
             SetBoth(ConsoleColor.White)
+            If c = n Then SetBoth(ConsoleColor.Green)
             Console.Write("".PadLeft(number, "X"c))
             SetBoth(ConsoleColor.Black)
             Console.Write("".PadLeft((Console.WindowWidth - number) - 5, "X"c))
             Console.WriteLine()
+            c += 1
         Next
     End Sub
     Function LoadMazeAscii() As List(Of Node)
@@ -151,6 +185,11 @@ Module Module1
             "",
             "Play the maze",
             "Braid the maze (remove dead ends)",
+            "",
+            "Get the average corridor length",
+            "Get the amount of corners in the maze",
+            "Get the amount of junctions in the maze",
+            "Get the amount of Dead-ends in the maze",
             "",
             "Save the maze as points",
             "Save the maze as a png image",
@@ -375,6 +414,11 @@ Module Module1
             "Play the maze",
             "Braid the maze (remove dead ends)",
             "",
+            "Get the average corridor length",
+            "Get the amount of corners in the maze",
+            "Get the amount of junctions in the maze",
+            "Get the amount of Dead-ends in the maze",
+            "",
             "Save the maze as points",
             "Save the maze as a png image",
             "Save the maze as an ascii text file",
@@ -466,7 +510,6 @@ Module Module1
         Dim JunctionCount As Integer = 0
         For Each node In availablePath
             If node.IsJunction(availablePath) Then
-                node.Print("JU")
                 JunctionCount += 1
             End If
         Next
@@ -480,7 +523,6 @@ Module Module1
             If node.Equals(start) Or node.Equals(target) Then Continue For
             Dim neighbours As List(Of Node) = GetNeighbours(node, availablePath)
             If neighbours.Count = 1 Then
-                node.Print("DE")
                 DeadEndCount += 1
             End If
         Next
@@ -723,7 +765,7 @@ Module Module1
         Dim stopwatch As Stopwatch = Stopwatch.StartNew
         Dim I As Integer = 0
         For Each node In Maze
-            If Adjacent(node, Maze) Then newlist.Add(node)
+            If CornerJunction(node, Maze) Then newlist.Add(node)
             I += 1
             Console.SetCursorPosition(45, Console.WindowHeight - 3)
             Console.Write($"{Math.Floor((I / Maze.Count) * 100)}%")
@@ -774,7 +816,7 @@ Module Module1
         End While
         Return Nothing
     End Function
-    Function Adjacent(ByVal CurrentNode As Node, ByVal AdjacentCells As List(Of Node))
+    Function CornerJunction(ByVal CurrentNode As Node, ByVal AdjacentCells As List(Of Node))
         Dim L As New List(Of Node)
         Dim top As New Node(CurrentNode.X, CurrentNode.Y - 1)
         Dim right As New Node(CurrentNode.X + 2, CurrentNode.Y)
@@ -789,6 +831,26 @@ Module Module1
         If AdjacentCells.Contains(right) And AdjacentCells.Contains(bottom) Then Return True
         If AdjacentCells.Contains(bottom) And AdjacentCells.Contains(left) Then Return True
         If AdjacentCells.Contains(left) And AdjacentCells.Contains(top) Then Return True
+        Return False
+    End Function
+    Function GetCornerCount(ByVal maze As List(Of Node))
+        Dim cCount As Integer = 0
+        For Each node In maze
+            If IsCorner(node, maze) Then
+                cCount += 1
+            End If
+        Next
+        Return cCount
+    End Function
+    Function IsCorner(ByVal currentNode As Node, ByVal adjacentcells As List(Of Node))
+        Dim top As New Node(currentNode.X, currentNode.Y - 1)
+        Dim right As New Node(currentNode.X + 2, currentNode.Y)
+        Dim bottom As New Node(currentNode.X, currentNode.Y + 1)
+        Dim left As New Node(currentNode.X - 2, currentNode.Y)
+        If adjacentcells.Contains(top) And adjacentcells.Contains(right) Then Return True 'is it a corner
+        If adjacentcells.Contains(right) And adjacentcells.Contains(bottom) Then Return True
+        If adjacentcells.Contains(bottom) And adjacentcells.Contains(left) Then Return True
+        If adjacentcells.Contains(left) And adjacentcells.Contains(top) Then Return True
         Return False
     End Function
     Function InitialiseVisited(ByVal Limits() As Integer)

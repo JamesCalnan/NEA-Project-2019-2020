@@ -1,6 +1,7 @@
-﻿Module Quicksort_Algorithm
+﻿Module Quick_sort_Algorithm
     Function quicksort(ByVal A As List(Of Double), ByVal lo As Integer, ByVal hi As Integer)
         'Initial call would be quicksort(list,0,list.count-1)
+        AnimateSort(A, 1)
         If lo < hi Then
             Dim p As Integer = partition(A, lo, hi)
             quicksort(A, lo, p - 1)
