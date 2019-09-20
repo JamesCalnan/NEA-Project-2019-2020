@@ -21,7 +21,7 @@
             If u.Equals(target) Then Exit While
             Q.Remove(u)
             For Each v As Node In GetNeighboursAd(u, availablepath)
-                Dim alt As Integer = dist(u) + 1
+                Dim alt As Integer = dist(u) + h(u, v, 1)
                 If alt < dist(v) Then
                     dist(v) = alt
                     prev(v) = u

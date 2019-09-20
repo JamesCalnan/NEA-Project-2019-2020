@@ -63,7 +63,7 @@
             If ShowPath Then : current.Print("██") : Threading.Thread.Sleep(Delay) : End If
             For Each Neighbour As Node In GetNeighboursAd(current, AdjacencyList)
                 If closedSet.Contains(Neighbour) Then Continue For
-                Dim tentative_gScore = gScore(current) + 1
+                Dim tentative_gScore = gScore(current) + h(current, Neighbour, heuristic)
                 If tentative_gScore <= gScore(Neighbour) Then
                     cameFrom(Neighbour) = current
                     gScore(Neighbour) = tentative_gScore

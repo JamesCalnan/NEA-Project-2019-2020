@@ -7,76 +7,84 @@ Module Module1
     Sub Main()
         Console.CursorVisible = False
         Console.ForegroundColor = (ConsoleColor.White)
-        'Dim r As New Random
-        'Console.ReadKey()
-        'Dim ind As Integer = 0
-        'While 1
-        '    Console.CursorVisible = False
-        '    Dim list As New List(Of Double)
-        '    For i = 1 To (Console.WindowHeight - 1)
-        '        list.Add(i * 1)
-        '    Next
-        '    AnimateSort(list, 1)
-        '    Threading.Thread.Sleep(20)
-        '    Shuffle(list)
-        '    AnimateSort(list, 1)
-        '    Threading.Thread.Sleep(20)
-        '    Dim sl As List(Of Double) = BubbleSortOptimisedAlternate(list) ', 0, list.Count - 1)
-        '    AnimateSort(sl, 1)
-        '    'For Each num In sl
-        '    '    Console.WriteLine(num)
-        '    'Next
-        '    Threading.Thread.Sleep(80)
-        '    Console.Clear()
-        'End While
+        Dim bt As New Binary_Tree
+        Dim r As New Random
+        For i = 0 To 10
+            bt.add(i Mod 2) 'r.Next(0, 10000))
+        Next
+        'bt.traverseInOrder(bt.root)
+        Console.WriteLine(bt.containsValue(0))
+        Console.ReadKey()
+        ''
+        ''Console.ReadKey()
+        ''Dim ind As Integer = 0
+        ''While 1
+        ''    Console.CursorVisible = False
+        ''    Dim list As New List(Of Double)
+        ''    For i = 1 To (Console.WindowHeight - 1)
+        ''        list.Add(i * 1)
+        ''    Next
+        ''    AnimateSort(list, 1)
+        ''    Threading.Thread.Sleep(20)
+        ''    Shuffle(list)
+        ''    AnimateSort(list, 1)
+        ''    Threading.Thread.Sleep(20)
+        ''    Dim sl As List(Of Double) = BubbleSortOptimisedAlternate(list) ', 0, list.Count - 1)
+        ''    AnimateSort(sl, 1)
+        ''    'For Each num In sl
+        ''    '    Console.WriteLine(num)
+        ''    'Next
+        ''    Threading.Thread.Sleep(80)
+        ''    Console.Clear()
+        ''End While
         Console.BackgroundColor = ConsoleColor.Black
-        Do
-            Console.SetCursorPosition(0, 0)
-            Console.Write("Please make the window full screen")
-        Loop Until Console.WindowWidth > Console.LargestWindowWidth - 10 And Console.WindowHeight > Console.LargestWindowHeight - 5
-        Dim MenuOptions() As String = {
-            "Generate a maze using one of the following algorithms",
-            "   Recursive Backtracker Algorithm (using iteration)",
-            "   Recursive Backtracker Algorithm (using recursion)",
-            "   Hunt and Kill Algorithm",
-            "   Prim's Algorithm (simplified)",
-            "   Prim's Algorithm (true)",
-            "   Aldous-Broder Algorithm",
-            "   Growing Tree Algorithm",
-            "   Sidewinder Algorithm",
-            "   Binary Tree Algorithm",
-            "   Wilson's Algorithm",
-            "   Eller's Algorithm",
-            "   Kruskal's Algorithm",
-            "   Houston's Algorithm",
-            "   Spiral Backtracker Algorithm",
-            "   Custom Algorithm",
-            "",
-            "Load the previously generated maze",
-            "",
-            "Load a maze from a text file (list of points)",
-            "Load a maze from an image file",
-            "Load a maze from an ascii text file",
-            "",
-            "Save the previously generated maze as a list of points",
-            "Save the previous maze as a png image",
-            "Save the previous maze to ascii text file",
-            "",
-            "Exit"
-        }
-        Menu(MenuOptions, "Menu")
+        'Do
+        '    Console.SetCursorPosition(0, 0)
+        '    Console.Write("Please make the window full screen")
+        'Loop Until Console.WindowWidth > Console.LargestWindowWidth - 10 And Console.WindowHeight > Console.LargestWindowHeight - 5
+        'Dim MenuOptions() As String = {
+        '    "Generate a maze using one of the following algorithms",
+        '    "   Recursive Backtracker Algorithm (using iteration)",
+        '    "   Recursive Backtracker Algorithm (using recursion)",
+        '    "   Hunt and Kill Algorithm",
+        '    "   Prim's Algorithm (simplified)",
+        '    "   Prim's Algorithm (true)",
+        '    "   Aldous-Broder Algorithm",
+        '    "   Growing Tree Algorithm",
+        '    "   Sidewinder Algorithm",
+        '    "   Binary Tree Algorithm",
+        '    "   Wilson's Algorithm",
+        '    "   Eller's Algorithm",
+        '    "   Kruskal's Algorithm",
+        '    "   Houston's Algorithm",
+        '    "   Spiral Backtracker Algorithm",
+        '    "   Custom Algorithm",
+        '    "",
+        '    "Load the previously generated maze",
+        '    "",
+        '    "Load a maze from a text file (list of points)",
+        '    "Load a maze from an image file",
+        '    "Load a maze from an ascii text file",
+        '    "",
+        '    "Save the previously generated maze as a list of points",
+        '    "Save the previous maze as a png image",
+        '    "Save the previous maze to ascii text file",
+        '    "",
+        '    "Exit"
+        '}
+        'Menu(MenuOptions, "Menu")
 
 
 
 
-        'Console.ReadKey()
-        'Dim bmp As New Bitmap(350, 350)
-        'Dim g As Graphics
-        'g = Graphics.FromImage(bmp)
-        'g.FillRectangle(Brushes.Aqua, 0, 0, 250, 250)
-        'g.Dispose()
-        'bmp.Save("name", System.Drawing.Imaging.ImageFormat.Png)
-        'bmp.Dispose()
+        ''Console.ReadKey()
+        ''Dim bmp As New Bitmap(350, 350)
+        ''Dim g As Graphics
+        ''g = Graphics.FromImage(bmp)
+        ''g.FillRectangle(Brushes.Aqua, 0, 0, 250, 250)
+        ''g.Dispose()
+        ''bmp.Save("name", System.Drawing.Imaging.ImageFormat.Png)
+        ''bmp.Dispose()
     End Sub
     Function StraightWays(ByVal maze As List(Of Node))
         Dim gx As Integer = 0
@@ -1032,41 +1040,3 @@ Class Value
     End Sub
 End Class
 
-Class Tree
-    Public value As Value
-    Public left, right As Tree
-    Public Function Remove(ByVal current As Tree, ByVal value As Value)
-        If IsNothing(current) Then Return False
-        If value.IntValue = current.value.IntValue Then
-            current = Nothing
-            Return True
-        End If
-        Return value.IntValue < current.value.IntValue
-        Remove(current.left, value)
-        Remove(current.right, value)
-    End Function
-    Public Function AddRecursive(ByVal current As Tree, ByVal value As Value)
-        If IsNothing(current) Then Return New Tree(value)
-        If value.IntValue < current.value.IntValue Then
-            current.left = AddRecursive(current.left, value)
-        ElseIf current.value.IntValue < value.IntValue Then
-            current.right = AddRecursive(current.right, value)
-        Else
-            Return current
-        End If
-        Return current
-    End Function
-    Function ExtractMin(ByVal node As Tree)
-        Dim current As Tree = node
-        While Not IsNothing(current.left)
-            current = current.left
-        End While
-        Dim ReturnNode As Node = current.value.Node
-        Return ReturnNode
-    End Function
-    Public Sub New(ByVal valu As Value)
-        value = valu
-        left = Nothing
-        right = Nothing
-    End Sub
-End Class
