@@ -7,14 +7,14 @@ Module Module1
     Sub Main()
         Console.CursorVisible = False
         Console.ForegroundColor = (ConsoleColor.White)
-        Dim bt As New Binary_Tree
-        Dim r As New Random
-        For i = 0 To 10
-            bt.add(i Mod 2) 'r.Next(0, 10000))
-        Next
-        'bt.traverseInOrder(bt.root)
-        Console.WriteLine(bt.containsValue(0))
-        Console.ReadKey()
+        'Dim bt As New Binary_Tree
+        'Dim r As New Random
+        'For i = 0 To 10
+        '    bt.add(i Mod 2) 'r.Next(0, 10000))
+        'Next
+        ''bt.traverseInOrder(bt.root)
+        'Console.WriteLine(bt.containsValue(0))
+        'Console.ReadKey()
         ''
         ''Console.ReadKey()
         ''Dim ind As Integer = 0
@@ -38,41 +38,41 @@ Module Module1
         ''    Console.Clear()
         ''End While
         Console.BackgroundColor = ConsoleColor.Black
-        'Do
-        '    Console.SetCursorPosition(0, 0)
-        '    Console.Write("Please make the window full screen")
-        'Loop Until Console.WindowWidth > Console.LargestWindowWidth - 10 And Console.WindowHeight > Console.LargestWindowHeight - 5
-        'Dim MenuOptions() As String = {
-        '    "Generate a maze using one of the following algorithms",
-        '    "   Recursive Backtracker Algorithm (using iteration)",
-        '    "   Recursive Backtracker Algorithm (using recursion)",
-        '    "   Hunt and Kill Algorithm",
-        '    "   Prim's Algorithm (simplified)",
-        '    "   Prim's Algorithm (true)",
-        '    "   Aldous-Broder Algorithm",
-        '    "   Growing Tree Algorithm",
-        '    "   Sidewinder Algorithm",
-        '    "   Binary Tree Algorithm",
-        '    "   Wilson's Algorithm",
-        '    "   Eller's Algorithm",
-        '    "   Kruskal's Algorithm",
-        '    "   Houston's Algorithm",
-        '    "   Spiral Backtracker Algorithm",
-        '    "   Custom Algorithm",
-        '    "",
-        '    "Load the previously generated maze",
-        '    "",
-        '    "Load a maze from a text file (list of points)",
-        '    "Load a maze from an image file",
-        '    "Load a maze from an ascii text file",
-        '    "",
-        '    "Save the previously generated maze as a list of points",
-        '    "Save the previous maze as a png image",
-        '    "Save the previous maze to ascii text file",
-        '    "",
-        '    "Exit"
-        '}
-        'Menu(MenuOptions, "Menu")
+        Do
+            Console.SetCursorPosition(0, 0)
+            Console.Write("Please make the window full screen")
+        Loop Until Console.WindowWidth > Console.LargestWindowWidth - 10 And Console.WindowHeight > Console.LargestWindowHeight - 5
+        Dim MenuOptions() As String = {
+            "Generate a maze using one of the following algorithms",
+            "   Recursive Backtracker Algorithm (using iteration)",
+            "   Recursive Backtracker Algorithm (using recursion)",
+            "   Hunt and Kill Algorithm",
+            "   Prim's Algorithm (simplified)",
+            "   Prim's Algorithm (true)",
+            "   Aldous-Broder Algorithm",
+            "   Growing Tree Algorithm",
+            "   Sidewinder Algorithm",
+            "   Binary Tree Algorithm",
+            "   Wilson's Algorithm",
+            "   Eller's Algorithm",
+            "   Kruskal's Algorithm",
+            "   Houston's Algorithm",
+            "   Spiral Backtracker Algorithm",
+            "   Custom Algorithm",
+            "",
+            "Load the previously generated maze",
+            "",
+            "Load a maze from a text file (list of points)",
+            "Load a maze from an image file",
+            "Load a maze from an ascii text file",
+            "",
+            "Save the previously generated maze as a list of points",
+            "Save the previous maze as a png image",
+            "Save the previous maze to ascii text file",
+            "",
+            "Exit"
+        }
+        Menu(MenuOptions, "Menu")
 
 
 

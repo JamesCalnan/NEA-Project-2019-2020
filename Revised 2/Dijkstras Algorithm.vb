@@ -4,27 +4,34 @@
         Dim target As New Node(availablepath.Keys(availablepath.Count - 1).X, availablepath.Keys(availablepath.Count - 1).Y)
         Dim dist As New Dictionary(Of Node, Double)
         Dim prev As New Dictionary(Of Node, Node)
-        Dim Q As New List(Of Node)
-        Dim INFINITY As Integer = Int32.MaxValue
-        For Each v In availablepath.Keys
-            dist(v) = INFINITY
-            prev(v) = Nothing
-            Q.Add(v)
-        Next
+        Dim Q As New PriorityQueue(Of Node)
         dist(source) = 0
+        For Each v In availablepath.Keys
+            If Not v.Equals(source) Then dist(v) = Int32.MaxValue \ 2
+            prev(v) = Nothing
+            Q.Enqueue(v, dist(v))
+        Next
+        'Q.Enqueue(source, 0)
         Dim stopwatch As Stopwatch = Stopwatch.StartNew()
         SetBoth(ConsoleColor.Red)
-        While Q.Count > 0
+        While Not Q.IsEmpty
             If ExitCase() Then Exit While
-            Dim u As Node = ExtractMin(Q, dist)
-            If ShowSolving Then : u.Print("██") : Threading.Thread.Sleep(SolvingDelay) : End If
+            Dim u As Node = Q.ExtractMin
+            SetBoth(ConsoleColor.Red)
+            If u.Equals(source) Then SetBoth(ConsoleColor.Green)
+            u.Print("XX")
+            Console.ReadKey()
             If u.Equals(target) Then Exit While
-            Q.Remove(u)
+            'If ShowSolving Then : u.Print("██") : Threading.Thread.Sleep(SolvingDelay) : End If
             For Each v As Node In GetNeighboursAd(u, availablepath)
-                Dim alt As Integer = dist(u) + h(u, v, 1)
+                Dim alt As Integer = dist(u) + 1 'h(u, v, 1)
                 If alt < dist(v) Then
                     dist(v) = alt
                     prev(v) = u
+                    If Q.IsEmpty Then
+                        Console.ReadKey()
+                    End If
+                    Q.DecreasePriority(v, alt)
                 End If
             Next
         End While
