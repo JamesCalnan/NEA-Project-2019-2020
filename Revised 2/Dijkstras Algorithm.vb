@@ -5,20 +5,22 @@
         Dim dist As New Dictionary(Of Node, Double)
         Dim prev As New Dictionary(Of Node, Node)
         Dim Q As New PriorityQueue(Of Node)
-        dist(source) = 0
+        dist.Add(source, 0)
         For Each v In availablepath.Keys
-            If Not v.Equals(source) Then dist(v) = Int32.MaxValue \ 2
+            If Not v.Equals(source) Then dist.Add(v, Int32.MaxValue / 2)
             prev(v) = Nothing
             Q.Enqueue(v, dist(v))
         Next
         'Q.Enqueue(source, 0)
         Dim stopwatch As Stopwatch = Stopwatch.StartNew()
-        SetBoth(ConsoleColor.Red)
+        'SetBoth(ConsoleColor.Red)
         While Not Q.IsEmpty
             If ExitCase() Then Exit While
             Dim u As Node = Q.ExtractMin
-            SetBoth(ConsoleColor.Red)
-            If u.Equals(source) Then SetBoth(ConsoleColor.Green)
+            'SetBoth(ConsoleColor.Red)
+            If u.Equals(source) Then
+                'SetBoth(ConsoleColor.Green)
+            End If
             u.Print("XX")
             Console.ReadKey()
             If u.Equals(target) Then Exit While
@@ -28,9 +30,6 @@
                 If alt < dist(v) Then
                     dist(v) = alt
                     prev(v) = u
-                    If Q.IsEmpty Then
-                        Console.ReadKey()
-                    End If
                     Q.DecreasePriority(v, alt)
                 End If
             Next

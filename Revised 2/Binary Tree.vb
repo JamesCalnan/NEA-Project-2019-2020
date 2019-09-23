@@ -1,16 +1,15 @@
 ﻿Imports NEA_2019
-
+Imports System.Drawing
 Public Class PriorityQueue(Of T)
     Private items As Binary_Tree(Of T)
     Public Sub New()
         items = New Binary_Tree(Of T)
     End Sub
-
     Public Sub Enqueue(ByVal value As T, ByVal priority As Integer)
         items.insert(New QueueItem(Of T)(value, 0))
     End Sub
     Public Function ExtractMin() As T
-        Dim minPriority As QueueItem(Of T) = items.minValue
+        Dim minPriority As QueueItem(Of T) = items.minValue()
         Dim output As T = items.findFirst(minPriority).value
         items.delete(minPriority)
         Return output
@@ -21,7 +20,6 @@ Public Class PriorityQueue(Of T)
         items.delete(item, True)
         items.insert(New QueueItem(Of T)(value, newPriority))
     End Sub
-
     Public Function IsEmpty()
         Return items.isEmpty
     End Function
@@ -29,17 +27,12 @@ End Class
 
 
 Public Class QueueItem(Of T)
-
     Public value As T
     Public priority As Integer
-
     Public Sub New(ByVal _value As T, ByVal _priority As Integer)
         value = _value
         priority = _priority
     End Sub
-    Public Function Clone() As QueueItem(Of T)
-        Return New QueueItem(Of T)(value, priority)
-    End Function
     Public Overrides Function Equals(obj As Object) As Boolean
         Dim item = TryCast(obj, QueueItem(Of T))
         Return item IsNot Nothing AndAlso
@@ -51,40 +44,33 @@ Public Class QueueItem(Of T)
         If ReferenceEquals(Nothing, other) Then Return 1
         Return priority.CompareTo(other.priority)
     End Function
-
     Public Overrides Function GetHashCode() As Integer
         Dim hashCode As Long = 913891427
         hashCode = (hashCode * -1521134295 + EqualityComparer(Of T).Default.GetHashCode(value)).GetHashCode()
         hashCode = (hashCode * -1521134295 + priority.GetHashCode()).GetHashCode()
         Return hashCode
     End Function
-
-    Public Shared Operator =(left As QueueItem(Of T), right As QueueItem(Of T)) As Boolean
-        Return EqualityComparer(Of QueueItem(Of T)).Default.Equals(left, right)
-    End Operator
-
-    Public Shared Operator <>(left As QueueItem(Of T), right As QueueItem(Of T)) As Boolean
-        Return Not left = right
-    End Operator
+    Public Function Clone() As QueueItem(Of T)
+        Return New QueueItem(Of T)(value, priority)
+    End Function
 End Class
 
 Public Class Binary_Tree(Of T)
     Public root As TreeItem(Of T)
-
     Public Sub delete(ByVal value As QueueItem(Of T), Optional ByVal strict As Boolean = False)
         root = deleteRecursive(root, value, strict)
     End Sub
     Public Function deleteRecursive(ByVal root As TreeItem(Of T), ByVal value As QueueItem(Of T), ByVal strict As Boolean)
         If IsNothing(root) Then Return root
-        If strict Then
-        End If
         If value.CompareTo(root.value) < 0 Then
             root.left = deleteRecursive(root.left, value, strict)
-        ElseIf value.CompareTo(root.value) > 0 Then
+        ElseIf value.CompareTo(root.value) > 0 Or strict And Not value.Equals(root.value) And value.CompareTo(root.value) = 0 Then
             root.right = deleteRecursive(root.right, value, strict)
         Else
             If IsNothing(root.left) Then Return root.right
             If IsNothing(root.right) Then Return root.left
+            root.value = minValue(root.right)
+            root.right = deleteRecursive(root.right, root.value, strict)
         End If
         Return root
     End Function
@@ -98,7 +84,7 @@ Public Class Binary_Tree(Of T)
         End If
         If value.CompareTo(root.value) < 0 Then
             root.left = insertRecursive(root.left, value)
-        ElseIf value.CompareTo(root.value) >= 0 Then
+        ElseIf value.CompareTo(root.value) > 0 Then
             root.right = insertRecursive(root.right, value)
         End If
         Return root
@@ -172,7 +158,6 @@ Public Class Binary_Tree(Of T)
         If value.CompareTo(root.value) > 0 Then Return findFirstRecursive(root.right, value)
         Return root
     End Function
-
     Public Function findExact(ByVal value As QueueItem(Of T)) As QueueItem(Of T)
         Return findExactRecursive(root, value).value
     End Function
@@ -215,8 +200,7 @@ Public Class Binary_Tree(Of T)
 End Class
 Public Class TreeItem(Of T)
     Public value As QueueItem(Of T)
-    Public left As TreeItem(Of T)
-    Public right As TreeItem(Of T)
+    Public left, right As TreeItem(Of T)
     Public Sub New(ByVal val As QueueItem(Of T))
         value = val
         left = Nothing

@@ -5,6 +5,7 @@ Module Module1
     'implement this: https://en.wikipedia.org/wiki/Talk:Selection_sort#Implementations, http://users.eecs.northwestern.edu/~haizhou/357/lec6.pdf
     'TODO: give user the option to print a path or carve through walls, put in solving menu when the user has loaded an ascii maze from a text file
     Sub Main()
+
         Console.CursorVisible = False
         Console.ForegroundColor = (ConsoleColor.White)
         'Dim bt As New Binary_Tree
@@ -37,42 +38,47 @@ Module Module1
         ''    Threading.Thread.Sleep(80)
         ''    Console.Clear()
         ''End While
+        Console.ResetColor()
         Console.BackgroundColor = ConsoleColor.Black
-        Do
-            Console.SetCursorPosition(0, 0)
-            Console.Write("Please make the window full screen")
-        Loop Until Console.WindowWidth > Console.LargestWindowWidth - 10 And Console.WindowHeight > Console.LargestWindowHeight - 5
-        Dim MenuOptions() As String = {
-            "Generate a maze using one of the following algorithms",
-            "   Recursive Backtracker Algorithm (using iteration)",
-            "   Recursive Backtracker Algorithm (using recursion)",
-            "   Hunt and Kill Algorithm",
-            "   Prim's Algorithm (simplified)",
-            "   Prim's Algorithm (true)",
-            "   Aldous-Broder Algorithm",
-            "   Growing Tree Algorithm",
-            "   Sidewinder Algorithm",
-            "   Binary Tree Algorithm",
-            "   Wilson's Algorithm",
-            "   Eller's Algorithm",
-            "   Kruskal's Algorithm",
-            "   Houston's Algorithm",
-            "   Spiral Backtracker Algorithm",
-            "   Custom Algorithm",
-            "",
-            "Load the previously generated maze",
-            "",
-            "Load a maze from a text file (list of points)",
-            "Load a maze from an image file",
-            "Load a maze from an ascii text file",
-            "",
-            "Save the previously generated maze as a list of points",
-            "Save the previous maze as a png image",
-            "Save the previous maze to ascii text file",
-            "",
-            "Exit"
-        }
-        Menu(MenuOptions, "Menu")
+        Console.ForegroundColor = ConsoleColor.DarkGray
+        Console.WriteLine("hello there")
+        Console.ReadKey()
+
+        'Do
+        '    Console.SetCursorPosition(0, 0)
+        '    Console.Write("Please make the window full screen")
+        'Loop Until Console.WindowWidth > Console.LargestWindowWidth - 10 And Console.WindowHeight > Console.LargestWindowHeight - 5
+        'Dim MenuOptions() As String = {
+        '    "Generate a maze using one of the following algorithms",
+        '    "   Recursive Backtracker Algorithm (using iteration)",
+        '    "   Recursive Backtracker Algorithm (using recursion)",
+        '    "   Hunt and Kill Algorithm",
+        '    "   Prim's Algorithm (simplified)",
+        '    "   Prim's Algorithm (true)",
+        '    "   Aldous-Broder Algorithm",
+        '    "   Growing Tree Algorithm",
+        '    "   Sidewinder Algorithm",
+        '    "   Binary Tree Algorithm",
+        '    "   Wilson's Algorithm",
+        '    "   Eller's Algorithm",
+        '    "   Kruskal's Algorithm",
+        '    "   Houston's Algorithm",
+        '    "   Spiral Backtracker Algorithm",
+        '    "   Custom Algorithm",
+        '    "",
+        '    "Load the previously generated maze",
+        '    "",
+        '    "Load a maze from a text file (list of points)",
+        '    "Load a maze from an image file",
+        '    "Load a maze from an ascii text file",
+        '    "",
+        '    "Save the previously generated maze as a list of points",
+        '    "Save the previous maze as a png image",
+        '    "Save the previous maze to ascii text file",
+        '    "",
+        '    "Exit"
+        '}
+        'Menu(MenuOptions, "Menu")
 
 
 
@@ -289,10 +295,7 @@ Module Module1
         End While
         Return Nothing
     End Function
-    Sub SetBoth(ByVal colour As ConsoleColor)
-        Console.ForegroundColor = colour
-        Console.BackgroundColor = colour
-    End Sub
+
     Function GetValidFileName()
         Dim InvalidCharacters As String = "\/:*?""<>|"
         Console.Clear()
@@ -505,7 +508,7 @@ Module Module1
         Console.ForegroundColor = ConsoleColor.White
         Console.SetCursorPosition(0, Console.WindowHeight - 1)
         Console.Write($"Solving                            Time taken: {timetaken}")
-        'PrintMessageMiddle($"Path length: {Pathlength}   {timetaken}", Console.WindowHeight - 1, ConsoleColor.Green)
+        'PrintMessageMiddle($"Path length: {Pathlength}   {timetaken}", Console.WindowHeight - 1, Color.Green)
     End Sub
     Function ExtractMin(ByVal list As List(Of Node), ByVal dist As Dictionary(Of Node, Double))
         Dim returnnode As Node = list(0)

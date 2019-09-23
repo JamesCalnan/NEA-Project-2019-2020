@@ -1,4 +1,5 @@
 ﻿Imports System.IO
+Imports System.Drawing
 Module Menus
     Sub Menu(ByVal arr() As String, ByVal topitem As String)
         Dim input As String = ""
@@ -12,7 +13,8 @@ Module Menus
         Console.Clear()
         Dim CurrentCol As Integer = Console.CursorTop
         Dim NumOfOptions As Integer = arr.Count
-        MsgColour($"{topitem}: ", ConsoleColor.Yellow)
+        Console.ResetColor()
+        MsgColour($"{topitem}: ", ConsoleColor.White)
         For i = 0 To arr.Count - 1
             If arr(i) = arr(y) Then
                 MsgColour($"> {arr(1)}  ", ConsoleColor.Green)
@@ -21,8 +23,6 @@ Module Menus
             End If
         Next
         While 1
-            Console.BackgroundColor = (ConsoleColor.Black)
-            Console.ForegroundColor = (ConsoleColor.White)
             Dim Info() As String = {"Information for using this program:", "Use the up and down arrow keys for navigating the menus", "Use the enter key to select an option", "Press 'I' to bring up information on the algorithm", "", "When inputting integer values:", "The up and down arrow keys increment by 1", "The right and left arrow keys increment by 10", "The 'M' key will set the number to the maximum value it can be", "The 'H' key will set the number to half of the maximum value it can be"}
             For i = 0 To Info.Count - 1
                 Console.SetCursorPosition(ScreenWidth - Info(i).Length / 2, i)
@@ -387,6 +387,7 @@ Module Menus
                         MsgColour("What Maze Generation Algorithm do you want to use: ", ConsoleColor.Yellow)
                     End If
             End Select
+            Console.ResetColor()
             Console.ForegroundColor = (ConsoleColor.White)
             Dim Count As Integer = 1
             For Each MenuOption In arr

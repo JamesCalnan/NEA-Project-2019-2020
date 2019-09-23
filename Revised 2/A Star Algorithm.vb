@@ -1,4 +1,8 @@
 ﻿Module A_Star_Algorithm
+    Sub SetBoth(ByVal colour As ConsoleColor)
+        Console.BackgroundColor = colour
+        Console.ForegroundColor = colour
+    End Sub
     Sub aStar(ByVal availablepath As List(Of Node), ByVal ShowPath As Boolean, ByVal ShowSolveTime As Boolean, ByVal Delay As Integer, ByVal Evaluation As Boolean)
         Dim start As New Node(availablepath(availablepath.Count - 2).X, availablepath(availablepath.Count - 2).Y)
         Dim target As New Node(availablepath(availablepath.Count - 1).X, availablepath(availablepath.Count - 1).Y)
