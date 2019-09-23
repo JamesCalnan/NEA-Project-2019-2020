@@ -24,8 +24,6 @@ Public Class PriorityQueue(Of T)
         Return items.isEmpty
     End Function
 End Class
-
-
 Public Class QueueItem(Of T)
     Public value As T
     Public priority As Integer
