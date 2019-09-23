@@ -4,6 +4,8 @@ Imports NEA_2019
 Module Module1
     'implement this: https://en.wikipedia.org/wiki/Talk:Selection_sort#Implementations, http://users.eecs.northwestern.edu/~haizhou/357/lec6.pdf
     'https://en.wikipedia.org/wiki/Bellman%E2%80%93Ford_algorithm, https://en.wikipedia.org/wiki/Floyd%E2%80%93Warshall_algorithm#Algorithm
+    'get rid of dead-end filling method when the maze has been braided
+    'give option for partial braid
     'TODO: give user the option to print a path or carve through walls, put in solving menu when the user has loaded an ascii maze from a text file
     Sub Main()
 
@@ -490,7 +492,6 @@ Module Module1
         End If
         Return False
     End Function
-
     Sub Backtrack(ByVal prev As Dictionary(Of Node, Node), ByVal target As Node, ByVal source As Node, ByVal watch As Stopwatch)
         Dim u As Node = target
         Dim Pathlength As Integer = 1
