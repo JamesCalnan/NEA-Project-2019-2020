@@ -5,8 +5,8 @@ Public Class PriorityQueue(Of T)
     Public Sub New()
         items = New Binary_Tree(Of T)
     End Sub
-    Public Sub Enqueue(ByVal value As T, ByVal priority As Integer)
-        items.insert(New QueueItem(Of T)(value, 0))
+    Public Sub Enqueue(ByVal value As T, Optional ByVal priority As Integer = 0)
+        items.insert(New QueueItem(Of T)(value, priority))
     End Sub
     Public Function ExtractMin() As T
         Dim minPriority As QueueItem(Of T) = items.minValue()
@@ -16,45 +16,51 @@ Public Class PriorityQueue(Of T)
     End Function
     Public Sub DecreasePriority(ByVal value As T, ByVal newPriority As Integer)
         Dim tempItem As New QueueItem(Of T)(value, 0)
-        Dim item As QueueItem(Of T) = items.findExact(tempItem).Clone
+        Dim item As QueueItem(Of T) = items.findExact(tempItem).Clone()
         items.delete(item, True)
         items.insert(New QueueItem(Of T)(value, newPriority))
     End Sub
     Public Function IsEmpty()
         Return items.isEmpty
     End Function
+
 End Class
 Public Class QueueItem(Of T)
+
     Public value As T
     Public priority As Integer
     Public Sub New(ByVal _value As T, ByVal _priority As Integer)
         value = _value
         priority = _priority
     End Sub
-    Public Overrides Function Equals(obj As Object) As Boolean
-        Dim item = TryCast(obj, QueueItem(Of T))
-        Return item IsNot Nothing AndAlso
-               EqualityComparer(Of T).Default.Equals(value, item.value) AndAlso
-               priority = item.priority
-    End Function
+
     Public Function CompareTo(ByVal other As QueueItem(Of T)) As Integer
         If ReferenceEquals(Me, other) Then Return 0
         If ReferenceEquals(Nothing, other) Then Return 1
         Return priority.CompareTo(other.priority)
     End Function
-    Public Overrides Function GetHashCode() As Integer
-        Dim hashCode As Long = 913891427
-        hashCode = (hashCode * -1521134295 + EqualityComparer(Of T).Default.GetHashCode(value)).GetHashCode()
-        hashCode = (hashCode * -1521134295 + priority.GetHashCode()).GetHashCode()
-        Return hashCode
-    End Function
     Public Function Clone() As QueueItem(Of T)
         Return New QueueItem(Of T)(value, priority)
+    End Function
+
+    Public Overrides Function Equals(obj As Object) As Boolean
+        Dim item = TryCast(obj, QueueItem(Of T))
+        Return item IsNot Nothing AndAlso
+               EqualityComparer(Of T).Default.Equals(value, item.value)
+    End Function
+
+    Public Overrides Function GetHashCode() As Integer
+        Dim hashCode As Long = 1113510858
+        hashCode = (hashCode * -1521134295 + EqualityComparer(Of T).Default.GetHashCode(value)).GetHashCode()
+        Return hashCode
     End Function
 End Class
 
 Public Class Binary_Tree(Of T)
     Public root As TreeItem(Of T)
+    Public Sub Binary_Tree()
+        root = Nothing
+    End Sub
     Public Sub delete(ByVal value As QueueItem(Of T), Optional ByVal strict As Boolean = False)
         root = deleteRecursive(root, value, strict)
     End Sub
@@ -76,13 +82,10 @@ Public Class Binary_Tree(Of T)
         root = insertRecursive(root, value)
     End Sub
     Private Function insertRecursive(ByVal root As TreeItem(Of T), ByVal value As QueueItem(Of T))
-        If IsNothing(root) Then
-            root = New TreeItem(Of T)(value)
-            Return root
-        End If
+        If IsNothing(root) Then Return New TreeItem(Of T)(value)
         If value.CompareTo(root.value) < 0 Then
             root.left = insertRecursive(root.left, value)
-        ElseIf value.CompareTo(root.value) > 0 Then
+        ElseIf value.CompareTo(root.value) >= 0 Then
             root.right = insertRecursive(root.right, value)
         End If
         Return root
@@ -162,12 +165,14 @@ Public Class Binary_Tree(Of T)
     Private Function findExactRecursive(ByVal root As TreeItem(Of T), ByVal value As QueueItem(Of T)) As TreeItem(Of T)
         If IsNothing(root) Then Return Nothing
         If value.Equals(root.value) Then Return root
+
         Dim output As TreeItem(Of T)
         output = findExactRecursive(root.left, value)
         If Not IsNothing(output) Then Return output
         output = findExactRecursive(root.right, value)
         If Not IsNothing(output) Then Return output
         Return output
+
     End Function
     Private Function minValue(ByVal root As TreeItem(Of T)) As QueueItem(Of T)
         Dim min As QueueItem(Of T) = root.value
