@@ -164,7 +164,7 @@ Module Menus
                                 "Solve using the left-hand rule",
                                 "Solve using the right-hand rule",
                                 "",
-                                "Play the maze", "Braid (remove dead ends)",
+                                "Play the maze", "Braid (remove dead ends)", "Partial braid (remove some dead ends)", "Make the maze sparse (remove some passages)",
                                 "",
             "Get the average corridor length",
             "Get the amount of corners in the maze",
@@ -278,7 +278,7 @@ Module Menus
                                 "Solve using the left-hand rule",
                                 "Solve using the right-hand rule",
                                 "",
-                                "Play the maze", "Braid (remove dead ends)",
+                                "Play the maze", "Braid (remove dead ends)", "Partial braid (remove some dead ends)", "Make the maze sparse (remove some passages)",
                                 "",
             "Get the average corridor length",
             "Get the amount of corners in the maze",
@@ -422,7 +422,7 @@ Module Menus
             "Solve using the right-hand rule",
             "",
             "Play the maze",
-            "Braid (remove dead ends)",
+            "Braid (remove dead ends)", "Partial braid (remove some dead ends)", "Make the maze sparse (remove some passages)",
             "",
             "Get the average corridor length",
             "Get the amount of corners in the maze",
@@ -689,8 +689,43 @@ Module Menus
             showpath = HorizontalYesNo(YposAfterMaze + 2, "Do you want to show the steps in solving the maze: ", True, False, False)
             If showpath Then solvingdelay = GetIntInputArrowKeys("Delay when solving the maze: ", 100, 0, True)
             Lee(Maze, showpath, solvingdelay)
-        ElseIf input = "Braid the maze (remove dead ends)" Then
-            PartialBraid(Maze)
+        ElseIf input = "Braid (remove dead ends)" Or input = "Partial braid (remove some dead ends)" Then
+            If input = "Braid (remove dead ends)" Then
+                EliminateDeadEnds(Maze)
+            ElseIf input = "Partial braid (remove some dead ends)" Then
+                PartialBraid(Maze)
+            End If
+            Dim GreatestX As Integer
+            For Each node In Maze
+                If GreatestX < node.X Then GreatestX = node.X
+            Next
+            Dim temparr() As String = {"Solve using the A* algorithm",
+                "Solve using Dijkstra's algorithm",
+                "Solve using Breadth-first search",
+                "Solve using Depth-first search (using iteration)",
+                "Solve using Depth-first search (using recursion)",
+                "Solve using a recursive algorithm",
+                "Solve using the Lee Algorithm (Wave Propagation)",
+                 "Solve using the dead end filling method",
+                "Solve using the left-hand rule",
+                "Solve using the right-hand rule",
+                "",
+                "Play the maze", "Make the maze sparse (remove some passages)",
+                "",
+                "Get the average corridor length",
+                "Get the amount of corners in the maze",
+                   "Get the amount of junctions in the maze",
+               "Get the amount of Dead-ends in the maze",
+               "",
+               "Save the maze as points",
+               "Save the maze as a png image",
+               "Save the maze as an ascii text file",
+               "",
+               "Clear the maze and return to the menu"}
+            input = SolvingMenu(temparr, "What would you like to do with the maze", GreatestX + 3, 3)
+            SolvingInput(input, showpath, YposAfterMaze, solvingdelay, Maze, "")
+        ElseIf input = "Make the maze sparse (remove some passages)" Then
+            Sparsify(Maze)
             Dim GreatestX As Integer
             For Each node In Maze
                 If GreatestX < node.X Then GreatestX = node.X
@@ -707,6 +742,7 @@ Module Menus
             "Solve using the right-hand rule",
             "",
             "Play the maze",
+            "Braid (remove dead ends)", "Partial braid (remove some dead ends)", "Make the maze sparse (remove some passages)",
             "",
             "Get the average corridor length",
             "Get the amount of corners in the maze",
@@ -721,36 +757,36 @@ Module Menus
             input = SolvingMenu(temparr, "What would you like to do with the maze", GreatestX + 3, 3)
             SolvingInput(input, showpath, YposAfterMaze, solvingdelay, Maze, "")
         ElseIf input = "Get the amount of Dead-ends in the maze" Then
-            Console.SetCursorPosition(0, Console.WindowHeight - 1)
-            SetBoth(ConsoleColor.Black)
-            Console.ForegroundColor = ConsoleColor.White
-            Dim deCount As Integer = GetDeadEndCount(Maze)
-            Console.Write($"Number of dead-ends: {deCount}     Percentage of the maze: {Math.Ceiling((deCount / Maze.Count) * 100)}%")
-            Console.ReadKey()
-        ElseIf input = "Get the amount of junctions in the maze" Then
-            Console.SetCursorPosition(0, Console.WindowHeight - 1)
-            SetBoth(ConsoleColor.Black)
-            Console.ForegroundColor = ConsoleColor.White
-            Dim jCount As Integer = GetJunctionCount(Maze)
-            Console.Write($"Number of junctions: {jCount}       Percentage of the maze: {Math.Ceiling((jCount / Maze.Count) * 100)}%")
-            Console.ReadKey()
-        ElseIf input = "Get the amount of corners in the maze" Then
-            Console.SetCursorPosition(0, Console.WindowHeight - 1)
-            SetBoth(ConsoleColor.Black)
-            Console.ForegroundColor = ConsoleColor.White
-            Dim cCount As Integer = GetCornerCount(Maze)
-            Console.Write($"Number of corners: {cCount}     Percentage of the maze: {Math.Ceiling((cCount / Maze.Count) * 100)}%")
-            Console.ReadKey()
-        ElseIf input = "Get the average corridor length" Then
-            Console.SetCursorPosition(0, Console.WindowHeight - 1)
-            SetBoth(ConsoleColor.Black)
-            Console.ForegroundColor = ConsoleColor.White
-            Console.Write($"Average corridor length: {Math.Ceiling(StraightWays(Maze))}")
-            Console.ReadKey()
-        ElseIf input = "Save the maze as an ascii text file" Then
-            SaveMazeAscii(Maze)
-        ElseIf input = "" Then
-            Console.Clear()
+                Console.SetCursorPosition(0, Console.WindowHeight - 1)
+                SetBoth(ConsoleColor.Black)
+                Console.ForegroundColor = ConsoleColor.White
+                Dim deCount As Integer = GetDeadEndCount(Maze)
+                Console.Write($"Number of dead-ends: {deCount}     Percentage of the maze: {Math.Ceiling((deCount / Maze.Count) * 100)}%")
+                Console.ReadKey()
+            ElseIf input = "Get the amount of junctions in the maze" Then
+                Console.SetCursorPosition(0, Console.WindowHeight - 1)
+                SetBoth(ConsoleColor.Black)
+                Console.ForegroundColor = ConsoleColor.White
+                Dim jCount As Integer = GetJunctionCount(Maze)
+                Console.Write($"Number of junctions: {jCount}       Percentage of the maze: {Math.Ceiling((jCount / Maze.Count) * 100)}%")
+                Console.ReadKey()
+            ElseIf input = "Get the amount of corners in the maze" Then
+                Console.SetCursorPosition(0, Console.WindowHeight - 1)
+                SetBoth(ConsoleColor.Black)
+                Console.ForegroundColor = ConsoleColor.White
+                Dim cCount As Integer = GetCornerCount(Maze)
+                Console.Write($"Number of corners: {cCount}     Percentage of the maze: {Math.Ceiling((cCount / Maze.Count) * 100)}%")
+                Console.ReadKey()
+            ElseIf input = "Get the average corridor length" Then
+                Console.SetCursorPosition(0, Console.WindowHeight - 1)
+                SetBoth(ConsoleColor.Black)
+                Console.ForegroundColor = ConsoleColor.White
+                Console.Write($"Average corridor length: {Math.Ceiling(StraightWays(Maze))}")
+                Console.ReadKey()
+            ElseIf input = "Save the maze as an ascii text file" Then
+                SaveMazeAscii(Maze)
+            ElseIf input = "" Then
+                Console.Clear()
             Console.WriteLine("A critical error has occured that has caused the program to no longer work")
             End
         End If

@@ -263,6 +263,7 @@
     <Compile Include="Recursive Solving Method.vb" />
     <Compile Include="Selection Sort Algorithm.vb" />
     <Compile Include="Sidewinder Algorithm.vb" />
+    <Compile Include="Sparse Maze.vb" />
     <Compile Include="Spiral Backtracker Algorithm.vb" />
     <Compile Include="Wall Follower.vb" />
     <Compile Include="Wilsons Algorithm.vb" />
