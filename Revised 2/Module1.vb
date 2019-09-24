@@ -154,7 +154,7 @@ Module Module1
     End Sub
     Function LoadMazeAscii() As List(Of Node)
         Console.Clear()
-        Dim x, y As Integer
+        Dim y As Integer
         Console.Write("File Name of the maze to load (don't include .txt): ")
         Dim filename As String = Console.ReadLine
         filename += ".txt"
