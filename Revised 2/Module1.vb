@@ -185,6 +185,7 @@ Module Module1
                 If node.X > gX Then gX = node.X
                 If node.Y > gY Then gY = node.Y
             Next
+            If gX > Console.WindowWidth - 57 Or gY > Console.WindowHeight - 6 Then Return Nothing
             PrintMazeHorizontally(Maze, gX, gY)
             PrintStartandEnd(Maze)
             Console.BackgroundColor = ConsoleColor.Black
@@ -201,7 +202,7 @@ Module Module1
             "Solve using the right-hand rule",
             "",
             "Play the maze",
-            "Braid the maze (remove dead ends)",
+            "Braid (remove dead ends)",
             "",
             "Get the average corridor length",
             "Get the amount of corners in the maze",
@@ -377,6 +378,30 @@ Module Module1
                     End If
                 Next
             Next
+            Dim temparr() As String = {"Solve using the A* algorithm",
+            "Solve using Dijkstra's algorithm",
+            "Solve using Breadth-first search",
+            "Solve using Depth-first search (using iteration)",
+            "Solve using Depth-first search (using recursion)",
+            "Solve using a recursive algorithm",
+            "Solve using the Lee Algorithm (Wave Propagation)",
+            "Solve using the dead end filling method",
+            "Solve using the left-hand rule",
+            "Solve using the right-hand rule",
+            "",
+            "Play the maze",
+            "Braid (remove dead ends)",
+            "",
+            "Get the average corridor length",
+            "Get the amount of corners in the maze",
+            "Get the amount of junctions in the maze",
+            "Get the amount of Dead-ends in the maze",
+            "",
+            "Save the maze as points",
+            "Save the maze as a png image",
+            "Save the maze as an ascii text file",
+            "",
+            "Clear the maze and return to the menu"}
             Dim Finish As Node
             Dim Start As Node
             If PathOnMaze Then
@@ -414,30 +439,7 @@ Module Module1
                     'Solving of the maze goes here
                     Console.BackgroundColor = ConsoleColor.Black
                     Console.ForegroundColor = ConsoleColor.White
-                    Dim temparr() As String = {"Solve using the A* algorithm",
-            "Solve using Dijkstra's algorithm",
-            "Solve using Breadth-first search",
-            "Solve using Depth-first search (using iteration)",
-            "Solve using Depth-first search (using recursion)",
-            "Solve using a recursive algorithm",
-            "Solve using the Lee Algorithm (Wave Propagation)",
-            "Solve using the dead end filling method",
-            "Solve using the left-hand rule",
-            "Solve using the right-hand rule",
-            "",
-            "Play the maze",
-            "Braid the maze (remove dead ends)",
-            "",
-            "Get the average corridor length",
-            "Get the amount of corners in the maze",
-            "Get the amount of junctions in the maze",
-            "Get the amount of Dead-ends in the maze",
-            "",
-            "Save the maze as points",
-            "Save the maze as a png image",
-            "Save the maze as an ascii text file",
-            "",
-            "Clear the maze and return to the menu"}
+
                     Dim Input As String = SolvingMenu(temparr, "What would you like to do with the maze", GreatestX + 3, 3)
                     SolvingInput(Input, True, GreatestY, 0, Maze, "")
                 End If
@@ -454,25 +456,6 @@ Module Module1
                 'Solving of the maze goes here
                 Console.BackgroundColor = ConsoleColor.Black
                 Console.ForegroundColor = ConsoleColor.White
-                Dim temparr() As String = {"Solve using the A* algorithm",
-            "Solve using Dijkstra's algorithm",
-            "Solve using Breadth-first search",
-            "Solve using Depth-first search (using iteration)",
-            "Solve using Depth-first search (using recursion)",
-            "Solve using a recursive algorithm",
-            "Solve using the Lee Algorithm (Wave Propagation)",
-            "Solve using the dead end filling method",
-            "Solve using the left-hand rule",
-            "Solve using the right-hand rule",
-            "",
-            "Play the maze",
-            "Braid the maze (remove dead ends)",
-            "",
-            "Save the maze as points",
-            "Save the maze as a png image",
-            "Save the maze as an ascii text file",
-            "",
-            "Clear the maze and return to the menu"}
                 Dim Input As String = SolvingMenu(temparr, "What would you like to do with the maze", GreatestX + 3, 3)
                 SolvingInput(Input, True, GreatestY, 0, Maze, "")
             End If

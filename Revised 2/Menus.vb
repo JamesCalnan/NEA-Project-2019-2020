@@ -164,7 +164,7 @@ Module Menus
                                 "Solve using the left-hand rule",
                                 "Solve using the right-hand rule",
                                 "",
-                                "Play the maze", "Braid the maze (remove dead ends)",
+                                "Play the maze", "Braid (remove dead ends)",
                                 "",
             "Get the average corridor length",
             "Get the amount of corners in the maze",
@@ -278,7 +278,7 @@ Module Menus
                                 "Solve using the left-hand rule",
                                 "Solve using the right-hand rule",
                                 "",
-                                "Play the maze", "Braid the maze (remove dead ends)",
+                                "Play the maze", "Braid (remove dead ends)",
                                 "",
             "Get the average corridor length",
             "Get the amount of corners in the maze",
@@ -337,7 +337,6 @@ Module Menus
                             Console.ReadKey()
                         Else
                             PreviousMaze = tempMaze
-
                         End If
                     ElseIf y = arr.Count - 1 Then
                         End
@@ -423,7 +422,7 @@ Module Menus
             "Solve using the right-hand rule",
             "",
             "Play the maze",
-            "Braid the maze (remove dead ends)",
+            "Braid (remove dead ends)",
             "",
             "Get the average corridor length",
             "Get the amount of corners in the maze",
@@ -691,7 +690,7 @@ Module Menus
             If showpath Then solvingdelay = GetIntInputArrowKeys("Delay when solving the maze: ", 100, 0, True)
             Lee(Maze, showpath, solvingdelay)
         ElseIf input = "Braid the maze (remove dead ends)" Then
-            EliminateDeadEnds(Maze)
+            PartialBraid(Maze)
             Dim GreatestX As Integer
             For Each node In Maze
                 If GreatestX < node.X Then GreatestX = node.X

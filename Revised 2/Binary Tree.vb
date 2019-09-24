@@ -28,7 +28,6 @@ Public Class PriorityQueue(Of T)
     End Function
 End Class
 Public Class QueueItem(Of T)
-
     Public value As T
     Public priority As Integer
     Public Sub New(ByVal _value As T, ByVal _priority As Integer)
@@ -44,13 +43,11 @@ Public Class QueueItem(Of T)
     Public Function Clone() As QueueItem(Of T)
         Return New QueueItem(Of T)(value, priority)
     End Function
-
     Public Overrides Function Equals(obj As Object) As Boolean
         Dim item = TryCast(obj, QueueItem(Of T))
         Return item IsNot Nothing AndAlso
                EqualityComparer(Of T).Default.Equals(value, item.value)
     End Function
-
     Public Overrides Function GetHashCode() As Integer
         Dim hashCode As Long = 1113510858
         hashCode = (hashCode * -1521134295 + EqualityComparer(Of T).Default.GetHashCode(value)).GetHashCode()
