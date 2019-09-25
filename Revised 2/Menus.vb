@@ -710,7 +710,7 @@ Module Menus
                 "Solve using the left-hand rule",
                 "Solve using the right-hand rule",
                 "",
-                "Play the maze", "Make the maze sparse (remove some passages)",
+                "Play the maze",
                 "",
                 "Get the average corridor length",
                 "Get the amount of corners in the maze",

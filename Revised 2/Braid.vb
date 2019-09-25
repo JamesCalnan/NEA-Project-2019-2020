@@ -32,10 +32,12 @@ Module Braid
                 For Each thing In NodesToRemove
                     AvailableNodes.Remove(thing)
                 Next
-                Dim PositionInMaze As Node = AvailableNodes(r.Next(0, AvailableNodes.Count))
-                Dim PosToBeAdded As Node = MidPoint(PositionInMaze, Node)
-                NodesToAdd.Add(PosToBeAdded)
-                PosToBeAdded.Print("██")
+                If AvailableNodes.Count <> 0 Then
+                    Dim PositionInMaze As Node = AvailableNodes(r.Next(0, AvailableNodes.Count))
+                    Dim PosToBeAdded As Node = MidPoint(PositionInMaze, Node)
+                    NodesToAdd.Add(PosToBeAdded)
+                    PosToBeAdded.Print("██")
+                End If
             End If
         Next
         For Each node In NodesToAdd
@@ -83,10 +85,12 @@ Module Braid
                     For Each thing In NodesToRemove
                         AvailableNodes.Remove(thing)
                     Next
-                    Dim PositionInMaze As Node = AvailableNodes(r.Next(0, AvailableNodes.Count))
-                    Dim PosToBeAdded As Node = MidPoint(PositionInMaze, node)
-                    NodesToAdd.Add(PosToBeAdded)
-                    PosToBeAdded.Print("██")
+                    If AvailableNodes.Count <> 0 Then
+                        Dim PositionInMaze As Node = AvailableNodes(r.Next(0, AvailableNodes.Count))
+                        Dim PosToBeAdded As Node = MidPoint(PositionInMaze, node)
+                        NodesToAdd.Add(PosToBeAdded)
+                        PosToBeAdded.Print("██")
+                    End If
                 End If
             End If
         Next

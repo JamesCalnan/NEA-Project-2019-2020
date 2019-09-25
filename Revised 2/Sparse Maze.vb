@@ -11,12 +11,7 @@
         Dim GreatestX, GreatestY As Integer
         GreatestX = 0
         GreatestY = 0
-        Console.ForegroundColor = ConsoleColor.White
-        Console.BackgroundColor = ConsoleColor.Black
-        Console.SetCursorPosition(1, 1)
-        Console.Write("Current Process: Finding dead ends")
-        Console.ForegroundColor = FillColour
-        Console.BackgroundColor = FillColour
+        SetBoth(FillColour)
         Dim stopwatch As Stopwatch = Stopwatch.StartNew()
         For Each node In Maze
             If node.X > GreatestX Then GreatestX = node.X

@@ -29,6 +29,7 @@
                 SetBoth(back)
             End If
             Dim RecentCells As List(Of Cell) = Neighbour(CurrentCell, VisitedCells, Limits, True)
+            'If RecentCells.Count = 0 Then RecentCells = RanNeighbour(CurrentCell, Limits)
             If RecentCells.Count > 0 Then 'done
                 Dim TemporaryCell As Cell = RecentCells(r.Next(0, RecentCells.Count))
                 VisitedCells(TemporaryCell) = True
@@ -66,6 +67,7 @@
         End If
         Dim ypos As Integer = Console.CursorTop
         AddStartAndEnd(ReturnablePath, Limits, 0)
+        Unicursal(ReturnablePath)
         Console.SetCursorPosition(0, ypos)
         Return ReturnablePath
     End Function
