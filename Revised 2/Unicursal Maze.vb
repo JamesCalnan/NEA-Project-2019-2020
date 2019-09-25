@@ -1,28 +1,18 @@
 ﻿Module Unicursal_Maze
     Sub Unicursal(ByVal Maze As List(Of Node))
-
-        'steps:
-        '   Flood fill to find the available path
-        '   make the availablepath a wall, this means enlarging the maze so that the path is 3 wide
-        '   done
         'https://pbs.twimg.com/media/BLr0vnDCAAE3ZxU.jpg:large
         Console.Clear()
         Maze.RemoveAt(Maze.Count - 1)
         Maze.RemoveAt(Maze.Count - 1)
-        Dim AlreadyAdded As New Dictionary(Of Node, Boolean)
+        Dim AlreadyAdded As New List(Of Node)
         SetBoth(ConsoleColor.Red)
         For Each node In Maze
             node.update(node.X * 2, node.Y * 2)
         Next
         Dim copyMaze As List(Of Node) = Maze
-        For Each node In Maze
-            AlreadyAdded(node) = False
-        Next
         Dim newMaze As New List(Of Node)
         'enlarge maze
         For Each node In Maze
-            SetBoth(ConsoleColor.White)
-            'node.Print("XX")
             Dim SurroundingNodes As New List(Of Node) From {
                 New Node(node.X + 2, node.Y),
                 New Node(node.X + 2, node.Y + 1),
@@ -38,6 +28,9 @@
                 New Node(node.X - 2, node.Y + 1)
             }
             Dim NodesToRemove As New List(Of Node)
+            For Each SurroundingNode In SurroundingNodes
+                If AlreadyAdded.Contains(SurroundingNode) Then NodesToRemove.Add(SurroundingNode)
+            Next
             For Each NodetoRemove In NodesToRemove
                 SurroundingNodes.Remove(NodetoRemove)
             Next
@@ -65,7 +58,6 @@
                 newMaze.Remove(New Node(node.X, node.Y - 1))
             End If
         Next
-
         SetBoth(ConsoleColor.White)
         Dim Gx, Gy As Integer
         For Each node In newMaze
@@ -73,8 +65,8 @@
             If node.X > Gx Then Gx = node.X
             If node.Y > Gy Then Gy = node.Y
         Next
-        Dim limits() As Integer = {5, 3, Gx, Gy}
-        AddStartAndEnd(Maze, limits, 0)
+        Dim limits() As Integer = {10, 5, Gx, Gy}
+        AddStartAndEnd(newMaze, limits, 0, True)
         Console.ReadKey()
     End Sub
 End Module

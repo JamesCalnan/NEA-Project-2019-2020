@@ -91,13 +91,14 @@
             End If
         Next
     End Sub
-    Sub AddStartAndEnd(ByRef Maze As List(Of Node), ByVal Limits() As Integer, ByVal EvenWidth As Integer)
+    Sub AddStartAndEnd(ByRef Maze As List(Of Node), ByVal Limits() As Integer, ByVal EvenWidth As Integer, Optional ByVal ChooseFirstAndLast As Boolean = False)
+        SetBoth(ConsoleColor.Red)
         Dim AvailableStartPositions As New List(Of Node)
         For x = Limits(0) + 3 To Limits(2)
             If Maze.Contains(New Node(x, Limits(1))) Then AvailableStartPositions.Add(New Node(x, Limits(1)))
         Next
         Dim R As New Random
-        Dim Index As Integer = R.Next(0, AvailableStartPositions.Count)
+        Dim Index As Integer = If(ChooseFirstAndLast, 0, R.Next(0, AvailableStartPositions.Count))
         Maze.Add(New Node(AvailableStartPositions(Index).X, AvailableStartPositions(Index).Y - 1))
         SetBoth(ConsoleColor.Red)
         Maze(Maze.Count - 1).Print("██")
@@ -105,7 +106,7 @@
         For x = Limits(0) + 3 To Limits(2)
             If Maze.Contains(New Node(x, Limits(3))) Then AvailableStartPositions.Add(New Node(x, Limits(3)))
         Next
-        Index = R.Next(0, AvailableStartPositions.Count)
+        Index = If(ChooseFirstAndLast, AvailableStartPositions.Count - 1, R.Next(0, AvailableStartPositions.Count))
         Maze.Add(New Node(AvailableStartPositions(Index).X, AvailableStartPositions(Index).Y + 1))
         SetBoth(ConsoleColor.Green)
         Maze(Maze.Count - 1).Print("██")
