@@ -1,99 +1,99 @@
 ﻿Module Prims
-    Function Prims_Simplified(ByVal Limits() As Integer, ByVal delay As Integer, ByVal ShowMazeGeneration As Boolean)
+    Function Prims_Simplified(limits() As Integer, delay As Integer, showMazeGeneration As Boolean)
         'Assumes the weights of each cell in the grid is the same and therefore chooses a random cell from the frontier set
-        Dim R As New Random
+        Dim r As New Random
         Dim availablepath As New List(Of Cell)
-        Dim FrontierSet As New List(Of Cell)
-        Dim CurrentCell As Cell = PickRandomStartingCell(Limits) '(Limits(0) + 3, Limits(1) + 2)
-        Dim VisitedCells As Dictionary(Of Cell, Boolean) = InitialiseVisited(Limits)
-        Dim WallCell As Cell
-        Dim ReturnablePath As New List(Of Node)
-        VisitedCells(CurrentCell) = True
+        Dim frontierSet As New List(Of Cell)
+        Dim currentCell As Cell = PickRandomStartingCell(limits) '(Limits(0) + 3, Limits(1) + 2)
+        Dim visitedCells As Dictionary(Of Cell, Boolean) = InitialiseVisited(limits)
+        Dim wallCell As Cell
+        Dim returnablePath As New List(Of Node)
+        visitedCells(currentCell) = True
         SetBoth(ConsoleColor.White)
-        If ShowMazeGeneration Then CurrentCell.Print("██")
-        ReturnablePath.Add(New Node(CurrentCell.X, CurrentCell.Y))
+        If showMazeGeneration Then currentCell.Print("██")
+        returnablePath.Add(New Node(currentCell.X, currentCell.Y))
         Dim stopwatch As Stopwatch = Stopwatch.StartNew()
         While True
             If ExitCase() Then Return Nothing
-            For Each cell As Cell In Neighbour(CurrentCell, VisitedCells, Limits, True)
-                If Not FrontierSet.Contains(cell) Then FrontierSet.Add(cell)
+            For Each cell As Cell In Neighbour(currentCell, visitedCells, limits, True)
+                If Not frontierSet.Contains(cell) Then frontierSet.Add(cell)
             Next
-            If FrontierSet.Count = 0 Then Exit While
-            CurrentCell = FrontierSet(R.Next(0, FrontierSet.Count))
-            Dim AdjancencyList() As Integer = AdjacentCheck(CurrentCell, VisitedCells)
-            Dim PreviousCell As Cell = PickAdjancentCell(CurrentCell, AdjancencyList)
-            WallCell = MidPoint(CurrentCell, PreviousCell)
-            If ShowMazeGeneration Then
-                WallCell.Print("██")
-                CurrentCell.Print("██")
+            If frontierSet.Count = 0 Then Exit While
+            currentCell = frontierSet(r.Next(0, frontierSet.Count))
+            Dim adjancencyList() As Integer = AdjacentCheck(currentCell, visitedCells)
+            Dim previousCell As Cell = PickAdjancentCell(currentCell, adjancencyList)
+            wallCell = MidPoint(currentCell, previousCell)
+            If showMazeGeneration Then
+                wallCell.Print("██")
+                currentCell.Print("██")
                 Threading.Thread.Sleep(delay)
             End If
-            VisitedCells(CurrentCell) = True
-            FrontierSet.Remove(CurrentCell)
-            AddToPath(ReturnablePath, CurrentCell, WallCell)
+            visitedCells(currentCell) = True
+            frontierSet.Remove(currentCell)
+            AddToPath(returnablePath, currentCell, wallCell)
         End While
         PrintMessageMiddle($"Time taken to generate the maze: {stopwatch.Elapsed.TotalSeconds}", 1, ConsoleColor.Yellow)
-        If Not ShowMazeGeneration Then
+        If Not showMazeGeneration Then
             SetBoth(ConsoleColor.White)
-            PrintMazeHorizontally(ReturnablePath, Limits(2), Limits(3))
+            PrintMazeHorizontally(returnablePath, limits(2), limits(3))
         End If
         Dim ypos As Integer = Console.CursorTop
-        AddStartAndEnd(ReturnablePath, Limits, 0)
+        AddStartAndEnd(returnablePath, limits, 0)
         Console.SetCursorPosition(0, ypos)
-        Return ReturnablePath
+        Return returnablePath
     End Function
-    Function Prims_True(ByVal Limits() As Integer, ByVal delay As Integer, ByVal ShowMazeGeneration As Boolean)
+    Function Prims_True(limits() As Integer, delay As Integer, showMazeGeneration As Boolean)
         'Assigns a random weight between 0, 99 to each available in the grid, it then chooses the cell with the lowest weight out of the frontier set
-        Dim R As New Random
+        Dim r As New Random
         Dim availablepath As New List(Of Cell)
-        Dim FrontierSet As New List(Of Cell)
-        Dim WallCell As Cell
-        Dim ReturnablePath As New List(Of Node)
-        Dim VisitedCells As Dictionary(Of Cell, Boolean) = InitialiseVisited(Limits)
+        Dim frontierSet As New List(Of Cell)
+        Dim wallCell As Cell
+        Dim returnablePath As New List(Of Node)
+        Dim visitedCells As Dictionary(Of Cell, Boolean) = InitialiseVisited(limits)
         Dim stopwatch As Stopwatch = Stopwatch.StartNew()
-        Dim Weights As New Dictionary(Of Cell, Integer)
-        For y = Limits(1) To Limits(3) Step 2
-            For x = Limits(0) + 3 To Limits(2) - 1 Step 4
+        Dim weights As New Dictionary(Of Cell, Integer)
+        For y = limits(1) To limits(3) Step 2
+            For x = limits(0) + 3 To limits(2) - 1 Step 4
                 Dim tempNode As New Cell(x, y)
-                Weights(tempNode) = R.Next(0, 99) 'Assigning random weights to each cell in the grid
+                weights(tempNode) = r.Next(0, 99) 'Assigning random weights to each cell in the grid
             Next
         Next
-        Dim CurrentCell As Cell = PickRandomStartingCell(Limits) '(FrontierSet(idx).X, FrontierSet(idx).Y) '(Limits(0) + 3, Limits(1) + 2)
-        VisitedCells(CurrentCell) = True
+        Dim currentCell As Cell = PickRandomStartingCell(limits) '(FrontierSet(idx).X, FrontierSet(idx).Y) '(Limits(0) + 3, Limits(1) + 2)
+        visitedCells(currentCell) = True
         SetBoth(ConsoleColor.White)
-        If ShowMazeGeneration Then CurrentCell.Print("██")
-        ReturnablePath.Add(New Node(CurrentCell.X, CurrentCell.Y))
+        If showMazeGeneration Then currentCell.Print("██")
+        returnablePath.Add(New Node(currentCell.X, currentCell.Y))
         While True
             If ExitCase() Then Return Nothing
-            For Each cell As Cell In Neighbour(CurrentCell, VisitedCells, Limits, True)
-                If Not FrontierSet.Contains(cell) Then FrontierSet.Add(cell)
+            For Each cell As Cell In Neighbour(currentCell, visitedCells, limits, True)
+                If Not frontierSet.Contains(cell) Then frontierSet.Add(cell)
             Next
-            If FrontierSet.Count = 0 Then Exit While
-            Dim HighestWeightCell As Cell = FrontierSet(0)
-            For Each cell In FrontierSet
-                If Weights(HighestWeightCell) < Weights(cell) Then HighestWeightCell = cell
+            If frontierSet.Count = 0 Then Exit While
+            Dim highestWeightCell As Cell = frontierSet(0)
+            For Each cell In frontierSet
+                If weights(highestWeightCell) < weights(cell) Then highestWeightCell = cell
             Next
-            CurrentCell = HighestWeightCell
-            Dim AdjancencyList() As Integer = AdjacentCheck(CurrentCell, VisitedCells)
-            Dim PreviousCell As Cell = PickAdjancentCell(CurrentCell, AdjancencyList)
-            WallCell = MidPoint(CurrentCell, PreviousCell)
-            If ShowMazeGeneration Then
-                WallCell.Print("██")
-                CurrentCell.Print("██")
+            currentCell = highestWeightCell
+            Dim adjancencyList() As Integer = AdjacentCheck(currentCell, visitedCells)
+            Dim previousCell As Cell = PickAdjancentCell(currentCell, adjancencyList)
+            wallCell = MidPoint(currentCell, previousCell)
+            If showMazeGeneration Then
+                wallCell.Print("██")
+                currentCell.Print("██")
             End If
-            VisitedCells(CurrentCell) = True
-            FrontierSet.Remove(CurrentCell)
-            AddToPath(ReturnablePath, CurrentCell, WallCell)
+            visitedCells(currentCell) = True
+            frontierSet.Remove(currentCell)
+            AddToPath(returnablePath, currentCell, wallCell)
             Threading.Thread.Sleep(delay)
         End While
         PrintMessageMiddle($"Time taken to generate the maze: {stopwatch.Elapsed.TotalSeconds}", 1, ConsoleColor.Yellow)
-        If Not ShowMazeGeneration Then
+        If Not showMazeGeneration Then
             SetBoth(ConsoleColor.White)
-            PrintMazeHorizontally(ReturnablePath, Limits(2), Limits(3))
+            PrintMazeHorizontally(returnablePath, limits(2), limits(3))
         End If
         Dim ypos As Integer = Console.CursorTop
-        AddStartAndEnd(ReturnablePath, Limits, 0)
+        AddStartAndEnd(returnablePath, limits, 0)
         Console.SetCursorPosition(0, ypos)
-        Return ReturnablePath
+        Return returnablePath
     End Function
 End Module

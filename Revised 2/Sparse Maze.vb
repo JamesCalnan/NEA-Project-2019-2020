@@ -1,54 +1,54 @@
-﻿Module Sparse_Maze
-    Sub Sparsify(ByVal Maze As List(Of Node))
-        Dim DeadEnds As New List(Of Node)
-        Dim Start As New Node(Maze(Maze.Count - 2).X, Maze(Maze.Count - 2).Y)
-        Dim Goal As New Node(Maze(Maze.Count - 1).X, Maze(Maze.Count - 1).Y)
-        Dim Visited As New Dictionary(Of Node, Boolean)
-        Dim FillColour As ConsoleColor = ConsoleColor.Black
-        Dim EditedMaze As New List(Of Node)
-        Dim NotPath As New List(Of Node)
+﻿Module SparseMaze
+    Sub Sparsify(maze As List(Of Node))
+        Dim deadEnds As New List(Of Node)
+        Dim start As New Node(maze(maze.Count - 2).X, maze(maze.Count - 2).Y)
+        Dim goal As New Node(maze(maze.Count - 1).X, maze(maze.Count - 1).Y)
+        Dim visited As New Dictionary(Of Node, Boolean)
+        Dim fillColour = ConsoleColor.Black
+        Dim editedMaze As New List(Of Node)
+        Dim notPath As New List(Of Node)
         Dim r As New Random
-        Dim GreatestX, GreatestY As Integer
-        GreatestX = 0
-        GreatestY = 0
-        SetBoth(FillColour)
+        Dim greatestX, greatestY As Integer
+        greatestX = 0
+        greatestY = 0
+        SetBoth(fillColour)
         Dim stopwatch As Stopwatch = Stopwatch.StartNew()
-        For Each node In Maze
-            If node.X > GreatestX Then GreatestX = node.X
-            If node.Y > GreatestY Then GreatestY = node.Y
-            If node.IsDeadEnd(Maze) Then
-                If node.Equals(Start) Or node.Equals(Goal) Then Continue For
-                DeadEnds.Add(node)
+        For Each node In maze
+            If node.X > greatestX Then greatestX = node.X
+            If node.Y > greatestY Then greatestY = node.Y
+            If node.IsDeadEnd(maze) Then
+                If node.Equals(start) Or node.Equals(goal) Then Continue For
+                deadEnds.Add(node)
             End If
-            Visited(node) = False
+            visited(node) = False
         Next
-        If DeadEnds.Count > 0 Then
+        If deadEnds.Count > 0 Then
             Console.ForegroundColor = ConsoleColor.White
             Console.BackgroundColor = ConsoleColor.Black
             Console.SetCursorPosition(1, 1)
             Console.Write("Current Process: Filling dead ends      ")
-            Console.ForegroundColor = FillColour
-            Console.BackgroundColor = FillColour
-            For Each deadEnd In DeadEnds
+            Console.ForegroundColor = fillColour
+            Console.BackgroundColor = fillColour
+            For Each deadEnd In deadEnds
                 If r.Next(1, 3) = 1 Then
-                    Dim StartingCell As Node = deadEnd
-                    StartingCell.Print("██")
-                    Maze.Remove(StartingCell)
-                    Visited(StartingCell) = True
-                    NotPath.Add(StartingCell)
-                    While Not StartingCell.IsJunction(Maze)
-                        Dim Neighbours As List(Of Node) = GetNeighbours(StartingCell, Maze)
-                        For Each NeighbourNode In Neighbours
-                            If NeighbourNode.IsJunction(Maze) Then
-                                Maze.Remove(StartingCell)
+                    Dim startingCell As Node = deadEnd
+                    startingCell.Print("██")
+                    maze.Remove(startingCell)
+                    visited(startingCell) = True
+                    notPath.Add(startingCell)
+                    While Not startingCell.IsJunction(maze)
+                        Dim neighbours As List(Of Node) = GetNeighbours(startingCell, maze)
+                        For Each NeighbourNode In neighbours
+                            If NeighbourNode.IsJunction(maze) Then
+                                maze.Remove(startingCell)
                                 Exit While
                             End If
-                            Maze.Remove(StartingCell)
-                            If Visited(NeighbourNode) Then Continue For
-                            StartingCell = NeighbourNode
-                            StartingCell.Print("██")
-                            NotPath.Add(StartingCell)
-                            Visited(NeighbourNode) = True
+                            maze.Remove(startingCell)
+                            If visited(NeighbourNode) Then Continue For
+                            startingCell = NeighbourNode
+                            startingCell.Print("██")
+                            notPath.Add(startingCell)
+                            visited(NeighbourNode) = True
                         Next
                     End While
                 End If
@@ -56,8 +56,8 @@
         Else
             Console.ForegroundColor = ConsoleColor.Green
             Console.BackgroundColor = ConsoleColor.Green
-            For Each Node In Maze
-                If Not NotPath.Contains(Node) Then Node.Print("██")
+            For Each Node In maze
+                If Not notPath.Contains(Node) Then Node.Print("██")
             Next
             Console.ForegroundColor = ConsoleColor.White
             Console.BackgroundColor = ConsoleColor.Black

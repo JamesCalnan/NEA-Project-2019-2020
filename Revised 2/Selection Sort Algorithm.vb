@@ -1,18 +1,18 @@
-﻿Module Selection_Sort_Algorithm
+﻿Module SelectionSortAlgorithm
 
-    Function selectionSort(ByVal A As List(Of Double))
-        Dim count As Integer = A.Count
+    Function SelectionSort(a As List(Of Double))
+        Dim count As Integer = a.Count
         Dim i, j As Integer
         Dim minimum As Integer
         For i = 0 To count - 1
             minimum = i
             For j = i + 1 To count - 1
-                If A(minimum) > A(j) Then minimum = j
+                If a(minimum) > a(j) Then minimum = j
             Next
-            swap(A, i, minimum)
-            AnimateSort(A, i)
+            Swap(a, i, minimum)
+            AnimateSort(a, i)
         Next
-        Return A
+        Return a
     End Function
 
 End Module

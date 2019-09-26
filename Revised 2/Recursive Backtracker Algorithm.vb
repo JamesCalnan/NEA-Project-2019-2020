@@ -1,94 +1,94 @@
-﻿Module Recursive_Backtracker
-    Function RecursiveBacktracker(ByVal Limits() As Integer, ByVal Delay As Integer, ByVal ShowMazeGeneration As Boolean)
+﻿Module RecursiveBacktracker
+    Function RecursiveBacktracker(limits() As Integer, delay As Integer, showMazeGeneration As Boolean)
         Dim r As New Random
-        Dim back As ConsoleColor = ConsoleColor.White
+        Dim back = ConsoleColor.White
         If back <> ConsoleColor.White Then
             SetBoth(ConsoleColor.White)
-            For y = Limits(1) - 1 To Limits(3) + 1
-                For x = Limits(0) + 1 To Limits(2) + 1
+            For y = limits(1) - 1 To limits(3) + 1
+                For x = limits(0) + 1 To limits(2) + 1
                     Console.SetCursorPosition(x, y)
                     Console.Write("XX")
                 Next
             Next
         End If
         SetBoth(back)
-        Dim CurrentCell As Cell = PickRandomStartingCell(Limits) '(Limits(0) + 3, Limits(1) + 2)
-        Dim PrevCell As Cell = CurrentCell '(Limits(0) + 3, Limits(1) + 2)
-        Dim VisitedCells As Dictionary(Of Cell, Boolean) = InitialiseVisited(Limits)
-        Dim Stack As New Stack(Of Cell)
-        Dim ReturnablePath As New List(Of Node)
+        Dim currentCell As Cell = PickRandomStartingCell(limits) '(Limits(0) + 3, Limits(1) + 2)
+        Dim prevCell As Cell = currentCell '(Limits(0) + 3, Limits(1) + 2)
+        Dim visitedCells As Dictionary(Of Cell, Boolean) = InitialiseVisited(limits)
+        Dim stack As New Stack(Of Cell)
+        Dim returnablePath As New List(Of Node)
         Dim stopwatch As Stopwatch = Stopwatch.StartNew()
-        Dim Bias() As Integer = {0, 1}
-        VisitedCells(CurrentCell) = True
-        ReturnablePath.Add(New Node(CurrentCell.X, CurrentCell.Y))
-        If ShowMazeGeneration Then CurrentCell.Print("██")
+        Dim bias() As Integer = {0, 1}
+        visitedCells(currentCell) = True
+        returnablePath.Add(New Node(currentCell.X, currentCell.Y))
+        If showMazeGeneration Then currentCell.Print("██")
         While True
             If ExitCase() Then Return Nothing
-            If ShowMazeGeneration Then
-                PrevCell.Print("██")
+            If showMazeGeneration Then
+                prevCell.Print("██")
                 SetBoth(back)
             End If
-            Dim RecentCells As List(Of Cell) = Neighbour(CurrentCell, VisitedCells, Limits, True)
+            Dim recentCells As List(Of Cell) = Neighbour(currentCell, visitedCells, limits, True)
             'If RecentCells.Count = 0 Then RecentCells = RanNeighbour(CurrentCell, Limits)
-            If RecentCells.Count > 0 Then 'done
-                Dim TemporaryCell As Cell = RecentCells(r.Next(0, RecentCells.Count))
-                VisitedCells(TemporaryCell) = True
-                Stack.Push(New Cell(TemporaryCell.X, TemporaryCell.Y))
-                Dim WallCell As Cell = MidPoint(CurrentCell, TemporaryCell)
-                CurrentCell = TemporaryCell
-                AddToPath(ReturnablePath, TemporaryCell, WallCell)
-                If ShowMazeGeneration Then
+            If recentCells.Count > 0 Then 'done
+                Dim temporaryCell As Cell = recentCells(r.Next(0, recentCells.Count))
+                visitedCells(temporaryCell) = True
+                stack.Push(New Cell(temporaryCell.X, temporaryCell.Y))
+                Dim wallCell As Cell = MidPoint(currentCell, temporaryCell)
+                currentCell = temporaryCell
+                AddToPath(returnablePath, temporaryCell, wallCell)
+                If showMazeGeneration Then
                     SetBoth(back)
-                    PrevCell.Print("██")
-                    WallCell.Print("██")
+                    prevCell.Print("██")
+                    wallCell.Print("██")
                     SetBoth(ConsoleColor.Blue)
-                    TemporaryCell.Print("██")
-                    PrevCell = CurrentCell
+                    temporaryCell.Print("██")
+                    prevCell = currentCell
                 End If
-            ElseIf Stack.Count > 1 Then
-                CurrentCell = Stack.Pop
-                If ShowMazeGeneration Then
+            ElseIf stack.Count > 1 Then
+                currentCell = stack.Pop
+                If showMazeGeneration Then
                     SetBoth(back)
-                    PrevCell.Print("██")
+                    prevCell.Print("██")
                     SetBoth(ConsoleColor.Blue)
-                    CurrentCell.Print("██")
+                    currentCell.Print("██")
                     SetBoth(back)
-                    PrevCell = CurrentCell
+                    prevCell = currentCell
                 End If
             Else
                 Exit While
             End If
-            Threading.Thread.Sleep(Delay)
+            Threading.Thread.Sleep(delay)
         End While
         PrintMessageMiddle($"Time taken to generate the maze: {stopwatch.Elapsed.TotalSeconds}", 1, ConsoleColor.Yellow)
-        If Not ShowMazeGeneration Then
+        If Not showMazeGeneration Then
             SetBoth(back)
-            PrintMazeHorizontally(ReturnablePath, Limits(2), Limits(3))
+            PrintMazeHorizontally(returnablePath, limits(2), limits(3))
         End If
         Dim ypos As Integer = Console.CursorTop
-        AddStartAndEnd(ReturnablePath, Limits, 0)
-        Unicursal(ReturnablePath)
+        AddStartAndEnd(returnablePath, limits, 0)
+        'Unicursal(returnablePath)
         Console.SetCursorPosition(0, ypos)
-        Return ReturnablePath
+        Return returnablePath
     End Function
-    Function RecursiveBacktrackerRecursively(ByVal cell As Cell, ByVal limits() As Integer, ByVal path As List(Of Node), ByRef visited As Dictionary(Of Cell, Boolean), ByRef cameFrom As Cell, ByVal r As Random, ByVal ShowMazeGeneration As Boolean, ByVal Delay As Integer)
-        Dim RecentCells As List(Of Cell) = Neighbour(cell, visited, limits, True)
-        If RecentCells.Count > 0 Then
-            Dim TemporaryCell As Cell = RecentCells(r.Next(0, RecentCells.Count))
-            Dim wall As Cell = MidPoint(cameFrom, TemporaryCell)
-            If ShowMazeGeneration Then
+    Function RecursiveBacktrackerRecursively(cell As Cell, limits() As Integer, path As List(Of Node), ByRef visited As Dictionary(Of Cell, Boolean), ByRef cameFrom As Cell, r As Random, showMazeGeneration As Boolean, delay As Integer)
+        Dim recentCells As List(Of Cell) = Neighbour(cell, visited, limits, True)
+        If recentCells.Count > 0 Then
+            Dim temporaryCell As Cell = recentCells(r.Next(0, recentCells.Count))
+            Dim wall As Cell = MidPoint(cameFrom, temporaryCell)
+            If showMazeGeneration Then
                 wall.Print("██")
-                TemporaryCell.Print("██")
-                Threading.Thread.Sleep(Delay) : End If
-            AddToPath(path, TemporaryCell, wall)
-            cameFrom = TemporaryCell
-            visited(TemporaryCell) = True
-            RecursiveBacktrackerRecursively(TemporaryCell, limits, path, visited, cameFrom, r, ShowMazeGeneration, Delay)
+                temporaryCell.Print("██")
+                Threading.Thread.Sleep(delay) : End If
+            AddToPath(path, temporaryCell, wall)
+            cameFrom = temporaryCell
+            visited(temporaryCell) = True
+            RecursiveBacktrackerRecursively(temporaryCell, limits, path, visited, cameFrom, r, showMazeGeneration, delay)
         Else
             Return Nothing
         End If
         cameFrom = cell
-        RecursiveBacktrackerRecursively(cell, limits, path, visited, cameFrom, r, ShowMazeGeneration, Delay)
+        RecursiveBacktrackerRecursively(cell, limits, path, visited, cameFrom, r, showMazeGeneration, delay)
         Return path
     End Function
 End Module

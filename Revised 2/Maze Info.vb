@@ -1,10 +1,10 @@
-﻿Module Maze_Info
+﻿Module MazeInfo
     Sub InitialiseScreen()
         Console.BackgroundColor = ConsoleColor.Black
         Console.Clear()
         Console.ForegroundColor = ConsoleColor.White
     End Sub
-    Sub RecrusiveBacktrackerINFO()
+    Sub RecrusiveBacktrackerInfo()
         Console.WriteLine("Steps in generating a maze using the recursive backtracker algorithm:")
         Console.WriteLine("     1. Choose a random starting cell from the grid, this becomes the current cell")
         Console.WriteLine("     2. Randomly carve a passage to an adjacent cell, but only if it hasn't already been visited")
@@ -24,7 +24,7 @@
         Console.WriteLine("             1. Pop a cell from the stack")
         Console.WriteLine("             2. Make it the current cell")
     End Sub
-    Sub RecrusiveBacktrackerRecursionINFO()
+    Sub RecrusiveBacktrackerRecursionInfo()
         Console.WriteLine("The recursive implementation of the Recursive Backtracker algortihm is very similar to the iterative version")
         Console.WriteLine($"{Environment.NewLine}Steps in generating a maze using the Recursive Backtracker Algorithm:")
         Console.WriteLine("     1. Choose a random starting cell from the grid, this becomes the current cell")
@@ -94,7 +94,7 @@
         Console.WriteLine("         6. Remove this cell from the frontier set")
         Console.WriteLine("         7. Add this cell to the visited set")
     End Sub
-    Sub HuntAndKillINFO()
+    Sub HuntAndKillInfo()
         Console.WriteLine("Steps in generating a maze using the Hunt and Kill Algorithm:")
         Console.WriteLine("     1. Choose a random starting cell")
         Console.WriteLine("     2. Randomly carve to an unvisited adjacent neighbour, until there aren't any unvisited neighbours available")
@@ -121,7 +121,7 @@
         Console.WriteLine("             3. Else")
         Console.WriteLine("                 The maze is finished being generated")
     End Sub
-    Sub AldousBroderINFO()
+    Sub AldousBroderInfo()
         Console.WriteLine("Steps in generating a maze using the Aldous-Broder Algorithm:")
         Console.WriteLine("     1. Choose a random starting cell")
         Console.WriteLine("     2. Randomly pick an adjacent cell")
@@ -135,7 +135,7 @@
         Console.WriteLine("             1. Carve a path to the chosen neighbour")
         Console.WriteLine("         3. Make the chosen neighbour the current cell")
     End Sub
-    Sub GrowingTreeINFO()
+    Sub GrowingTreeInfo()
         Console.WriteLine("Steps in generating a maze using the Growing Tree Algorithm:")
         Console.WriteLine("     1. Let C be a list of cells")
         Console.WriteLine("     2. Add a random starting cell to C")
@@ -152,28 +152,28 @@
         Console.WriteLine("         5. Mark the current cell as visited")
         Console.WriteLine("         6. Remove the current cell from C")
     End Sub
-    Sub SidewinderINFO()
+    Sub SidewinderInfo()
 
     End Sub
-    Sub BinaryTreeINFO()
+    Sub BinaryTreeInfo()
 
     End Sub
-    Sub WilsonsINFO()
+    Sub WilsonsInfo()
 
     End Sub
-    Sub EllersINFO()
+    Sub EllersInfo()
 
     End Sub
-    Sub KruskalsINFO()
+    Sub KruskalsInfo()
 
     End Sub
-    Sub HoustonsINFO()
+    Sub HoustonsInfo()
 
     End Sub
-    Sub SpiralBacktrackerINFO()
+    Sub SpiralBacktrackerInfo()
 
     End Sub
-    Sub CustomAlgorithmINFO()
+    Sub CustomAlgorithmInfo()
 
     End Sub
 End Module

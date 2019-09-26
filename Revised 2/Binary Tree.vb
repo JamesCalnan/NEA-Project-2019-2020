@@ -1,91 +1,91 @@
 ﻿Imports NEA_2019
 Imports System.Drawing
 Public Class PriorityQueue(Of T)
-    Private items As Binary_Tree(Of T)
+    Private _items As BinaryTree(Of T)
     Public Sub New()
-        items = New Binary_Tree(Of T)
+        _items = New BinaryTree(Of T)
     End Sub
-    Public Sub Enqueue(ByVal value As T, Optional ByVal priority As Integer = 0)
-        items.insert(New QueueItem(Of T)(value, priority))
+    Public Sub Enqueue(value As T, Optional ByVal priority As Integer = 0)
+        _items.Insert(New QueueItem(Of T)(value, priority))
     End Sub
     Public Function ExtractMin() As T
-        Dim minPriority As QueueItem(Of T) = items.minValue()
-        Dim output As T = items.findFirst(minPriority).value
-        items.delete(minPriority)
+        Dim minPriority As QueueItem(Of T) = _items.MinValue()
+        Dim output As T = _items.FindFirst(minPriority).Value
+        _items.Delete(minPriority)
         Return output
     End Function
-    Public Sub DecreasePriority(ByVal value As T, ByVal newPriority As Integer)
+    Public Sub DecreasePriority(value As T, newPriority As Integer)
         Dim tempItem As New QueueItem(Of T)(value, 0)
-        Dim item As QueueItem(Of T) = items.findExact(tempItem).Clone()
-        items.delete(item, True)
-        items.insert(New QueueItem(Of T)(value, newPriority))
+        Dim item As QueueItem(Of T) = _items.FindExact(tempItem).Clone()
+        _items.Delete(item, True)
+        _items.Insert(New QueueItem(Of T)(value, newPriority))
     End Sub
-    Public Function Contains(ByVal value As QueueItem(Of T)) As Boolean
-        Return If(IsNothing(items.Contains(value)), False, True)
+    Public Function Contains(value As QueueItem(Of T)) As Boolean
+        Return If(IsNothing(_items.Contains(value)), False, True)
     End Function
     Public Function IsEmpty()
-        Return items.isEmpty
+        Return _items.IsEmpty
     End Function
 End Class
 Public Class QueueItem(Of T)
-    Public value As T
-    Public priority As Integer
-    Public Sub New(ByVal _value As T, ByVal _priority As Integer)
-        value = _value
-        priority = _priority
+    Public Value As T
+    Public Priority As Integer
+    Public Sub New(value As T, priority As Integer)
+        Value = value
+        Priority = priority
     End Sub
 
-    Public Function CompareTo(ByVal other As QueueItem(Of T)) As Integer
+    Public Function CompareTo(other As QueueItem(Of T)) As Integer
         If ReferenceEquals(Me, other) Then Return 0
         If ReferenceEquals(Nothing, other) Then Return 1
-        Return priority.CompareTo(other.priority)
+        Return Priority.CompareTo(other.Priority)
     End Function
     Public Function Clone() As QueueItem(Of T)
-        Return New QueueItem(Of T)(value, priority)
+        Return New QueueItem(Of T)(Value, Priority)
     End Function
     Public Overrides Function Equals(obj As Object) As Boolean
         Dim item = TryCast(obj, QueueItem(Of T))
         Return item IsNot Nothing AndAlso
-               EqualityComparer(Of T).Default.Equals(value, item.value)
+               EqualityComparer(Of T).Default.Equals(Value, item.Value)
     End Function
     Public Overrides Function GetHashCode() As Integer
         Dim hashCode As Long = 1113510858
-        hashCode = (hashCode * -1521134295 + EqualityComparer(Of T).Default.GetHashCode(value)).GetHashCode()
+        hashCode = (hashCode * -1521134295 + EqualityComparer(Of T).Default.GetHashCode(Value)).GetHashCode()
         Return hashCode
     End Function
 End Class
 
-Public Class Binary_Tree(Of T)
-    Public root As TreeItem(Of T)
+Public Class BinaryTree(Of T)
+    Public Root As TreeItem(Of T)
     Public Sub Binary_Tree()
-        root = Nothing
+        Root = Nothing
     End Sub
-    Public Sub delete(ByVal value As QueueItem(Of T), Optional ByVal strict As Boolean = False)
-        root = deleteRecursive(root, value, strict)
+    Public Sub Delete(value As QueueItem(Of T), Optional ByVal strict As Boolean = False)
+        Root = DeleteRecursive(Root, value, strict)
     End Sub
-    Public Function deleteRecursive(ByVal root As TreeItem(Of T), ByVal value As QueueItem(Of T), ByVal strict As Boolean)
+    Public Function DeleteRecursive(root As TreeItem(Of T), value As QueueItem(Of T), strict As Boolean)
         If IsNothing(root) Then Return root
-        If value.CompareTo(root.value) < 0 Then
-            root.left = deleteRecursive(root.left, value, strict)
-        ElseIf value.CompareTo(root.value) > 0 Or strict And Not value.Equals(root.value) And value.CompareTo(root.value) = 0 Then
-            root.right = deleteRecursive(root.right, value, strict)
+        If value.CompareTo(root.Value) < 0 Then
+            root.Left = DeleteRecursive(root.Left, value, strict)
+        ElseIf value.CompareTo(root.Value) > 0 Or strict And Not value.Equals(root.Value) And value.CompareTo(root.Value) = 0 Then
+            root.Right = DeleteRecursive(root.Right, value, strict)
         Else
-            If IsNothing(root.left) Then Return root.right
-            If IsNothing(root.right) Then Return root.left
-            root.value = minValue(root.right)
-            root.right = deleteRecursive(root.right, root.value, strict)
+            If IsNothing(root.Left) Then Return root.Right
+            If IsNothing(root.Right) Then Return root.Left
+            root.Value = MinValue(root.Right)
+            root.Right = DeleteRecursive(root.Right, root.Value, strict)
         End If
         Return root
     End Function
-    Public Sub insert(ByVal value As QueueItem(Of T))
-        root = insertRecursive(root, value)
+    Public Sub Insert(value As QueueItem(Of T))
+        Root = InsertRecursive(Root, value)
     End Sub
-    Private Function insertRecursive(ByVal root As TreeItem(Of T), ByVal value As QueueItem(Of T))
+    Private Function InsertRecursive(root As TreeItem(Of T), value As QueueItem(Of T))
         If IsNothing(root) Then Return New TreeItem(Of T)(value)
-        If value.CompareTo(root.value) < 0 Then
-            root.left = insertRecursive(root.left, value)
-        ElseIf value.CompareTo(root.value) >= 0 Then
-            root.right = insertRecursive(root.right, value)
+        If value.CompareTo(root.Value) < 0 Then
+            root.Left = InsertRecursive(root.Left, value)
+        ElseIf value.CompareTo(root.Value) >= 0 Then
+            root.Right = InsertRecursive(root.Right, value)
         End If
         Return root
     End Function
@@ -104,40 +104,40 @@ Public Class Binary_Tree(Of T)
     'Public Function containsValue(ByVal value As Integer)
     '    Return containsValueRecursive(root, value)
     'End Function
-    Public Function findFirst(ByVal value As QueueItem(Of T)) As QueueItem(Of T)
-        Return findFirstRecursive(root, value).value
+    Public Function FindFirst(value As QueueItem(Of T)) As QueueItem(Of T)
+        Return FindFirstRecursive(Root, value).Value
     End Function
-    Private Function findFirstRecursive(ByVal root As TreeItem(Of T), ByVal value As QueueItem(Of T)) As TreeItem(Of T)
-        If value.CompareTo(root.value) < 0 Then Return findFirstRecursive(root.left, value)
-        If value.CompareTo(root.value) > 0 Then Return findFirstRecursive(root.right, value)
+    Private Function FindFirstRecursive(root As TreeItem(Of T), value As QueueItem(Of T)) As TreeItem(Of T)
+        If value.CompareTo(root.Value) < 0 Then Return FindFirstRecursive(root.Left, value)
+        If value.CompareTo(root.Value) > 0 Then Return FindFirstRecursive(root.Right, value)
         Return root
     End Function
-    Public Function Contains(ByVal value As QueueItem(Of T))
-        Return findExact(value)
+    Public Function Contains(value As QueueItem(Of T))
+        Return FindExact(value)
     End Function
-    Public Function findExact(ByVal value As QueueItem(Of T)) As QueueItem(Of T)
-        Return findExactRecursive(root, value).value
+    Public Function FindExact(value As QueueItem(Of T)) As QueueItem(Of T)
+        Return FindExactRecursive(Root, value).Value
     End Function
-    Private Function findExactRecursive(ByVal root As TreeItem(Of T), ByVal value As QueueItem(Of T)) As TreeItem(Of T)
+    Private Function FindExactRecursive(root As TreeItem(Of T), value As QueueItem(Of T)) As TreeItem(Of T)
         If IsNothing(root) Then Return Nothing
-        If value.Equals(root.value) Then Return root
+        If value.Equals(root.Value) Then Return root
         Dim output As TreeItem(Of T)
-        output = findExactRecursive(root.left, value)
+        output = FindExactRecursive(root.Left, value)
         If Not IsNothing(output) Then Return output
-        output = findExactRecursive(root.right, value)
+        output = FindExactRecursive(root.Right, value)
         If Not IsNothing(output) Then Return output
         Return output
     End Function
-    Private Function minValue(ByVal root As TreeItem(Of T)) As QueueItem(Of T)
-        Dim min As QueueItem(Of T) = root.value
-        While Not IsNothing(root.left)
-            min = root.left.value
-            root = root.left
+    Private Function MinValue(root As TreeItem(Of T)) As QueueItem(Of T)
+        Dim min As QueueItem(Of T) = root.Value
+        While Not IsNothing(root.Left)
+            min = root.Left.Value
+            root = root.Left
         End While
         Return min
     End Function
-    Public Function minValue() As QueueItem(Of T)
-        Return Me.minValue(root)
+    Public Function MinValue() As QueueItem(Of T)
+        Return Me.MinValue(Root)
     End Function
     'Private Function findSmallestValue(ByVal root As TreeItem)
     '    Return If(IsNothing(root.left), root.value, findSmallestValue(root.left))
@@ -145,22 +145,22 @@ Public Class Binary_Tree(Of T)
     'Public Function ExtractMin()
     '    Return findSmallestValue(root)
     'End Function
-    Public Function getSize() As Integer
-        Return getSizeRecursive(root)
+    Public Function GetSize() As Integer
+        Return GetSizeRecursive(Root)
     End Function
-    Private Function getSizeRecursive(ByVal current As TreeItem(Of T))
-        Return If(IsNothing(current), 0, getSizeRecursive(current.left) + 1 + getSizeRecursive(current.right))
+    Private Function GetSizeRecursive(current As TreeItem(Of T))
+        Return If(IsNothing(current), 0, GetSizeRecursive(current.Left) + 1 + GetSizeRecursive(current.Right))
     End Function
-    Public Function isEmpty() As Boolean
-        Return IsNothing(root)
+    Public Function IsEmpty() As Boolean
+        Return IsNothing(Root)
     End Function
 End Class
 Public Class TreeItem(Of T)
-    Public value As QueueItem(Of T)
-    Public left, right As TreeItem(Of T)
-    Public Sub New(ByVal val As QueueItem(Of T))
-        value = val
-        left = Nothing
-        right = Nothing
+    Public Value As QueueItem(Of T)
+    Public Left, Right As TreeItem(Of T)
+    Public Sub New(val As QueueItem(Of T))
+        Value = val
+        Left = Nothing
+        Right = Nothing
     End Sub
 End Class

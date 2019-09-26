@@ -1,19 +1,22 @@
-﻿Module Unicursal_Maze
-    Sub Unicursal(ByVal Maze As List(Of Node))
+﻿Module UnicursalMaze
+    function Unicursal(mazeOriginal As List(Of Node))
         'https://pbs.twimg.com/media/BLr0vnDCAAE3ZxU.jpg:large
+        
+        dim maze as List(Of Node) = mazeOriginal.ToList()
         Console.Clear()
-        Maze.RemoveAt(Maze.Count - 1)
-        Maze.RemoveAt(Maze.Count - 1)
-        Dim AlreadyAdded As New List(Of Node)
+        maze.RemoveAt(maze.Count - 1)
+        maze.RemoveAt(maze.Count - 1)
+        Dim alreadyAdded As New List(Of Node)
         SetBoth(ConsoleColor.Red)
-        For Each node In Maze
-            node.update(node.X * 2, node.Y * 2)
+        For Each node In maze
+            node.Update((node.X * 2)-5, (node.Y * 2)-2)
+            if node.x > Console.WindowWidth-60 or node.Y > Console.WindowHeight-10 then Return nothing
         Next
-        Dim copyMaze As List(Of Node) = Maze
+        Dim copyMaze As List(Of Node) = maze
         Dim newMaze As New List(Of Node)
         'enlarge maze
-        For Each node In Maze
-            Dim SurroundingNodes As New List(Of Node) From {
+        For Each node In maze
+            Dim surroundingNodes As New List(Of Node) From {
                 New Node(node.X + 2, node.Y),
                 New Node(node.X + 2, node.Y + 1),
                 New Node(node.X + 2, node.Y - 1),
@@ -25,48 +28,34 @@
                 New Node(node.X - 2, node.Y - 1),
                 New Node(node.X, node.Y + 1),
                 New Node(node.X + 2, node.Y + 1),
-                New Node(node.X - 2, node.Y + 1)
-            }
-            Dim NodesToRemove As New List(Of Node)
-            For Each SurroundingNode In SurroundingNodes
-                If AlreadyAdded.Contains(SurroundingNode) Then NodesToRemove.Add(SurroundingNode)
+                New Node(node.X - 2, node.Y + 1)}
+            Dim nodesToRemove As List(Of Node) = (From surroundingNode In surroundingNodes Where alreadyAdded.Contains(surroundingNode)).ToList()
+            For Each NodetoRemove In nodesToRemove
+                surroundingNodes.Remove(NodetoRemove)
             Next
-            For Each NodetoRemove In NodesToRemove
-                SurroundingNodes.Remove(NodetoRemove)
-            Next
-            For Each FinalNode In SurroundingNodes
-                newMaze.Add(FinalNode)
-            Next
+            newMaze.AddRange(surroundingNodes)
         Next
         Console.ResetColor()
         Console.Clear()
         For Each node In copyMaze
-            Dim PotentialAdjacentCell As New Node(node.X + 4, node.Y)
-            If copyMaze.Contains(PotentialAdjacentCell) Then
-                newMaze.Remove(New Node(node.X + 2, node.Y))
-            End If
-            PotentialAdjacentCell.update(node.X - 4, node.Y)
-            If copyMaze.Contains(PotentialAdjacentCell) Then
-                newMaze.Remove(New Node(node.X - 2, node.Y))
-            End If
-            PotentialAdjacentCell.update(node.X, node.Y + 2)
-            If copyMaze.Contains(PotentialAdjacentCell) Then
-                newMaze.Remove(New Node(node.X, node.Y + 1))
-            End If
-            PotentialAdjacentCell.update(node.X, node.Y - 2)
-            If copyMaze.Contains(PotentialAdjacentCell) Then
-                newMaze.Remove(New Node(node.X, node.Y - 1))
-            End If
+            Dim potentialAdjacentCell As New Node(node.X + 4, node.Y)
+            If copyMaze.Contains(potentialAdjacentCell) Then newMaze.Remove(New Node(node.X + 2, node.Y))
+            potentialAdjacentCell.Update(node.X - 4, node.Y)
+            If copyMaze.Contains(potentialAdjacentCell) Then newMaze.Remove(New Node(node.X - 2, node.Y))
+            potentialAdjacentCell.Update(node.X, node.Y + 2)
+            If copyMaze.Contains(potentialAdjacentCell) Then newMaze.Remove(New Node(node.X, node.Y + 1))
+            potentialAdjacentCell.Update(node.X, node.Y - 2)
+            If copyMaze.Contains(potentialAdjacentCell) Then newMaze.Remove(New Node(node.X, node.Y - 1))
         Next
         SetBoth(ConsoleColor.White)
-        Dim Gx, Gy As Integer
+        Dim gx, gy As Integer
         For Each node In newMaze
             node.Print("XX")
-            If node.X > Gx Then Gx = node.X
-            If node.Y > Gy Then Gy = node.Y
+            If node.X > gx Then gx = node.X
+            If node.Y > gy Then gy = node.Y
         Next
-        Dim limits() As Integer = {10, 5, Gx, Gy}
+        Dim limits() As Integer = {5, 3, gx, gy}
         AddStartAndEnd(newMaze, limits, 0, True)
-        Console.ReadKey()
-    End Sub
+        Return newMaze
+    End function
 End Module

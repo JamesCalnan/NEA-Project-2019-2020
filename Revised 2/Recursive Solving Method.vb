@@ -1,27 +1,27 @@
-﻿Module Recursive_Solving_Method
-    Function recursiveSolve(ByVal maze As List(Of Node), ByVal Visited As Dictionary(Of Node, Boolean), ByVal correctPath As Dictionary(Of Node, Boolean), ByVal X As Integer, ByVal Y As Integer, ByVal Target As Node, ByVal ShowSteps As Boolean, ByVal Delay As Integer)
-        Dim CurrentNode As New Node(X, Y)
-        If CurrentNode.Equals(Target) Then Return True
-        If Not maze.Contains(CurrentNode) OrElse Visited(CurrentNode) Then Return False
-        If ShowSteps Then
-            CurrentNode.Print("XX")
-            Threading.Thread.Sleep(Delay)
+﻿Module RecursiveSolvingMethod
+    Function RecursiveSolve(maze As List(Of Node), visited As Dictionary(Of Node, Boolean), correctPath As Dictionary(Of Node, Boolean), x As Integer, y As Integer, target As Node, showSteps As Boolean, delay As Integer)
+        Dim currentNode As New Node(x, y)
+        If currentNode.Equals(target) Then Return True
+        If Not maze.Contains(currentNode) OrElse visited(currentNode) Then Return False
+        If showSteps Then
+            currentNode.Print("XX")
+            Threading.Thread.Sleep(delay)
         End If
-        Visited(CurrentNode) = True
-        If recursiveSolve(maze, Visited, correctPath, X, Y - 1, Target, ShowSteps, Delay) Then
-            correctPath(CurrentNode) = True
+        visited(currentNode) = True
+        If RecursiveSolve(maze, visited, correctPath, x, y - 1, target, showSteps, delay) Then
+            correctPath(currentNode) = True
             Return True
         End If
-        If recursiveSolve(maze, Visited, correctPath, X - 2, Y, Target, ShowSteps, Delay) Then
-            correctPath(CurrentNode) = True
+        If RecursiveSolve(maze, visited, correctPath, x - 2, y, target, showSteps, delay) Then
+            correctPath(currentNode) = True
             Return True
         End If
-        If recursiveSolve(maze, Visited, correctPath, X + 2, Y, Target, ShowSteps, Delay) Then
-            correctPath(CurrentNode) = True
+        If RecursiveSolve(maze, visited, correctPath, x + 2, y, target, showSteps, delay) Then
+            correctPath(currentNode) = True
             Return True
         End If
-        If recursiveSolve(maze, Visited, correctPath, X, Y + 1, Target, ShowSteps, Delay) Then
-            correctPath(CurrentNode) = True
+        If RecursiveSolve(maze, visited, correctPath, x, y + 1, target, showSteps, delay) Then
+            correctPath(currentNode) = True
             Return True
         End If
         Return False

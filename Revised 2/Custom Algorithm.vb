@@ -1,55 +1,55 @@
-﻿Module Custom_Algorithm
-    Function Custom(ByVal Limits() As Integer, ByVal delay As Integer, ByVal ShowMazeGeneration As Boolean)
-        Dim R As New Random
+﻿Module CustomAlgorithm
+    Function Custom(limits() As Integer, delay As Integer, showMazeGeneration As Boolean)
+        Dim r As New Random
         Dim availablepath As New List(Of Cell)
-        Dim FrontierSet, RecentFrontierSet As New List(Of Cell)
-        Dim CurrentCell As Cell = PickRandomStartingCell(Limits) '(Limits(0) + 3, Limits(1) + 2)
-        Dim WallCell As Cell
-        Dim Index As Integer
-        Dim ReturnablePath As New List(Of Node)
-        Dim VisitedCells As Dictionary(Of Cell, Boolean) = InitialiseVisited(Limits)
-        VisitedCells(CurrentCell) = True
-        If ShowMazeGeneration Then CurrentCell.Print("██")
-        ReturnablePath.Add(New Node(CurrentCell.X, CurrentCell.Y))
+        Dim frontierSet, recentFrontierSet As New List(Of Cell)
+        Dim currentCell As Cell = PickRandomStartingCell(limits) '(Limits(0) + 3, Limits(1) + 2)
+        Dim wallCell As Cell
+        Dim index As Integer
+        Dim returnablePath As New List(Of Node)
+        Dim visitedCells As Dictionary(Of Cell, Boolean) = InitialiseVisited(limits)
+        visitedCells(currentCell) = True
+        If showMazeGeneration Then currentCell.Print("██")
+        returnablePath.Add(New Node(currentCell.X, currentCell.Y))
         Dim stopwatch As Stopwatch = Stopwatch.StartNew()
         SetBoth(ConsoleColor.White)
         While True
             If ExitCase() Then Return Nothing
-            For Each cell As Cell In Neighbour(CurrentCell, VisitedCells, Limits, True)
-                If Not FrontierSet.Contains(cell) Then FrontierSet.Add(cell)
-                RecentFrontierSet.Add(cell)
+            For Each cell As Cell In Neighbour(currentCell, visitedCells, limits, True)
+                If Not frontierSet.Contains(cell) Then frontierSet.Add(cell)
+                recentFrontierSet.Add(cell)
             Next
-            If RecentFrontierSet.Count > 0 Then
-                Index = R.Next(0, RecentFrontierSet.Count)
-                CurrentCell = RecentFrontierSet(Index)
+            If recentFrontierSet.Count > 0 Then
+                index = r.Next(0, recentFrontierSet.Count)
+                currentCell = recentFrontierSet(index)
             Else
-                If FrontierSet.Count = 0 Then Exit While
-                Index = FrontierSet.Count - 1 'R.Next(0, FrontierSet.Count)
-                CurrentCell = FrontierSet(Index)
+                If frontierSet.Count = 0 Then Exit While
+                index = frontierSet.Count - 1 'R.Next(0, FrontierSet.Count)
+                currentCell = frontierSet(index)
             End If
-            Dim AdjancencyList() As Integer = AdjacentCheck(CurrentCell, VisitedCells)
-            Dim PreviousCell As Cell = PickAdjancentCell(CurrentCell, AdjancencyList)
-            WallCell = MidPoint(CurrentCell, PreviousCell)
-            If ShowMazeGeneration Then
+            Dim adjancencyList() As Integer = AdjacentCheck(currentCell, visitedCells)
+            Dim previousCell As Cell = PickAdjancentCell(currentCell, adjancencyList)
+            wallCell = MidPoint(currentCell, previousCell)
+            If showMazeGeneration Then
                 SetBoth(ConsoleColor.White)
-                WallCell.Print("██")
-                CurrentCell.Print("██")
+                wallCell.Print("██")
+                currentCell.Print("██")
             End If
-            VisitedCells(CurrentCell) = True
-            FrontierSet.Remove(CurrentCell)
-            ReturnablePath.Add(New Node(WallCell.X, WallCell.Y))
-            ReturnablePath.Add(New Node(CurrentCell.X, CurrentCell.Y))
+            visitedCells(currentCell) = True
+            frontierSet.Remove(currentCell)
+            returnablePath.Add(New Node(wallCell.X, wallCell.Y))
+            returnablePath.Add(New Node(currentCell.X, currentCell.Y))
             Threading.Thread.Sleep(delay)
-            RecentFrontierSet.Clear()
+            recentFrontierSet.Clear()
         End While
         PrintMessageMiddle($"Time taken to generate the maze: {stopwatch.Elapsed.TotalSeconds}", 1, ConsoleColor.Yellow)
-        If Not ShowMazeGeneration Then
+        If Not showMazeGeneration Then
             SetBoth(ConsoleColor.White)
-            PrintMazeHorizontally(ReturnablePath, Limits(2), Limits(3))
+            PrintMazeHorizontally(returnablePath, limits(2), limits(3))
         End If
         Dim ypos As Integer = Console.CursorTop
-        AddStartAndEnd(ReturnablePath, Limits, 0)
+        AddStartAndEnd(returnablePath, limits, 0)
         Console.SetCursorPosition(0, ypos)
-        Return ReturnablePath
+        Return returnablePath
     End Function
 End Module

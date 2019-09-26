@@ -1,29 +1,29 @@
-﻿Module Insertion_Sort_Algorithm
-    Function insertionsortR(ByRef A As List(Of Double), ByVal n As Integer)
+﻿Module InsertionSortAlgorithm
+    Function InsertionsortR(ByRef a As List(Of Double), n As Integer)
         'initial call would be insertionSortR(A, length(A)-1) 
         If n > 0 Then
-            insertionsortR(A, n - 1)
-            Dim x As Double = A(n)
+            InsertionsortR(a, n - 1)
+            Dim x As Double = a(n)
             Dim j As Integer = n - 1
-            While j >= 0 AndAlso A(j) > x
-                A(j + 1) = A(j)
+            While j >= 0 AndAlso a(j) > x
+                a(j + 1) = a(j)
                 j -= 1
             End While
-            A(j + 1) = x
+            a(j + 1) = x
         End If
     End Function
-    Function insertionsortI(ByVal A As List(Of Double))
-        Dim i As Integer = 1
-        While i < A.Count
+    Function InsertionsortI(a As List(Of Double))
+        Dim i = 1
+        While i < a.Count
             Dim j = i
-            While j > 0 AndAlso A(j - 1) > A(j)
-                swap(A, j, j - 1)
+            While j > 0 AndAlso a(j - 1) > a(j)
+                Swap(a, j, j - 1)
                 j -= 1
 
             End While
-            AnimateSort(A, 1)
+            AnimateSort(a, 1)
             i += 1
         End While
-        Return A
+        Return a
     End Function
 End Module

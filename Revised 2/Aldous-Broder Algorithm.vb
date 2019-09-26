@@ -1,71 +1,71 @@
-﻿Module Aldous_Broder
-    Function AldousBroder(ByVal Limits() As Integer, ByVal delay As Integer, ByVal ShowMazeGeneration As Boolean)
-        Dim TotalCellCount As Integer
-        Dim R As New Random
+﻿Module AldousBroder
+    Function AldousBroder(limits() As Integer, delay As Integer, showMazeGeneration As Boolean)
+        Dim totalCellCount As Integer
+        Dim r As New Random
         Dim availablepath As New List(Of Cell)
-        Dim RecentCells As New List(Of Cell)
-        Dim CurrentCell As Cell = PickRandomStartingCell(Limits) '(Limits(0) + 3, Limits(1) + 2)
-        Dim PrevCell As Cell = PickRandomStartingCell(Limits)
-        Dim VisitedCells As Dictionary(Of Cell, Boolean) = InitialiseVisited(Limits)
-        Dim PreviousCell As Cell = CurrentCell
-        Dim WallCell As Cell
-        Dim ReturnablePath As New List(Of Node)
-        For y = Limits(1) To Limits(3) Step 2
-            For x = Limits(0) + 3 To Limits(2) - 1 Step 4
-                TotalCellCount += 1
+        Dim recentCells As New List(Of Cell)
+        Dim currentCell As Cell = PickRandomStartingCell(limits) '(Limits(0) + 3, Limits(1) + 2)
+        Dim prevCell As Cell = PickRandomStartingCell(limits)
+        Dim visitedCells As Dictionary(Of Cell, Boolean) = InitialiseVisited(limits)
+        Dim previousCell As Cell = currentCell
+        Dim wallCell As Cell
+        Dim returnablePath As New List(Of Node)
+        For y = limits(1) To limits(3) Step 2
+            For x = limits(0) + 3 To limits(2) - 1 Step 4
+                totalCellCount += 1
             Next
         Next
         Dim stopwatch As Stopwatch = Stopwatch.StartNew()
         SetBoth(ConsoleColor.White)
-        VisitedCells(CurrentCell) = True
-        ReturnablePath.Add(New Node(CurrentCell.X, CurrentCell.Y))
-        If ShowMazeGeneration Then CurrentCell.Print("██")
-        Dim UsedCellCount As Integer = 1
-        While UsedCellCount <> TotalCellCount
+        visitedCells(currentCell) = True
+        returnablePath.Add(New Node(currentCell.X, currentCell.Y))
+        If showMazeGeneration Then currentCell.Print("██")
+        Dim usedCellCount = 1
+        While usedCellCount <> totalCellCount
             If ExitCase() Then Return Nothing
-            RecentCells.Clear()
-            RecentCells = RanNeighbour(CurrentCell, Limits)
-            Dim Index As Integer = R.Next(0, RecentCells.Count)
-            Dim TemporaryCell As Cell = RecentCells(Index)
-            Dim TempNodeCell As New Node(TemporaryCell.X, TemporaryCell.Y)
-            If Not VisitedCells(TemporaryCell) Then
-                VisitedCells(New Cell(TemporaryCell.X, TemporaryCell.Y)) = True
-                UsedCellCount += 1
-                WallCell = MidPoint(CurrentCell, TemporaryCell)
-                CurrentCell = TemporaryCell
-                ReturnablePath.Add(New Node(WallCell.X, WallCell.Y))
-                ReturnablePath.Add(New Node(TemporaryCell.X, TemporaryCell.Y))
-                If ShowMazeGeneration Then
+            recentCells.Clear()
+            recentCells = RanNeighbour(currentCell, limits)
+            Dim index As Integer = r.Next(0, recentCells.Count)
+            Dim temporaryCell As Cell = recentCells(index)
+            Dim tempNodeCell As New Node(temporaryCell.X, temporaryCell.Y)
+            If Not visitedCells(temporaryCell) Then
+                visitedCells(New Cell(temporaryCell.X, temporaryCell.Y)) = True
+                usedCellCount += 1
+                wallCell = MidPoint(currentCell, temporaryCell)
+                currentCell = temporaryCell
+                returnablePath.Add(New Node(wallCell.X, wallCell.Y))
+                returnablePath.Add(New Node(temporaryCell.X, temporaryCell.Y))
+                If showMazeGeneration Then
                     SetBoth(ConsoleColor.White)
-                    PrevCell.Print("██")
-                    WallCell.Print("██")
+                    prevCell.Print("██")
+                    wallCell.Print("██")
                     SetBoth(ConsoleColor.Blue)
-                    TemporaryCell.Print("██")
-                    PrevCell = CurrentCell
+                    temporaryCell.Print("██")
+                    prevCell = currentCell
                 End If
             Else
-                CurrentCell = TemporaryCell
-                If ShowMazeGeneration Then
+                currentCell = temporaryCell
+                If showMazeGeneration Then
                     SetBoth(ConsoleColor.White)
-                    PrevCell.Print("██")
+                    prevCell.Print("██")
                     SetBoth(ConsoleColor.Blue)
-                    TemporaryCell.Print("██")
-                    PrevCell = CurrentCell
+                    temporaryCell.Print("██")
+                    prevCell = currentCell
                 End If
             End If
             Threading.Thread.Sleep(delay)
         End While
         PrintMessageMiddle($"Time taken to generate the maze: {stopwatch.Elapsed.TotalSeconds}", 1, ConsoleColor.Yellow)
-        If Not ShowMazeGeneration Then
+        If Not showMazeGeneration Then
             SetBoth(ConsoleColor.White)
-            PrintMazeHorizontally(ReturnablePath, Limits(2), Limits(3))
+            PrintMazeHorizontally(returnablePath, limits(2), limits(3))
         Else
             SetBoth(ConsoleColor.White)
-            PrevCell.Print("██")
+            prevCell.Print("██")
         End If
         Dim ypos As Integer = Console.CursorTop
-        AddStartAndEnd(ReturnablePath, Limits, 0)
+        AddStartAndEnd(returnablePath, limits, 0)
         Console.SetCursorPosition(0, ypos)
-        Return ReturnablePath
+        Return returnablePath
     End Function
 End Module

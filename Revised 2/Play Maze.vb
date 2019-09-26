@@ -1,24 +1,24 @@
-﻿Module Play_Maze
-    Sub Playmaze(ByVal AvailablePath As List(Of Node), ByVal ShowPath As Boolean)
+﻿Module PlayMaze
+    Sub PlaymazeSubroutine(availablePath As List(Of Node), showPath As Boolean)
         Dim playerPath As New List(Of Node)
-        Dim currentPos As New Node(AvailablePath(AvailablePath.Count - 2).X, AvailablePath(AvailablePath.Count - 2).Y)
-        Dim start As New Node(AvailablePath(AvailablePath.Count - 2).X, AvailablePath(AvailablePath.Count - 2).Y)
+        Dim currentPos As New Node(availablePath(availablePath.Count - 2).X, availablePath(availablePath.Count - 2).Y)
+        Dim start As New Node(availablePath(availablePath.Count - 2).X, availablePath(availablePath.Count - 2).Y)
         If Not playerPath.Contains(currentPos) Then playerPath.Add(currentPos)
         Console.ForegroundColor = (ConsoleColor.Magenta)
         currentPos.Print("██")
-        Dim PreviousPos As Node = currentPos
-        Dim target As New Node(AvailablePath(AvailablePath.Count - 1).X, AvailablePath(AvailablePath.Count - 1).Y)
+        Dim previousPos As Node = currentPos
+        Dim target As New Node(availablePath(availablePath.Count - 1).X, availablePath(availablePath.Count - 1).Y)
         Console.ForegroundColor = (ConsoleColor.Green)
         target.Print("██")
         Console.CursorVisible = False
         While Not currentPos.Equals(target)
             Dim t As New Node(Console.CursorLeft, Console.CursorTop)
             Dim s As New Node(Console.CursorLeft - 1, Console.CursorTop)
-            If AvailablePath.Contains(t) Or AvailablePath.Contains(s) Then
-                If ShowPath And AvailablePath.Contains(s) Or AvailablePath.Contains(t) Then
+            If availablePath.Contains(t) Or availablePath.Contains(s) Then
+                If showPath And availablePath.Contains(s) Or availablePath.Contains(t) Then
                     If playerPath.Contains(t) Or playerPath.Contains(s) Then
-                        If AvailablePath.Contains(t) Or AvailablePath.Contains(s) Then
-                            If ShowPath Then
+                        If availablePath.Contains(t) Or availablePath.Contains(s) Then
+                            If showPath Then
                                 Console.ForegroundColor = ConsoleColor.Blue
                                 Console.BackgroundColor = ConsoleColor.Blue
                             Else
@@ -34,7 +34,7 @@
                         Console.BackgroundColor = ConsoleColor.White
                     End If
                 Else
-                    If AvailablePath.Contains(t) Or AvailablePath.Contains(s) Then
+                    If availablePath.Contains(t) Or availablePath.Contains(s) Then
                         Console.ForegroundColor = ConsoleColor.White
                         Console.BackgroundColor = ConsoleColor.White
                     Else
@@ -50,16 +50,16 @@
             Select Case key.Key.ToString
                 Case "RightArrow"
                     Dim tempNode3 As New Node(currentPos.X + 2, currentPos.Y)
-                    PlayMazeKeyPress(currentPos, tempNode3, ShowPath, PreviousPos, playerPath, AvailablePath)
+                    PlayMazeKeyPress(currentPos, tempNode3, showPath, previousPos, playerPath, availablePath)
                 Case "LeftArrow"
                     Dim tempNode2 As New Node(currentPos.X - 2, currentPos.Y)
-                    PlayMazeKeyPress(currentPos, tempNode2, ShowPath, PreviousPos, playerPath, AvailablePath)
+                    PlayMazeKeyPress(currentPos, tempNode2, showPath, previousPos, playerPath, availablePath)
                 Case "UpArrow"
                     Dim tempNode1 As New Node(currentPos.X, currentPos.Y - 1)
-                    PlayMazeKeyPress(currentPos, tempNode1, ShowPath, PreviousPos, playerPath, AvailablePath)
+                    PlayMazeKeyPress(currentPos, tempNode1, showPath, previousPos, playerPath, availablePath)
                 Case "DownArrow"
                     Dim tempNode As New Node(currentPos.X, currentPos.Y + 1)
-                    PlayMazeKeyPress(currentPos, tempNode, ShowPath, PreviousPos, playerPath, AvailablePath)
+                    PlayMazeKeyPress(currentPos, tempNode, showPath, previousPos, playerPath, availablePath)
                 Case "Escape"
                     Exit While
                 Case Else
@@ -69,24 +69,24 @@
         If currentPos.Equals(target) Then
             playerPath.Add(start)
             playerPath.Add(target)
-            aStar(playerPath, False, False, 0, False)
+            AStar(playerPath, False, False, 0, False)
             Console.Clear()
             PrintMessageMiddle("EPIC VICTORY ROYALE", Console.WindowHeight / 2, ConsoleColor.Yellow)
             Console.ReadKey()
         End If
     End Sub
-    Sub PlayMazeKeyPress(ByRef currentPos As Node, ByVal tempNode As Node, ByVal showpath As Boolean, ByRef PreviousPos As Node, ByRef playerPath As List(Of Node), ByVal AvailablePath As List(Of Node))
-        If AvailablePath.Contains(tempNode) Then
+    Sub PlayMazeKeyPress(ByRef currentPos As Node, tempNode As Node, showpath As Boolean, ByRef previousPos As Node, ByRef playerPath As List(Of Node), availablePath As List(Of Node))
+        If availablePath.Contains(tempNode) Then
             currentPos = tempNode
             If showpath Then
                 Console.ForegroundColor = (ConsoleColor.Blue)
             Else
                 Console.ForegroundColor = (ConsoleColor.White)
             End If
-            PreviousPos.Print("██")
+            previousPos.Print("██")
             Console.ForegroundColor = (ConsoleColor.Magenta)
             currentPos.Print("██")
-            PreviousPos = currentPos
+            previousPos = currentPos
             If Not playerPath.Contains(currentPos) Then playerPath.Add(currentPos)
         End If
     End Sub

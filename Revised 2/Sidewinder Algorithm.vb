@@ -1,52 +1,52 @@
-﻿Module Sidewinder_Algorithm
-    Function Sidewinder(ByVal Limits() As Integer, ByVal Delay As Integer, ByVal ShowMazeGeneration As Boolean)
-        While Limits(2) Mod 4 <> 2
-            Limits(2) -= 1
+﻿Module SidewinderAlgorithm
+    Function Sidewinder(limits() As Integer, delay As Integer, showMazeGeneration As Boolean)
+        While limits(2) Mod 4 <> 2
+            limits(2) -= 1
         End While
-        Dim WallCell As Cell
-        Dim RunSet As New List(Of Cell)
-        Dim Availablepath As New List(Of Node)
-        Dim R As New Random
+        Dim wallCell As Cell
+        Dim runSet As New List(Of Cell)
+        Dim availablepath As New List(Of Node)
+        Dim r As New Random
         Dim stopwatch As Stopwatch = Stopwatch.StartNew()
         SetBoth(ConsoleColor.White)
-        For y = Limits(1) To Limits(3) Step 2
-            For x = Limits(0) + 3 To Limits(2) Step 4
+        For y = limits(1) To limits(3) Step 2
+            For x = limits(0) + 3 To limits(2) Step 4
                 If ExitCase() Then Return Nothing
-                Dim CurrentCell As New Cell(x, y)
-                Availablepath.Add(New Node(CurrentCell.X, CurrentCell.Y))
-                If ShowMazeGeneration Then CurrentCell.Print("██")
-                If y <> Limits(1) Then RunSet.Add(New Cell(CurrentCell.X, CurrentCell.Y))
-                Dim EastCell As New Cell(x + 4, y)
-                Dim RanNum As Integer = R.Next(1, 101)
-                If x + 2 = Limits(2) And y <> Limits(1) Then
-                    RanNum = 1
+                Dim currentCell As New Cell(x, y)
+                availablepath.Add(New Node(currentCell.X, currentCell.Y))
+                If showMazeGeneration Then currentCell.Print("██")
+                If y <> limits(1) Then runSet.Add(New Cell(currentCell.X, currentCell.Y))
+                Dim eastCell As New Cell(x + 4, y)
+                Dim ranNum As Integer = r.Next(1, 101)
+                If x + 2 = limits(2) And y <> limits(1) Then
+                    ranNum = 1
                 End If
-                If RanNum > 50 Or y = Limits(1) Then
-                    If EastCell.WithinLimits(Limits) Then
-                        WallCell = MidPoint(CurrentCell, EastCell)
-                        If ShowMazeGeneration Then WallCell.Print("██")
-                        Availablepath.Add(New Node(WallCell.X, WallCell.Y))
+                If ranNum > 50 Or y = limits(1) Then
+                    If eastCell.WithinLimits(limits) Then
+                        wallCell = MidPoint(currentCell, eastCell)
+                        If showMazeGeneration Then wallCell.Print("██")
+                        availablepath.Add(New Node(wallCell.X, wallCell.Y))
                     End If
                 Else
-                    Dim RandomRunSet As Integer = R.Next(0, RunSet.Count)
-                    Dim RandomRunSetCell As Cell = RunSet(RandomRunSet)
-                    Dim NorthCell As New Cell(RandomRunSetCell.X, y - 2)
-                    WallCell = MidPoint(RandomRunSetCell, NorthCell)
-                    Availablepath.Add(New Node(WallCell.X, WallCell.Y))
-                    If ShowMazeGeneration Then WallCell.Print("██")
-                    RunSet.Clear()
+                    Dim randomRunSet As Integer = r.Next(0, runSet.Count)
+                    Dim randomRunSetCell As Cell = runSet(randomRunSet)
+                    Dim northCell As New Cell(randomRunSetCell.X, y - 2)
+                    wallCell = MidPoint(randomRunSetCell, northCell)
+                    availablepath.Add(New Node(wallCell.X, wallCell.Y))
+                    If showMazeGeneration Then wallCell.Print("██")
+                    runSet.Clear()
                 End If
-                Threading.Thread.Sleep(Delay)
+                Threading.Thread.Sleep(delay)
             Next
         Next
         PrintMessageMiddle($"Time taken to generate the maze: {stopwatch.Elapsed.TotalSeconds}", 1, ConsoleColor.Yellow)
-        If Not ShowMazeGeneration Then
+        If Not showMazeGeneration Then
             SetBoth(ConsoleColor.White)
-            PrintMazeHorizontally(Availablepath, Limits(2), Limits(3))
+            PrintMazeHorizontally(availablepath, limits(2), limits(3))
         End If
         Dim ypos As Integer = Console.CursorTop
-        AddStartAndEnd(Availablepath, Limits, 0)
+        AddStartAndEnd(availablepath, limits, 0)
         Console.SetCursorPosition(0, ypos)
-        Return Availablepath
+        Return availablepath
     End Function
 End Module
