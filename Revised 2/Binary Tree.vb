@@ -1,40 +1,42 @@
 ﻿Imports NEA_2019
 Imports System.Drawing
 Public Class PriorityQueue(Of T)
-    Private _items As BinaryTree(Of T)
     Public Sub New()
-        _items = New BinaryTree(Of T)
+        Items = New BinaryTree(Of T)
     End Sub
+    Public Property Items As BinaryTree(Of T)
     Public Sub Enqueue(value As T, Optional ByVal priority As Integer = 0)
-        _items.Insert(New QueueItem(Of T)(value, priority))
+        Items.Insert(New QueueItem(Of T)(value, priority))
     End Sub
     Public Function ExtractMin() As T
-        Dim minPriority As QueueItem(Of T) = _items.MinValue()
-        Dim output As T = _items.FindFirst(minPriority).Value
-        _items.Delete(minPriority)
+        Dim minPriority As QueueItem(Of T) = Items.MinValue()
+        Dim output As T = Items.FindFirst(minPriority).Value
+        Items.Delete(minPriority)
         Return output
     End Function
+
     Public Sub DecreasePriority(value As T, newPriority As Integer)
         Dim tempItem As New QueueItem(Of T)(value, 0)
-        Dim item As QueueItem(Of T) = _items.FindExact(tempItem).Clone()
-        _items.Delete(item, True)
-        _items.Insert(New QueueItem(Of T)(value, newPriority))
+        Dim item As QueueItem(Of T) = Items.FindExact(tempItem).Clone()
+        Items.Delete(item, True)
+        Items.Insert(New QueueItem(Of T)(value, newPriority))
     End Sub
+
     Public Function Contains(value As QueueItem(Of T)) As Boolean
-        Return If(IsNothing(_items.Contains(value)), False, True)
+        Return Not IsNothing(Items.Contains(value))
     End Function
+
     Public Function IsEmpty()
-        Return _items.IsEmpty
+        Return Items.IsEmpty
     End Function
 End Class
 Public Class QueueItem(Of T)
     Public Value As T
     Public Priority As Integer
-    Public Sub New(value As T, priority As Integer)
-        Value = value
-        Priority = priority
+    Public Sub New(inputValue As T, inputPriority As Integer)
+        Value = inputValue
+        Priority = inputPriority
     End Sub
-
     Public Function CompareTo(other As QueueItem(Of T)) As Integer
         If ReferenceEquals(Me, other) Then Return 0
         If ReferenceEquals(Nothing, other) Then Return 1

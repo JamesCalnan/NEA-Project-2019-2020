@@ -35,18 +35,18 @@
         Dim target As New Node(maze(maze.Count - 1).X, maze(maze.Count - 1).Y)
         Dim dist As New Dictionary(Of Node, Double)
         Dim prev As New Dictionary(Of Node, Node)
-        Dim q As New PriorityQueue(Of Node)
+        Dim Q As New PriorityQueue(Of Node)
         dist(source) = 0
         For Each v In maze
             If Not v.Equals(source) Then dist(v) = Int32.MaxValue / 2
             prev(v) = Nothing
-            q.Enqueue(v, dist(v))
+            Q.Enqueue(v, dist(v))
         Next
         Dim stopwatch As Stopwatch = Stopwatch.StartNew()
         SetBoth(ConsoleColor.Red)
-        While Not q.IsEmpty
+        While Not Q.IsEmpty
             If ExitCase() Then Exit While
-            Dim u As Node = q.ExtractMin
+            Dim u As Node = Q.ExtractMin
             If u.Equals(target) Then Exit While
             If showSolving Then : u.Print("██") : Threading.Thread.Sleep(solvingDelay) : End If
             For Each v As Node In GetNeighbours(u, maze)
@@ -54,7 +54,7 @@
                 If alt < dist(v) Then
                     dist(v) = alt
                     prev(v) = u
-                    q.DecreasePriority(v, alt)
+                    Q.DecreasePriority(v, alt)
                 End If
             Next
         End While
