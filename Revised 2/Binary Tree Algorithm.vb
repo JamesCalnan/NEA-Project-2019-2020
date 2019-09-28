@@ -1,5 +1,6 @@
 ﻿Module BinaryTreeAlgorithm
-    Function BinaryTree(limits() As Integer, delay As Integer, showMazeGeneration As Boolean, biasArr() As Integer)
+    Function BinaryTree(limits() As Integer, delay As Integer, showMazeGeneration As Boolean, biasArr() As Integer, pathColour as consolecolor, backGroundColour as consolecolor)
+        If backGroundColour <> ConsoleColor.black Then DrawBackground(backGroundColour,limits)
         Dim availablepath As New List(Of Node)
         Dim wallCell As Cell
         Dim r As New Random
@@ -18,7 +19,7 @@
             changeX = +4
             changeY = -2
         End If
-        SetBoth(ConsoleColor.White)
+        SetBoth(pathColour)
         For y = limits(1) To limits(3) Step 2
             For x = limits(0) + 3 To limits(2) Step 4
                 If ExitCase() Then Return Nothing
@@ -52,11 +53,11 @@
         Next
         PrintMessageMiddle($"Time taken to generate the maze: {stopwatch.Elapsed.TotalSeconds}", 1, ConsoleColor.Yellow)
         If Not showMazeGeneration Then
-            SetBoth(ConsoleColor.White)
+            SetBoth(pathColour)
             PrintMazeHorizontally(availablepath, limits(2), limits(3))
         End If
         Dim ypos As Integer = Console.CursorTop
-        AddStartAndEnd(availablepath, limits, 0)
+        AddStartAndEnd(availablepath, limits, pathColour)
         Console.SetCursorPosition(0, ypos)
         Return availablepath
     End Function

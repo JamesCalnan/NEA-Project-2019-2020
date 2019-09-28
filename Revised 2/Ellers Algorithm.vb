@@ -1,5 +1,7 @@
 ﻿Module EllersAlgorithm
-    Function Ellers(limits() As Integer, delay As Integer, showMazeGeneration As Boolean)
+    Function Ellers(limits() As Integer, delay As Integer, showMazeGeneration As Boolean, pathColour as consolecolor, backGroundColour as consolecolor)
+        dim tempLimits() = {limits(0),limits(1),limits(2),limits(3)-2}
+        If backGroundColour <> ConsoleColor.black Then DrawBackground(backGroundColour,tempLimits)
         Dim lowerBound As Integer = limits(2)
         Dim upperBound As Integer = limits(2)
         Do
@@ -28,7 +30,7 @@
                 availableCells(cur) = True
             Next
         Next
-        SetBoth(ConsoleColor.White)
+        SetBoth(pathColour)
         For y = limits(1) To limits(3) - 2 Step 2
             For i = 0 To 1
                 For x = limits(0) + 3 To limits(2) Step 4
@@ -131,13 +133,12 @@
         Next
         PrintMessageMiddle($"Time taken to generate the maze: {stopwatch.Elapsed.TotalSeconds}", 1, ConsoleColor.Yellow)
         If Not showMazeGeneration Then
-            Console.ForegroundColor = (ConsoleColor.White)
-            Console.BackgroundColor = (ConsoleColor.White)
+            SetBoth(pathColour)
             PrintMazeHorizontally(returnPath, limits(2), limits(3))
         End If
         Dim ypos As Integer = Console.CursorTop
         limits(3) -= 2
-        AddStartAndEnd(returnPath, limits, 0)
+        AddStartAndEnd(returnPath, limits, pathcolour)
         Console.SetCursorPosition(0, ypos)
         Return returnPath
     End Function

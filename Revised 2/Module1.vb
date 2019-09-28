@@ -6,7 +6,8 @@ Module Module1
     'https://en.wikipedia.org/wiki/Bellman%E2%80%93Ford_algorithm, https://en.wikipedia.org/wiki/Floyd%E2%80%93Warshall_algorithm#Algorithm
     'get rid of dead-end filling method when the maze has been braided
     'give option for partial braid
-    'TODO: give user the option to print a path or carve through walls, put in solving menu when the user has loaded an ascii maze from a text file
+    'TODO: give user the option to print a path or carve through walls, put in solving menu when the user has loaded an ascii maze from a text file, give the user the option to chose back and fore colour, solving menu colours still need to be done
+    'solving menu needs to have thepathcolour and backgroundcolour implemented
     Sub Main()
         ''Console.ReadKey()
         ''Dim ind As Integer = 0
@@ -34,6 +35,9 @@ Module Module1
         'Console.ForegroundColor = ConsoleColor.DarkGray
         'Console.WriteLine("hello there")
         'Console.ReadKey()
+        
+        dim b as ConsoleColor = consolecolor.Black
+        
         Do
             Console.SetCursorPosition(0, 0)
             Console.Write("Please make the window full screen")
@@ -57,6 +61,9 @@ Module Module1
             "   Custom Algorithm",
             "",
             "Load the previously generated maze",
+            "",
+            "Change the path colour           current colour: ",
+            "Change the background colour     current colour: ",
             "",
             "Load a maze from a text file (list of points)",
             "Load a maze from an image file",
@@ -138,7 +145,7 @@ Module Module1
             c += 1
         Next
     End Sub
-    Function LoadMazeAscii() As List(Of Node)
+    Function LoadMazeAscii(pathColour as ConsoleColor, backGroundColour as ConsoleColor) As List(Of Node)
         Console.Clear()
         Dim y As Integer
         Console.Write("File Name of the maze to load (don't include .txt): ")
@@ -172,6 +179,8 @@ Module Module1
                 If node.Y > gY Then gY = node.Y
             Next
             If gX > Console.WindowWidth - 57 Or gY > Console.WindowHeight - 6 Then Return Nothing
+            DrawBackground(backGroundColour,{5,3,gX+1,gY-1})
+            SetBoth(pathColour)
             PrintMazeHorizontally(maze, gX, gY)
             PrintStartandEnd(maze)
             Console.BackgroundColor = ConsoleColor.Black
@@ -200,8 +209,8 @@ Module Module1
             "Save the maze as an ascii text file",
             "",
             "Clear the maze and return to the menu"}
-            Dim input As String = SolvingMenu(temparr, "What would you like to do with the maze", gX + 3, 3)
-            SolvingInput(input, True, gY + 2, 0, maze, "")
+            Dim input As String = SolvingMenu(temparr, "What would you like to do with the maze", gX + 7, 3)
+            SolvingInput(input, True, gY + 2, 0, maze, "",pathColour,backGroundColour)
             Return maze
         Else
             Console.Clear()
@@ -248,6 +257,15 @@ Module Module1
     Sub DisplayAvailablePositions(count As Integer)
         PrintMessageMiddle($"There are {count} available positions in the maze", 0, ConsoleColor.Magenta)
     End Sub
+    sub DrawBackground(backgroundColour as ConsoleColor, limits() as Integer)
+        SetBoth(backgroundColour)
+        For y = limits(1) - 1 To limits(3) + 1
+            For x = limits(0) + 1 To limits(2) + 1
+                Console.SetCursorPosition(x, y)
+                Console.Write("XX")
+            Next
+        Next
+    End sub
     Function PreGenMenu(arr() As String, message As String)
         Console.Clear()
         Dim temparr() As Integer = {0, 0, 0, 0, 0, 0, 0, 0, 0}
@@ -331,7 +349,7 @@ Module Module1
         Console.ReadKey()
         Console.Clear()
     End Sub
-    Function LoadMazePng()
+    Function LoadMazePng(pathColour as ConsoleColor, backGroundColour as ConsoleColor)
         'loading a big maze twice exceeds memory limit
         Console.Clear()
         Console.Write("File Name of the maze to load (don't include .png): ")
@@ -428,7 +446,7 @@ Module Module1
                     Console.ForegroundColor = ConsoleColor.White
 
                     Dim input As String = SolvingMenu(temparr, "What would you like to do with the maze", greatestX + 3, 3)
-                    SolvingInput(input, True, greatestY, 0, maze, "")
+                    SolvingInput(input, True, greatestY, 0, maze, "",pathColour,backGroundColour)
                 End If
             Else
                 start = maze(0)
@@ -444,7 +462,7 @@ Module Module1
                 Console.BackgroundColor = ConsoleColor.Black
                 Console.ForegroundColor = ConsoleColor.White
                 Dim input As String = SolvingMenu(temparr, "What would you like to do with the maze", greatestX + 3, 3)
-                SolvingInput(input, True, greatestY, 0, maze, "")
+                SolvingInput(input, True, greatestY, 0, maze, "",pathColour,backGroundColour)
             End If
             Return maze
         Else
@@ -845,8 +863,43 @@ Module Module1
         Next
         Return dict
     End Function
-
-    Sub SaveMazePng(path As List(Of Node), algorithm As String, fileName As String)
+    function consoleColourToBrush(colour as ConsoleColor)
+        if colour = ConsoleColor.Black
+            return Brushes.Black
+        elseif colour = ConsoleColor.Blue
+            return Brushes.Blue
+        elseif colour = consolecolor.Cyan
+            return Brushes.Cyan
+        elseif colour = ConsoleColor.Gray
+            return Brushes.SlateGray
+        elseif colour = ConsoleColor.Green
+            return Brushes.LimeGreen
+        elseif colour = ConsoleColor.Magenta
+            return Brushes.Magenta
+        elseif colour = ConsoleColor.Red
+            return Brushes.Red
+        elseif colour = ConsoleColor.White
+            return brushes.White
+        elseif colour = ConsoleColor.Yellow
+            return Brushes.Yellow
+        elseif colour = ConsoleColor.DarkBlue
+            return Brushes.DarkBlue
+        elseif colour = ConsoleColor.DarkCyan
+            return Brushes.DarkCyan
+        elseif colour = ConsoleColor.DarkGray
+            return Brushes.DarkSlateGray
+        elseif colour = ConsoleColor.DarkGreen
+            Return Brushes.DarkGreen
+        elseif colour = ConsoleColor.DarkMagenta
+            return Brushes.DarkMagenta
+        elseif colour = ConsoleColor.DarkRed
+            return Brushes.DarkRed
+        ElseIf colour = consolecolor.DarkYellow
+            return Brushes.OrangeRed
+        End If
+        return nothing
+    End function
+    Sub SaveMazePng(path As List(Of Node), algorithm As String, fileName As String, pathColour as consolecolor, backGroundColour as consolecolor)
         Console.Clear()
         Dim solving As Boolean = HorizontalYesNo(0, "Do you want the outputted maze to have the solution on it  ", False, False, False)
         Console.Clear()
@@ -862,9 +915,10 @@ Module Module1
         Dim bmp As New Bitmap(width, height)
         Dim g As Graphics
         g = Graphics.FromImage(bmp)
-        g.FillRectangle(Brushes.Black, 0, 0, width, height)
+        g.FillRectangle(consoleColourToBrush(backGroundColour), 0, 0, width, height)
+        dim gPathColour as Brush = consoleColourToBrush(pathColour)
         For Each thing In path
-            g.FillRectangle(Brushes.White, (thing.X) * multiplier, (thing.Y * 2) * multiplier, 2 * multiplier, 2 * multiplier)
+            g.FillRectangle(gPathColour, (thing.X) * multiplier, (thing.Y * 2) * multiplier, 2 * multiplier, 2 * multiplier)
         Next
         If solving Then
             Dim myBrush As New SolidBrush(Color.FromArgb(255, 0, 0, 255))

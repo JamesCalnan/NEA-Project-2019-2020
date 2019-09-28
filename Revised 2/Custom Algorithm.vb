@@ -1,7 +1,7 @@
 ﻿Module CustomAlgorithm
-    Function Custom(limits() As Integer, delay As Integer, showMazeGeneration As Boolean)
+    Function Custom(limits() As Integer, delay As Integer, showMazeGeneration As Boolean, pathColour as consolecolor, backGroundColour as consolecolor)
+        If backGroundColour <> ConsoleColor.black Then DrawBackground(backGroundColour,limits)
         Dim r As New Random
-        Dim availablepath As New List(Of Cell)
         Dim frontierSet, recentFrontierSet As New List(Of Cell)
         Dim currentCell As Cell = PickRandomStartingCell(limits) '(Limits(0) + 3, Limits(1) + 2)
         Dim wallCell As Cell
@@ -9,10 +9,10 @@
         Dim returnablePath As New List(Of Node)
         Dim visitedCells As Dictionary(Of Cell, Boolean) = InitialiseVisited(limits)
         visitedCells(currentCell) = True
-        If showMazeGeneration Then currentCell.Print("██")
         returnablePath.Add(New Node(currentCell.X, currentCell.Y))
         Dim stopwatch As Stopwatch = Stopwatch.StartNew()
-        SetBoth(ConsoleColor.White)
+        SetBoth(pathColour)
+        If showMazeGeneration Then currentCell.Print("██")
         While True
             If ExitCase() Then Return Nothing
             For Each cell As Cell In Neighbour(currentCell, visitedCells, limits, True)
@@ -31,7 +31,7 @@
             Dim previousCell As Cell = PickAdjancentCell(currentCell, adjancencyList)
             wallCell = MidPoint(currentCell, previousCell)
             If showMazeGeneration Then
-                SetBoth(ConsoleColor.White)
+                SetBoth(pathColour)
                 wallCell.Print("██")
                 currentCell.Print("██")
             End If
@@ -44,7 +44,7 @@
         End While
         PrintMessageMiddle($"Time taken to generate the maze: {stopwatch.Elapsed.TotalSeconds}", 1, ConsoleColor.Yellow)
         If Not showMazeGeneration Then
-            SetBoth(ConsoleColor.White)
+            SetBoth(pathColour)
             PrintMazeHorizontally(returnablePath, limits(2), limits(3))
         End If
         Dim ypos As Integer = Console.CursorTop

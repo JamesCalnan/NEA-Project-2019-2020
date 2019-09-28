@@ -1,13 +1,12 @@
 ﻿Module AldousBroder
-    Function AldousBroder(limits() As Integer, delay As Integer, showMazeGeneration As Boolean)
+    Function AldousBroder(limits() As Integer, delay As Integer, showMazeGeneration As Boolean, pathColour as consolecolor, backGroundColour as consolecolor)
+        If backGroundColour <> ConsoleColor.black Then DrawBackground(backGroundColour,limits)
         Dim totalCellCount As Integer
         Dim r As New Random
-        Dim availablepath As New List(Of Cell)
         Dim recentCells As New List(Of Cell)
         Dim currentCell As Cell = PickRandomStartingCell(limits) '(Limits(0) + 3, Limits(1) + 2)
         Dim prevCell As Cell = PickRandomStartingCell(limits)
         Dim visitedCells As Dictionary(Of Cell, Boolean) = InitialiseVisited(limits)
-        Dim previousCell As Cell = currentCell
         Dim wallCell As Cell
         Dim returnablePath As New List(Of Node)
         For y = limits(1) To limits(3) Step 2
@@ -16,7 +15,7 @@
             Next
         Next
         Dim stopwatch As Stopwatch = Stopwatch.StartNew()
-        SetBoth(ConsoleColor.White)
+        SetBoth(pathcolour)
         visitedCells(currentCell) = True
         returnablePath.Add(New Node(currentCell.X, currentCell.Y))
         If showMazeGeneration Then currentCell.Print("██")
@@ -27,7 +26,6 @@
             recentCells = RanNeighbour(currentCell, limits)
             Dim index As Integer = r.Next(0, recentCells.Count)
             Dim temporaryCell As Cell = recentCells(index)
-            Dim tempNodeCell As New Node(temporaryCell.X, temporaryCell.Y)
             If Not visitedCells(temporaryCell) Then
                 visitedCells(New Cell(temporaryCell.X, temporaryCell.Y)) = True
                 usedCellCount += 1
@@ -36,7 +34,7 @@
                 returnablePath.Add(New Node(wallCell.X, wallCell.Y))
                 returnablePath.Add(New Node(temporaryCell.X, temporaryCell.Y))
                 If showMazeGeneration Then
-                    SetBoth(ConsoleColor.White)
+                    SetBoth(pathcolour)
                     prevCell.Print("██")
                     wallCell.Print("██")
                     SetBoth(ConsoleColor.Blue)
@@ -46,7 +44,7 @@
             Else
                 currentCell = temporaryCell
                 If showMazeGeneration Then
-                    SetBoth(ConsoleColor.White)
+                    SetBoth(pathcolour)
                     prevCell.Print("██")
                     SetBoth(ConsoleColor.Blue)
                     temporaryCell.Print("██")
@@ -57,14 +55,14 @@
         End While
         PrintMessageMiddle($"Time taken to generate the maze: {stopwatch.Elapsed.TotalSeconds}", 1, ConsoleColor.Yellow)
         If Not showMazeGeneration Then
-            SetBoth(ConsoleColor.White)
+            SetBoth(pathcolour)
             PrintMazeHorizontally(returnablePath, limits(2), limits(3))
         Else
-            SetBoth(ConsoleColor.White)
+            SetBoth(pathcolour)
             prevCell.Print("██")
         End If
         Dim ypos As Integer = Console.CursorTop
-        AddStartAndEnd(returnablePath, limits, 0)
+        AddStartAndEnd(returnablePath, limits, pathcolour)
         Console.SetCursorPosition(0, ypos)
         Return returnablePath
     End Function

@@ -1,14 +1,15 @@
 ﻿Module SidewinderAlgorithm
-    Function Sidewinder(limits() As Integer, delay As Integer, showMazeGeneration As Boolean)
+    Function Sidewinder(limits() As Integer, delay As Integer, showMazeGeneration As Boolean, pathColour as consolecolor, backGroundColour as consolecolor)
         While limits(2) Mod 4 <> 2
             limits(2) -= 1
         End While
+        If backGroundColour <> ConsoleColor.black Then DrawBackground(backGroundColour,limits)
         Dim wallCell As Cell
         Dim runSet As New List(Of Cell)
         Dim availablepath As New List(Of Node)
         Dim r As New Random
         Dim stopwatch As Stopwatch = Stopwatch.StartNew()
-        SetBoth(ConsoleColor.White)
+        SetBoth(pathColour)
         For y = limits(1) To limits(3) Step 2
             For x = limits(0) + 3 To limits(2) Step 4
                 If ExitCase() Then Return Nothing
@@ -41,11 +42,11 @@
         Next
         PrintMessageMiddle($"Time taken to generate the maze: {stopwatch.Elapsed.TotalSeconds}", 1, ConsoleColor.Yellow)
         If Not showMazeGeneration Then
-            SetBoth(ConsoleColor.White)
+            SetBoth(pathColour)
             PrintMazeHorizontally(availablepath, limits(2), limits(3))
         End If
         Dim ypos As Integer = Console.CursorTop
-        AddStartAndEnd(availablepath, limits, 0)
+        AddStartAndEnd(availablepath, limits, pathColour)
         Console.SetCursorPosition(0, ypos)
         Return availablepath
     End Function

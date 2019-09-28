@@ -1,15 +1,15 @@
 ﻿Module Prims
-    Function Prims_Simplified(limits() As Integer, delay As Integer, showMazeGeneration As Boolean)
+    Function Prims_Simplified(limits() As Integer, delay As Integer, showMazeGeneration As Boolean,  pathColour as Consolecolor,  backGroundColour as ConsoleColor)
         'Assumes the weights of each cell in the grid is the same and therefore chooses a random cell from the frontier set
+        If backGroundColour <> ConsoleColor.black Then DrawBackground(backGroundColour,limits)
         Dim r As New Random
-        Dim availablepath As New List(Of Cell)
         Dim frontierSet As New List(Of Cell)
         Dim currentCell As Cell = PickRandomStartingCell(limits) '(Limits(0) + 3, Limits(1) + 2)
         Dim visitedCells As Dictionary(Of Cell, Boolean) = InitialiseVisited(limits)
         Dim wallCell As Cell
         Dim returnablePath As New List(Of Node)
         visitedCells(currentCell) = True
-        SetBoth(ConsoleColor.White)
+        SetBoth(pathColour)
         If showMazeGeneration Then currentCell.Print("██")
         returnablePath.Add(New Node(currentCell.X, currentCell.Y))
         Dim stopwatch As Stopwatch = Stopwatch.StartNew()
@@ -34,18 +34,18 @@
         End While
         PrintMessageMiddle($"Time taken to generate the maze: {stopwatch.Elapsed.TotalSeconds}", 1, ConsoleColor.Yellow)
         If Not showMazeGeneration Then
-            SetBoth(ConsoleColor.White)
+            SetBoth(pathColour)
             PrintMazeHorizontally(returnablePath, limits(2), limits(3))
         End If
         Dim ypos As Integer = Console.CursorTop
-        AddStartAndEnd(returnablePath, limits, 0)
+        AddStartAndEnd(returnablePath, limits, pathColour)
         Console.SetCursorPosition(0, ypos)
         Return returnablePath
     End Function
-    Function Prims_True(limits() As Integer, delay As Integer, showMazeGeneration As Boolean)
+    Function Prims_True(limits() As Integer, delay As Integer, showMazeGeneration As Boolean, pathColour as Consolecolor,  backGroundColour as ConsoleColor)
         'Assigns a random weight between 0, 99 to each available in the grid, it then chooses the cell with the lowest weight out of the frontier set
+        If backGroundColour <> ConsoleColor.black Then DrawBackground(backGroundColour,limits)
         Dim r As New Random
-        Dim availablepath As New List(Of Cell)
         Dim frontierSet As New List(Of Cell)
         Dim wallCell As Cell
         Dim returnablePath As New List(Of Node)
@@ -60,7 +60,7 @@
         Next
         Dim currentCell As Cell = PickRandomStartingCell(limits) '(FrontierSet(idx).X, FrontierSet(idx).Y) '(Limits(0) + 3, Limits(1) + 2)
         visitedCells(currentCell) = True
-        SetBoth(ConsoleColor.White)
+        SetBoth(pathcolour)
         If showMazeGeneration Then currentCell.Print("██")
         returnablePath.Add(New Node(currentCell.X, currentCell.Y))
         While True
@@ -88,11 +88,11 @@
         End While
         PrintMessageMiddle($"Time taken to generate the maze: {stopwatch.Elapsed.TotalSeconds}", 1, ConsoleColor.Yellow)
         If Not showMazeGeneration Then
-            SetBoth(ConsoleColor.White)
+            SetBoth(pathcolour)
             PrintMazeHorizontally(returnablePath, limits(2), limits(3))
         End If
         Dim ypos As Integer = Console.CursorTop
-        AddStartAndEnd(returnablePath, limits, 0)
+        AddStartAndEnd(returnablePath, limits, pathcolour)
         Console.SetCursorPosition(0, ypos)
         Return returnablePath
     End Function

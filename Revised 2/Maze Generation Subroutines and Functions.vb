@@ -28,7 +28,7 @@
         Loop
         Return startingCell
     End Function
-    Function GetDirection(cell1 As Cell, cell2 As Cell, ByRef newdir As Dictionary(Of Cell, String), showmazegeneration As Boolean)
+    Function GetDirection(cell1 As Cell, cell2 As Cell, ByRef newdir As Dictionary(Of Cell, String), showmazegeneration As Boolean,  delay as integer)
         Dim tempCell As New Cell(cell2.X, cell2.Y - 2)
         Console.BackgroundColor = (ConsoleColor.Black)
         Console.ForegroundColor = (ConsoleColor.Red)
@@ -39,6 +39,7 @@
             Else
                 newdir.Add(tempCell, "VV")
             End If
+            if showmazegeneration then Threading.Thread.Sleep(delay)
             Return "VV"
         End If
         tempCell.Update(cell2.X + 4, cell2.Y)
@@ -49,6 +50,7 @@
             Else
                 newdir.Add(tempCell, "<<")
             End If
+            if showmazegeneration then Threading.Thread.Sleep(delay)
             Return "<<"
         End If
         tempCell.Update(cell2.X, cell2.Y + 2)
@@ -59,6 +61,7 @@
             Else
                 newdir.Add(tempCell, "^^")
             End If
+            if showmazegeneration then Threading.Thread.Sleep(delay)
             Return "^^"
         End If
         tempCell.Update(cell2.X - 4, cell2.Y)
@@ -69,6 +72,7 @@
             Else
                 newdir.Add(tempCell, ">>")
             End If
+            if showmazegeneration then Threading.Thread.Sleep(delay)
             Return ">>"
         End If
         Return Nothing
@@ -79,19 +83,19 @@
         tempNode.Update(cell2.X, cell2.Y)
         If Not list.Contains(tempNode) Then list.Add(New Node(cell2.X, cell2.Y))
     End Sub
-    Sub EraseLineHaK(limits() As Integer, xCount As Integer, visitedlistAndWall As List(Of Node), y As Integer)
+    Sub EraseLineHaK(limits() As Integer, xCount As Integer, visitedlistAndWall As List(Of Node), y As Integer, pathColour as ConsoleColor, backGroundColour as ConsoleColor)
         For i = limits(0) + 3 To xCount + 2 Step 2
-            Dim tempcell As New Node(i, y)
+            Dim tempCell As New Node(i, y)
             If Not visitedlistAndWall.Contains(tempcell) Then
-                SetBoth(ConsoleColor.Black)
+                SetBoth(backgroundcolour)
                 tempcell.Print("  ")
             Else
-                SetBoth(ConsoleColor.White)
+                SetBoth(pathcolour)
                 tempcell.Print("██")
             End If
         Next
     End Sub
-    Sub AddStartAndEnd(ByRef maze As List(Of Node), limits() As Integer, evenWidth As Integer, Optional ByVal chooseFirstAndLast As Boolean = False)
+    Sub AddStartAndEnd(ByRef maze As List(Of Node), limits() As Integer, pathColour as ConsoleColor,Optional ByVal chooseFirstAndLast As Boolean = False)
         SetBoth(ConsoleColor.Red)
         Dim availableStartPositions As New List(Of Node)
         For x = limits(0) + 3 To limits(2)
@@ -100,7 +104,7 @@
         Dim r As New Random
         Dim index As Integer = If(chooseFirstAndLast, 0, r.Next(0, availableStartPositions.Count))
         maze.Add(New Node(availableStartPositions(index).X, availableStartPositions(index).Y - 1))
-        SetBoth(ConsoleColor.Red)
+        SetBoth(pathcolour)
         maze(maze.Count - 1).Print("██")
         availableStartPositions.Clear()
         For x = limits(0) + 3 To limits(2)
@@ -108,7 +112,7 @@
         Next
         index = If(chooseFirstAndLast, availableStartPositions.Count - 1, r.Next(0, availableStartPositions.Count))
         maze.Add(New Node(availableStartPositions(index).X, availableStartPositions(index).Y + 1))
-        SetBoth(ConsoleColor.Green)
+        SetBoth(pathcolour)
         maze(maze.Count - 1).Print("██")
         Console.BackgroundColor = (ConsoleColor.Black)
     End Sub

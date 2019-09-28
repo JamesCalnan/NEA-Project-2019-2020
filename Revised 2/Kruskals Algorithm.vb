@@ -1,5 +1,7 @@
 ﻿Module KruskalsAlgorithm
-    Function Kruskals(limits() As Integer, delay As Integer, showMazeGeneration As Boolean)
+    Function Kruskals(limits() As Integer, delay As Integer, showMazeGeneration As Boolean, pathColour as consolecolor, backGroundColour as consolecolor)
+        dim tempLimits() = {limits(0),limits(1),limits(2),limits(3)}
+        If backGroundColour <> ConsoleColor.black Then DrawBackground(backGroundColour,tempLimits)
         Dim cellSet As New Dictionary(Of Cell, Integer)
         Dim availableCells As New List(Of Cell)
         Dim setNumber = 1
@@ -21,7 +23,7 @@
                 End If
             Next
         Next
-        SetBoth(ConsoleColor.White)
+        SetBoth(pathColour)
         Dim stopwatch As Stopwatch = Stopwatch.StartNew()
         While edgeWeights.Count > 0
             If ExitCase() Then Return Nothing
@@ -42,10 +44,7 @@
                 If showMazeGeneration Then wallCell.Print("██")
                 returnpath.Add(New Node(wallCell.X, wallCell.Y))
                 Dim setNumToBeChanged As Integer = cellSet(adjacentCells(1))
-                Dim cellsToBeChanged As New List(Of Cell)
-                For Each thing In cellSet
-                    If thing.Value = setNumToBeChanged Then cellsToBeChanged.Add(thing.Key)
-                Next
+                Dim cellsToBeChanged As List(Of Cell) = (From thing In cellSet Where thing.Value = setNumToBeChanged Select thing.Key).ToList()
                 For Each thing In cellsToBeChanged
                     cellSet(thing) = cellSet(adjacentCells(0))
                 Next
@@ -59,7 +58,7 @@
         End While
         PrintMessageMiddle($"Time taken to generate the maze: {stopwatch.Elapsed.TotalSeconds}", 1, ConsoleColor.Yellow)
         If Not showMazeGeneration Then
-            SetBoth(ConsoleColor.White)
+            SetBoth(pathColour)
             PrintMazeHorizontally(returnpath, limits(2), limits(3))
         End If
         Dim ypos As Integer = Console.CursorTop + 5

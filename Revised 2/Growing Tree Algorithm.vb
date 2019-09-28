@@ -1,7 +1,7 @@
 ﻿Module GrowingTreeAlgorithm
-    Function GrowingTree(limits() As Integer, delay As Integer, cellSelectionMethod() As Integer, showMazeGeneration As Boolean)
+    Function GrowingTree(limits() As Integer, delay As Integer, cellSelectionMethod() As Integer, showMazeGeneration As Boolean, pathColour as consolecolor, backGroundColour as consolecolor)
+        If backGroundColour <> ConsoleColor.black Then DrawBackground(backGroundColour,limits)
         Dim r As New Random
-        Dim availablepath As New List(Of Cell)
         Dim frontierSet, recentFrontierSet As New List(Of Cell)
         Dim currentCell As Cell = PickRandomStartingCell(limits) '(Limits(0) + 3, Limits(1) + 2)
         Dim previousCell As Cell = currentCell
@@ -11,7 +11,7 @@
         Dim returnablePath As New List(Of Node)
         visitedCells(currentCell) = True
         If showMazeGeneration Then
-            SetBoth(ConsoleColor.White)
+            SetBoth(pathColour)
             currentCell.Print("██")
         End If
         returnablePath.Add(New Node(currentCell.X, currentCell.Y))
@@ -133,7 +133,7 @@
             End If
             wallCell = MidPoint(currentCell, previousCell)
             If showMazeGeneration Then
-                SetBoth(ConsoleColor.White)
+                SetBoth(pathColour)
                 wallCell.Print("██")
                 currentCell.Print("██")
             End If
@@ -146,11 +146,11 @@
         End While
         PrintMessageMiddle($"Time taken to generate the maze: {stopwatch.Elapsed.TotalSeconds}", 1, ConsoleColor.Yellow)
         If Not showMazeGeneration Then
-            SetBoth(ConsoleColor.White)
+            SetBoth(pathColour)
             PrintMazeHorizontally(returnablePath, limits(2), limits(3))
         End If
         Dim ypos As Integer = Console.CursorTop
-        AddStartAndEnd(returnablePath, limits, 0)
+        AddStartAndEnd(returnablePath, limits, pathColour)
         Console.SetCursorPosition(0, ypos)
         Return returnablePath
     End Function

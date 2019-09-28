@@ -1,7 +1,7 @@
 ﻿Module WilsonsAlgorithm
-    Function Wilsons(limits() As Integer, delay As Integer, showMazeGeneration As Boolean)
+    Function Wilsons(limits() As Integer, delay As Integer, showMazeGeneration As Boolean, pathColour as consolecolor, backGroundColour as consolecolor)
+        If backGroundColour <> ConsoleColor.black Then DrawBackground(backGroundColour,limits)
         Dim r As New Random
-        Dim availablepath As New List(Of Cell)
         Dim ust, recentCells, availablepositions As New List(Of Cell)
         Dim currentCell As New Cell(limits(0) + 3, limits(1) + 2)
         Dim prevCell As New Cell(limits(0) + 3, limits(1) + 2)
@@ -14,7 +14,7 @@
         Dim cellCount As Integer = availablepositions.Count
         Dim startingCell As Cell = PickRandomCell(availablepositions, ust, limits)
         If showMazeGeneration Then
-            SetBoth(ConsoleColor.White)
+            SetBoth(pathColour)
             startingCell.Print("██")
         End If
         ust.Add(startingCell)
@@ -30,10 +30,10 @@
                 recentCells.Add(cell)
             Next
             temporaryCell = recentCells(r.Next(0, recentCells.Count))
-            Dim dir As String = GetDirection(currentCell, temporaryCell, directions, showMazeGeneration)
+            Dim dir As String = GetDirection(currentCell, temporaryCell, directions, showMazeGeneration,0)
             If ust.Contains(temporaryCell) Then 'Unvisited cell?
-                direction.Add(temporaryCell, GetDirection(temporaryCell, currentCell, directions, showMazeGeneration))
-                SetBoth(ConsoleColor.White)
+                direction.Add(temporaryCell, GetDirection(temporaryCell, currentCell, directions, showMazeGeneration,0))
+                SetBoth(pathColour)
                 Dim newList As New List(Of Cell)
                 Dim current As Cell = directions.Keys(0)
                 Dim cur As Cell = current
@@ -67,10 +67,10 @@
                 If showMazeGeneration Then
                     For Each thing In direction
                         If ust.Contains(thing.Key) Then
-                            SetBoth(ConsoleColor.White)
+                            SetBoth(pathColour)
                             thing.Key.Print("  ")
                         Else
-                            SetBoth(ConsoleColor.Black)
+                            SetBoth(backGroundColour)
                             thing.Key.Print("  ")
                         End If
                     Next
@@ -81,21 +81,21 @@
             Else
                 currentCell = temporaryCell
                 If direction.ContainsKey(currentCell) Then
-                    direction(currentCell) = GetDirection(currentCell, prevCell, directions, showMazeGeneration)
+                    direction(currentCell) = GetDirection(currentCell, prevCell, directions, showMazeGeneration, delay)
                 Else
-                    direction.Add(currentCell, GetDirection(currentCell, prevCell, directions, showMazeGeneration))
+                    direction.Add(currentCell, GetDirection(currentCell, prevCell, directions, showMazeGeneration, delay))
                 End If
-                SetBoth(ConsoleColor.White)
+                SetBoth(pathColour)
                 prevCell = currentCell
             End If
         End While
         PrintMessageMiddle($"Time taken to generate the maze: {stopwatch.Elapsed.TotalSeconds}", 1, ConsoleColor.Yellow)
         If Not showMazeGeneration Then
-            SetBoth(ConsoleColor.White)
+            SetBoth(pathColour)
             PrintMazeHorizontally(returnablePath, limits(2), limits(3))
         End If
         Dim ypos As Integer = Console.CursorTop
-        AddStartAndEnd(returnablePath, limits, 0)
+        AddStartAndEnd(returnablePath, limits, pathColour)
         Console.SetCursorPosition(0, ypos)
         Return returnablePath
     End Function

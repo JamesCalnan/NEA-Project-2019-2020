@@ -1,5 +1,7 @@
 ﻿Module SpiralBacktrackerAlgorithm
-    Function SpiralBacktracker(limits() As Integer, delay As Integer, showMazeGeneration As Boolean)
+    Function SpiralBacktracker(limits() As Integer, delay As Integer, showMazeGeneration As Boolean, pathColour as consolecolor, backGroundColour as consolecolor)
+        Dim adding As Double = GetIntInputArrowKeys("Cell Reach: ", 100, 0, True)
+        If backGroundColour <> ConsoleColor.black Then DrawBackground(backGroundColour,limits)
         Dim r As New Random
         Dim currentCell As Cell = PickRandomStartingCell(limits)
         Dim prevCell As Cell = currentCell
@@ -7,10 +9,9 @@
         Dim stack As New Stack(Of Cell)
         Dim returnablePath As New List(Of Node)
         Dim recentCells As New List(Of Cell)
-        Dim adding As Double = GetIntInputArrowKeys("Cell Reach: ", 100, 0, True)
         Dim currentCellReach As Double = 0
         Dim dir = "UP"
-        SetBoth(ConsoleColor.White)
+        SetBoth(pathColour)
         visitedCells(currentCell) = True
         If showMazeGeneration Then currentCell.Print("██")
         returnablePath.Add(New Node(currentCell.X, currentCell.Y))
@@ -19,7 +20,7 @@
             If ExitCase() Then Return Nothing
             If showMazeGeneration Then
                 prevCell.Print("██")
-                SetBoth(ConsoleColor.White)
+                SetBoth(pathColour)
             End If
             If Neighbour(currentCell, visitedCells, limits, False) Then 'done
                 Dim tempCell As New Cell(-1, -1)
@@ -73,7 +74,7 @@
                 currentCell = temporaryCell
                 AddToPath(returnablePath, temporaryCell, wallCell)
                 If showMazeGeneration Then
-                    SetBoth(ConsoleColor.White)
+                    SetBoth(pathColour)
                     prevCell.Print("██")
                     wallCell.Print("██")
                     SetBoth(ConsoleColor.Blue)
@@ -83,11 +84,11 @@
             ElseIf stack.Count > 1 Then
                 currentCell = stack.Pop 'CurrentCell.Pop(Stack)
                 If showMazeGeneration Then
-                    SetBoth(ConsoleColor.White)
+                    SetBoth(pathColour)
                     prevCell.Print("██")
                     SetBoth(ConsoleColor.Blue)
                     currentCell.Print("██")
-                    SetBoth(ConsoleColor.White)
+                    SetBoth(pathColour)
                     prevCell = currentCell
                 End If
             Else
@@ -97,7 +98,7 @@
         End While
         PrintMessageMiddle($"Time taken to generate the maze: {stopwatch.Elapsed.TotalSeconds}", 1, ConsoleColor.Yellow)
         If Not showMazeGeneration Then
-            SetBoth(ConsoleColor.White)
+            SetBoth(pathColour)
             PrintMazeHorizontally(returnablePath, limits(2), limits(3))
         End If
         Dim ypos As Integer = Console.CursorTop

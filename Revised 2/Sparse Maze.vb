@@ -5,14 +5,12 @@
         Dim goal As New Node(maze(maze.Count - 1).X, maze(maze.Count - 1).Y)
         Dim visited As New Dictionary(Of Node, Boolean)
         Dim fillColour = ConsoleColor.Black
-        Dim editedMaze As New List(Of Node)
         Dim notPath As New List(Of Node)
         Dim r As New Random
         Dim greatestX, greatestY As Integer
         greatestX = 0
         greatestY = 0
         SetBoth(fillColour)
-        Dim stopwatch As Stopwatch = Stopwatch.StartNew()
         For Each node In maze
             If node.X > greatestX Then greatestX = node.X
             If node.Y > greatestY Then greatestY = node.Y
@@ -23,12 +21,6 @@
             visited(node) = False
         Next
         If deadEnds.Count > 0 Then
-            Console.ForegroundColor = ConsoleColor.White
-            Console.BackgroundColor = ConsoleColor.Black
-            Console.SetCursorPosition(1, 1)
-            Console.Write("Current Process: Filling dead ends      ")
-            Console.ForegroundColor = fillColour
-            Console.BackgroundColor = fillColour
             For Each deadEnd In deadEnds
                 If r.Next(1, 3) = 1 Then
                     Dim startingCell As Node = deadEnd
@@ -57,7 +49,7 @@
             Console.ForegroundColor = ConsoleColor.Green
             Console.BackgroundColor = ConsoleColor.Green
             For Each Node In maze
-                If Not notPath.Contains(Node) Then Node.Print("██")
+                If Not notPath.Contains(Node)      then          Node.Print("██")
             Next
             Console.ForegroundColor = ConsoleColor.White
             Console.BackgroundColor = ConsoleColor.Black
