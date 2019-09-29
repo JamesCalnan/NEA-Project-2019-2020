@@ -2,8 +2,9 @@
 Imports System.Drawing
 Module Menus
     Sub Menu(arr() As String, topitem As String)
-        dim pathColour = ConsoleColor.black
-        dim backGroundColour = ConsoleColor.gray
+        dim pathColour = ConsoleColor.white
+        dim backGroundColour = ConsoleColor.black
+        dim solvingColour = ConsoleColor.Red
         Dim input = ""
         Dim previousAlgorithm = ""
         Dim previousMaze, loadedMaze As New List(Of Node)
@@ -24,6 +25,8 @@ Module Menus
                     Console.WriteLine($" {arr(i)}{pathColour.ToString()}")
                 elseif arr(i) = "Change the background colour     current colour: "
                     Console.WriteLine($" {arr(i)}{backGroundColour.ToString()}")
+                elseif arr(i) = "Change the solving colour        current colour: "
+                    Console.WriteLine($" {arr(i)}{solvingColour.ToString()}")
                 Else 
                     Console.WriteLine($" {arr(i)}")
                 End If
@@ -54,7 +57,7 @@ Module Menus
                     If arr(y) = "   Recursive Backtracker Algorithm (using iteration)" Then
                         GetMazeInfo(width, height, delayMs, limits, showMazeGeneration, True, 0)
                         availablePath = RecursiveBacktracker.RecursiveBacktracker(limits, delayMs, showMazeGeneration,pathcolour, backgroundcolour)
-                        Solving(availablePath, limits, previousMaze, input, yPosAfterMaze, showPath, solvingDelay, arr(y), previousAlgorithm,pathColour,backGroundColour)
+                        Solving(availablePath, limits, previousMaze, input, yPosAfterMaze, showPath, solvingDelay, arr(y), previousAlgorithm,pathColour,backGroundColour,solvingColour)
                     ElseIf arr(y) = "   Recursive Backtracker Algorithm (using recursion)" Then
                         Dim r As New Random
                         GetMazeInfo(width, height, delayMs, limits, showMazeGeneration, True, 0)
@@ -73,83 +76,82 @@ Module Menus
                         SetBoth(pathcolour)
                         If Not showMazeGeneration Then PrintMazeHorizontally(path, limits(2), limits(3))
                         AddStartAndEnd(path, limits, pathcolour)
-                        Solving(path, limits, previousMaze, input, yPosAfterMaze, showPath, solvingDelay, arr(y), previousAlgorithm,pathColour,backGroundColour)
+                        Solving(path, limits, previousMaze, input, yPosAfterMaze, showPath, solvingDelay, arr(y), previousAlgorithm,pathColour,backGroundColour,solvingColour)
                         previousMaze = path
                     ElseIf arr(y) = "   Hunt and Kill Algorithm" Then
                         GetMazeInfo(width, height, delayMs, limits, showMazeGeneration, True, 0)
                         availablePath = HuntAndKillRefactored(limits, delayMs, showMazeGeneration, pathColour,backGroundColour)
-                        Solving(availablePath, limits, previousMaze, input, yPosAfterMaze, showPath, solvingDelay, arr(y), previousAlgorithm,pathColour,backGroundColour)
+                        Solving(availablePath, limits, previousMaze, input, yPosAfterMaze, showPath, solvingDelay, arr(y), previousAlgorithm,pathColour,backGroundColour,solvingColour)
                     ElseIf arr(y) = "   Prim's Algorithm (simplified)" Then
                         GetMazeInfo(width, height, delayMs, limits, showMazeGeneration, True, 0)
                         availablePath = Prims_Simplified(limits, delayMs, showMazeGeneration,pathColour,backGroundColour)
-                        Solving(availablePath, limits, previousMaze, input, yPosAfterMaze, showPath, solvingDelay, arr(y), previousAlgorithm,pathColour,backGroundColour)
+                        Solving(availablePath, limits, previousMaze, input, yPosAfterMaze, showPath, solvingDelay, arr(y), previousAlgorithm,pathColour,backGroundColour,solvingColour)
                     ElseIf arr(y) = "   Prim's Algorithm (true)" Then
                         GetMazeInfo(width, height, delayMs, limits, showMazeGeneration, True, 0)
                         availablePath = Prims_True(limits, delayMs, showMazeGeneration, pathColour,backGroundColour)
-                        Solving(availablePath, limits, previousMaze, input, yPosAfterMaze, showPath, solvingDelay, arr(y), previousAlgorithm,pathColour,backGroundColour)
+                        Solving(availablePath, limits, previousMaze, input, yPosAfterMaze, showPath, solvingDelay, arr(y), previousAlgorithm,pathColour,backGroundColour,solvingColour)
                     ElseIf arr(y) = "   Aldous-Broder Algorithm" Then
                         GetMazeInfo(width, height, delayMs, limits, showMazeGeneration, True, 0)
                         availablePath = AldousBroder.AldousBroder(limits, delayMs, showMazeGeneration, pathColour,backGroundColour)
-                        Solving(availablePath, limits, previousMaze, input, yPosAfterMaze, showPath, solvingDelay, arr(y), previousAlgorithm,pathColour,backGroundColour)
+                        Solving(availablePath, limits, previousMaze, input, yPosAfterMaze, showPath, solvingDelay, arr(y), previousAlgorithm,pathColour,backGroundColour,solvingColour)
                     ElseIf arr(y) = "   Growing Tree Algorithm" Then
                         GetMazeInfo(width, height, delayMs, limits, showMazeGeneration, True, 0)
                         Dim arrOptions() As String = {"Newest (Recursive Backtracker)", "Random (Prim's simplified)", "Newest/Random, 75/25 split", "Newest/Random, 50/50 split", "Newest/Random, 25/75 split", "Oldest", "Middle", "Newest/Oldest, 50/50 split", "Oldest/Random, 50/50 split"}
                         Dim cellSelectionMethod() As Integer = PreGenMenu(arrOptions, "What Cell selection method would you like to use: ")
                         availablePath = GrowingTree(limits, delayMs, cellSelectionMethod, showMazeGeneration, pathColour,backGroundColour)
-                        Solving(availablePath, limits, previousMaze, input, yPosAfterMaze, showPath, solvingDelay, arr(y), previousAlgorithm,pathColour,backGroundColour)
+                        Solving(availablePath, limits, previousMaze, input, yPosAfterMaze, showPath, solvingDelay, arr(y), previousAlgorithm,pathColour,backGroundColour,solvingColour)
                     ElseIf arr(y) = "   Sidewinder Algorithm" Then
                         GetMazeInfo(width, height, delayMs, limits, showMazeGeneration, True, 0)
                         availablePath = Sidewinder(limits, delayMs, showMazeGeneration, pathColour,backGroundColour)
-                        Solving(availablePath, limits, previousMaze, input, yPosAfterMaze, showPath, solvingDelay, arr(y), previousAlgorithm,pathColour,backGroundColour)
+                        Solving(availablePath, limits, previousMaze, input, yPosAfterMaze, showPath, solvingDelay, arr(y), previousAlgorithm,pathColour,backGroundColour,solvingColour)
                     ElseIf arr(y) = "   Binary Tree Algorithm" Then
                         GetMazeInfo(width, height, delayMs, limits, showMazeGeneration, True, 0)
                         Dim arrOptions() As String = {"Northwest", "Northeast", "Southwest", "Southeast"}
                         Dim bias() As Integer = PreGenMenu(arrOptions, "Cell bias: ")
                         availablePath = BinaryTree(limits, delayMs, showMazeGeneration, bias,pathColour,backGroundColour)
-                        Solving(availablePath, limits, previousMaze, input, yPosAfterMaze, showPath, solvingDelay, arr(y), previousAlgorithm,pathColour,backGroundColour)
+                        Solving(availablePath, limits, previousMaze, input, yPosAfterMaze, showPath, solvingDelay, arr(y), previousAlgorithm,pathColour,backGroundColour,solvingColour)
                     ElseIf arr(y) = "   Wilson's Algorithm" Then
                         GetMazeInfo(width, height, delayMs, limits, showMazeGeneration, True, 0)
                         availablePath = Wilsons(limits, delayMs, showMazeGeneration,pathColour,backGroundColour)
-                        Solving(availablePath, limits, previousMaze, input, yPosAfterMaze, showPath, solvingDelay, arr(y), previousAlgorithm,pathColour,backGroundColour)
+                        Solving(availablePath, limits, previousMaze, input, yPosAfterMaze, showPath, solvingDelay, arr(y), previousAlgorithm,pathColour,backGroundColour,solvingColour)
                     ElseIf arr(y) = "   Eller's Algorithm" Then
                         GetMazeInfo(width, height, delayMs, limits, showMazeGeneration, True, 0)
                         availablePath = Ellers(limits, delayMs, showMazeGeneration,pathColour,backGroundColour)
-                        Solving(availablePath, limits, previousMaze, input, yPosAfterMaze, showPath, solvingDelay, arr(y), previousAlgorithm,pathColour,backGroundColour)
+                        Solving(availablePath, limits, previousMaze, input, yPosAfterMaze, showPath, solvingDelay, arr(y), previousAlgorithm,pathColour,backGroundColour,solvingColour)
                     ElseIf arr(y) = "   Kruskal's Algorithm" Then
                         GetMazeInfo(width, height, delayMs, limits, showMazeGeneration, True, 0)
                         availablePath = Kruskals(limits, delayMs, showMazeGeneration,pathColour,backGroundColour)
-                        Solving(availablePath, limits, previousMaze, input, yPosAfterMaze, showPath, solvingDelay, arr(y), previousAlgorithm,pathColour,backGroundColour)
+                        Solving(availablePath, limits, previousMaze, input, yPosAfterMaze, showPath, solvingDelay, arr(y), previousAlgorithm,pathColour,backGroundColour,solvingColour)
                     ElseIf arr(y) = "   Houston's Algorithm" Then
                         GetMazeInfo(width, height, delayMs, limits, showMazeGeneration, True, 0)
                         availablePath = Houstons(limits, delayMs, showMazeGeneration,pathColour,backGroundColour)
-                        Solving(availablePath, limits, previousMaze, input, yPosAfterMaze, showPath, solvingDelay, arr(y), previousAlgorithm,pathColour,backGroundColour)
+                        Solving(availablePath, limits, previousMaze, input, yPosAfterMaze, showPath, solvingDelay, arr(y), previousAlgorithm,pathColour,backGroundColour,solvingColour)
                     ElseIf arr(y) = "   Spiral Backtracker Algorithm" Then
                         GetMazeInfo(width, height, delayMs, limits, showMazeGeneration, True, 0)
                         availablePath = SpiralBacktracker(limits, delayMs, showMazeGeneration,pathColour,backGroundColour)
-                        Solving(availablePath, limits, previousMaze, input, yPosAfterMaze, showPath, solvingDelay, arr(y), previousAlgorithm,pathColour,backGroundColour)
+                        Solving(availablePath, limits, previousMaze, input, yPosAfterMaze, showPath, solvingDelay, arr(y), previousAlgorithm,pathColour,backGroundColour,solvingColour)
                     ElseIf arr(y) = "   Custom Algorithm" Then
                         GetMazeInfo(width, height, delayMs, limits, showMazeGeneration, True, 0)
                         availablePath = Custom(limits, delayMs, showMazeGeneration,pathColour,backGroundColour)
-                        Solving(availablePath, limits, previousMaze, input, yPosAfterMaze, showPath, solvingDelay, arr(y), previousAlgorithm,pathColour,backGroundColour)
+                        Solving(availablePath, limits, previousMaze, input, yPosAfterMaze, showPath, solvingDelay, arr(y), previousAlgorithm,pathColour,backGroundColour,solvingColour)
                     ElseIf arr(y) = "Load the previously generated maze" Then
                         Dim greatestX, greatestY As Integer
                         If previousMaze.Count > 1 And Not IsNothing(previousMaze) Then
                             Console.Clear()
                             Console.SetCursorPosition(0, 0)
-                            Dim mess = "Algorithm used to generate this maze: "
+                            Const mess = "Algorithm used to generate this maze: "
                             Console.Write(mess)
                             Console.SetCursorPosition(mess.Length, 0)
                             MsgColour(previousAlgorithm, ConsoleColor.Green)
                             SetBoth(ConsoleColor.White)
+                            greatestX = (From node In previousMaze Select node.X).Concat(new Integer() {greatestX}).Max()
                             For Each node In previousMaze
-                                'node.Print("██")
-                                If greatestX < node.X Then greatestX = node.X
                                 If greatestY < node.Y Then greatestY = node.Y
                             Next
-                            DrawBackground(backGroundColour,{5,3,greatestX,greatestY-1})
+                            if backGroundColour <> consolecolor.black then DrawBackground(backGroundColour,{5,3,greatestX+1,greatestY-1})
                             SetBoth(pathColour)
                             PrintMazeHorizontally(previousMaze,greatestX,greatesty)
-                            PrintStartandEnd(previousMaze)
+                            'PrintStartandEnd(previousMaze)
                             Console.BackgroundColor = (ConsoleColor.Black)
                             DisplayAvailablePositions(previousMaze.Count)
                             yPosAfterMaze = greatestY 
@@ -165,7 +167,7 @@ Module Menus
                                 "Solve using the left-hand rule",
                                 "Solve using the right-hand rule",
                                 "",
-                                "Play the maze", "Braid (remove dead ends)", "Partial braid (remove some dead ends)", "Make the maze sparse (remove some passages)",
+                                "Play the maze", "Braid (remove dead ends)", "Partial braid (remove some dead ends)", "Make the maze sparse (remove some passages)","Make the maze unicursal",
                                 "",
             "Get the average corridor length",
             "Get the amount of corners in the maze",
@@ -177,8 +179,8 @@ Module Menus
                                 "Save the maze as an ascii text file",
                                 "",
                                 "Clear the maze and return to the menu"}
-                            input = SolvingMenu(temparr, "What would you like to do with the maze", greatestX + 3, 3)
-                            SolvingInput(input, showPath, yPosAfterMaze, solvingDelay, previousMaze, previousAlgorithm,pathColour,backGroundColour)
+                            input = SolvingMenu(temparr, "What would you like to do with the maze", greatestX + 6, 3)
+                            SolvingInput(input, showPath, yPosAfterMaze, solvingDelay, previousMaze, previousAlgorithm,pathColour,backGroundColour,solvingColour)
                         Else
                             Console.Clear()
                             MsgColour("No previous maze available", ConsoleColor.Red)
@@ -203,6 +205,12 @@ Module Menus
                             MsgColour("No previous maze available", ConsoleColor.Red)
                             Console.ReadKey()
                         End If
+                    elseif arr(y) = "Change the path colour           current colour: "
+                        pathColour = ColourChange()
+                    elseif arr(y) = "Change the background colour     current colour: "
+                        backGroundColour = ColourChange()
+                    elseif arr(y) = "Change the solving colour        current colour: "
+                        solvingColour = ColourChange()
                     ElseIf arr(y) = "Load a maze from a text file (list of points)" Then
                         Dim validMaze, xMax, yMax As Integer
                         Dim greatestY = 0
@@ -284,7 +292,7 @@ Module Menus
                                 "Solve using the left-hand rule",
                                 "Solve using the right-hand rule",
                                 "",
-                                "Play the maze", "Braid (remove dead ends)", "Partial braid (remove some dead ends)", "Make the maze sparse (remove some passages)",
+                                "Play the maze", "Braid (remove dead ends)", "Partial braid (remove some dead ends)", "Make the maze sparse (remove some passages)","Make the maze unicursal",
                                 "",
             "Get the average corridor length",
             "Get the amount of corners in the maze",
@@ -297,7 +305,7 @@ Module Menus
                                 "",
                                 "Clear the maze and return to the menu"}
                                 input = SolvingMenu(temparr, "What would you like to do with the maze", greatestX + 6, 3)
-                                SolvingInput(input, showPath, yPosAfterMaze, solvingDelay, previousMaze, usedAlgorithm,pathColour,backGroundColour)
+                                SolvingInput(input, showPath, yPosAfterMaze, solvingDelay, previousMaze, usedAlgorithm,pathColour,backGroundColour,solvingColour)
                             ElseIf validMaze = 0 Then
                                 Console.Clear()
                                 MsgColour("Maze is too big for the screen, please decrease the font size and try again", ConsoleColor.Red)
@@ -313,7 +321,7 @@ Module Menus
                             Console.ReadKey()
                         End If
                     ElseIf arr(y) = "Load a maze from an image file" Then
-                        Dim tempMaze As List(Of Node) = LoadMazePng(pathColour,backGroundColour)
+                        Dim tempMaze As List(Of Node) = LoadMazePng(pathColour,backGroundColour,solvingColour)
                         If IsNothing(tempMaze) Then
                             Console.Clear()
                             Console.ForegroundColor = ConsoleColor.Red
@@ -334,7 +342,7 @@ Module Menus
                         End If
                     ElseIf arr(y) = "Load a maze from an ascii text file" Then
                         Console.Clear()
-                        Dim tempMaze As List(Of Node) = LoadMazeAscii(pathColour,backGroundColour)
+                        Dim tempMaze As List(Of Node) = LoadMazeAscii(pathColour,backGroundColour,solvingColour)
                         If IsNothing(tempMaze) Then
                             Console.Clear()
                             Console.ForegroundColor = ConsoleColor.Red
@@ -401,10 +409,11 @@ Module Menus
                     Console.Write($" {MenuOption}{pathColour.ToString()}    ")
                 elseif MenuOption = "Change the background colour     current colour: "
                     Console.Write($" {MenuOption}{backgroundcolour.ToString()}    ")
+                elseif MenuOption = "Change the solving colour        current colour: "
+                    Console.WriteLine($" {MenuOption}{solvingColour.ToString()}      ")
                 Else 
                     Console.Write($" {MenuOption}    ")
                 End If
-                
                 Count += 1
             Next
             Console.SetCursorPosition(0, y + 1)
@@ -412,16 +421,18 @@ Module Menus
                 MsgColour($"> {arr(y)}{pathColour.ToString()}  ", ConsoleColor.Green)
             elseif arr(y) = "Change the background colour     current colour: "
                 MsgColour($"> {arr(y)}{backGroundColour.ToString()}  ", ConsoleColor.Green)
+            elseif arr(y) = "Change the solving colour        current colour: "
+                MsgColour($"> {arr(y)}{solvingcolour.ToString()}  ", ConsoleColor.Green)
             Else 
                  MsgColour($"> {arr(y)}  ", ConsoleColor.Green)
             End If
         End While
     End Sub
-    Sub Solving(availablePath As List(Of Node), Limits() As Integer, ByRef PreviousMaze As List(Of Node), ByRef Input As String, YPosAfterMaze As Integer, ShowPath As Boolean, SolvingDelay As Integer, ByRef Algorithm As String, ByRef SetPreivousAlgorithm As String,pathColour as ConsoleColor,backGroundColour as consolecolor)
+    Sub Solving(availablePath As List(Of Node), Limits() As Integer, ByRef PreviousMaze As List(Of Node), ByRef Input As String, YPosAfterMaze As Integer, ShowPath As Boolean, SolvingDelay As Integer, ByRef Algorithm As String, ByRef SetPreivousAlgorithm As String,pathColour as ConsoleColor,backGroundColour as consolecolor,solvingColour as ConsoleColor)
         If availablePath IsNot Nothing Then
             SetPreivousAlgorithm = Algorithm
             PreSolving(Limits, availablePath, PreviousMaze, Input, YPosAfterMaze)
-            SolvingInput(Input, ShowPath, YPosAfterMaze, SolvingDelay, availablePath, Algorithm,pathColour,backGroundColour)
+            SolvingInput(Input, ShowPath, YPosAfterMaze, SolvingDelay, availablePath, Algorithm,pathColour,backGroundColour,solvingColour)
         End If
     End Sub
     Sub PreSolving(limits() As Integer, availablePath As List(Of Node), ByRef previousMaze As List(Of Node), ByRef input As String, ByRef yPosAfterMaze As Integer)
@@ -610,27 +621,27 @@ Module Menus
         Console.ForegroundColor = (ConsoleColor.White)
         Return current
     End Function
-    Sub SolvingInput(input As String, showpath As Boolean, YposAfterMaze As Integer, solvingdelay As Integer, Maze As List(Of Node), Algorithm As String,pathColour as ConsoleColor,backGroundColour as ConsoleColor)
+    Sub SolvingInput(input As String, showpath As Boolean, YposAfterMaze As Integer, solvingdelay As Integer, Maze As List(Of Node), Algorithm As String,pathColour as ConsoleColor,backGroundColour as ConsoleColor,solvingColour as ConsoleColor)
         If input = "Solve using the A* algorithm" Then
             showpath = HorizontalYesNo(YposAfterMaze + 2, "Do you want to show the steps in solving the maze: ", True, False, False)
             If showpath Then solvingdelay = GetIntInputArrowKeys("Delay when solving the maze: ", 100, 0, True)
             If HorizontalYesNo(YposAfterMaze + 2, "Do you want to use the optimised version of A*: ", True, False, False) Then
-                AStar(Maze, showpath, True, solvingdelay, False)
+                AStar(Maze, showpath, True, solvingdelay, solvingColour)
             Else
                 Dim neededNodes As List(Of Node) = GetNeededNodes(Maze)
                 Dim adjacencyList As Dictionary(Of Node, List(Of Node)) = ConstructAdjacencyList(neededNodes, Maze)
-                AStarWiki(adjacencyList, showpath, True, solvingdelay, False)
+                AStarWiki(adjacencyList, showpath, True, solvingdelay, solvingColour)
             End If
         ElseIf input = "Solve using Dijkstra's algorithm" Then
             showpath = HorizontalYesNo(YposAfterMaze + 2, "Do you want to show the steps in solving the maze: ", True, False, False)
             If showpath Then solvingdelay = GetIntInputArrowKeys("Delay when solving the maze: ", 100, 0, True)
             'Dim neededNodes As List(Of Node) = GetNeededNodes(Maze)
             'Dim AdjacencyList As Dictionary(Of Node, List(Of Node)) = ConstructAdjacencyList(neededNodes, Maze)
-            Dijkstras(Maze, showpath, solvingdelay, False)
+            Dijkstras(Maze, showpath, solvingdelay, solvingcolour)
         ElseIf input = "Solve using Breadth-first search" Then
             showpath = HorizontalYesNo(YposAfterMaze + 2, "Do you want to show the steps in solving the maze: ", True, False, False)
             If showpath Then solvingdelay = GetIntInputArrowKeys("Delay when solving the maze: ", 100, 0, True)
-            Bfs(Maze, showpath, True, solvingdelay, False)
+            Bfs(Maze, showpath, True, solvingdelay, solvingColour)
         ElseIf input = "Solve using a recursive algorithm" Then
             showpath = HorizontalYesNo(YposAfterMaze + 2, "Do you want to show the steps in solving the maze: ", True, False, False)
             If showpath Then solvingdelay = GetIntInputArrowKeys("Delay when solving the maze: ", 100, 0, True)
@@ -643,7 +654,7 @@ Module Menus
             Console.ForegroundColor = ConsoleColor.White
             Console.SetCursorPosition(0, Console.WindowHeight - 1)
             Console.Write("Solving                            ")
-            SetBoth(ConsoleColor.Red)
+            SetBoth(solvingcolour)
             Dim stopwatch As Stopwatch = Stopwatch.StartNew()
             Dim b As Boolean = RecursiveSolve(Maze, visited, correctPath, Maze(Maze.Count - 2).X, Maze(Maze.Count - 2).Y, New Node(Maze(Maze.Count - 1).X, Maze(Maze.Count - 1).Y), showpath, solvingdelay)
             SetBoth(ConsoleColor.Green)
@@ -660,7 +671,7 @@ Module Menus
             If showpath Then solvingdelay = GetIntInputArrowKeys("Delay when solving the maze: ", 100, 0, True)
             Dim neededNodes As List(Of Node) = GetNeededNodes(Maze)
             Dim adjacencyList As Dictionary(Of Node, List(Of Node)) = ConstructAdjacencyList(neededNodes, Maze)
-            DFS_Iterative(adjacencyList, showpath, True, solvingdelay, False)
+            DFS_Iterative(adjacencyList, showpath, True, solvingdelay, solvingcolour)
         ElseIf input = "Solve using Depth-first search (using recursion)" Then
             showpath = HorizontalYesNo(YposAfterMaze + 2, "Do you want to show the steps in solving the maze: ", True, False, False)
             If showpath Then solvingdelay = GetIntInputArrowKeys("Delay when solving the maze: ", 100, 0, True)
@@ -672,14 +683,13 @@ Module Menus
             Next
             Dim cameFrom As New Dictionary(Of Node, Node)
             Dim timer As Stopwatch = Stopwatch.StartNew
-            Console.ForegroundColor = ConsoleColor.Red
-            Console.BackgroundColor = ConsoleColor.Red
+            setboth(solvingColour)
             DFS_Recursive(Maze, startV, discovered, cameFrom, goal, showpath, solvingdelay, False)
             ReconstructPath(cameFrom, goal, startV, $"{timer.Elapsed.TotalSeconds}")
             Console.ReadKey()
         ElseIf input = "Play the maze" Then
             showpath = HorizontalYesNo(YposAfterMaze + 2, "Do you want to show the steps you have taken in the maze: ", True, False, False)
-            PlaymazeSubroutine(Maze, showpath)
+            PlaymazeSubroutine(Maze, showpath,pathColour,backGroundColour)
         ElseIf input = "Clear the maze and return to the menu" Then
             Console.Clear()
         ElseIf input = "Save the maze as points" Then
@@ -694,26 +704,27 @@ Module Menus
         ElseIf input = "Solve using the dead end filling method" Then
             showpath = HorizontalYesNo(YposAfterMaze + 2, "Do you want to show the steps in solving the maze: ", True, False, False)
             If showpath Then solvingdelay = GetIntInputArrowKeys("Delay when solving the maze: ", 100, 0, True)
-            DeadEndFiller(Maze, showpath, True, solvingdelay, False)
+            DeadEndFiller(Maze, showpath, True, solvingdelay, pathcolour,solvingcolour)
         ElseIf input = "Solve using the left-hand rule" Then
             Console.SetCursorPosition(0, YposAfterMaze + 2)
             solvingdelay = GetIntInputArrowKeys("Delay when solving the maze: ", 100, 0, True)
-            WallFollowerAlgorithm(Maze, solvingdelay, "LHR")
+            WallFollowerAlgorithm(Maze, solvingdelay, "LHR",solvingColour)
         ElseIf input = "Solve using the right-hand rule" Then
             Console.SetCursorPosition(0, YposAfterMaze + 2)
             solvingdelay = GetIntInputArrowKeys("Delay when solving the maze: ", 100, 0, True)
-            WallFollowerAlgorithm(Maze,solvingdelay,"")
+            WallFollowerAlgorithm(Maze,solvingdelay,"",solvingColour)
         ElseIf input = "Solve using the Lee Algorithm (Wave Propagation)" Then
             showpath = HorizontalYesNo(YposAfterMaze + 2, "Do you want to show the steps in solving the maze: ", True, False, False)
             If showpath Then solvingdelay = GetIntInputArrowKeys("Delay when solving the maze: ", 100, 0, True)
-            Lee(Maze, showpath, solvingdelay)
+            lee(Maze, showpath, solvingdelay,solvingColour)
         Elseif input = "Make the maze unicursal"
             dim mazecopy as List(Of Node) = (From node In Maze Select New Node(node.X, node.y)).ToList()
-            dim uniMaze as list(of node) = unicursal(mazecopy)
+            dim uniMaze as list(of node) = unicursal(mazecopy,pathColour,backGroundColour)
             if IsNothing(uniMaze)
                 MsgColour("The maze that you tried to make unicursal is too big, please try a smaller maze",ConsoleColor.Red)
                 Console.readkey
                 Else     
+                    maze = uniMaze
                     Dim greatestX As Integer = (From node In uniMaze Select node.X).Concat(new Integer() {greatestX}).Max()
                     dim greatestY as Integer = (from node in uniMaze Select node.Y).Concat(new Integer() {greatesty}).Max()
                     Dim temparr() As String = {"Solve using the A* algorithm",
@@ -739,13 +750,14 @@ Module Menus
                                    "",
                                    "Clear the maze and return to the menu"}
                     input = SolvingMenu(temparr, "What would you like to do with the maze", greatestX + 5, 3)
-                    SolvingInput(input, true, greatestY+2, solvingdelay, unimaze, "",pathColour,backGroundColour)
+                     
+                    SolvingInput(input, true, greatestY+2, solvingdelay, unimaze, "",pathColour,backGroundColour,solvingColour)
             End If
         ElseIf input = "Braid (remove dead ends)" Or input = "Partial braid (remove some dead ends)" Then
             If input = "Braid (remove dead ends)" Then
-                EliminateDeadEnds(Maze)
+                EliminateDeadEnds(Maze,pathColour,backGroundColour)
             ElseIf input = "Partial braid (remove some dead ends)" Then
-                PartialBraid(Maze)
+                PartialBraid(Maze,pathColour,backGroundColour)
             End If
             Dim greatestX As Integer = (From node In Maze Select node.X).Concat(new Integer() {greatestX}).Max()
             Dim temparr() As String = {"Solve using the A* algorithm",
@@ -770,14 +782,12 @@ Module Menus
                "Save the maze as an ascii text file",
                "",
                "Clear the maze and return to the menu"}
-            input = SolvingMenu(temparr, "What would you like to do with the maze", greatestX + 3, 3)
-            SolvingInput(input, showpath, YposAfterMaze, solvingdelay, Maze, "",pathColour,backGroundColour)
+            input = SolvingMenu(temparr, "What would you like to do with the maze", greatestX + 6, 3)
+            SolvingInput(input, showpath, YposAfterMaze, solvingdelay, Maze, "",pathColour,backGroundColour,solvingColour)
         ElseIf input = "Make the maze sparse (remove some passages)" Then
-            Sparsify(Maze)
+            Sparsify(Maze,pathColour,backGroundColour)
             Dim greatestX As Integer
-            For Each node In Maze
-                If greatestX < node.X Then greatestX = node.X
-            Next
+            greatestX = (From node In Maze Select node.X).Concat(new Integer() {greatestX}).Max()
             Dim temparr() As String = {"Solve using the A* algorithm",
             "Solve using Dijkstra's algorithm",
             "Solve using Breadth-first search",
@@ -802,8 +812,8 @@ Module Menus
             "Save the maze as an ascii text file",
             "",
             "Clear the maze and return to the menu"}
-            input = SolvingMenu(temparr, "What would you like to do with the maze", greatestX + 3, 3)
-            SolvingInput(input, showpath, YposAfterMaze, solvingdelay, Maze, "",pathColour,backGroundColour)
+            input = SolvingMenu(temparr, "What would you like to do with the maze", greatestX + 6, 3)
+            SolvingInput(input, showpath, YposAfterMaze, solvingdelay, Maze, "",pathColour,backGroundColour,solvingColour)
         ElseIf input = "Get the amount of Dead-ends in the maze" Then
                 Console.SetCursorPosition(0, Console.WindowHeight - 1)
                 SetBoth(ConsoleColor.Black)

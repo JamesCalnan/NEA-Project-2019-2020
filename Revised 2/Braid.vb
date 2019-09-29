@@ -1,7 +1,7 @@
 ﻿Imports NEA_2019
 Module Braid
-    Sub EliminateDeadEnds(ByRef maze As List(Of Node))
-        SetBoth(ConsoleColor.White)
+    Sub EliminateDeadEnds(ByRef maze As List(Of Node),pathColour as ConsoleColor,backGroundColour as ConsoleColor)
+        SetBoth(pathcolour)
         Dim r As New Random
         Dim startV As New Node(maze(maze.Count - 2).X, maze(maze.Count - 2).Y)
         Dim goal As New Node(maze(maze.Count - 1).X, maze(maze.Count - 1).Y)
@@ -12,11 +12,11 @@ Module Braid
             If node.Equals(startV) Or node.Equals(goal) Then Continue For
             If node.IsDeadEnd(maze) Then
                 Dim availableNodes As New List(Of Node) From {
-                    New Node(node.X, node.Y - 2),'up
-                    New Node(node.X + 4, node.Y),'right
-                    New Node(node.X, node.Y + 2),'down
-                    New Node(node.X - 4, node.Y) 'left
-                }
+                        New Node(node.X, node.Y - 2),'up
+                        New Node(node.X + 4, node.Y),'right
+                        New Node(node.X, node.Y + 2),'down
+                        New Node(node.X - 4, node.Y) 'left
+                        }
                 Dim directNeighbour As New Node(node.X, node.Y - 1)
                 If maze.Contains(directNeighbour) Then availableNodes.RemoveAt(0)
                 directNeighbour.Update(node.X + 2, node.Y)
@@ -48,8 +48,8 @@ Module Braid
         Console.BackgroundColor = ConsoleColor.Black
         Console.ForegroundColor = ConsoleColor.White
     End Sub
-    Sub PartialBraid(ByRef maze As List(Of Node))
-        SetBoth(ConsoleColor.White)
+    Sub PartialBraid(ByRef maze As List(Of Node),pathColour as ConsoleColor,backGroundColour as ConsoleColor)
+        SetBoth(pathColour)
         Dim r As New Random
         Dim startV As New Node(maze(maze.Count - 2).X, maze(maze.Count - 2).Y)
         Dim goal As New Node(maze(maze.Count - 1).X, maze(maze.Count - 1).Y)
@@ -94,9 +94,7 @@ Module Braid
                 End If
             End If
         Next
-        For Each node In nodesToAdd
-            maze.Add(node)
-        Next
+        maze.AddRange(nodesToAdd)
         maze.Add(startV)
         maze.Add(goal)
         Console.BackgroundColor = ConsoleColor.Black

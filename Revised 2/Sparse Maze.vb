@@ -1,10 +1,10 @@
 ﻿Module SparseMaze
-    Sub Sparsify(maze As List(Of Node))
+    Sub Sparsify(maze As List(Of Node),pathColour as ConsoleColor,backGroundColour as ConsoleColor)
         Dim deadEnds As New List(Of Node)
         Dim start As New Node(maze(maze.Count - 2).X, maze(maze.Count - 2).Y)
         Dim goal As New Node(maze(maze.Count - 1).X, maze(maze.Count - 1).Y)
         Dim visited As New Dictionary(Of Node, Boolean)
-        Dim fillColour = ConsoleColor.Black
+        Dim fillColour = backgroundcolour
         Dim notPath As New List(Of Node)
         Dim r As New Random
         Dim greatestX, greatestY As Integer

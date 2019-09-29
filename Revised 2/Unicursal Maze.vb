@@ -1,7 +1,6 @@
 ﻿Module UnicursalMaze
-    function Unicursal(mazeOriginal As List(Of Node))
+    function Unicursal(mazeOriginal As List(Of Node),pathColour as ConsoleColor,backGroundColour as ConsoleColor)
         'https://pbs.twimg.com/media/BLr0vnDCAAE3ZxU.jpg:large
-        
         dim maze as List(Of Node) = mazeOriginal.ToList()
         Console.Clear()
         maze.RemoveAt(maze.Count - 1)
@@ -47,15 +46,18 @@
             potentialAdjacentCell.Update(node.X, node.Y - 2)
             If copyMaze.Contains(potentialAdjacentCell) Then newMaze.Remove(New Node(node.X, node.Y - 1))
         Next
-        SetBoth(ConsoleColor.White)
         Dim gx, gy As Integer
         For Each node In newMaze
-            node.Print("XX")
             If node.X > gx Then gx = node.X
             If node.Y > gy Then gy = node.Y
         Next
         Dim limits() As Integer = {5, 3, gx, gy}
-        AddStartAndEnd(newMaze, limits, 0, True)
+        if backGroundColour <> ConsoleColor.Black then DrawBackground(backGroundColour,{6, 3, gx+1, gy})
+          AddStartAndEnd(newMaze, limits, pathcolour, True)
+        SetBoth(pathcolour)
+        for each node in newMaze
+            node.Print("XX")
+        Next
         Return newMaze
     End function
 End Module

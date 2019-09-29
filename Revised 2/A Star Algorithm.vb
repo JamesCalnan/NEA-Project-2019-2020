@@ -3,19 +3,18 @@
         Console.BackgroundColor = colour
         Console.ForegroundColor = colour
     End Sub
-    Sub AStar(availablepath As List(Of Node), showPath As Boolean, showSolveTime As Boolean, delay As Integer, evaluation As Boolean)
+    Sub AStar(availablepath As List(Of Node), showPath As Boolean, showSolveTime As Boolean, delay As Integer,  solvingColour as ConsoleColor)
         Dim start As New Node(availablepath(availablepath.Count - 2).X, availablepath(availablepath.Count - 2).Y)
         Dim target As New Node(availablepath(availablepath.Count - 1).X, availablepath(availablepath.Count - 1).Y)
         Dim current As Node = start
         Dim openSet, closedSet As New HashSet(Of Node)
-        SetBoth(ConsoleColor.Red)
+        SetBoth(SolvingColour)
         openSet.Add(current)
         current.GCost = 0
         current.HCost = H(current, target, 1)
         Dim stopwatch As Stopwatch = Stopwatch.StartNew()
         While openSet.Count > 0
             If ExitCase() Then
-                evaluation = True
                 Exit While
             End If
             current = openSet(0)
@@ -40,9 +39,9 @@
                 End If
             Next
         End While
-        If Not evaluation Then Console.ReadKey()
+       Console.ReadKey()
     End Sub
-    Sub AStarWiki(adjacencyList As Dictionary(Of Node, List(Of Node)), showPath As Boolean, showSolveTime As Boolean, delay As Integer, evaluation As Boolean)
+    Sub AStarWiki(adjacencyList As Dictionary(Of Node, List(Of Node)), showPath As Boolean, showSolveTime As Boolean, delay As Integer,  solvingColour as ConsoleColor)
         Dim openSet, closedSet As New List(Of Node)
         Dim start As New Node(adjacencyList.Keys(adjacencyList.Count - 2).X, adjacencyList.Keys(adjacencyList.Count - 2).Y)
         Dim goal As New Node(adjacencyList.Keys(adjacencyList.Count - 1).X, adjacencyList.Keys(adjacencyList.Count - 1).Y)
@@ -58,7 +57,7 @@
         fScore(start) = H(start, goal, heuristic)
         openSet.Add(start)
         Dim stopwatch As Stopwatch = Stopwatch.StartNew()
-        SetBoth(ConsoleColor.Red)
+        SetBoth(solvingcolour)
         While openSet.Count > 0
             Dim current As Node = ExtractMin(openSet, fScore)
             If current.Equals(goal) Then Exit While
@@ -77,6 +76,6 @@
             Next
         End While
         ReconstructPath(cameFrom, goal, start, If(showSolveTime, $"{stopwatch.Elapsed.TotalSeconds}", ""))
-        If Not evaluation Then Console.ReadKey()
+Console.ReadKey()
     End Sub
 End Module

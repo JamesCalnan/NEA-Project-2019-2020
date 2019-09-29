@@ -1,5 +1,5 @@
 ﻿Module BreadthFirstSearch
-    Sub Bfs(availablepath As List(Of Node), showPath As Boolean, showSolveTime As Boolean, delay As Integer, evaluation As Boolean)
+    Sub Bfs(availablepath As List(Of Node), showPath As Boolean, showSolveTime As Boolean, delay As Integer, solvingColour as ConsoleColor)
         Dim startV As New Node(availablepath(availablepath.Count - 2).X, availablepath(availablepath.Count - 2).Y)
         Dim goal As New Node(availablepath(availablepath.Count - 1).X, availablepath(availablepath.Count - 1).Y)
         Dim discovered As New Dictionary(Of Node, Boolean)
@@ -10,7 +10,7 @@
         Next
         discovered(startV) = True
         q.Enqueue(startV)
-        SetBoth(ConsoleColor.Red)
+        SetBoth(solvingcolour)
         Dim stopwatch As Stopwatch = Stopwatch.StartNew()
         While q.Count > 0
             Dim v As Node = q.Dequeue
@@ -25,6 +25,6 @@
             Next
         End While
         ReconstructPath(cameFrom, goal, startV, If(showSolveTime, $"{stopwatch.Elapsed.TotalSeconds}", ""))
-        If Not evaluation Then Console.ReadKey()
+        Console.ReadKey()
     End Sub
 End Module

@@ -48,7 +48,7 @@
             PrintMazeHorizontally(returnablePath, limits(2), limits(3))
         End If
         Dim ypos As Integer = Console.CursorTop
-        AddStartAndEnd(returnablePath, limits, 0)
+        AddStartAndEnd(returnablePath, limits, pathcolour)
         Console.SetCursorPosition(0, ypos)
         Return returnablePath
     End Function

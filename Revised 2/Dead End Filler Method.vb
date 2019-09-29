@@ -1,5 +1,5 @@
 ﻿Module DeadEndFillerMethod
-    Sub DeadEndFiller(list As List(Of Node), showPath As Boolean, showSolveTime As Boolean, delay As Integer, evaluation As Boolean)
+    Sub DeadEndFiller(list As List(Of Node), showPath As Boolean, showSolveTime As Boolean, delay As Integer, pathColour as ConsoleColor, solvingcolour as ConsoleColor)
         Dim deadEnds As New List(Of Node)
         Dim start As New Node(list(list.Count - 2).X, list(list.Count - 2).Y)
         Dim goal As New Node(list(list.Count - 1).X, list(list.Count - 1).Y)
@@ -15,8 +15,7 @@
         Console.BackgroundColor = ConsoleColor.Black
         Console.SetCursorPosition(1, 1)
         Console.Write("Current Process: Finding dead ends")
-        Console.ForegroundColor = fillColour
-        Console.BackgroundColor = fillColour
+        SetBoth(solvingcolour)
         Dim stopwatch As Stopwatch = Stopwatch.StartNew()
         For Each node In list
             maze.Add(node)
@@ -61,8 +60,7 @@
             Console.BackgroundColor = ConsoleColor.Black
             Console.SetCursorPosition(1, 1)
             Console.Write("                                             ")
-            Console.ForegroundColor = ConsoleColor.Green
-            Console.BackgroundColor = ConsoleColor.Green
+            setboth(ConsoleColor.Green)
             If showPath Then start.Print("██")
             PrintMessageMiddle($"Time Taken to solve: {stopwatch.Elapsed.TotalSeconds} seconds", Console.WindowHeight - 1, ConsoleColor.Green)
             If showPath Then
@@ -70,13 +68,11 @@
                     For __y = 3 To greatestY + 1
                         If list.Contains(New Node(__x, __y)) Then
                             If Not notPath.Contains(New Node(__x, __y)) Then
-                                Console.ForegroundColor = ConsoleColor.Green
-                                Console.BackgroundColor = ConsoleColor.Green
+                                setboth(ConsoleColor.Green)
                                 Console.SetCursorPosition(__x, __y)
                                 Console.Write("██")
                             Else
-                                Console.ForegroundColor = ConsoleColor.White
-                                Console.BackgroundColor = ConsoleColor.White
+                                SetBoth(pathColour)
                                 Console.SetCursorPosition(__x, __y)
                                 If showPath Then Console.Write("██")
                             End If
@@ -85,15 +81,13 @@
                     Threading.Thread.Sleep(delay)
                 Next
             Else
-                Console.ForegroundColor = ConsoleColor.Green
-                Console.BackgroundColor = ConsoleColor.Green
+                setboth(ConsoleColor.Green)
                 For Each Node In maze
                     If Not notPath.Contains(Node) Then Node.Print("██")
                 Next
             End If
         Else
-            Console.ForegroundColor = ConsoleColor.Black
-            Console.BackgroundColor = ConsoleColor.Black
+            setboth(ConsoleColor.Black)
             Console.SetCursorPosition(1, 1)
             Console.Write("                                             ")
             PrintMessageMiddle("No deadends detected", Console.WindowHeight - 1, ConsoleColor.Red)

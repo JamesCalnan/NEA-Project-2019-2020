@@ -1,5 +1,5 @@
 ﻿Module WallFollower
-    Sub WallFollowerAlgorithm(maze As List(Of Node), delay As Integer, rule As String)
+    Sub WallFollowerAlgorithm(maze As List(Of Node), delay As Integer, rule As String, solvingColour as ConsoleColor)
         Dim startV As New Node(maze(maze.Count - 2).X, maze(maze.Count - 2).Y)
         Dim goal As New Node(maze(maze.Count - 1).X, maze(maze.Count - 1).Y)
         Dim u As Node = startV
@@ -26,7 +26,7 @@
             Console.ForegroundColor = ConsoleColor.White
             Console.SetCursorPosition(0, 1)
             Console.Write($"Current direction: {currentDirection.Substring(0, 1).ToUpper}{currentDirection.Substring(1, currentDirection.Count - 1)}      ")
-            SetBoth(ConsoleColor.Cyan)
+            SetBoth(solvingcolour)
             u.Print("XX")
             prev = u
             Threading.Thread.Sleep(delay)
@@ -64,7 +64,7 @@
         End If
         Return ReverseDirection(currentDirection)
     End Function
-    Private Function ReverseDirection(currentdirection As String)
+    Private Function ReverseDirection(currentDirection As String)
         If currentdirection = "right" Then
             Return "left"
         ElseIf currentdirection = "left" Then

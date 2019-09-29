@@ -1,5 +1,5 @@
 ﻿Module PlayMaze
-    Sub PlaymazeSubroutine(availablePath As List(Of Node), showPath As Boolean)
+    Sub PlaymazeSubroutine(availablePath As List(Of Node), showPath As Boolean, pathColour as ConsoleColor, backGroundColour as ConsoleColor)
         Dim playerPath As New List(Of Node)
         Dim currentPos As New Node(availablePath(availablePath.Count - 2).X, availablePath(availablePath.Count - 2).Y)
         Dim start As New Node(availablePath(availablePath.Count - 2).X, availablePath(availablePath.Count - 2).Y)
@@ -19,32 +19,25 @@
                     If playerPath.Contains(t) Or playerPath.Contains(s) Then
                         If availablePath.Contains(t) Or availablePath.Contains(s) Then
                             If showPath Then
-                                Console.ForegroundColor = ConsoleColor.Blue
-                                Console.BackgroundColor = ConsoleColor.Blue
+                                SetBoth(ConsoleColor.Blue)
                             Else
-                                Console.ForegroundColor = ConsoleColor.White
-                                Console.BackgroundColor = ConsoleColor.White
+                                SetBoth(pathColour)
                             End If
                         Else
-                            Console.ForegroundColor = ConsoleColor.White
-                            Console.BackgroundColor = ConsoleColor.White
+                            SetBoth(pathColour)
                         End If
                     Else
-                        Console.ForegroundColor = ConsoleColor.White
-                        Console.BackgroundColor = ConsoleColor.White
+                        SetBoth(pathColour)
                     End If
                 Else
                     If availablePath.Contains(t) Or availablePath.Contains(s) Then
-                        Console.ForegroundColor = ConsoleColor.White
-                        Console.BackgroundColor = ConsoleColor.White
+                        SetBoth(pathColour)
                     Else
-                        Console.ForegroundColor = ConsoleColor.Blue
-                        Console.BackgroundColor = ConsoleColor.Blue
+                        SetBoth(ConsoleColor.Blue)
                     End If
                 End If
             Else
-                Console.ForegroundColor = ConsoleColor.Black
-                Console.BackgroundColor = ConsoleColor.Black
+                setboth(backGroundColour)
             End If
             Dim key = Console.ReadKey
             Select Case key.Key.ToString
@@ -69,7 +62,7 @@
         If currentPos.Equals(target) Then
             playerPath.Add(start)
             playerPath.Add(target)
-            AStar(playerPath, False, False, 0, False)
+            AStar(playerPath, False, False, 0, ConsoleColor.Black)
             Console.Clear()
             PrintMessageMiddle("EPIC VICTORY ROYALE", Console.WindowHeight / 2, ConsoleColor.Yellow)
             Console.ReadKey()

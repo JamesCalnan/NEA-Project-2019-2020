@@ -36,8 +36,8 @@ Module Module1
         'Console.WriteLine("hello there")
         'Console.ReadKey()
         
-        dim b as ConsoleColor = consolecolor.Black
-        
+'        dim b as ConsoleColor = consolecolor.Black
+'        
         Do
             Console.SetCursorPosition(0, 0)
             Console.Write("Please make the window full screen")
@@ -64,6 +64,7 @@ Module Module1
             "",
             "Change the path colour           current colour: ",
             "Change the background colour     current colour: ",
+            "Change the solving colour        current colour: ",
             "",
             "Load a maze from a text file (list of points)",
             "Load a maze from an image file",
@@ -77,9 +78,10 @@ Module Module1
         }
         Menu(menuOptions, "Menu")
 
-
-
-        ''Console.ReadKey()
+        dim newColour as ConsoleColor = ColourChange()
+        Console.ForegroundColor = newColour
+        Console.WriteLine("MESSSSSSSSSSAGE")
+        Console.ReadKey()
         ''Dim bmp As New Bitmap(350, 350)
         ''Dim g As Graphics
         ''g = Graphics.FromImage(bmp)
@@ -88,36 +90,65 @@ Module Module1
         ''bmp.Save("name", System.Drawing.Imaging.ImageFormat.Png)
         ''bmp.Dispose()
     End Sub
+    function GetAllConsoleColours as string()
+        dim colourArr(15) as string
+        for i = 0 to 15
+            dim curColour as ConsoleColor = i
+            colourArr(i) = curColour.ToString()
+        Next
+        return colourArr'{ConsoleColor.Black,ConsoleColor.Blue,ConsoleColor.Cyan,ConsoleColor.Gray,ConsoleColor.Gray,ConsoleColor.Green,ConsoleColor.Magenta,ConsoleColor.Red,ConsoleColor.White,ConsoleColor.Yellow,ConsoleColor.DarkBlue,ConsoleColor.DarkCyan,ConsoleColor.DarkGreen,ConsoleColor.DarkMagenta,ConsoleColor.DarkGray}
+    End function
+    function ColourChange as ConsoleColor
+        Console.Clear()
+        Console.CursorVisible = False
+        dim colourArr() as String = GetAllConsoleColours()
+        dim returnValue as string = SolvingMenu(colourArr,"What colour would you like to change to",0,0)
+        for i = 0 to 15
+            dim curColour as ConsoleColor = i
+            Console.Clear()
+            if curColour.ToString = returnValue then return curcolour
+        Next
+        return 0
+    End function
     Function StraightWays(maze As List(Of Node))
-        Dim gx = 0
-        Dim gy = 0
-        For Each node In maze
-            If node.X > gx Then gx = node.X
-            If node.Y > gy Then gy = node.Y
+        dim mX = 0
+        Dim gx = (From node In maze Select node.X).Concat(new Integer() {0}).Max()
+        Dim gy = (From node In maze Select node.y).Concat(new Integer() {0}).Max()
+        for x = 0 to Console.WindowWidth-40
+            if maze.Contains(New Node(x,3)) then
+                mX = x
+                Exit For
+            End If
         Next
         Dim corridorCount As New List(Of Integer)
-        For x = 8 To gx + 1 Step 2
+        For x = mx To gx + 1 step 2
             Dim straightCount = 0
             For y = 3 To gy
                 Dim tempNode As New Node(x, y)
                 If maze.Contains(tempNode) Then
                     straightCount += 1
                 Else
-                    If straightCount > 1 Then corridorCount.Add(straightCount)
+                    If straightCount > 1 Then 
+                        corridorCount.Add(straightCount)
+                    End If
                     straightCount = 0
                 End If
+                Threading.Thread.Sleep(5)
             Next
         Next
         For y = 3 To gy
             Dim straightCount = 0
-            For x = 8 To gx + 1 Step 2
+            For x = mx To gx + 1  step 2
                 Dim tempNode As New Node(x, y)
                 If maze.Contains(tempNode) Then
                     straightCount += 1
                 Else
-                    If straightCount > 1 Then corridorCount.Add(straightCount)
+                    If straightCount > 1 Then 
+                        corridorCount.Add(straightCount)
+                    End If
                     straightCount = 0
                 End If
+                Threading.Thread.Sleep(5)
             Next
         Next
         Return corridorCount.Average
@@ -145,7 +176,7 @@ Module Module1
             c += 1
         Next
     End Sub
-    Function LoadMazeAscii(pathColour as ConsoleColor, backGroundColour as ConsoleColor) As List(Of Node)
+    Function LoadMazeAscii(pathColour as ConsoleColor, backGroundColour as ConsoleColor,solvingColour as ConsoleColor) As List(Of Node)
         Console.Clear()
         Dim y As Integer
         Console.Write("File Name of the maze to load (don't include .txt): ")
@@ -170,7 +201,7 @@ Module Module1
             maze.RemoveAt(maze.Count - 1)
             maze.Add(start)
             maze.Add(finish)
-            SetBoth(ConsoleColor.White)
+            SetBoth(pathColour)
             Dim gX, gY As Integer
             gX = 0
             gY = 0
@@ -197,7 +228,7 @@ Module Module1
             "Solve using the right-hand rule",
             "",
             "Play the maze",
-            "Braid (remove dead ends)", "Partial braid (remove some dead ends)", "Make the maze sparse (remove some passages)",
+            "Braid (remove dead ends)", "Partial braid (remove some dead ends)", "Make the maze sparse (remove some passages)","Make the maze unicursal",
             "",
             "Get the average corridor length",
             "Get the amount of corners in the maze",
@@ -210,7 +241,7 @@ Module Module1
             "",
             "Clear the maze and return to the menu"}
             Dim input As String = SolvingMenu(temparr, "What would you like to do with the maze", gX + 7, 3)
-            SolvingInput(input, True, gY + 2, 0, maze, "",pathColour,backGroundColour)
+            SolvingInput(input, True, gY + 2, 0, maze, "",pathColour,backGroundColour,SolvingColour)
             Return maze
         Else
             Console.Clear()
@@ -349,7 +380,7 @@ Module Module1
         Console.ReadKey()
         Console.Clear()
     End Sub
-    Function LoadMazePng(pathColour as ConsoleColor, backGroundColour as ConsoleColor)
+    Function LoadMazePng(pathColour as ConsoleColor, backGroundColour as ConsoleColor,SolvingColour as ConsoleColor)
         'loading a big maze twice exceeds memory limit
         Console.Clear()
         Console.Write("File Name of the maze to load (don't include .png): ")
@@ -395,7 +426,7 @@ Module Module1
             "Solve using the right-hand rule",
             "",
             "Play the maze",
-            "Braid (remove dead ends)", "Partial braid (remove some dead ends)", "Make the maze sparse (remove some passages)",
+            "Braid (remove dead ends)", "Partial braid (remove some dead ends)", "Make the maze sparse (remove some passages)","Make the maze unicursal",
             "",
             "Get the average corridor length",
             "Get the amount of corners in the maze",
@@ -446,7 +477,7 @@ Module Module1
                     Console.ForegroundColor = ConsoleColor.White
 
                     Dim input As String = SolvingMenu(temparr, "What would you like to do with the maze", greatestX + 3, 3)
-                    SolvingInput(input, True, greatestY, 0, maze, "",pathColour,backGroundColour)
+                    SolvingInput(input, True, greatestY, 0, maze, "",pathColour,backGroundColour,SolvingColour)
                 End If
             Else
                 start = maze(0)
@@ -462,7 +493,7 @@ Module Module1
                 Console.BackgroundColor = ConsoleColor.Black
                 Console.ForegroundColor = ConsoleColor.White
                 Dim input As String = SolvingMenu(temparr, "What would you like to do with the maze", greatestX + 3, 3)
-                SolvingInput(input, True, greatestY, 0, maze, "",pathColour,backGroundColour)
+                SolvingInput(input, True, greatestY, 0, maze, "",pathColour,backGroundColour,SolvingColour)
             End If
             Return maze
         Else
