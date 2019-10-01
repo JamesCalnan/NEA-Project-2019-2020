@@ -9,7 +9,7 @@
         Dim currentDirection = "down"
         Dim timer As Stopwatch = Stopwatch.StartNew
         Do
-            SetBoth(ConsoleColor.DarkCyan)
+            SetBoth(solvingcolour)
             prev.Print("XX")
             currentDirection = GetNextDirection(maze, u, currentDirection, rule)
             If currentDirection = "left" Then
@@ -26,7 +26,7 @@
             Console.ForegroundColor = ConsoleColor.White
             Console.SetCursorPosition(0, 1)
             Console.Write($"Current direction: {currentDirection.Substring(0, 1).ToUpper}{currentDirection.Substring(1, currentDirection.Count - 1)}      ")
-            SetBoth(solvingcolour)
+            SetBoth(ConsoleColor.cyan)
             u.Print("XX")
             prev = u
             Threading.Thread.Sleep(delay)

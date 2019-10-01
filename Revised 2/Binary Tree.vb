@@ -21,7 +21,11 @@ Public Class PriorityQueue(Of T)
         Items.Delete(item, True)
         Items.Insert(New QueueItem(Of T)(value, newPriority))
     End Sub
-
+    Public  sub Delete(value as T)
+        Dim tempItem As New QueueItem(Of T)(value, 0)
+        Dim item As QueueItem(Of T) = Items.FindExact(tempItem).Clone()
+        Items.Delete(item,true)
+    End sub
     Public Function Contains(value As QueueItem(Of T)) As Boolean
         Return Not IsNothing(Items.Contains(value))
     End Function
@@ -58,7 +62,7 @@ Public Class QueueItem(Of T)
 End Class
 
 Public Class BinaryTree(Of T)
-    Public Root As TreeItem(Of T)
+    Private Root As TreeItem(Of T)
     Public Sub Binary_Tree()
         Root = Nothing
     End Sub
@@ -130,7 +134,7 @@ Public Class BinaryTree(Of T)
         If Not IsNothing(output) Then Return output
         Return output
     End Function
-    Private Function MinValue(root As TreeItem(Of T)) As QueueItem(Of T)
+    Private Shared Function MinValue(root As TreeItem(Of T)) As QueueItem(Of T)
         Dim min As QueueItem(Of T) = root.Value
         While Not IsNothing(root.Left)
             min = root.Left.Value
@@ -139,7 +143,7 @@ Public Class BinaryTree(Of T)
         Return min
     End Function
     Public Function MinValue() As QueueItem(Of T)
-        Return Me.MinValue(Root)
+        Return MinValue(Root)
     End Function
     'Private Function findSmallestValue(ByVal root As TreeItem)
     '    Return If(IsNothing(root.left), root.value, findSmallestValue(root.left))

@@ -37,7 +37,7 @@ Module Module1
         'Console.ReadKey()
         
 '        dim b as ConsoleColor = consolecolor.Black
-'        
+       console.readkey
         Do
             Console.SetCursorPosition(0, 0)
             Console.Write("Please make the window full screen")
@@ -55,7 +55,8 @@ Module Module1
             "   Binary Tree Algorithm",
             "   Wilson's Algorithm",
             "   Eller's Algorithm",
-            "   Kruskal's Algorithm",
+            "   Kruskal's Algorithm (simplified)",
+            "   Kruskal's Algorithm (true)",
             "   Houston's Algorithm",
             "   Spiral Backtracker Algorithm",
             "   Custom Algorithm",
@@ -90,6 +91,123 @@ Module Module1
         ''bmp.Save("name", System.Drawing.Imaging.ImageFormat.Png)
         ''bmp.Dispose()
     End Sub
+    sub PrintPreviousMaze(previousMaze as list(of Node),previousAlgorithm as String,showPath as Boolean, byref yPosAfterMaze as Integer, solvingDelay as Integer,tempArr() as String, pathColour as ConsoleColor, backGroundColour as ConsoleColor,solvingColour as ConsoleColor)
+        If Not IsNothing(previousMaze) Then
+            Console.Clear()
+            Console.SetCursorPosition(0, 0)
+            Const mess = "Algorithm used to generate this maze: "
+            Console.Write(mess)
+            Console.SetCursorPosition(mess.Length, 0)
+            MsgColour(previousAlgorithm, ConsoleColor.Green)
+            Dim gX, gY As Integer
+            gx = 0
+            gy = 0
+            For Each node In previousMaze
+                if gX < node.x then gX = node.x
+                If gY < node.Y Then gY = node.Y
+            Next
+            if backGroundColour <> consolecolor.black then DrawBackground(backGroundColour,{5,3,gX+1,gY-1})
+            SetBoth(pathColour)
+            PrintMazeHorizontally(previousMaze,gX,gY)
+            Console.BackgroundColor = (ConsoleColor.Black)
+            DisplayAvailablePositions(previousMaze.Count)
+            yPosAfterMaze = gY 
+            Console.SetCursorPosition(0, yPosAfterMaze + 3)
+            dim input = SolvingMenu(temparr, "What would you like to do with the maze", gX + 6, 3)
+            SolvingInput(input, showPath, yPosAfterMaze, solvingDelay, previousMaze, previousAlgorithm,pathColour,backGroundColour,solvingColour)
+        Else
+            Console.Clear()
+            MsgColour("No previous maze available", ConsoleColor.Red)
+            Console.ReadKey()
+        End If
+    End sub
+    sub LoadMazeTextFile(byref loadedMaze as list(of node),yPosAfterMaze as Integer,byref previousMaze as List(Of Node),tempArr() as String,showPath as Boolean,solvingDelay as Integer, pathColour as ConsoleColor,backGroundColour as ConsoleColor,solvingColour as ConsoleColor)
+        Dim validMaze, xMax, yMax As Integer
+                                Dim greatestY = 0
+                                Dim greatestX = 0
+                                validMaze = 1
+                                xMax = Console.WindowWidth - 50
+                                yMax = Console.WindowHeight - 8
+                                loadedMaze.Clear()
+                                Console.Clear()
+                                Dim _x, _y As Integer
+                                Console.Write("File Name of the maze to load (don't include .txt): ")
+                                Dim filename As String = Console.ReadLine + ".txt"
+                                If File.Exists(filename) Then
+                                    Dim usedAlgorithm = ""
+                                    Dim c = 0
+                                    Dim e = True
+                                    Console.Clear()
+                                    Using reader = New StreamReader(filename)
+                                        Do Until reader.EndOfStream
+                                            If e Then
+                                                usedAlgorithm = reader.ReadLine
+                                                e = False
+                                            End If
+                                            If c = 0 Then
+                                                _x = Int(reader.ReadLine)
+                                                If Int(_x) > greatestX Then greatestX = Int(_x)
+                                                If _x > xMax Then
+                                                    validMaze = 0
+                                                    Exit Do
+                                                End If
+                                            ElseIf c = 1 Then
+                                                _y = Int(reader.ReadLine)
+                                                If Int(_y) > greatestY Then greatestY = Int(_y)
+                                                If _y > yMax Then
+                                                    validMaze = 0
+                                                    Exit Do
+                                                End If
+                                            End If
+                                            c += 1
+                                            If c = 2 Then
+                                                Console.WriteLine($"({_x}, {_y})")
+                                                loadedMaze.Add(New Node(_x, _y))
+                                                c = 0
+                                            End If
+                                        Loop
+                                    End Using
+                                    If loadedMaze.Count < 1 Then validMaze = 2
+                                    If validMaze = 1 Then
+                                        MsgColour($"Finished loading maze positions, total maze positions: {loadedMaze.Count}", ConsoleColor.Green)
+                                        Console.ReadKey()
+                                        Console.Clear()
+                                        Console.SetCursorPosition(0, 0)
+                                        Dim mess = "Algorithm used to generate this maze: "
+                                        Console.Write(mess)
+                                        Console.SetCursorPosition(mess.Length, 0)
+                                        MsgColour(usedAlgorithm, ConsoleColor.Green)
+                                        SetBoth(ConsoleColor.White)
+                                        dim gx,gy as integer
+                                        For Each node In loadedMaze
+                                            if node.x > gx then gx = node.X
+                                            if node.y > gy then gy = node.y
+                                        Next
+                                        DrawBackground(backGroundColour,{5,3,greatestx+1,gy-1})
+                                        SetBoth(pathcolour)
+                                        PrintMazeHorizontally(loadedMaze,greatestx,greatesty)
+                                        PrintStartandEnd(loadedMaze)
+                                        yPosAfterMaze = greatestY
+                                        DisplayAvailablePositions(previousMaze.Count)
+                                        Console.SetCursorPosition(0, yPosAfterMaze + 3)
+                                        previousMaze = loadedMaze
+                                        dim input = SolvingMenu(temparr, "What would you like to do with the maze", greatestX + 6, 3)
+                                        SolvingInput(input, showPath, yPosAfterMaze, solvingDelay, previousMaze, usedAlgorithm,pathColour,backGroundColour,solvingColour)
+                                    ElseIf validMaze = 0 Then
+                                        Console.Clear()
+                                        MsgColour("Maze is too big for the screen, please decrease the font size and try again", ConsoleColor.Red)
+                                        Console.ReadKey()
+                                    ElseIf validMaze = 2 Then
+                             Console.Clear()
+                                        MsgColour("Invalid maze", ConsoleColor.Red)
+                           Console.ReadKey()
+                                    End If
+                                Else
+                          Console.Clear()
+                                    MsgColour("File doesn't exist", ConsoleColor.Red)
+                                    Console.ReadKey()
+            End If
+    End sub
     function GetAllConsoleColours as string()
         dim colourArr(15) as string
         for i = 0 to 15
@@ -133,7 +251,6 @@ Module Module1
                     End If
                     straightCount = 0
                 End If
-                Threading.Thread.Sleep(5)
             Next
         Next
         For y = 3 To gy
@@ -148,7 +265,6 @@ Module Module1
                     End If
                     straightCount = 0
                 End If
-                Threading.Thread.Sleep(5)
             Next
         Next
         Return corridorCount.Average
@@ -176,7 +292,7 @@ Module Module1
             c += 1
         Next
     End Sub
-    Function LoadMazeAscii(pathColour as ConsoleColor, backGroundColour as ConsoleColor,solvingColour as ConsoleColor) As List(Of Node)
+    Function LoadMazeAscii(tempArr() as String, pathColour as ConsoleColor, backGroundColour as ConsoleColor,solvingColour as ConsoleColor) As List(Of Node)
         Console.Clear()
         Dim y As Integer
         Console.Write("File Name of the maze to load (don't include .txt): ")
@@ -216,30 +332,6 @@ Module Module1
             PrintStartandEnd(maze)
             Console.BackgroundColor = ConsoleColor.Black
             Console.ForegroundColor = ConsoleColor.White
-            Dim temparr() As String = {"Solve using the A* algorithm",
-            "Solve using Dijkstra's algorithm",
-            "Solve using Breadth-first search",
-            "Solve using Depth-first search (using iteration)",
-            "Solve using Depth-first search (using recursion)",
-            "Solve using a recursive algorithm",
-            "Solve using the Lee Algorithm (Wave Propagation)",
-            "Solve using the dead end filling method",
-            "Solve using the left-hand rule",
-            "Solve using the right-hand rule",
-            "",
-            "Play the maze",
-            "Braid (remove dead ends)", "Partial braid (remove some dead ends)", "Make the maze sparse (remove some passages)","Make the maze unicursal",
-            "",
-            "Get the average corridor length",
-            "Get the amount of corners in the maze",
-            "Get the amount of junctions in the maze",
-            "Get the amount of Dead-ends in the maze",
-            "",
-            "Save the maze as points",
-            "Save the maze as a png image",
-            "Save the maze as an ascii text file",
-            "",
-            "Clear the maze and return to the menu"}
             Dim input As String = SolvingMenu(temparr, "What would you like to do with the maze", gX + 7, 3)
             SolvingInput(input, True, gY + 2, 0, maze, "",pathColour,backGroundColour,SolvingColour)
             Return maze
@@ -380,7 +472,7 @@ Module Module1
         Console.ReadKey()
         Console.Clear()
     End Sub
-    Function LoadMazePng(pathColour as ConsoleColor, backGroundColour as ConsoleColor,SolvingColour as ConsoleColor)
+    Function LoadMazePng(tempArr() as String, pathColour as ConsoleColor, backGroundColour as ConsoleColor,SolvingColour as ConsoleColor)
         'loading a big maze twice exceeds memory limit
         Console.Clear()
         Console.Write("File Name of the maze to load (don't include .png): ")
@@ -414,30 +506,6 @@ Module Module1
                     End If
                 Next
             Next
-            Dim temparr() As String = {"Solve using the A* algorithm",
-            "Solve using Dijkstra's algorithm",
-            "Solve using Breadth-first search",
-            "Solve using Depth-first search (using iteration)",
-            "Solve using Depth-first search (using recursion)",
-            "Solve using a recursive algorithm",
-            "Solve using the Lee Algorithm (Wave Propagation)",
-            "Solve using the dead end filling method",
-            "Solve using the left-hand rule",
-            "Solve using the right-hand rule",
-            "",
-            "Play the maze",
-            "Braid (remove dead ends)", "Partial braid (remove some dead ends)", "Make the maze sparse (remove some passages)","Make the maze unicursal",
-            "",
-            "Get the average corridor length",
-            "Get the amount of corners in the maze",
-            "Get the amount of junctions in the maze",
-            "Get the amount of Dead-ends in the maze",
-            "",
-            "Save the maze as points",
-            "Save the maze as a png image",
-            "Save the maze as an ascii text file",
-            "",
-            "Clear the maze and return to the menu"}
             Dim finish As Node
             Dim start As Node
             If pathOnMaze Then
@@ -895,40 +963,42 @@ Module Module1
         Return dict
     End Function
     function consoleColourToBrush(colour as ConsoleColor)
-        if colour = ConsoleColor.Black
-            return Brushes.Black
-        elseif colour = ConsoleColor.Blue
-            return Brushes.Blue
-        elseif colour = consolecolor.Cyan
-            return Brushes.Cyan
-        elseif colour = ConsoleColor.Gray
-            return Brushes.SlateGray
-        elseif colour = ConsoleColor.Green
-            return Brushes.LimeGreen
-        elseif colour = ConsoleColor.Magenta
-            return Brushes.Magenta
-        elseif colour = ConsoleColor.Red
-            return Brushes.Red
-        elseif colour = ConsoleColor.White
-            return brushes.White
-        elseif colour = ConsoleColor.Yellow
-            return Brushes.Yellow
-        elseif colour = ConsoleColor.DarkBlue
-            return Brushes.DarkBlue
-        elseif colour = ConsoleColor.DarkCyan
-            return Brushes.DarkCyan
-        elseif colour = ConsoleColor.DarkGray
-            return Brushes.DarkSlateGray
-        elseif colour = ConsoleColor.DarkGreen
-            Return Brushes.DarkGreen
-        elseif colour = ConsoleColor.DarkMagenta
-            return Brushes.DarkMagenta
-        elseif colour = ConsoleColor.DarkRed
-            return Brushes.DarkRed
-        ElseIf colour = consolecolor.DarkYellow
-            return Brushes.OrangeRed
-        End If
-        return nothing
+        Select colour
+            case ConsoleColor.Black
+                return Brushes.Black
+            Case ConsoleColor.Blue
+                return Brushes.Blue
+            case consolecolor.Cyan
+                return Brushes.Cyan
+            case ConsoleColor.Gray
+                return Brushes.SlateGray
+            Case ConsoleColor.Green
+                return Brushes.LimeGreen
+            Case ConsoleColor.Magenta
+                return Brushes.Magenta
+            Case ConsoleColor.Red
+                return Brushes.Red
+            case ConsoleColor.White
+                return brushes.White
+            Case ConsoleColor.Yellow
+                return Brushes.Yellow
+            Case ConsoleColor.DarkBlue
+                return Brushes.DarkBlue
+            Case    ConsoleColor.DarkCyan
+                return Brushes.DarkCyan
+            Case ConsoleColor.DarkGray
+                return Brushes.DarkSlateGray
+            Case    ConsoleColor.DarkGreen
+                Return Brushes.DarkGreen
+            Case    ConsoleColor.DarkMagenta
+                return Brushes.DarkMagenta
+            Case    ConsoleColor.DarkRed
+                return Brushes.DarkRed
+            Case    consolecolor.DarkYellow
+                return Brushes.OrangeRed
+            Case    Else
+                return nothing
+        End Select
     End function
     Sub SaveMazePng(path As List(Of Node), algorithm As String, fileName As String, pathColour as consolecolor, backGroundColour as consolecolor)
         Console.Clear()
@@ -996,6 +1066,9 @@ Class Cell
         X = xpoint
         Y = ypoint
     End Sub
+    Public  Function ToNode() As node    
+        return New Node(Me.X,Me.Y)
+    End Function
     Sub Update(x As Integer, y As Integer)
         Me.X = x
         Me.Y = y
@@ -1028,6 +1101,9 @@ Public Class Node
         Console.SetCursorPosition(X, Y)
         Console.Write(letter)
     End Sub
+    Public  function ToCell
+        return new Cell(me.X,Me.Y)
+    End function
     Public Sub New(xPoint As Integer, yPoint As Integer)
         X = xpoint
         Y = ypoint

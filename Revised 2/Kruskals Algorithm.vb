@@ -1,5 +1,5 @@
 ﻿Module KruskalsAlgorithm
-    Function Kruskals(limits() As Integer, delay As Integer, showMazeGeneration As Boolean, pathColour as consolecolor, backGroundColour as consolecolor)
+    Function Kruskals(limits() As Integer, delay As Integer, showMazeGeneration As Boolean, pathColour as consolecolor, backGroundColour as consolecolor, rule as String)
         dim tempLimits() = {limits(0),limits(1),limits(2),limits(3)}
         If backGroundColour <> ConsoleColor.black Then DrawBackground(backGroundColour,tempLimits)
         Dim cellSet As New Dictionary(Of Cell, Integer)
@@ -28,13 +28,18 @@
         While edgeWeights.Count > 0
             If ExitCase() Then Return Nothing
             'find the edge with the lowest weight
-            Dim highestWeightEdge As Cell = edgeWeights.Keys(r.Next(0, edgeWeights.Count))
-            'For Each cell In EdgeWeights
-            '    If EdgeWeights(HighestWeightCell) < EdgeWeights(cell.Key) Then HighestWeightCell = cell.Key
-            'Next
+             Dim highestWeightEdge As Cell
+            if rule = "simplified"
+                highestWeightEdge = edgeWeights.Keys(r.Next(0, edgeWeights.Count))
+            Else    
+                dim tempCell as cell = edgeWeights.Keys(0)
+                For Each cell In EdgeWeights
+                    If EdgeWeights(tempCell) < EdgeWeights(cell.Key) Then tempCell = cell.Key
+                Next
+                highestWeightEdge = tempCell
+            End If
             'TempLowest is now the key with the lowest value in the EdgeWeights dictionary
             Dim wallCell As Cell = highestWeightEdge
-            'need to find the two adjacent cells
             Dim adjacentCells As New List(Of Cell)
             If availableCells.Contains(New Cell(wallCell.X, wallCell.Y - 1)) Then adjacentCells.Add(New Cell(wallCell.X, wallCell.Y - 1))
             If availableCells.Contains(New Cell(wallCell.X + 2, wallCell.Y)) Then adjacentCells.Add(New Cell(wallCell.X + 2, wallCell.Y))
@@ -62,7 +67,7 @@
             PrintMazeHorizontally(returnpath, limits(2), limits(3))
         End If
         Dim ypos As Integer = Console.CursorTop + 5
-        AddStartAndEnd(returnpath, limits, 0)
+        AddStartAndEnd(returnpath, limits, pathColour)
         Console.SetCursorPosition(0, ypos)
         Return returnpath
     End Function
