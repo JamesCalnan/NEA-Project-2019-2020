@@ -50,7 +50,7 @@
             Console.ForegroundColor = ConsoleColor.Green
             Console.BackgroundColor = ConsoleColor.Green
             For Each Node In maze
-                If Not notPath.Contains(Node)      then          Node.Print("██")
+                If Not notPath.Contains(Node) Then Node.Print("██")
             Next
             Console.ForegroundColor = ConsoleColor.White
             Console.BackgroundColor = ConsoleColor.Black

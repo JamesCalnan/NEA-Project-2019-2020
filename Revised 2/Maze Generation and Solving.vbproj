@@ -267,6 +267,7 @@
     <Compile Include="Sparse Maze.vb" />
     <Compile Include="Spiral Backtracker Algorithm.vb" />
     <Compile Include="Unicursal Maze.vb" />
+    <Compile Include="UserCreateMaze.vb" />
     <Compile Include="Wall Follower.vb" />
     <Compile Include="Wilsons Algorithm.vb" />
   </ItemGroup>

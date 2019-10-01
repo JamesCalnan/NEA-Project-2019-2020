@@ -35,9 +35,9 @@ Module Module1
         'Console.ForegroundColor = ConsoleColor.DarkGray
         'Console.WriteLine("hello there")
         'Console.ReadKey()
-        
-'        dim b as ConsoleColor = consolecolor.Black
-       console.readkey
+
+        '        dim b as ConsoleColor = consolecolor.Black
+        Console.CursorVisible = False
         Do
             Console.SetCursorPosition(0, 0)
             Console.Write("Please make the window full screen")
@@ -89,7 +89,7 @@ Module Module1
         ''bmp.Dispose()
     End Sub
     sub PrintPreviousMaze(previousMaze as list(of Node),previousAlgorithm as String,showPath as Boolean, byref yPosAfterMaze as Integer, solvingDelay as Integer,tempArr() as String, pathColour as ConsoleColor, backGroundColour as ConsoleColor,solvingColour as ConsoleColor)
-        If Not IsNothing(previousMaze) Then
+        If Not IsNothing(previousMaze) And previousMaze.Count > 0 Then
             Console.Clear()
             Console.SetCursorPosition(0, 0)
             Const mess = "Algorithm used to generate this maze: "
@@ -97,21 +97,22 @@ Module Module1
             Console.SetCursorPosition(mess.Length, 0)
             MsgColour(previousAlgorithm, ConsoleColor.Green)
             Dim gX, gY As Integer
-            gx = 0
-            gy = 0
+            gX = 0
+            gY = 0
             For Each node In previousMaze
-                if gX < node.x then gX = node.x
+                If gX < node.X Then gX = node.X
                 If gY < node.Y Then gY = node.Y
             Next
-            if backGroundColour <> consolecolor.black then DrawBackground(backGroundColour,{5,3,gX+1,gY-1})
+            If previousAlgorithm = "   Make your own maze" Then gY += 1
+            If backGroundColour <> ConsoleColor.Black Then DrawBackground(backGroundColour, {5, 3, gX + 1, gY - 1})
             SetBoth(pathColour)
-            PrintMazeHorizontally(previousMaze,gX,gY)
+            PrintMazeHorizontally(previousMaze, gX, gY)
             Console.BackgroundColor = (ConsoleColor.Black)
             DisplayAvailablePositions(previousMaze.Count)
-            yPosAfterMaze = gY 
+            yPosAfterMaze = gY
             Console.SetCursorPosition(0, yPosAfterMaze + 3)
-            dim input = SolvingMenu(temparr, "What would you like to do with the maze", gX + 6, 3)
-            SolvingInput(input, showPath, yPosAfterMaze, solvingDelay, previousMaze, previousAlgorithm,pathColour,backGroundColour,solvingColour)
+            Dim input = SolvingMenu(tempArr, "What would you like to do with the maze", gX + 6, 3)
+            SolvingInput(input, showPath, yPosAfterMaze, solvingDelay, previousMaze, previousAlgorithm, pathColour, backGroundColour, solvingColour)
         Else
             Console.Clear()
             MsgColour("No previous maze available", ConsoleColor.Red)
@@ -206,116 +207,7 @@ Module Module1
         End If
     End Sub
 
-    Function UserCreateMaze(limits() As Integer, pathColour As ConsoleColor, backGroundColour As ConsoleColor)
-        Dim UnvisitedCells As New List(Of Cell)
-        Dim visited As Dictionary(Of Cell, Boolean) = InitialiseVisited(limits)
-        For Each node In visited
-            UnvisitedCells.Add(node.Key)
-        Next
-        SetBoth(backGroundColour)
-        If backGroundColour <> ConsoleColor.Black Then DrawBackground(backGroundColour, limits)
-        Dim userPath As New List(Of Cell)
-        Dim path As New List(Of Node)
-        Dim currentPos As Cell = PickRandomStartingCell(limits)
-        Dim previousPos As Cell = currentPos
-        visited(currentPos) = True
-        UnvisitedCells.Remove(currentPos)
-        SetBoth(ConsoleColor.Magenta)
-        currentPos.Print("XX")
-        While UnvisitedCells.Count > 0
-            SetBoth(backGroundColour)
-            If userPath.Contains(New Cell(Console.CursorLeft, Console.CursorTop)) Or userPath.Contains(New Cell(Console.CursorLeft - 1, Console.CursorTop)) Or userPath.Contains(New Cell(Console.CursorLeft + 1, Console.CursorTop)) Then SetBoth(pathColour)
-            Dim key = Console.ReadKey
-            SetBoth(pathColour)
-            Select Case key.Key.ToString
-                Case "RightArrow"
-                    Dim tempNode3 As New Cell(currentPos.X + 4, currentPos.Y)
-                    If tempNode3.WithinLimits(limits) Then
-                        currentPos = tempNode3
-                        If Not visited(currentPos) Then
-                            Dim wallCell As Cell = MidPoint(currentPos, previousPos)
-                            SetBoth(pathColour)
-                            wallCell.Print("XX")
-                            visited(currentPos) = True
-                            UnvisitedCells.Remove(currentPos)
-                            AddToPath(path, currentPos, wallCell)
-                        End If
-                        previousPos.Print("XX")
-                        SetBoth(ConsoleColor.Magenta)
-                        currentPos.Print("XX")
-                        If Not path.Contains(currentPos.ToNode) Then path.Add(currentPos.ToNode)
-                        previousPos = currentPos
-                    End If
-                Case "LeftArrow"
-                    Dim tempNode2 As New Cell(currentPos.X - 4, currentPos.Y)
-                    If tempNode2.WithinLimits(limits) Then
-                        currentPos = tempNode2
-                        If Not visited(currentPos) Then
-                            Dim wallCell As Cell = MidPoint(currentPos, previousPos)
-                            SetBoth(pathColour)
-                            wallCell.Print("XX")
-                            visited(currentPos) = True
-                            UnvisitedCells.Remove(currentPos)
-                            AddToPath(path, currentPos, wallCell)
-                        End If
-                        previousPos.Print("XX")
-                        SetBoth(ConsoleColor.Magenta)
-                        currentPos.Print("XX")
-                        If Not path.Contains(currentPos.ToNode) Then path.Add(currentPos.ToNode)
-                        previousPos = currentPos
-                    End If
-                Case "UpArrow"
-                    Dim tempNode1 As New Cell(currentPos.X, currentPos.Y - 2)
-                    If tempNode1.WithinLimits(limits) Then
-                        currentPos = tempNode1
-                        If Not visited(currentPos) Then
-                            Dim wallCell As Cell = MidPoint(currentPos, previousPos)
-                            SetBoth(pathColour)
-                            wallCell.Print("XX")
-                            visited(currentPos) = True
-                            UnvisitedCells.Remove(currentPos)
-                            AddToPath(path, currentPos, wallCell)
-                        End If
-                        previousPos.Print("XX")
-                        SetBoth(ConsoleColor.Magenta)
-                        currentPos.Print("XX")
-                        If Not path.Contains(currentPos.ToNode) Then path.Add(currentPos.ToNode)
-                        previousPos = currentPos
 
-                    End If
-                Case "DownArrow"
-                    Dim tempNode As New Cell(currentPos.X, currentPos.Y + 2)
-                    If tempNode.WithinLimits(limits) Then
-                        currentPos = tempNode
-                        If Not visited(currentPos) Then
-                            Dim wallCell As Cell = MidPoint(currentPos, previousPos)
-                            SetBoth(pathColour)
-                            wallCell.Print("XX")
-                            visited(currentPos) = True
-                            UnvisitedCells.Remove(currentPos)
-                            AddToPath(path, currentPos, wallCell)
-                        End If
-                        previousPos.Print("XX")
-                        SetBoth(ConsoleColor.Magenta)
-                        currentPos.Print("XX")
-                        If Not path.Contains(currentPos.ToNode) Then path.Add(currentPos.ToNode)
-                        previousPos = currentPos
-                    End If
-                Case "Escape"
-                    Exit While
-                Case Else
-            End Select
-            userPath.Add(currentPos)
-            If userPath.Contains(New Cell(Console.CursorLeft, Console.CursorTop)) Or userPath.Contains(New Cell(Console.CursorLeft - 1, Console.CursorTop)) Or userPath.Contains(New Cell(Console.CursorLeft + 1, Console.CursorTop)) Then SetBoth(pathColour)
-            SetBoth(Console.BackgroundColor)
-            Console.SetCursorPosition(0, 0)
-        End While
-        path.Add(currentPos.ToNode)
-        SetBoth(pathColour)
-        currentPos.Print("XX")
-        AddStartAndEnd(path, limits, pathColour)
-        Return path
-    End Function
 
     Function GetAllConsoleColours as string()
         dim colourArr(15) as string
@@ -491,10 +383,12 @@ Module Module1
     sub DrawBackground(backgroundColour as ConsoleColor, limits() as Integer)
         SetBoth(backgroundColour)
         For y = limits(1) - 1 To limits(3) + 1
-            For x = limits(0) + 1 To limits(2) + 1
-                Console.SetCursorPosition(x, y)
-                Console.Write("XX")
-            Next
+            Console.SetCursorPosition(limits(0) + 1, y)
+            Console.Write("".PadLeft(limits(2) - 3, " "c))
+            'For x = limits(0) + 1 To limits(2) + 1 Step 2
+            '    Console.SetCursorPosition(x, y)
+            '    Console.Write("XX")
+            'Next
         Next
     End sub
     Function PreGenMenu(arr() As String, message As String)
@@ -1209,9 +1103,13 @@ Public Class Node
         Console.SetCursorPosition(X, Y)
         Console.Write(letter)
     End Sub
-    Public  function ToCell
-        return new Cell(me.X,Me.Y)
-    End function
+    Public Function ToCell()
+        Return New Cell(Me.X, Me.Y)
+    End Function
+    Public Function AdjacentToMaze(maze As List(Of Node))
+        If maze.Contains(New Node(Me.X, Me.Y + 1)) Or maze.Contains(New Node(Me.X, Me.Y - 1)) Or maze.Contains(New Node(Me.X - 2, Me.Y)) Or maze.Contains(New Node(Me.X + 2, Me.Y)) Then Return True
+        Return False
+    End Function
     Public Sub New(xPoint As Integer, yPoint As Integer)
         X = xpoint
         Y = ypoint

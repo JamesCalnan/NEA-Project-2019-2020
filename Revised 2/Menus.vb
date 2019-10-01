@@ -97,7 +97,7 @@ Module Menus
                             v(currentCell) = True
                             Dim path As New List(Of Node)
                             Dim stopwatch As Stopwatch = Stopwatch.StartNew()
-                            SetBoth(ConsoleColor.White)
+                            SetBoth(pathColour)
                             path.Add(New Node(currentCell.X, currentCell.Y))
                             If showMazeGeneration Then currentCell.Print("██")
                             path = RecursiveBacktrackerRecursively(currentCell, limits, path, v, prev, r, showMazeGeneration, delayMs, pathColour)
@@ -139,7 +139,7 @@ Module Menus
                         ElseIf arr(y) = "   Custom Algorithm" Then
                             availablePath = Custom(limits, delayMs, showMazeGeneration, pathColour, backGroundColour)
                         ElseIf arr(y) = "   Make your own maze" Then
-                            availablePath = UserCreateMaze(limits, pathColour, backGroundColour)
+                            availablePath = UserCreateMaze.UserCreateMaze(limits, pathColour, backGroundColour)
                         End If
                         Solving(availablePath, limits, previousMaze, input, yPosAfterMaze, showPath, solvingDelay, arr(y), previousAlgorithm,temparr,pathColour,backGroundColour,solvingColour)
                     Else
@@ -305,7 +305,7 @@ Module Menus
         If ClearMessage Then Console.Write("                                                                                                               ")
         Console.SetCursorPosition(0, y + If(setafter, 1, 0))
     End Sub
-    Function HorizontalYesNo(ColumnPosition As Integer, message As String, ClearMessage As Boolean, ClearBefore As Boolean, SetAfter As Boolean)
+    Function HorizontalYesNo(ColumnPosition As Integer, message As String, ClearMessage As Boolean, ClearBefore As Boolean, SetAfter As Boolean) As Boolean
         If ClearBefore Then Console.Clear()
         Console.ForegroundColor = (ConsoleColor.White)
         Dim Choice = True

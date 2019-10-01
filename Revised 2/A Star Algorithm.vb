@@ -3,21 +3,24 @@
         Console.BackgroundColor = colour
         Console.ForegroundColor = colour
     End Sub
-    Sub AStar(availablepath As List(Of Node), showPath As Boolean, showSolveTime As Boolean, delay As Integer,  solvingColour as ConsoleColor)
+    ''' <summary>
+    ''' A star algorithm according the the video series produced by sebastian lague
+    ''' </summary>
+    Sub AStar(availablepath As List(Of Node), showPath As Boolean, showSolveTime As Boolean, delay As Integer, solvingColour As ConsoleColor)
         Dim start As New Node(availablepath(availablepath.Count - 2).X, availablepath(availablepath.Count - 2).Y)
         Dim target As New Node(availablepath(availablepath.Count - 1).X, availablepath(availablepath.Count - 1).Y)
         Dim current As Node = start
         Dim openSet, closedSet As New HashSet(Of Node)
-        SetBoth(SolvingColour)
+        SetBoth(solvingColour)
         openSet.Add(current)
         current.GCost = 0
-        current.HCost = H(current, target, 1)
+        current.HCost = H(current, target, 10)
         Dim stopwatch As Stopwatch = Stopwatch.StartNew()
         While openSet.Count > 0
             If ExitCase() Then
                 Exit While
             End If
-            current = openSet(0)
+            current = openSet(openSet.Count - 1)
             For i = 1 To openSet.Count - 1
                 If openSet(i).FCost() <= current.FCost() Or openSet(i).HCost = current.HCost Then If openSet(i).HCost < current.HCost Then current = openSet(i)
             Next
@@ -33,13 +36,13 @@
                 Dim tentativeGScore = current.GCost + 1
                 If tentativeGScore < neighbour.GCost Or Not openSet.Contains(neighbour) Then
                     neighbour.GCost = tentativeGScore
-                    neighbour.HCost = H(neighbour, target, 1) 'GetDistance(target, Neighbour)
+                    neighbour.HCost = H(neighbour, target, 5) 'GetDistance(target, Neighbour)
                     neighbour.Parent = current
                     openSet.Add(neighbour)
                 End If
             Next
         End While
-       Console.ReadKey()
+        Console.ReadKey()
     End Sub
     Sub AStarWiki(adjacencyList As Dictionary(Of Node, List(Of Node)), showPath As Boolean, showSolveTime As Boolean, delay As Integer,  solvingColour as ConsoleColor)
         Dim openSet, closedSet As New List(Of Node)
