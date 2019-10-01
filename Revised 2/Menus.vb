@@ -13,7 +13,7 @@ Module Menus
                                    "Solve using the left-hand rule",
                                    "Solve using the right-hand rule",
                                    "",
-                                   "Play the maze", "Braid (remove dead ends)", "Partial braid (remove some dead ends)", "Make the maze sparse (remove some passages)","Make the maze unicursal",
+                                   "Play the maze", "Braid (remove dead ends)", "Partial braid (remove some dead ends)", "Make the maze sparse (remove some passages)", "Make the maze unicursal",
                                    "",
                                    "Get the average corridor length",
                                    "Get the amount of corners in the maze",
@@ -25,7 +25,8 @@ Module Menus
                                    "Save the maze as an ascii text file",
                                    "",
                                    "Clear the maze and return to the menu"}
-        dim pathColour = ConsoleColor.white
+        Dim allColours() As String = GetAllConsoleColours()
+        Dim pathColour = ConsoleColor.white
         dim backGroundColour = ConsoleColor.black
         dim solvingColour = ConsoleColor.Red
         Dim input = ""
@@ -83,13 +84,13 @@ Module Menus
                 Case "Enter"
                     Console.ForegroundColor = ConsoleColor.White
                     Dim availablePath As List(Of Node)
-                    if y <= lastMazeGenItem
-                        GetMazeInfo(width, height, delayMs, limits, showMazeGeneration, True, 0)
+                    if y <= lastMazeGenItem Then
+                        GetMazeInfo(width, height, delayMs, limits, showMazeGeneration, True, 0, If(arr(y) = "   Make your own maze", True, False))
                         If arr(y) = "   Recursive Backtracker Algorithm (using iteration)" Then
-                            availablePath = RecursiveBacktracker.RecursiveBacktracker(limits, delayMs, showMazeGeneration,pathcolour, backgroundcolour)
+                            availablePath = RecursiveBacktracker.RecursiveBacktracker(limits, delayMs, showMazeGeneration, pathColour, backGroundColour)
                         ElseIf arr(y) = "   Recursive Backtracker Algorithm (using recursion)" Then
                             Dim r As New Random
-                            If backGroundColour <> ConsoleColor.Black Then DrawBackground(backGroundColour,limits)
+                            If backGroundColour <> ConsoleColor.Black Then DrawBackground(backGroundColour, limits)
                             Dim currentCell As Cell = PickRandomStartingCell(limits) '(Limits(0) + 3, Limits(1) + 2)
                             Dim prev As Cell = currentCell '(Limits(0) + 3, Limits(1) + 2)
                             Dim v As Dictionary(Of Cell, Boolean) = InitialiseVisited(limits)
@@ -99,51 +100,53 @@ Module Menus
                             SetBoth(ConsoleColor.White)
                             path.Add(New Node(currentCell.X, currentCell.Y))
                             If showMazeGeneration Then currentCell.Print("██")
-                            path = RecursiveBacktrackerRecursively(currentCell, limits, path, v, prev, r, showMazeGeneration, delayMs,pathColour)
+                            path = RecursiveBacktrackerRecursively(currentCell, limits, path, v, prev, r, showMazeGeneration, delayMs, pathColour)
                             PrintMessageMiddle($"Time taken to generate the maze: {stopwatch.Elapsed.TotalSeconds}", 1, ConsoleColor.Yellow)
                             SetBoth(pathcolour)
                             If Not showMazeGeneration Then PrintMazeHorizontally(path, limits(2), limits(3))
                             AddStartAndEnd(path, limits, pathcolour)
                             availablePath = path
                         ElseIf arr(y) = "   Hunt and Kill Algorithm" Then
-                            availablePath = HuntAndKillRefactored(limits, delayMs, showMazeGeneration, pathColour,backGroundColour)
+                            availablePath = HuntAndKillRefactored(limits, delayMs, showMazeGeneration, pathColour, backGroundColour)
                         ElseIf arr(y) = "   Prim's Algorithm (simplified)" Then
-                            availablePath = Prims_Simplified(limits, delayMs, showMazeGeneration,pathColour,backGroundColour)
+                            availablePath = Prims_Simplified(limits, delayMs, showMazeGeneration, pathColour, backGroundColour)
                         ElseIf arr(y) = "   Prim's Algorithm (true)" Then
-                            availablePath = Prims_True(limits, delayMs, showMazeGeneration, pathColour,backGroundColour)
+                            availablePath = Prims_True(limits, delayMs, showMazeGeneration, pathColour, backGroundColour)
                         ElseIf arr(y) = "   Aldous-Broder Algorithm" Then
-                            availablePath = AldousBroder.AldousBroder(limits, delayMs, showMazeGeneration, pathColour,backGroundColour)
+                            availablePath = AldousBroder.AldousBroder(limits, delayMs, showMazeGeneration, pathColour, backGroundColour)
                         ElseIf arr(y) = "   Growing Tree Algorithm" Then
                             Dim arrOptions() As String = {"Newest (Recursive Backtracker)", "Random (Prim's simplified)", "Newest/Random, 75/25 split", "Newest/Random, 50/50 split", "Newest/Random, 25/75 split", "Oldest", "Middle", "Newest/Oldest, 50/50 split", "Oldest/Random, 50/50 split"}
                             Dim cellSelectionMethod() As Integer = PreGenMenu(arrOptions, "What Cell selection method would you like to use: ")
-                            availablePath = GrowingTree(limits, delayMs, cellSelectionMethod, showMazeGeneration, pathColour,backGroundColour)
+                            availablePath = GrowingTree(limits, delayMs, cellSelectionMethod, showMazeGeneration, pathColour, backGroundColour)
                         ElseIf arr(y) = "   Sidewinder Algorithm" Then
-                            availablePath = Sidewinder(limits, delayMs, showMazeGeneration, pathColour,backGroundColour)
+                            availablePath = Sidewinder(limits, delayMs, showMazeGeneration, pathColour, backGroundColour)
                         ElseIf arr(y) = "   Binary Tree Algorithm" Then
                             Dim arrOptions() As String = {"Northwest", "Northeast", "Southwest", "Southeast"}
                             Dim bias() As Integer = PreGenMenu(arrOptions, "Cell bias: ")
-                            availablePath = BinaryTree(limits, delayMs, showMazeGeneration, bias,pathColour,backGroundColour)
+                            availablePath = BinaryTree(limits, delayMs, showMazeGeneration, bias, pathColour, backGroundColour)
                         ElseIf arr(y) = "   Wilson's Algorithm" Then
-                            availablePath = Wilsons(limits, delayMs, showMazeGeneration,pathColour,backGroundColour)
+                            availablePath = Wilsons(limits, delayMs, showMazeGeneration, pathColour, backGroundColour)
                         ElseIf arr(y) = "   Eller's Algorithm" Then
-                            availablePath = Ellers(limits, delayMs, showMazeGeneration,pathColour,backGroundColour)
+                            availablePath = Ellers(limits, delayMs, showMazeGeneration, pathColour, backGroundColour)
                         ElseIf arr(y) = "   Kruskal's Algorithm (simplified)" Then
-                            availablePath = Kruskals(limits, delayMs, showMazeGeneration,pathColour,backGroundColour,"simplified")
-                        elseif arr(y) = "   Kruskal's Algorithm (true)"
-                            availablePath = Kruskals(limits, delayMs, showMazeGeneration,pathColour,backGroundColour,"true")
+                            availablePath = Kruskals(limits, delayMs, showMazeGeneration, pathColour, backGroundColour, "simplified")
+                        ElseIf arr(y) = "   Kruskal's Algorithm (true)" Then
+                            availablePath = Kruskals(limits, delayMs, showMazeGeneration, pathColour, backGroundColour, "true")
                         ElseIf arr(y) = "   Houston's Algorithm" Then
-                            availablePath = Houstons(limits, delayMs, showMazeGeneration,pathColour,backGroundColour)
+                            availablePath = Houstons(limits, delayMs, showMazeGeneration, pathColour, backGroundColour)
                         ElseIf arr(y) = "   Spiral Backtracker Algorithm" Then
-                            availablePath = SpiralBacktracker(limits, delayMs, showMazeGeneration,pathColour,backGroundColour)
+                            availablePath = SpiralBacktracker(limits, delayMs, showMazeGeneration, pathColour, backGroundColour)
                         ElseIf arr(y) = "   Custom Algorithm" Then
-                            availablePath = Custom(limits, delayMs, showMazeGeneration,pathColour,backGroundColour)
-                        end If
+                            availablePath = Custom(limits, delayMs, showMazeGeneration, pathColour, backGroundColour)
+                        ElseIf arr(y) = "   Make your own maze" Then
+                            availablePath = UserCreateMaze(limits, pathColour, backGroundColour)
+                        End If
                         Solving(availablePath, limits, previousMaze, input, yPosAfterMaze, showPath, solvingDelay, arr(y), previousAlgorithm,temparr,pathColour,backGroundColour,solvingColour)
                     Else
-                    If arr(y) = "Load the previously generated maze" Then
-                        PrintPreviousMaze(previousMaze,previousAlgorithm,showPath,yPosAfterMaze,solvingDelay,temparr,pathColour,backGroundColour,solvingColour)
-                    ElseIf arr(y) = "Save the previously generated maze as a list of points" Then
-                        If previousMaze.Count > 1 Then
+                        If arr(y) = "Load the previously generated maze" Then
+                            PrintPreviousMaze(previousMaze, previousAlgorithm, showPath, yPosAfterMaze, solvingDelay, temparr, pathColour, backGroundColour, solvingColour)
+                        ElseIf arr(y) = "Save the previously generated maze as a list of points" Then
+                            If previousMaze.Count > 1 Then
                             SaveMazeTextFile(previousMaze, previousAlgorithm)
                         Else
                             Console.Clear()
@@ -161,13 +164,13 @@ Module Menus
                             MsgColour("No previous maze available", ConsoleColor.Red)
                             Console.ReadKey()
                         End If
-                    elseif arr(y) = "Change the path colour           current colour: "
-                        pathColour = ColourChange()
-                    elseif arr(y) = "Change the background colour     current colour: "
-                        backGroundColour = ColourChange()
-                    elseif arr(y) = "Change the solving colour        current colour: "
-                        solvingColour = ColourChange()
-                    ElseIf arr(y) = "Load a maze from a text file (list of points)" Then
+                    elseif arr(y) = "Change the path colour           current colour: " Then
+                            pathColour = ColourChange(allColours)
+                        ElseIf arr(y) = "Change the background colour     current colour: "Then
+                            backGroundColour = ColourChange(allColours)
+                        ElseIf arr(y) = "Change the solving colour        current colour: "Then
+                            solvingColour = ColourChange(allColours)
+                        ElseIf arr(y) = "Load a maze from a text file (list of points)" Then
                         LoadMazeTextFile(loadedMaze,yPosAfterMaze,previousMaze,temparr,showPath,solvingDelay,pathColour,backGroundColour,solvingColour)
                     ElseIf arr(y) = "Load a maze from an image file" Then
                         Dim tempMaze As List(Of Node) = LoadMazePng(temparr, pathColour,backGroundColour,solvingColour)
@@ -489,6 +492,7 @@ Module Menus
             For Each thing In correctPath
                 If thing.Value Then thing.Key.Print("XX")
             Next
+            Maze(Maze.Count - 1).Print("XX")
             SetBoth(ConsoleColor.Black)
             Console.ForegroundColor = ConsoleColor.White
             Console.SetCursorPosition(35, Console.WindowHeight - 1)
@@ -677,15 +681,18 @@ Module Menus
             End
         End If
     End Sub
-    Sub GetMazeInfo(ByRef Width As Integer, ByRef Height As Integer, ByRef DelayMS As Integer, ByRef Limits() As Integer, ByRef ShowGeneration As Boolean, Clear As Boolean, y As Integer)
+    Sub GetMazeInfo(ByRef Width As Integer, ByRef Height As Integer, ByRef DelayMS As Integer, ByRef Limits() As Integer, ByRef ShowGeneration As Boolean, Clear As Boolean, y As Integer, Optional NeedExtraInfo As Boolean = True)
         Console.SetCursorPosition(0, y)
-        ShowGeneration = HorizontalYesNo(Console.CursorTop, "Do you want to see the maze being generated: ", False, If(Clear, True, False), False)
-        Console.SetCursorPosition(0, Console.CursorTop + 1)
-        If ShowGeneration Then
-            DelayMS = GetIntInputArrowKeys("Delay when making the Maze (MS): ", 100, 0, False)
-        Else
-            DelayMS = 0
+        If Not NeedExtraInfo Then
+            ShowGeneration = HorizontalYesNo(Console.CursorTop, "Do you want to see the maze being generated: ", False, If(Clear, True, False), False)
+            Console.SetCursorPosition(0, Console.CursorTop + 1)
+            If ShowGeneration Then
+                DelayMS = GetIntInputArrowKeys("Delay when making the Maze (MS): ", 100, 0, False)
+            Else
+                DelayMS = 0
+            End If
         End If
+        If NeedExtraInfo Then Console.Clear()
         Width = GetIntInputArrowKeys($"Width of the Maze: ", (Console.WindowWidth - 58) / 2, 20, False) * 2
         Height = GetIntInputArrowKeys($"Height of the Maze: ", Console.WindowHeight - 7, 20, False)
         If Width Mod 2 = 0 Then

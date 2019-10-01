@@ -60,6 +60,7 @@ Module Module1
             "   Houston's Algorithm",
             "   Spiral Backtracker Algorithm",
             "   Custom Algorithm",
+            "   Make your own maze",
             "",
             "Load the previously generated maze",
             "",
@@ -79,10 +80,6 @@ Module Module1
         }
         Menu(menuOptions, "Menu")
 
-        dim newColour as ConsoleColor = ColourChange()
-        Console.ForegroundColor = newColour
-        Console.WriteLine("MESSSSSSSSSSAGE")
-        Console.ReadKey()
         ''Dim bmp As New Bitmap(350, 350)
         ''Dim g As Graphics
         ''g = Graphics.FromImage(bmp)
@@ -120,114 +117,225 @@ Module Module1
             MsgColour("No previous maze available", ConsoleColor.Red)
             Console.ReadKey()
         End If
-    End sub
-    sub LoadMazeTextFile(byref loadedMaze as list(of node),yPosAfterMaze as Integer,byref previousMaze as List(Of Node),tempArr() as String,showPath as Boolean,solvingDelay as Integer, pathColour as ConsoleColor,backGroundColour as ConsoleColor,solvingColour as ConsoleColor)
+    End Sub
+    Sub LoadMazeTextFile(ByRef loadedMaze As list(Of node), yPosAfterMaze As Integer, ByRef previousMaze As List(Of Node), tempArr() As String, showPath As Boolean, solvingDelay As Integer, pathColour As ConsoleColor, backGroundColour As ConsoleColor, solvingColour As ConsoleColor)
         Dim validMaze, xMax, yMax As Integer
-                                Dim greatestY = 0
-                                Dim greatestX = 0
-                                validMaze = 1
-                                xMax = Console.WindowWidth - 50
-                                yMax = Console.WindowHeight - 8
-                                loadedMaze.Clear()
-                                Console.Clear()
-                                Dim _x, _y As Integer
-                                Console.Write("File Name of the maze to load (don't include .txt): ")
-                                Dim filename As String = Console.ReadLine + ".txt"
-                                If File.Exists(filename) Then
-                                    Dim usedAlgorithm = ""
-                                    Dim c = 0
-                                    Dim e = True
-                                    Console.Clear()
-                                    Using reader = New StreamReader(filename)
-                                        Do Until reader.EndOfStream
-                                            If e Then
-                                                usedAlgorithm = reader.ReadLine
-                                                e = False
-                                            End If
-                                            If c = 0 Then
-                                                _x = Int(reader.ReadLine)
-                                                If Int(_x) > greatestX Then greatestX = Int(_x)
-                                                If _x > xMax Then
-                                                    validMaze = 0
-                                                    Exit Do
-                                                End If
-                                            ElseIf c = 1 Then
-                                                _y = Int(reader.ReadLine)
-                                                If Int(_y) > greatestY Then greatestY = Int(_y)
-                                                If _y > yMax Then
-                                                    validMaze = 0
-                                                    Exit Do
-                                                End If
-                                            End If
-                                            c += 1
-                                            If c = 2 Then
-                                                Console.WriteLine($"({_x}, {_y})")
-                                                loadedMaze.Add(New Node(_x, _y))
-                                                c = 0
-                                            End If
-                                        Loop
-                                    End Using
-                                    If loadedMaze.Count < 1 Then validMaze = 2
-                                    If validMaze = 1 Then
-                                        MsgColour($"Finished loading maze positions, total maze positions: {loadedMaze.Count}", ConsoleColor.Green)
-                                        Console.ReadKey()
-                                        Console.Clear()
-                                        Console.SetCursorPosition(0, 0)
-                                        Dim mess = "Algorithm used to generate this maze: "
-                                        Console.Write(mess)
-                                        Console.SetCursorPosition(mess.Length, 0)
-                                        MsgColour(usedAlgorithm, ConsoleColor.Green)
-                                        SetBoth(ConsoleColor.White)
-                                        dim gx,gy as integer
-                                        For Each node In loadedMaze
-                                            if node.x > gx then gx = node.X
-                                            if node.y > gy then gy = node.y
-                                        Next
-                                        DrawBackground(backGroundColour,{5,3,greatestx+1,gy-1})
-                                        SetBoth(pathcolour)
-                                        PrintMazeHorizontally(loadedMaze,greatestx,greatesty)
-                                        PrintStartandEnd(loadedMaze)
-                                        yPosAfterMaze = greatestY
-                                        DisplayAvailablePositions(previousMaze.Count)
-                                        Console.SetCursorPosition(0, yPosAfterMaze + 3)
-                                        previousMaze = loadedMaze
-                                        dim input = SolvingMenu(temparr, "What would you like to do with the maze", greatestX + 6, 3)
-                                        SolvingInput(input, showPath, yPosAfterMaze, solvingDelay, previousMaze, usedAlgorithm,pathColour,backGroundColour,solvingColour)
-                                    ElseIf validMaze = 0 Then
-                                        Console.Clear()
-                                        MsgColour("Maze is too big for the screen, please decrease the font size and try again", ConsoleColor.Red)
-                                        Console.ReadKey()
-                                    ElseIf validMaze = 2 Then
-                             Console.Clear()
-                                        MsgColour("Invalid maze", ConsoleColor.Red)
-                           Console.ReadKey()
-                                    End If
-                                Else
-                          Console.Clear()
-                                    MsgColour("File doesn't exist", ConsoleColor.Red)
-                                    Console.ReadKey()
+        Dim greatestY = 0
+        Dim greatestX = 0
+        validMaze = 1
+        xMax = Console.WindowWidth - 50
+        yMax = Console.WindowHeight - 8
+        loadedMaze.Clear()
+        Console.Clear()
+        Dim _x, _y As Integer
+        Console.Write("File Name of the maze to load (don't include .txt): ")
+        Dim filename As String = Console.ReadLine + ".txt"
+        If File.Exists(filename) Then
+            Dim usedAlgorithm = ""
+            Dim c = 0
+            Dim e = True
+            Console.Clear()
+            Using reader = New StreamReader(filename)
+                Do Until reader.EndOfStream
+                    If e Then
+                        usedAlgorithm = reader.ReadLine
+                        e = False
+                    End If
+                    If c = 0 Then
+                        _x = Int(reader.ReadLine)
+                        If Int(_x) > greatestX Then greatestX = Int(_x)
+                        If _x > xMax Then
+                            validMaze = 0
+                            Exit Do
+                        End If
+                    ElseIf c = 1 Then
+                        _y = Int(reader.ReadLine)
+                        If Int(_y) > greatestY Then greatestY = Int(_y)
+                        If _y > yMax Then
+                            validMaze = 0
+                            Exit Do
+                        End If
+                    End If
+                    c += 1
+                    If c = 2 Then
+                        Console.WriteLine($"({_x}, {_y})")
+                        loadedMaze.Add(New Node(_x, _y))
+                        c = 0
+                    End If
+                Loop
+            End Using
+            If loadedMaze.Count < 1 Then validMaze = 2
+            If validMaze = 1 Then
+                MsgColour($"Finished loading maze positions, total maze positions: {loadedMaze.Count}", ConsoleColor.Green)
+                Console.ReadKey()
+                Console.Clear()
+                Console.SetCursorPosition(0, 0)
+                Dim mess = "Algorithm used to generate this maze: "
+                Console.Write(mess)
+                Console.SetCursorPosition(mess.Length, 0)
+                MsgColour(usedAlgorithm, ConsoleColor.Green)
+                SetBoth(ConsoleColor.White)
+                Dim gx, gy As Integer
+                For Each node In loadedMaze
+                    If node.x > gx Then gx = node.X
+                    If node.y > gy Then gy = node.y
+                Next
+                DrawBackground(backGroundColour, {5, 3, greatestx + 1, gy - 1})
+                SetBoth(pathcolour)
+                PrintMazeHorizontally(loadedMaze, greatestx, greatesty)
+                PrintStartandEnd(loadedMaze)
+                yPosAfterMaze = greatestY
+                DisplayAvailablePositions(previousMaze.Count)
+                Console.SetCursorPosition(0, yPosAfterMaze + 3)
+                previousMaze = loadedMaze
+                Dim input = SolvingMenu(temparr, "What would you like to do with the maze", greatestX + 6, 3)
+                SolvingInput(input, showPath, yPosAfterMaze, solvingDelay, previousMaze, usedAlgorithm, pathColour, backGroundColour, solvingColour)
+            ElseIf validMaze = 0 Then
+                Console.Clear()
+                MsgColour("Maze is too big for the screen, please decrease the font size and try again", ConsoleColor.Red)
+                Console.ReadKey()
+            ElseIf validMaze = 2 Then
+                Console.Clear()
+                MsgColour("Invalid maze", ConsoleColor.Red)
+                Console.ReadKey()
             End If
-    End sub
-    function GetAllConsoleColours as string()
+        Else
+            Console.Clear()
+            MsgColour("File doesn't exist", ConsoleColor.Red)
+            Console.ReadKey()
+        End If
+    End Sub
+
+    Function UserCreateMaze(limits() As Integer, pathColour As ConsoleColor, backGroundColour As ConsoleColor)
+        Dim UnvisitedCells As New List(Of Cell)
+        Dim visited As Dictionary(Of Cell, Boolean) = InitialiseVisited(limits)
+        For Each node In visited
+            UnvisitedCells.Add(node.Key)
+        Next
+        SetBoth(backGroundColour)
+        If backGroundColour <> ConsoleColor.Black Then DrawBackground(backGroundColour, limits)
+        Dim userPath As New List(Of Cell)
+        Dim path As New List(Of Node)
+        Dim currentPos As Cell = PickRandomStartingCell(limits)
+        Dim previousPos As Cell = currentPos
+        visited(currentPos) = True
+        UnvisitedCells.Remove(currentPos)
+        SetBoth(ConsoleColor.Magenta)
+        currentPos.Print("XX")
+        While UnvisitedCells.Count > 0
+            SetBoth(backGroundColour)
+            If userPath.Contains(New Cell(Console.CursorLeft, Console.CursorTop)) Or userPath.Contains(New Cell(Console.CursorLeft - 1, Console.CursorTop)) Or userPath.Contains(New Cell(Console.CursorLeft + 1, Console.CursorTop)) Then SetBoth(pathColour)
+            Dim key = Console.ReadKey
+            SetBoth(pathColour)
+            Select Case key.Key.ToString
+                Case "RightArrow"
+                    Dim tempNode3 As New Cell(currentPos.X + 4, currentPos.Y)
+                    If tempNode3.WithinLimits(limits) Then
+                        currentPos = tempNode3
+                        If Not visited(currentPos) Then
+                            Dim wallCell As Cell = MidPoint(currentPos, previousPos)
+                            SetBoth(pathColour)
+                            wallCell.Print("XX")
+                            visited(currentPos) = True
+                            UnvisitedCells.Remove(currentPos)
+                            AddToPath(path, currentPos, wallCell)
+                        End If
+                        previousPos.Print("XX")
+                        SetBoth(ConsoleColor.Magenta)
+                        currentPos.Print("XX")
+                        If Not path.Contains(currentPos.ToNode) Then path.Add(currentPos.ToNode)
+                        previousPos = currentPos
+                    End If
+                Case "LeftArrow"
+                    Dim tempNode2 As New Cell(currentPos.X - 4, currentPos.Y)
+                    If tempNode2.WithinLimits(limits) Then
+                        currentPos = tempNode2
+                        If Not visited(currentPos) Then
+                            Dim wallCell As Cell = MidPoint(currentPos, previousPos)
+                            SetBoth(pathColour)
+                            wallCell.Print("XX")
+                            visited(currentPos) = True
+                            UnvisitedCells.Remove(currentPos)
+                            AddToPath(path, currentPos, wallCell)
+                        End If
+                        previousPos.Print("XX")
+                        SetBoth(ConsoleColor.Magenta)
+                        currentPos.Print("XX")
+                        If Not path.Contains(currentPos.ToNode) Then path.Add(currentPos.ToNode)
+                        previousPos = currentPos
+                    End If
+                Case "UpArrow"
+                    Dim tempNode1 As New Cell(currentPos.X, currentPos.Y - 2)
+                    If tempNode1.WithinLimits(limits) Then
+                        currentPos = tempNode1
+                        If Not visited(currentPos) Then
+                            Dim wallCell As Cell = MidPoint(currentPos, previousPos)
+                            SetBoth(pathColour)
+                            wallCell.Print("XX")
+                            visited(currentPos) = True
+                            UnvisitedCells.Remove(currentPos)
+                            AddToPath(path, currentPos, wallCell)
+                        End If
+                        previousPos.Print("XX")
+                        SetBoth(ConsoleColor.Magenta)
+                        currentPos.Print("XX")
+                        If Not path.Contains(currentPos.ToNode) Then path.Add(currentPos.ToNode)
+                        previousPos = currentPos
+
+                    End If
+                Case "DownArrow"
+                    Dim tempNode As New Cell(currentPos.X, currentPos.Y + 2)
+                    If tempNode.WithinLimits(limits) Then
+                        currentPos = tempNode
+                        If Not visited(currentPos) Then
+                            Dim wallCell As Cell = MidPoint(currentPos, previousPos)
+                            SetBoth(pathColour)
+                            wallCell.Print("XX")
+                            visited(currentPos) = True
+                            UnvisitedCells.Remove(currentPos)
+                            AddToPath(path, currentPos, wallCell)
+                        End If
+                        previousPos.Print("XX")
+                        SetBoth(ConsoleColor.Magenta)
+                        currentPos.Print("XX")
+                        If Not path.Contains(currentPos.ToNode) Then path.Add(currentPos.ToNode)
+                        previousPos = currentPos
+                    End If
+                Case "Escape"
+                    Exit While
+                Case Else
+            End Select
+            userPath.Add(currentPos)
+            If userPath.Contains(New Cell(Console.CursorLeft, Console.CursorTop)) Or userPath.Contains(New Cell(Console.CursorLeft - 1, Console.CursorTop)) Or userPath.Contains(New Cell(Console.CursorLeft + 1, Console.CursorTop)) Then SetBoth(pathColour)
+            SetBoth(Console.BackgroundColor)
+            Console.SetCursorPosition(0, 0)
+        End While
+        path.Add(currentPos.ToNode)
+        SetBoth(pathColour)
+        currentPos.Print("XX")
+        AddStartAndEnd(path, limits, pathColour)
+        Return path
+    End Function
+
+    Function GetAllConsoleColours as string()
         dim colourArr(15) as string
         for i = 0 to 15
             dim curColour as ConsoleColor = i
             colourArr(i) = curColour.ToString()
         Next
         return colourArr'{ConsoleColor.Black,ConsoleColor.Blue,ConsoleColor.Cyan,ConsoleColor.Gray,ConsoleColor.Gray,ConsoleColor.Green,ConsoleColor.Magenta,ConsoleColor.Red,ConsoleColor.White,ConsoleColor.Yellow,ConsoleColor.DarkBlue,ConsoleColor.DarkCyan,ConsoleColor.DarkGreen,ConsoleColor.DarkMagenta,ConsoleColor.DarkGray}
-    End function
-    function ColourChange as ConsoleColor
+    End Function
+    Function ColourChange(ByVal colourArr() As String) As ConsoleColor
         Console.Clear()
         Console.CursorVisible = False
-        dim colourArr() as String = GetAllConsoleColours()
-        dim returnValue as string = SolvingMenu(colourArr,"What colour would you like to change to",0,0)
-        for i = 0 to 15
-            dim curColour as ConsoleColor = i
-            Console.Clear()
-            if curColour.ToString = returnValue then return curcolour
+        Dim returnValue As String = SolvingMenu(colourArr, "What colour would you like to change to", 0, 0)
+        Console.Clear()
+        For i = 0 To 15
+            Dim curColour As ConsoleColor = i
+            If curColour.ToString = returnValue Then Return curColour
         Next
-        return 0
-    End function
+        Return 0
+    End Function
     Function StraightWays(maze As List(Of Node))
         dim mX = 0
         Dim gx = (From node In maze Select node.X).Concat(new Integer() {0}).Max()

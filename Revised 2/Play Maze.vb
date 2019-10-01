@@ -43,16 +43,16 @@
             Select Case key.Key.ToString
                 Case "RightArrow"
                     Dim tempNode3 As New Node(currentPos.X + 2, currentPos.Y)
-                    PlayMazeKeyPress(currentPos, tempNode3, showPath, previousPos, playerPath, availablePath)
+                    PlayMazeKeyPress(currentPos, tempNode3, showPath, previousPos, playerPath, availablePath, pathColour)
                 Case "LeftArrow"
                     Dim tempNode2 As New Node(currentPos.X - 2, currentPos.Y)
-                    PlayMazeKeyPress(currentPos, tempNode2, showPath, previousPos, playerPath, availablePath)
+                    PlayMazeKeyPress(currentPos, tempNode2, showPath, previousPos, playerPath, availablePath, pathColour)
                 Case "UpArrow"
                     Dim tempNode1 As New Node(currentPos.X, currentPos.Y - 1)
-                    PlayMazeKeyPress(currentPos, tempNode1, showPath, previousPos, playerPath, availablePath)
+                    PlayMazeKeyPress(currentPos, tempNode1, showPath, previousPos, playerPath, availablePath, pathColour)
                 Case "DownArrow"
                     Dim tempNode As New Node(currentPos.X, currentPos.Y + 1)
-                    PlayMazeKeyPress(currentPos, tempNode, showPath, previousPos, playerPath, availablePath)
+                    PlayMazeKeyPress(currentPos, tempNode, showPath, previousPos, playerPath, availablePath, pathColour)
                 Case "Escape"
                     Exit While
                 Case Else
@@ -68,13 +68,13 @@
             Console.ReadKey()
         End If
     End Sub
-    Sub PlayMazeKeyPress(ByRef currentPos As Node, tempNode As Node, showpath As Boolean, ByRef previousPos As Node, ByRef playerPath As List(Of Node), availablePath As List(Of Node))
+    Sub PlayMazeKeyPress(ByRef currentPos As Node, tempNode As Node, showpath As Boolean, ByRef previousPos As Node, ByRef playerPath As List(Of Node), availablePath As List(Of Node), pathColour As ConsoleColor)
         If availablePath.Contains(tempNode) Then
             currentPos = tempNode
             If showpath Then
                 Console.ForegroundColor = (ConsoleColor.Blue)
             Else
-                Console.ForegroundColor = (ConsoleColor.White)
+                Console.ForegroundColor = (pathColour)
             End If
             previousPos.Print("██")
             Console.ForegroundColor = (ConsoleColor.Magenta)
