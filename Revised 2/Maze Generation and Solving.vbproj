@@ -220,6 +220,7 @@
     <Compile Include="Binary Tree Algorithm.vb" />
     <Compile Include="Binary Tree.vb" />
     <Compile Include="Bogosort Algorithm.vb" />
+    <Compile Include="BoruvkasAlgorithm.vb" />
     <Compile Include="Bozo Sort Algorithm.vb" />
     <Compile Include="Braid.vb" />
     <Compile Include="Breadth-First Search.vb" />

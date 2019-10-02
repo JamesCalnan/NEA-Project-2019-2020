@@ -106,8 +106,10 @@ Module Menus
                             If Not showMazeGeneration Then PrintMazeHorizontally(path, limits(2), limits(3))
                             AddStartAndEnd(path, limits, pathcolour)
                             availablePath = path
-                        ElseIf arr(y) = "   Hunt and Kill Algorithm" Then
+                        ElseIf arr(y) = "   Hunt and Kill Algorithm (first cell)" Then
                             availablePath = HuntAndKillRefactored(limits, delayMs, showMazeGeneration, pathColour, backGroundColour)
+                        ElseIf arr(y) = "   Hunt and Kill Algorithm (random cell)" Then
+                            availablePath = HuntAndKillRefactoredRandom(limits, delayMs, showMazeGeneration, pathColour, backGroundColour)
                         ElseIf arr(y) = "   Prim's Algorithm (simplified)" Then
                             availablePath = Prims_Simplified(limits, delayMs, showMazeGeneration, pathColour, backGroundColour)
                         ElseIf arr(y) = "   Prim's Algorithm (true)" Then
@@ -120,10 +122,14 @@ Module Menus
                             availablePath = GrowingTree(limits, delayMs, cellSelectionMethod, showMazeGeneration, pathColour, backGroundColour)
                         ElseIf arr(y) = "   Sidewinder Algorithm" Then
                             availablePath = Sidewinder(limits, delayMs, showMazeGeneration, pathColour, backGroundColour)
-                        ElseIf arr(y) = "   Binary Tree Algorithm" Then
+                        ElseIf arr(y) = "   Binary Tree Algorithm (top down)" Or arr(y) = "   Binary Tree Algorithm (random)" Then
                             Dim arrOptions() As String = {"Northwest", "Northeast", "Southwest", "Southeast"}
                             Dim bias() As Integer = PreGenMenu(arrOptions, "Cell bias: ")
-                            availablePath = BinaryTree(limits, delayMs, showMazeGeneration, bias, pathColour, backGroundColour)
+                            If arr(y) = "   Binary Tree Algorithm (top down)" Then
+                                availablePath = BinaryTree(limits, delayMs, showMazeGeneration, bias, pathColour, backGroundColour)
+                            Else
+                                availablePath = BinaryTreeRandom(limits, delayMs, showMazeGeneration, bias, pathColour, backGroundColour)
+                            End If
                         ElseIf arr(y) = "   Wilson's Algorithm" Then
                             availablePath = Wilsons(limits, delayMs, showMazeGeneration, pathColour, backGroundColour)
                         ElseIf arr(y) = "   Eller's Algorithm" Then
@@ -140,6 +146,10 @@ Module Menus
                             availablePath = Custom(limits, delayMs, showMazeGeneration, pathColour, backGroundColour)
                         ElseIf arr(y) = "   Make your own maze" Then
                             availablePath = UserCreateMaze.UserCreateMaze(limits, pathColour, backGroundColour)
+                        ElseIf arr(y) = "   Borůvka's Algorithm (top down)" Then
+                            availablePath = BoruvkasAlgorithm.BoruvkasAlgorithm(limits, delayMs, showMazeGeneration, pathColour, backGroundColour, "")
+                        ElseIf arr(y) = "   Borůvka's Algorithm (random)" Then
+                            availablePath = BoruvkasAlgorithm.BoruvkasAlgorithm(limits, delayMs, showMazeGeneration, pathColour, backGroundColour, "shuffle")
                         End If
                         Solving(availablePath, limits, previousMaze, input, yPosAfterMaze, showPath, solvingDelay, arr(y), previousAlgorithm,temparr,pathColour,backGroundColour,solvingColour)
                     Else
@@ -214,7 +224,7 @@ Module Menus
                     Console.Clear()
                     MsgColour($"{topitem}: ", ConsoleColor.Yellow)
                 Case "I"
-                    If y < 16 Then
+                    If y < lastMazeGenItem Then
                         InitialiseScreen()
                         If arr(y) = "   Recursive Backtracker Algorithm (using iteration)" Then
                             RecrusiveBacktrackerInfo()
@@ -240,8 +250,8 @@ Module Menus
                             EllersInfo()
                         ElseIf arr(y) = "   Kruskal's Algorithm (simplified)" Then
                             KruskalsInfo()
-                        elseif arr(y) = "   Kruskal's Algorithm (true)"
-                            
+                        ElseIf arr(y) = "   Kruskal's Algorithm (true)" Then
+
                         ElseIf arr(y) = "   Houston's Algorithm" Then
                             HoustonsInfo()
                         ElseIf arr(y) = "   Spiral Backtracker Algorithm" Then

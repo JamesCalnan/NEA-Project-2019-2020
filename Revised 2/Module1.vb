@@ -35,24 +35,28 @@ Module Module1
         'Console.ForegroundColor = ConsoleColor.DarkGray
         'Console.WriteLine("hello there")
         'Console.ReadKey()
-
+        Console.ReadKey()
         '        dim b as ConsoleColor = consolecolor.Black
-        Console.CursorVisible = False
-        Do
-            Console.SetCursorPosition(0, 0)
-            Console.Write("Please make the window full screen")
-        Loop Until Console.WindowWidth > Console.LargestWindowWidth - 10 And Console.WindowHeight > Console.LargestWindowHeight - 5
+        'Console.CursorVisible = False
+        'Do
+        '    Console.SetCursorPosition(0, 0)
+        '    Console.Write("Please make the window full screen")
+        'Loop Until Console.WindowWidth > Console.LargestWindowWidth - 10 And Console.WindowHeight > Console.LargestWindowHeight - 5
         Dim menuOptions() As String = {
             "Generate a maze using one of the following algorithms",
             "   Recursive Backtracker Algorithm (using iteration)",
             "   Recursive Backtracker Algorithm (using recursion)",
-            "   Hunt and Kill Algorithm",
+            "   Hunt and Kill Algorithm (first cell)",
+            "   Hunt and Kill Algorithm (random cell)",
             "   Prim's Algorithm (simplified)",
             "   Prim's Algorithm (true)",
             "   Aldous-Broder Algorithm",
             "   Growing Tree Algorithm",
             "   Sidewinder Algorithm",
-            "   Binary Tree Algorithm",
+            "   Borůvka's Algorithm (top down)",
+            "   Borůvka's Algorithm (random)",
+            "   Binary Tree Algorithm (top down)",
+            "   Binary Tree Algorithm (random)",
             "   Wilson's Algorithm",
             "   Eller's Algorithm",
             "   Kruskal's Algorithm (simplified)",
@@ -955,7 +959,7 @@ Module Module1
         If adjacentcells.Contains(left) And adjacentcells.Contains(top) Then Return True
         Return False
     End Function
-    Function InitialiseVisited(limits() As Integer)
+    Function InitialiseVisited(limits() As Integer) As Dictionary(Of Cell, Boolean)
         Dim dict As New Dictionary(Of Cell, Boolean)
         For y = limits(1) To limits(3) Step 2
             For x = limits(0) + 3 To limits(2) - 1 Step 4
@@ -964,7 +968,7 @@ Module Module1
         Next
         Return dict
     End Function
-    function consoleColourToBrush(colour as ConsoleColor)
+    Function consoleColourToBrush(colour as ConsoleColor)
         Select colour
             case ConsoleColor.Black
                 return Brushes.Black

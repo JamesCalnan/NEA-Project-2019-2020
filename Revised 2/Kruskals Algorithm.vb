@@ -33,8 +33,8 @@
                 highestWeightEdge = edgeWeights.Keys(r.Next(0, edgeWeights.Count))
             Else    
                 dim tempCell as cell = edgeWeights.Keys(0)
-                For Each cell In EdgeWeights
-                    If EdgeWeights(tempCell) < EdgeWeights(cell.Key) Then tempCell = cell.Key
+                For Each cell In From cell1 In edgeWeights Where edgeWeights(tempCell) < edgeWeights(cell1.Key)
+                    tempCell = cell.Key
                 Next
                 highestWeightEdge = tempCell
             End If
