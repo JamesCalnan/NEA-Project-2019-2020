@@ -35,13 +35,13 @@ Module Module1
         'Console.ForegroundColor = ConsoleColor.DarkGray
         'Console.WriteLine("hello there")
         'Console.ReadKey()
-        Console.ReadKey()
         '        dim b as ConsoleColor = consolecolor.Black
         'Console.CursorVisible = False
         'Do
         '    Console.SetCursorPosition(0, 0)
         '    Console.Write("Please make the window full screen")
         'Loop Until Console.WindowWidth > Console.LargestWindowWidth - 10 And Console.WindowHeight > Console.LargestWindowHeight - 5
+        'Dim bool = HorizontalYesNo(0, "Do you want to have the exit option available on the menu:   ", True, True, False)
         Dim menuOptions() As String = {
             "Generate a maze using one of the following algorithms",
             "   Recursive Backtracker Algorithm (using iteration)",
@@ -63,6 +63,8 @@ Module Module1
             "   Kruskal's Algorithm (true)",
             "   Houston's Algorithm",
             "   Spiral Backtracker Algorithm",
+            "   Reverse-Delete Algorithm (breadth-first search)",
+            "   Reverse-Delete Algorithm (depth-first search)",
             "   Custom Algorithm",
             "   Make your own maze",
             "",
@@ -1063,6 +1065,18 @@ Module Module1
         If availablepath.Contains(newnode) Then neighbours.Add(New Node(newnode.X, newnode.Y))
         newnode.Update(current.X - 2, current.Y)
         If availablepath.Contains(newnode) Then neighbours.Add(New Node(newnode.X, newnode.Y))
+        Return neighbours
+    End Function
+    Function GetNeighboursCell(ByRef current As Cell, ByRef availablepath As List(Of Cell))
+        Dim neighbours As New List(Of Cell)
+        Dim newNode As New Cell(current.X, current.Y - 1)
+        If availablepath.Contains(newNode) Then neighbours.Add(New Cell(newNode.X, newNode.Y))
+        newNode.Update(current.X + 2, current.Y)
+        If availablepath.Contains(newNode) Then neighbours.Add(New Cell(newNode.X, newNode.Y))
+        newNode.Update(current.X, current.Y + 1)
+        If availablepath.Contains(newNode) Then neighbours.Add(New Cell(newNode.X, newNode.Y))
+        newNode.Update(current.X - 2, current.Y)
+        If availablepath.Contains(newNode) Then neighbours.Add(New Cell(newNode.X, newNode.Y))
         Return neighbours
     End Function
 End Module

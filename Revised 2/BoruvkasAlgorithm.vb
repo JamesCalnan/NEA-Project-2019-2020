@@ -8,7 +8,7 @@
         Dim T As New Dictionary(Of Cell, Integer)
         Dim availableCells As New List(Of Cell)
         Dim setNumber = 1
-        Dim returnpath As New List(Of Node)
+        Dim returnPath As New List(Of Node)
         Dim edgeWeights As New Dictionary(Of Cell, Integer)
         Dim r As New Random
         SetBoth(ConsoleColor.White)
@@ -41,8 +41,8 @@
                     Vertex.Print("XX")
                     Threading.Thread.Sleep(delay \ 2)
                 End If
-                If Not returnpath.Contains(Vertex.ToNode()) Then returnpath.Add(Vertex.ToNode())
-                Dim chosenEdge = FindLowestEdge(Vertex, edgeWeights, availableCells, T, returnpath, showMazeGeneration, delay)
+                If Not returnPath.Contains(Vertex.ToNode()) Then returnPath.Add(Vertex.ToNode())
+                Dim chosenEdge = FindLowestEdge(Vertex, edgeWeights, availableCells, T, returnPath, showMazeGeneration, delay)
                 If IsNothing(chosenEdge) Then Continue For
                 edgesUsed.Add(chosenEdge)
                 cellEdge(Vertex) = chosenEdge
@@ -67,8 +67,8 @@
             iteration += 1
             Console.Write($"iteration: {iteration}")
         End While
-        AddStartAndEnd(returnpath, limits, pathColour)
-        Return returnpath
+        AddStartAndEnd(returnPath, limits, pathColour)
+        Return returnPath
     End Function
     Sub ShuffleCells(ByRef list As List(Of Cell))
         Dim returnList As New List(Of Cell)

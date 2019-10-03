@@ -20,7 +20,7 @@
             If ExitCase() Then
                 Exit While
             End If
-            current = openSet(openSet.Count - 1)
+            current = openSet(0)
             For i = 1 To openSet.Count - 1
                 If openSet(i).FCost() <= current.FCost() Or openSet(i).HCost = current.HCost Then If openSet(i).HCost < current.HCost Then current = openSet(i)
             Next

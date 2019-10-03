@@ -263,6 +263,7 @@
     <Compile Include="Quicksort Algorithm.vb" />
     <Compile Include="Recursive Backtracker Algorithm.vb" />
     <Compile Include="Recursive Solving Method.vb" />
+    <Compile Include="Reverse-Delete Algorithm.vb" />
     <Compile Include="Selection Sort Algorithm.vb" />
     <Compile Include="Sidewinder Algorithm.vb" />
     <Compile Include="Sparse Maze.vb" />

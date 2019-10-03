@@ -1,7 +1,7 @@
 ﻿Imports System.IO
 Imports System.Drawing
 Module Menus
-    Sub Menu(arr() As String, topitem As String)
+    Sub Menu(arr() As String, topitem As String, Optional Exitavailable As Boolean = True)
         Dim temparr() As String = {"Solve using the A* algorithm",
                                    "Solve using Dijkstra's algorithm",
                                    "Solve using Breadth-first search",
@@ -26,15 +26,15 @@ Module Menus
                                    "",
                                    "Clear the maze and return to the menu"}
         Dim allColours() As String = GetAllConsoleColours()
-        Dim pathColour = ConsoleColor.white
-        dim backGroundColour = ConsoleColor.black
-        dim solvingColour = ConsoleColor.Red
+        Dim pathColour = ConsoleColor.White
+        Dim backGroundColour = ConsoleColor.Black
+        Dim solvingColour = ConsoleColor.Red
         Dim input = ""
         Dim previousAlgorithm = ""
         Dim previousMaze, loadedMaze As New List(Of Node)
         Dim width, height, delayMs, solvingDelay, yPosAfterMaze, y, lastMazeGenItem As Integer
-        for i = 0 to arr.count-1
-            if arr(i) = ""
+        For i = 0 To arr.Count - 1
+            If arr(i) = "" Then
                 lastMazeGenItem = i
                 Exit For
             End If
@@ -51,13 +51,13 @@ Module Menus
             If arr(i) = arr(y) Then
                 MsgColour($"> {arr(1)}  ", ConsoleColor.Green)
             Else
-                if arr(i) =  "Change the path colour           current colour: " Then 
+                If arr(i) = "Change the path colour           current colour: " Then
                     Console.WriteLine($" {arr(i)}{pathColour.ToString()}")
-                elseif arr(i) = "Change the background colour     current colour: "
+                ElseIf arr(i) = "Change the background colour     current colour: " Then
                     Console.WriteLine($" {arr(i)}{backGroundColour.ToString()}")
-                elseif arr(i) = "Change the solving colour        current colour: "
+                ElseIf arr(i) = "Change the solving colour        current colour: " Then
                     Console.WriteLine($" {arr(i)}{solvingColour.ToString()}")
-                Else 
+                Else
                     Console.WriteLine($" {arr(i)}")
                 End If
             End If
@@ -84,7 +84,7 @@ Module Menus
                 Case "Enter"
                     Console.ForegroundColor = ConsoleColor.White
                     Dim availablePath As List(Of Node)
-                    if y <= lastMazeGenItem Then
+                    If y <= lastMazeGenItem Then
                         GetMazeInfo(width, height, delayMs, limits, showMazeGeneration, True, 0, If(arr(y) = "   Make your own maze", True, False))
                         If arr(y) = "   Recursive Backtracker Algorithm (using iteration)" Then
                             availablePath = RecursiveBacktracker.RecursiveBacktracker(limits, delayMs, showMazeGeneration, pathColour, backGroundColour)
@@ -102,9 +102,9 @@ Module Menus
                             If showMazeGeneration Then currentCell.Print("██")
                             path = RecursiveBacktrackerRecursively(currentCell, limits, path, v, prev, r, showMazeGeneration, delayMs, pathColour)
                             PrintMessageMiddle($"Time taken to generate the maze: {stopwatch.Elapsed.TotalSeconds}", 1, ConsoleColor.Yellow)
-                            SetBoth(pathcolour)
+                            SetBoth(pathColour)
                             If Not showMazeGeneration Then PrintMazeHorizontally(path, limits(2), limits(3))
-                            AddStartAndEnd(path, limits, pathcolour)
+                            AddStartAndEnd(path, limits, pathColour)
                             availablePath = path
                         ElseIf arr(y) = "   Hunt and Kill Algorithm (first cell)" Then
                             availablePath = HuntAndKillRefactored(limits, delayMs, showMazeGeneration, pathColour, backGroundColour)
@@ -150,75 +150,85 @@ Module Menus
                             availablePath = BoruvkasAlgorithm.BoruvkasAlgorithm(limits, delayMs, showMazeGeneration, pathColour, backGroundColour, "")
                         ElseIf arr(y) = "   Borůvka's Algorithm (random)" Then
                             availablePath = BoruvkasAlgorithm.BoruvkasAlgorithm(limits, delayMs, showMazeGeneration, pathColour, backGroundColour, "shuffle")
+                        ElseIf arr(y) = "   Reverse-Delete Algorithm (breadth-first search)" Then
+                            availablePath = reverseDeleteAlgorithm(limits, delayMs, showMazeGeneration, pathColour, backGroundColour, "bfs")
+                        ElseIf arr(y) = "   Reverse-Delete Algorithm (depth-first search)" Then
+                            availablePath = reverseDeleteAlgorithm(limits, delayMs, showMazeGeneration, pathColour, backGroundColour, "dfs")
                         End If
-                        Solving(availablePath, limits, previousMaze, input, yPosAfterMaze, showPath, solvingDelay, arr(y), previousAlgorithm,temparr,pathColour,backGroundColour,solvingColour)
+                        Solving(availablePath, limits, previousMaze, input, yPosAfterMaze, showPath, solvingDelay, arr(y), previousAlgorithm, temparr, pathColour, backGroundColour, solvingColour)
                     Else
                         If arr(y) = "Load the previously generated maze" Then
                             PrintPreviousMaze(previousMaze, previousAlgorithm, showPath, yPosAfterMaze, solvingDelay, temparr, pathColour, backGroundColour, solvingColour)
                         ElseIf arr(y) = "Save the previously generated maze as a list of points" Then
                             If previousMaze.Count > 1 Then
-                            SaveMazeTextFile(previousMaze, previousAlgorithm)
-                        Else
-                            Console.Clear()
-                            MsgColour("No previous maze available", ConsoleColor.Red)
-                            Console.ReadKey()
-                        End If
-                    ElseIf arr(y) = "Save the previous maze as a png image" Then
-                        If previousMaze.Count > 1 Then
-                            Console.Clear()
-                            Console.ForegroundColor = ConsoleColor.White
-                            Dim filename As String = GetValidFileName()
-                            SaveMazePng(previousMaze, $"Algorithm used to generate this maze: {previousAlgorithm}", filename,pathColour,backGroundColour)
-                        Else
-                            Console.Clear()
-                            MsgColour("No previous maze available", ConsoleColor.Red)
-                            Console.ReadKey()
-                        End If
-                    elseif arr(y) = "Change the path colour           current colour: " Then
+                                SaveMazeTextFile(previousMaze, previousAlgorithm)
+                            Else
+                                Console.Clear()
+                                MsgColour("No previous maze available", ConsoleColor.Red)
+                                Console.ReadKey()
+                            End If
+                        ElseIf arr(y) = "Save the previous maze as a png image" Then
+                            If previousMaze.Count > 1 Then
+                                Console.Clear()
+                                Console.ForegroundColor = ConsoleColor.White
+                                Dim filename As String = GetValidFileName()
+                                SaveMazePng(previousMaze, $"Algorithm used to generate this maze: {previousAlgorithm}", filename, pathColour, backGroundColour)
+                            Else
+                                Console.Clear()
+                                MsgColour("No previous maze available", ConsoleColor.Red)
+                                Console.ReadKey()
+                            End If
+                        ElseIf arr(y) = "Change the path colour           current colour: " Then
                             pathColour = ColourChange(allColours)
-                        ElseIf arr(y) = "Change the background colour     current colour: "Then
+                        ElseIf arr(y) = "Change the background colour     current colour: " Then
                             backGroundColour = ColourChange(allColours)
-                        ElseIf arr(y) = "Change the solving colour        current colour: "Then
+                        ElseIf arr(y) = "Change the solving colour        current colour: " Then
                             solvingColour = ColourChange(allColours)
                         ElseIf arr(y) = "Load a maze from a text file (list of points)" Then
-                        LoadMazeTextFile(loadedMaze,yPosAfterMaze,previousMaze,temparr,showPath,solvingDelay,pathColour,backGroundColour,solvingColour)
-                    ElseIf arr(y) = "Load a maze from an image file" Then
-                        Dim tempMaze As List(Of Node) = LoadMazePng(temparr, pathColour,backGroundColour,solvingColour)
-                        If IsNothing(tempMaze) Then
+                            LoadMazeTextFile(loadedMaze, yPosAfterMaze, previousMaze, temparr, showPath, solvingDelay, pathColour, backGroundColour, solvingColour)
+                        ElseIf arr(y) = "Load a maze from an image file" Then
+                            Dim tempMaze As List(Of Node) = LoadMazePng(temparr, pathColour, backGroundColour, solvingColour)
+                            If IsNothing(tempMaze) Then
+                                Console.Clear()
+                                Console.ForegroundColor = ConsoleColor.Red
+                                Console.BackgroundColor = ConsoleColor.Black
+                                Console.WriteLine("The maze that you tried to load is invalid")
+                                Console.ReadKey()
+                            Else
+                                previousMaze = tempMaze
+                            End If
+                        ElseIf arr(y) = "Save the previous maze to ascii text file" Then
+                            If previousMaze.Count > 0 Then
+                                SaveMazeAscii(previousMaze)
+                            Else
+                                Console.Clear()
+                                Console.ForegroundColor = ConsoleColor.Red
+                                Console.WriteLine($"No previous maze available")
+                                Console.ReadKey()
+                            End If
+                        ElseIf arr(y) = "Load a maze from an ascii text file" Then
                             Console.Clear()
-                            Console.ForegroundColor = ConsoleColor.Red
-                            Console.BackgroundColor = ConsoleColor.Black
-                            Console.WriteLine("The maze that you tried to load is invalid")
-                            Console.ReadKey()
+                            Dim tempMaze As List(Of Node) = LoadMazeAscii(temparr, pathColour, backGroundColour, solvingColour)
+                            If IsNothing(tempMaze) Then
+                                Console.Clear()
+                                Console.ForegroundColor = ConsoleColor.Red
+                                Console.BackgroundColor = ConsoleColor.Black
+                                Console.WriteLine("The maze that you tried to load is too big for the console window, please decrease font size and try again")
+                                Console.ReadKey()
+                            Else
+                                previousMaze = tempMaze
+                            End If
+                        ElseIf y = arr.Count - 1 Then
+                            If Exitavailable Then
+                                End
+                            Else
+                                Console.Clear()
+                                MsgColour("Unavailable", ConsoleColor.Red)
+                                Console.ReadKey()
+                            End If
                         Else
-                            previousMaze = tempMaze
+                            OptionNotReady()
                         End If
-                    ElseIf arr(y) = "Save the previous maze to ascii text file" Then
-                        If previousMaze.Count > 0 Then
-                            SaveMazeAscii(previousMaze)
-                        Else
-                            Console.Clear()
-                            Console.ForegroundColor = ConsoleColor.Red
-                            Console.WriteLine($"No previous maze available")
-                            Console.ReadKey()
-                        End If
-                    ElseIf arr(y) = "Load a maze from an ascii text file" Then
-                        Console.Clear()
-                        Dim tempMaze As List(Of Node) = LoadMazeAscii(temparr,pathColour,backGroundColour,solvingColour)
-                        If IsNothing(tempMaze) Then
-                            Console.Clear()
-                            Console.ForegroundColor = ConsoleColor.Red
-                            Console.BackgroundColor = ConsoleColor.Black
-                            Console.WriteLine("The maze that you tried to load is too big for the console window, please decrease font size and try again")
-                            Console.ReadKey()
-                        Else
-                            previousMaze = tempMaze
-                        End If
-                    ElseIf y = arr.Count - 1 Then
-                        End
-                    Else
-                        OptionNotReady()
-                    End If
                     End If
                     Console.BackgroundColor = (ConsoleColor.Black)
                     Console.Clear()
@@ -258,6 +268,8 @@ Module Menus
                             SpiralBacktrackerInfo()
                         ElseIf arr(y) = "   Custom Algorithm" Then
                             CustomAlgorithmInfo()
+                        Else
+                            OptionNotReady()
                         End If
                         Console.ReadKey()
                         Console.BackgroundColor = (ConsoleColor.Black)
@@ -270,26 +282,26 @@ Module Menus
             Dim Count = 1
             For Each MenuOption In arr
                 Console.SetCursorPosition(0, Count + currentCol)
-                if MenuOption = "Change the path colour           current colour: "
+                If MenuOption = "Change the path colour           current colour: " Then
                     Console.Write($" {MenuOption}{pathColour.ToString()}    ")
-                elseif MenuOption = "Change the background colour     current colour: "
-                    Console.Write($" {MenuOption}{backgroundcolour.ToString()}    ")
-                elseif MenuOption = "Change the solving colour        current colour: "
+                ElseIf MenuOption = "Change the background colour     current colour: " Then
+                    Console.Write($" {MenuOption}{backGroundColour.ToString()}    ")
+                ElseIf MenuOption = "Change the solving colour        current colour: " Then
                     Console.WriteLine($" {MenuOption}{solvingColour.ToString()}      ")
-                Else 
+                Else
                     Console.Write($" {MenuOption}    ")
                 End If
                 Count += 1
             Next
             Console.SetCursorPosition(0, y + 1)
-            if arr(y) =  "Change the path colour           current colour: "
+            If arr(y) = "Change the path colour           current colour: " Then
                 MsgColour($"> {arr(y)}{pathColour.ToString()}  ", ConsoleColor.Green)
-            elseif arr(y) = "Change the background colour     current colour: "
+            ElseIf arr(y) = "Change the background colour     current colour: " Then
                 MsgColour($"> {arr(y)}{backGroundColour.ToString()}  ", ConsoleColor.Green)
-            elseif arr(y) = "Change the solving colour        current colour: "
-                MsgColour($"> {arr(y)}{solvingcolour.ToString()}  ", ConsoleColor.Green)
-            Else 
-                 MsgColour($"> {arr(y)}  ", ConsoleColor.Green)
+            ElseIf arr(y) = "Change the solving colour        current colour: " Then
+                MsgColour($"> {arr(y)}{solvingColour.ToString()}  ", ConsoleColor.Green)
+            Else
+                MsgColour($"> {arr(y)}  ", ConsoleColor.Green)
             End If
         End While
     End Sub
@@ -542,7 +554,7 @@ Module Menus
             Dim filename As String = GetValidFileName()
             SaveMazePng(Maze, Algorithm, filename,pathColour,backGroundColour)
         ElseIf input = "s" Then
-            Sd(Maze)
+            'Sd(Maze)
         ElseIf input = "Solve using the dead end filling method" Then
             showpath = HorizontalYesNo(YposAfterMaze + 2, "Do you want to show the steps in solving the maze: ", True, False, False)
             If showpath Then solvingdelay = GetIntInputArrowKeys("Delay when solving the maze: ", 100, 0, True)
@@ -703,7 +715,7 @@ Module Menus
             End If
         End If
         If NeedExtraInfo Then Console.Clear()
-        Width = GetIntInputArrowKeys($"Width of the Maze: ", (Console.WindowWidth - 58) / 2, 20, False) * 2
+        Width = GetIntInputArrowKeys($"Width of the Maze: ", (Console.WindowWidth - 56) / 2, 20, False) * 2 + 4
         Height = GetIntInputArrowKeys($"Height of the Maze: ", Console.WindowHeight - 7, 20, False)
         If Width Mod 2 = 0 Then
             Width += 1
