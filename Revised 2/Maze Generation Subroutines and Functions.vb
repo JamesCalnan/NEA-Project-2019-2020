@@ -16,67 +16,7 @@
         End If
         Return Nothing
     End Function
-    Function PickRandomCell(availablePositions As List(Of Cell), ust As List(Of Cell), limits() As Integer)
-        Dim r As New Random
-        Dim startingCell As New Cell(r.Next(limits(1), limits(3)), r.Next(limits(0) + 3, limits(2) - 1))
-        Do
-            Dim idx As Integer = r.Next(0, availablePositions.Count)
-            startingCell.Update(availablePositions(idx).X, availablePositions(idx).Y)
-            If Not ust.Contains(startingCell) Then
-                Exit Do
-            End If
-        Loop
-        Return startingCell
-    End Function
-    Function GetDirection(cell1 As Cell, cell2 As Cell, ByRef newdir As Dictionary(Of Cell, String), showmazegeneration As Boolean,  delay as integer)
-        Dim tempCell As New Cell(cell2.X, cell2.Y - 2)
-        Console.BackgroundColor = (ConsoleColor.Black)
-        Console.ForegroundColor = (ConsoleColor.Red)
-        If cell1.Equals(tempCell) Then
-            If showmazegeneration Then tempCell.Print("VV")
-            If newdir.ContainsKey(tempCell) Then
-                newdir(tempCell) = "VV"
-            Else
-                newdir.Add(tempCell, "VV")
-            End If
-            if showmazegeneration then Threading.Thread.Sleep(delay)
-            Return "VV"
-        End If
-        tempCell.Update(cell2.X + 4, cell2.Y)
-        If cell1.Equals(tempCell) Then
-            If showmazegeneration Then tempCell.Print("<<")
-            If newdir.ContainsKey(tempCell) Then
-                newdir(tempCell) = "<<"
-            Else
-                newdir.Add(tempCell, "<<")
-            End If
-            if showmazegeneration then Threading.Thread.Sleep(delay)
-            Return "<<"
-        End If
-        tempCell.Update(cell2.X, cell2.Y + 2)
-        If cell1.Equals(tempCell) Then
-            If showmazegeneration Then tempCell.Print("^^")
-            If newdir.ContainsKey(tempCell) Then
-                newdir(tempCell) = "^^"
-            Else
-                newdir.Add(tempCell, "^^")
-            End If
-            if showmazegeneration then Threading.Thread.Sleep(delay)
-            Return "^^"
-        End If
-        tempCell.Update(cell2.X - 4, cell2.Y)
-        If cell1.Equals(tempCell) Then
-            If showmazegeneration Then tempCell.Print(">>")
-            If newdir.ContainsKey(tempCell) Then
-                newdir(tempCell) = ">>"
-            Else
-                newdir.Add(tempCell, ">>")
-            End If
-            if showmazegeneration then Threading.Thread.Sleep(delay)
-            Return ">>"
-        End If
-        Return Nothing
-    End Function
+
     Sub AddToPath(ByRef list As List(Of Node), cell1 As Cell, cell2 As Cell)
         Dim tempNode As New Node(cell1.X, cell1.Y)
         If Not list.Contains(tempNode) Then list.Add(New Node(cell1.X, cell1.Y))

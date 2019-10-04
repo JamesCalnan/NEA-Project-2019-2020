@@ -4,6 +4,9 @@ Public Class PriorityQueue(Of T)
     Public Sub New()
         Items = New BinaryTree(Of T)
     End Sub
+    Public Sub Clear()
+        Items = New BinaryTree(Of T)
+    End Sub
     Public Property Items As BinaryTree(Of T)
     Public Sub Enqueue(value As T, Optional ByVal priority As Integer = 0)
         Items.Insert(New QueueItem(Of T)(value, priority))
@@ -15,19 +18,26 @@ Public Class PriorityQueue(Of T)
         Return output
     End Function
 
+    Public Function PeekMin() As T
+        Dim minPriority As QueueItem(Of T) = Items.MinValue()
+        Dim output As T = Items.FindFirst(minPriority).Value
+        Return output
+    End Function
+
     Public Sub DecreasePriority(value As T, newPriority As Integer)
         Dim tempItem As New QueueItem(Of T)(value, 0)
         Dim item As QueueItem(Of T) = Items.FindExact(tempItem).Clone()
         Items.Delete(item, True)
         Items.Insert(New QueueItem(Of T)(value, newPriority))
     End Sub
-    Public  sub Delete(value as T)
+    Public  Sub Delete(value as T)
         Dim tempItem As New QueueItem(Of T)(value, 0)
         Dim item As QueueItem(Of T) = Items.FindExact(tempItem).Clone()
         Items.Delete(item,true)
-    End sub
-    Public Function Contains(value As QueueItem(Of T)) As Boolean
-        Return Not IsNothing(Items.Contains(value))
+    End Sub
+    Public Function Contains(value As T) As Boolean
+
+        'Return Not IsNothing(Items.Contains(value))
     End Function
 
     Public Function IsEmpty()

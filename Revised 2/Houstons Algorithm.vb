@@ -1,6 +1,8 @@
-﻿Module HoustonsAlgorithm
-    Function Houstons(limits() As Integer, delay As Integer, showMazeGeneration As Boolean, pathColour as consolecolor, backGroundColour as consolecolor)
-        If backGroundColour <> ConsoleColor.black Then DrawBackground(backGroundColour,limits)
+﻿Imports Enumerable = System.Linq.Enumerable
+
+Module HoustonsAlgorithm
+    Function Houstons(limits() As Integer, delay As Integer, showMazeGeneration As Boolean, pathColour As ConsoleColor, backGroundColour As ConsoleColor)
+        If backGroundColour <> ConsoleColor.Black Then DrawBackground(backGroundColour, limits)
         Dim direction, newdir As New Dictionary(Of Cell, String)
         Dim directions As New Dictionary(Of Cell, String)
         Dim totalCellCount As Integer
@@ -25,12 +27,10 @@
         returnablePath.Add(New Node(currentCell.X, currentCell.Y))
         Dim initialiseWilsonCell = True
         While 1
+            If ExitCase() Then Return Nothing
             If totalCellCount / 3 > visitedList.Count Then
-                If ExitCase() Then Return Nothing
                 recentCells.Clear()
-                For Each cell As Cell In RanNeighbour(currentCell, limits)
-                    recentCells.Add(cell)
-                Next
+                recentCells.AddRange(Enumerable.Cast(Of Cell)(RanNeighbour(currentCell, limits)))
                 Dim index As Integer = r.Next(0, recentCells.Count)
                 Dim temporaryCell As Cell = recentCells(index)
                 Dim tempNodeCell As New Node(temporaryCell.X, temporaryCell.Y)

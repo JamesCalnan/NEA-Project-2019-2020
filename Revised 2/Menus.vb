@@ -4,6 +4,7 @@ Module Menus
     Sub Menu(arr() As String, topitem As String, Optional Exitavailable As Boolean = True)
         Dim temparr() As String = {"Solve using the A* algorithm",
                                    "Solve using Dijkstra's algorithm",
+                                   "Solve using Best-first search",
                                    "Solve using Breadth-first search",
                                    "Solve using Depth-first search (using iteration)",
                                    "Solve using Depth-first search (using recursion)",
@@ -83,7 +84,7 @@ Module Menus
                     If arr(y) = "" Or arr(y) = "Generate a maze using one of the following algorithms" Then y -= 1
                 Case "Enter"
                     Console.ForegroundColor = ConsoleColor.White
-                    Dim availablePath As List(Of Node)
+                    Dim availablePath As New List(Of Node)
                     If y <= lastMazeGenItem Then
                         GetMazeInfo(width, height, delayMs, limits, showMazeGeneration, True, 0, If(arr(y) = "   Make your own maze", True, False))
                         If arr(y) = "   Recursive Backtracker Algorithm (using iteration)" Then
@@ -150,12 +151,16 @@ Module Menus
                             availablePath = BoruvkasAlgorithm.BoruvkasAlgorithm(limits, delayMs, showMazeGeneration, pathColour, backGroundColour, "")
                         ElseIf arr(y) = "   Borůvka's Algorithm (random)" Then
                             availablePath = BoruvkasAlgorithm.BoruvkasAlgorithm(limits, delayMs, showMazeGeneration, pathColour, backGroundColour, "shuffle")
+                        ElseIf arr(y) = "   Reverse-Delete Algorithm (best-first search)" Then
+                            availablePath = reverseDeleteAlgorithm(limits, delayMs, showMazeGeneration, pathColour, backGroundColour, "bestfs")
                         ElseIf arr(y) = "   Reverse-Delete Algorithm (breadth-first search)" Then
                             availablePath = reverseDeleteAlgorithm(limits, delayMs, showMazeGeneration, pathColour, backGroundColour, "bfs")
                         ElseIf arr(y) = "   Reverse-Delete Algorithm (depth-first search)" Then
                             availablePath = reverseDeleteAlgorithm(limits, delayMs, showMazeGeneration, pathColour, backGroundColour, "dfs")
+                        ElseIf arr(y) = "   Randomised Breadth-First Search" Then
+                            availablePath = RandomisedBFS(limits, delayMs, showMazeGeneration, pathColour, backGroundColour)
                         End If
-                        Solving(availablePath, limits, previousMaze, input, yPosAfterMaze, showPath, solvingDelay, arr(y), previousAlgorithm, temparr, pathColour, backGroundColour, solvingColour)
+                        If Not IsNothing(availablePath) Then Solving(availablePath, limits, previousMaze, input, yPosAfterMaze, showPath, solvingDelay, arr(y), previousAlgorithm, temparr, pathColour, backGroundColour, solvingColour)
                     Else
                         If arr(y) = "Load the previously generated maze" Then
                             PrintPreviousMaze(previousMaze, previousAlgorithm, showPath, yPosAfterMaze, solvingDelay, temparr, pathColour, backGroundColour, solvingColour)
@@ -305,14 +310,12 @@ Module Menus
             End If
         End While
     End Sub
-    Sub Solving(availablePath As List(Of Node), Limits() As Integer, ByRef previousMaze As List(Of Node), ByRef Input As String, yPosAfterMaze As Integer, showPath As Boolean, solvingDelay As Integer, ByRef algorithm As String, ByRef setPreivousAlgorithm As String,tempArr() as String,pathColour as ConsoleColor,backGroundColour as consolecolor,solvingColour as ConsoleColor)
-        If availablePath IsNot Nothing Then
-            setPreivousAlgorithm = algorithm
-            previousMaze.Clear()
-            previousMaze.AddRange(availablePath)
-            PreSolving(Limits, availablePath, previousMaze, Input, yPosAfterMaze,tempArr)
-            SolvingInput(Input, showPath, yPosAfterMaze, solvingDelay, availablePath, algorithm,pathColour,backGroundColour,solvingColour)
-        End If
+    Sub Solving(availablePath As List(Of Node), Limits() As Integer, ByRef previousMaze As List(Of Node), ByRef Input As String, yPosAfterMaze As Integer, showPath As Boolean, solvingDelay As Integer, ByRef algorithm As String, ByRef setPreivousAlgorithm As String, tempArr() As String, pathColour As ConsoleColor, backGroundColour As consolecolor, solvingColour As ConsoleColor)
+        setPreivousAlgorithm = algorithm
+        previousMaze.Clear()
+        previousMaze.AddRange(availablePath)
+        PreSolving(Limits, availablePath, previousMaze, Input, yPosAfterMaze, tempArr)
+        SolvingInput(Input, showPath, yPosAfterMaze, solvingDelay, availablePath, algorithm, pathColour, backGroundColour, solvingColour)
     End Sub
     Sub PreSolving(limits() As Integer, availablePath As List(Of Node), ByRef previousMaze As List(Of Node), ByRef input As String, ByRef yPosAfterMaze As Integer,tempArr() as String)
         Console.BackgroundColor = (ConsoleColor.Black)
@@ -481,9 +484,9 @@ Module Menus
             If HorizontalYesNo(YposAfterMaze + 2, "Do you want to use the optimised version of A*: ", True, False, False) Then
                 AStar(Maze, showpath, True, solvingdelay, solvingColour)
             Else
-                Dim neededNodes As List(Of Node) = GetNeededNodes(Maze)
-                Dim adjacencyList As Dictionary(Of Node, List(Of Node)) = ConstructAdjacencyList(neededNodes, Maze)
-                AStarWiki(adjacencyList, showpath, True, solvingdelay, solvingColour)
+                'Dim neededNodes As List(Of Node) = GetNeededNodes(Maze)
+                'Dim adjacencyList As Dictionary(Of Node, List(Of Node)) = ConstructAdjacencyList(neededNodes, Maze)
+                AStarWiki(Maze, showpath, True, solvingdelay, solvingColour)
             End If
         ElseIf input = "Solve using Dijkstra's algorithm" Then
             showpath = HorizontalYesNo(YposAfterMaze + 2, "Do you want to show the steps in solving the maze: ", True, False, False)
@@ -495,6 +498,10 @@ Module Menus
             showpath = HorizontalYesNo(YposAfterMaze + 2, "Do you want to show the steps in solving the maze: ", True, False, False)
             If showpath Then solvingdelay = GetIntInputArrowKeys("Delay when solving the maze: ", 100, 0, True)
             Bfs(Maze, showpath, True, solvingdelay, solvingColour)
+        ElseIf input = "Solve using Best-first search" Then
+            showpath = HorizontalYesNo(YposAfterMaze + 2, "Do you want to show the steps in solving the maze: ", True, False, False)
+            If showpath Then solvingdelay = GetIntInputArrowKeys("Delay when solving the maze: ", 100, 0, True)
+            Bestfs(Maze, showpath, True, solvingdelay, solvingColour)
         ElseIf input = "Solve using a recursive algorithm" Then
             showpath = HorizontalYesNo(YposAfterMaze + 2, "Do you want to show the steps in solving the maze: ", True, False, False)
             If showpath Then solvingdelay = GetIntInputArrowKeys("Delay when solving the maze: ", 100, 0, True)

@@ -42,6 +42,7 @@
         Next
         SetBoth(backGroundColour)
         While availableEdges.Count > 0
+            If ExitCase() Then Return Nothing
             Dim highestWeightEdge = FindHighestEdgeWeight(edgeWeights, availableEdges)
             Dim adjacentCells As New List(Of Cell)
             If availableCells.Contains(New Cell(highestWeightEdge.X, highestWeightEdge.Y - 1)) Then adjacentCells.Add(New Cell(highestWeightEdge.X, highestWeightEdge.Y - 1))
@@ -57,6 +58,8 @@
                 connectedVertices = connectedVerticesBfs(availableEdges, availableCells, v1, v2)
             ElseIf searchingAlgorithm = "dfs" Then
                 connectedVertices = connectedVerticesDfs(availableEdges, availableCells, v1, v2)
+            ElseIf searchingAlgorithm = "bestfs" Then
+                connectedVertices = connectedVerticesBestfs(availableEdges, availableCells, v1, v2)
             End If
             If connectedVertices Then
                 returnPath.Remove(highestWeightEdge.ToNode)
@@ -73,6 +76,29 @@
         End If
         AddStartAndEnd(returnPath, limits, pathColour)
         Return returnPath
+    End Function
+    Function connectedVerticesBestfs(edgeList As List(Of Cell), vertexList As List(Of Cell), v1 As Cell, v2 As Cell)
+        Dim discovered As New Dictionary(Of Cell, Boolean)
+        Dim q As New PriorityQueue(Of Node)
+        Dim g As New List(Of Cell)
+        g.AddRange(edgeList)
+        g.AddRange(vertexList)
+        For Each node In g
+            discovered(node) = False
+        Next
+        q.Enqueue(v1.ToNode())
+        discovered(v1) = True
+        While Not q.IsEmpty()
+            Dim v = q.ExtractMin().ToCell()
+            If v.Equals(v2) Then Return True
+            For Each w As Cell In GetNeighboursCell(v, g)
+                If Not discovered(w) Then
+                    discovered(w) = True
+                    q.Enqueue(w.ToNode(), H(w.ToNode(), v2.ToNode(), 1))
+                End If
+            Next
+        End While
+        Return False
     End Function
     Function connectedVerticesDfs(edgeList As List(Of Cell), vertexList As List(Of Cell), v1 As Cell, v2 As Cell)
         Dim visited As New Dictionary(Of Cell, Boolean)

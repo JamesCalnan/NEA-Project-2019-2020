@@ -7,8 +7,8 @@
     ''' A star algorithm according the the video series produced by sebastian lague
     ''' </summary>
     Sub AStar(availablepath As List(Of Node), showPath As Boolean, showSolveTime As Boolean, delay As Integer, solvingColour As ConsoleColor)
-        Dim start As New Node(availablepath(availablepath.Count - 2).X, availablepath(availablepath.Count - 2).Y)
-        Dim target As New Node(availablepath(availablepath.Count - 1).X, availablepath(availablepath.Count - 1).Y)
+        Dim start = GetStart(availablepath)
+        Dim target = GetGoal(availablepath)
         Dim current As Node = start
         Dim openSet, closedSet As New HashSet(Of Node)
         SetBoth(solvingColour)
@@ -44,41 +44,50 @@
         End While
         Console.ReadKey()
     End Sub
-    Sub AStarWiki(adjacencyList As Dictionary(Of Node, List(Of Node)), showPath As Boolean, showSolveTime As Boolean, delay As Integer,  solvingColour as ConsoleColor)
-        Dim openSet, closedSet As New List(Of Node)
-        Dim start As New Node(adjacencyList.Keys(adjacencyList.Count - 2).X, adjacencyList.Keys(adjacencyList.Count - 2).Y)
-        Dim goal As New Node(adjacencyList.Keys(adjacencyList.Count - 1).X, adjacencyList.Keys(adjacencyList.Count - 1).Y)
-        Dim gScore, fScore As New Dictionary(Of Node, Double)
+    Sub AStarWiki(availablepath As List(Of Node), showPath As Boolean, showSolveTime As Boolean, delay As Integer, solvingColour As ConsoleColor)
+        Dim closedSet, visitedSet As New List(Of Node)
+        Dim openSet As New PriorityQueue(Of Node)
+        Dim start As Node = GetStart(availablepath)
+        Dim goal As Node = GetGoal(availablepath)
+        Dim gScore As New Dictionary(Of Node, Double)
         Dim cameFrom As New Dictionary(Of Node, Node)
         Dim infinity As Integer = Int32.MaxValue
-        For Each node In adjacencyList.Keys
+        For Each node In availablepath
             gScore(node) = infinity
-            fScore(node) = infinity
         Next
         Dim heuristic As Double = 5
         gScore(start) = 0
-        fScore(start) = H(start, goal, heuristic)
-        openSet.Add(start)
+        'fScore(start) = H(start, goal, heuristic)
+        openSet.Enqueue(start, H(start, goal, heuristic))
+        visitedSet.Add(start)
         Dim stopwatch As Stopwatch = Stopwatch.StartNew()
-        SetBoth(solvingcolour)
-        While openSet.Count > 0
-            Dim current As Node = ExtractMin(openSet, fScore)
-            If current.Equals(goal) Then Exit While
-            openSet.Remove(current)
+        SetBoth(solvingColour)
+        While Not openSet.IsEmpty()
+            Dim current As Node = openSet.ExtractMin()
+            'If current.Equals(goal) Then Exit While
+            visitedSet.Add(current)
             closedSet.Add(current)
             If showPath Then : current.Print("██") : Threading.Thread.Sleep(delay) : End If
-            For Each neighbour As Node In GetNeighboursAd(current, adjacencyList)
+            For Each neighbour As Node In GetNeighbours(current, availablepath)
                 If closedSet.Contains(neighbour) Then Continue For
                 Dim tentativeGScore = gScore(current) + H(current, neighbour, heuristic)
                 If tentativeGScore <= gScore(neighbour) Then
                     cameFrom(neighbour) = current
                     gScore(neighbour) = tentativeGScore
-                    fScore(neighbour) = gScore(neighbour) + H(goal, neighbour, heuristic)
-                    If Not openSet.Contains(neighbour) Then openSet.Add(neighbour)
+                    If Not visitedSet.Contains(neighbour) Then
+                        openSet.Enqueue(neighbour, gScore(neighbour) + H(goal, neighbour, heuristic))
+                        visitedSet.Add(neighbour)
+                    End If
                 End If
             Next
         End While
         ReconstructPath(cameFrom, goal, start, If(showSolveTime, $"{stopwatch.Elapsed.TotalSeconds}", ""))
-Console.ReadKey()
+        Console.ReadKey()
     End Sub
+    Function GetStart(maze As List(Of Node)) As Node
+        Return maze(maze.Count - 2)
+    End Function
+    Function GetGoal(maze As List(Of Node)) As Node
+        Return maze(maze.Count - 1)
+    End Function
 End Module

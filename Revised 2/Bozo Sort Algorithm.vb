@@ -7,4 +7,9 @@
         End While
         Return a
     End Function
+    Sub Swap(ByRef a As List(Of Double), index1 As Integer, index2 As Integer)
+        Dim temp As Double = a(index1)
+        a(index1) = a(index2)
+        a(index2) = temp
+    End Sub
 End Module

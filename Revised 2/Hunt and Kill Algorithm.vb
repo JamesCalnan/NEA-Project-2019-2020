@@ -106,6 +106,7 @@
                 If showMazeGeneration Then
                     wallCell.Print("██")
                     currentCell.Print("██")
+                    Threading.Thread.Sleep(delay)
                 End If
                 visitedCells(currentCell) = True
             Else
@@ -125,13 +126,13 @@
                 If showMazeGeneration Then
                     wallCell.Print("██")
                     currentCell.Print("██")
+                    Threading.Thread.Sleep(delay)
                 End If
                 AddToPath(returnablePath, currentCell, wallCell)
                 visitedCells(currentCell) = True
                 usedCellPositions += 1
                 huntedCells.Clear()
             End If
-            Threading.Thread.Sleep(delay)
         End While
         PrintMessageMiddle($"Time taken to generate the maze: {stopwatch.Elapsed.TotalSeconds}", 1, ConsoleColor.Yellow)
         If Not showMazeGeneration Then

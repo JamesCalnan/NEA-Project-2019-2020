@@ -217,6 +217,7 @@
   <ItemGroup>
     <Compile Include="A Star Algorithm.vb" />
     <Compile Include="Aldous-Broder Algorithm.vb" />
+    <Compile Include="Best-First Search.vb" />
     <Compile Include="Binary Tree Algorithm.vb" />
     <Compile Include="Binary Tree.vb" />
     <Compile Include="Bogosort Algorithm.vb" />
@@ -232,12 +233,12 @@
     <Compile Include="Dijkstras Algorithm.vb" />
     <Compile Include="Ellers Algorithm.vb" />
     <Compile Include="Growing Tree Algorithm.vb" />
-    <Compile Include="Heap Sort Algorithm.vb" />
     <Compile Include="Houstons Algorithm.vb" />
     <Compile Include="Hunt and Kill Algorithm.vb" />
     <Compile Include="Insertion Sort Algorithm.vb" />
     <Compile Include="Kruskals Algorithm.vb" />
     <Compile Include="Lee Algorithm.vb" />
+    <Compile Include="Life Long Planning A Star.vb" />
     <Compile Include="Maze Generation Subroutines and Functions.vb" />
     <Compile Include="Maze Info.vb" />
     <Compile Include="Menus.vb" />
@@ -261,14 +262,17 @@
     <Compile Include="Play Maze.vb" />
     <Compile Include="Prims Algorithm.vb" />
     <Compile Include="Quicksort Algorithm.vb" />
+    <Compile Include="RandomBFS.vb" />
     <Compile Include="Recursive Backtracker Algorithm.vb" />
     <Compile Include="Recursive Solving Method.vb" />
     <Compile Include="Reverse-Delete Algorithm.vb" />
     <Compile Include="Selection Sort Algorithm.vb" />
+    <Compile Include="ShortestPathFasterAlgorithm.vb" />
     <Compile Include="Sidewinder Algorithm.vb" />
     <Compile Include="Sparse Maze.vb" />
     <Compile Include="Spiral Backtracker Algorithm.vb" />
     <Compile Include="Unicursal Maze.vb" />
+    <Compile Include="User Create Map.vb" />
     <Compile Include="UserCreateMaze.vb" />
     <Compile Include="Wall Follower.vb" />
     <Compile Include="Wilsons Algorithm.vb" />

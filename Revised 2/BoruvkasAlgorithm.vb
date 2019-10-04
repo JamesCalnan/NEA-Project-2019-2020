@@ -33,6 +33,7 @@
         Console.SetCursorPosition(0, 0)
         Console.Write($"iteration: {iteration}")
         While UniqueComponentNumber(T)
+            If ExitCase() Then Return Nothing
             Dim cellEdge As New Dictionary(Of Cell, Cell)
             Dim edgesUsed As New List(Of Cell)
             For Each Vertex In availableCells

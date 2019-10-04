@@ -90,6 +90,7 @@
         SetBoth(pathColour)
 
         While availableCells.Count > 0
+            If ExitCase() Then Return Nothing
             Dim tempCell As Cell = availableCells(r.Next(availableCells.Count))
             If showMazeGeneration Then tempcell.Print("██")
             availablepath.Add(New Node(tempcell.X, tempcell.Y))
@@ -118,38 +119,6 @@
             availableCells.Remove(tempCell)
             Threading.Thread.Sleep(delay)
         End While
-
-        'For y = limits(1) To limits(3) Step 2
-        '    For x = limits(0) + 3 To limits(2) Step 4
-        '        If ExitCase() Then Return Nothing
-        '        Dim tempcell As New Cell(x, y)
-        '        If showMazeGeneration Then tempcell.Print("██")
-        '        availablepath.Add(New Node(tempcell.X, tempcell.Y))
-        '        Dim vCell As New Cell(x + changeX, y)
-        '        Dim hCell As New Cell(x, y + changeY)
-        '        If vCell.WithinLimits(limits) And hCell.WithinLimits(limits) Then
-        '            Dim randomNumber As Integer = r.Next(1, 101)
-        '            If randomNumber > 50 Then
-        '                wallCell = MidPoint(tempcell, vCell)
-        '                If showMazeGeneration Then wallCell.Print("██")
-        '                availablepath.Add(New Node(wallCell.X, wallCell.Y))
-        '            Else
-        '                wallCell = MidPoint(tempcell, hCell)
-        '                If showMazeGeneration Then wallCell.Print("██")
-        '                availablepath.Add(New Node(wallCell.X, wallCell.Y))
-        '            End If
-        '        ElseIf vCell.WithinLimits(limits) And Not hCell.WithinLimits(limits) Then
-        '            wallCell = MidPoint(tempcell, vCell)
-        '            If showMazeGeneration Then wallCell.Print("██")
-        '            availablepath.Add(New Node(wallCell.X, wallCell.Y))
-        '        ElseIf Not vCell.WithinLimits(limits) And hCell.WithinLimits(limits) Then
-        '            wallCell = MidPoint(tempcell, hCell)
-        '            If showMazeGeneration Then wallCell.Print("██")
-        '            availablepath.Add(New Node(wallCell.X, wallCell.Y))
-        '        End If
-        '        Threading.Thread.Sleep(delay)
-        '    Next
-        'Next
         PrintMessageMiddle($"Time taken to generate the maze: {stopwatch.Elapsed.TotalSeconds}", 1, ConsoleColor.Yellow)
         If Not showMazeGeneration Then
             SetBoth(pathColour)

@@ -46,6 +46,7 @@ Module Module1
             "Generate a maze using one of the following algorithms",
             "   Recursive Backtracker Algorithm (using iteration)",
             "   Recursive Backtracker Algorithm (using recursion)",
+            "   Randomised Breadth-First Search",
             "   Hunt and Kill Algorithm (first cell)",
             "   Hunt and Kill Algorithm (random cell)",
             "   Prim's Algorithm (simplified)",
@@ -63,6 +64,7 @@ Module Module1
             "   Kruskal's Algorithm (true)",
             "   Houston's Algorithm",
             "   Spiral Backtracker Algorithm",
+            "   Reverse-Delete Algorithm (best-first search)",
             "   Reverse-Delete Algorithm (breadth-first search)",
             "   Reverse-Delete Algorithm (depth-first search)",
             "   Custom Algorithm",
@@ -851,7 +853,7 @@ Module Module1
         Console.SetCursorPosition(Console.WindowWidth / 2 - message.Length / 2, y)
         Console.Write(message)
     End Sub
-    Function PickRandomStartingCell(limits() As Integer)
+    Function PickRandomStartingCell(limits() As Integer) As Cell
         Dim li As New List(Of Cell)
         For y = limits(1) To limits(3) Step 2
             For x = limits(0) + 3 To limits(2) - 1 Step 4
