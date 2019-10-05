@@ -1,6 +1,76 @@
 ﻿Imports Enumerable = System.Linq.Enumerable
 
 Module WilsonsAlgorithm
+    Function WilsonsRefectored(limits() As Integer, delay As Integer, showMazeGeneration As Boolean, pathColour As ConsoleColor, backGroundColour As ConsoleColor)
+        Dim r As New Random
+        Dim fullMaze As New List(Of Node)
+        Dim availablePositions, UST, randomWalkCells As New List(Of Cell)
+        Dim cameFrom As New Dictionary(Of Cell, Cell)
+        For y = limits(1) To limits(3) Step 2
+            For x = limits(0) + 3 To limits(2) - 1 Step 4
+                availablePositions.Add(New Cell(x, y))
+                cameFrom(New Cell(x, y)) = Nothing
+            Next
+        Next
+        Dim startCell = PickRandomStartingCell(limits)
+        UST.Add(startCell)
+        SetBoth(pathColour)
+        UST(0).Print("XX")
+        availablePositions.Remove(startCell)
+        Dim currentCell As Cell = PickRandomCell(availablePositions, UST, limits)
+        Dim previousCell = currentCell
+        While availablePositions.Count > 0
+            Dim immediateNeighbours = RanNeighbour(currentCell, limits)
+            currentCell = immediateNeighbours(r.Next(immediateNeighbours.count))
+            SetBoth(pathColour)
+            currentCell.Print("XX")
+            cameFrom(previousCell) = currentCell
+            If UST.Contains(currentCell) Then 'if the cell is in the uniform spanning tree
+                Dim backtrackingCell = randomWalkCells(0)
+                backtrackingCell.Print("XX")
+                Dim pathToUst As New List(Of Cell) From {
+                    backtrackingCell
+                }
+                Do
+                    backtrackingCell = cameFrom(backtrackingCell)
+                    backtrackingCell.Print("XX")
+                    pathToUst.Add(backtrackingCell)
+                Loop Until UST.Contains(backtrackingCell)
+                fullMaze.Add(pathToUst(0).ToNode())
+                availablePositions.Remove(pathToUst(0))
+                UST.AddRange(pathToUst)
+                For i = 0 To pathToUst.Count - 2
+                    Dim wall As Cell = MidPoint(pathToUst(i), pathToUst(i + 1))
+                    availablePositions.Remove(pathToUst(i + 1))
+                    wall.Print("XX")
+                    fullMaze.Add(wall.ToNode())
+                    fullMaze.Add(pathToUst(i + 1).ToNode())
+                Next
+                SetBoth(ConsoleColor.Black)
+                For Each thing In From thing1 In randomWalkCells Where Not UST.Contains(thing1)
+                    thing.Print("XX")
+                Next
+                For y = limits(1) To limits(3) Step 2
+                    For x = limits(0) + 3 To limits(2) - 1 Step 4
+                        cameFrom(New Cell(x, y)) = Nothing
+                    Next
+                Next
+                randomWalkCells.Clear()
+                SetBoth(pathColour)
+                If availablePositions.Count = 0 Then Exit While 'there are no available cells
+                currentCell = PickRandomCell(availablePositions, UST, limits)
+                previousCell = currentCell
+                randomWalkCells.Add(currentCell)
+                currentCell.Print("XX")
+            Else
+                cameFrom(previousCell) = currentCell
+                If Not randomWalkCells.Contains(previousCell) Then randomWalkCells.Add(previousCell)
+                previousCell = currentCell
+            End If
+        End While
+        AddStartAndEnd(fullMaze, limits, pathColour)
+        Return fullMaze
+    End Function
     Function Wilsons(limits() As Integer, delay As Integer, showMazeGeneration As Boolean, pathColour As ConsoleColor, backGroundColour As ConsoleColor)
         If backGroundColour <> ConsoleColor.Black Then DrawBackground(backGroundColour, limits)
         Dim r As New Random

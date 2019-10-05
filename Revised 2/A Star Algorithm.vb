@@ -6,7 +6,7 @@
     ''' <summary>
     ''' A star algorithm according the the video series produced by sebastian lague
     ''' </summary>
-    Sub AStar(availablepath As List(Of Node), showPath As Boolean, showSolveTime As Boolean, delay As Integer, solvingColour As ConsoleColor)
+    Sub AStar(availablepath As List(Of Node), showPath As Boolean, showSolveTime As Boolean, delay As Integer, heuristic As Double, solvingColour As ConsoleColor)
         Dim start = GetStart(availablepath)
         Dim target = GetGoal(availablepath)
         Dim current As Node = start
@@ -17,9 +17,7 @@
         current.HCost = H(current, target, 10)
         Dim stopwatch As Stopwatch = Stopwatch.StartNew()
         While openSet.Count > 0
-            If ExitCase() Then
-                Exit While
-            End If
+            If ExitCase() Then Exit While
             current = openSet(0)
             For i = 1 To openSet.Count - 1
                 If openSet(i).FCost() <= current.FCost() Or openSet(i).HCost = current.HCost Then If openSet(i).HCost < current.HCost Then current = openSet(i)
@@ -36,7 +34,7 @@
                 Dim tentativeGScore = current.GCost + 1
                 If tentativeGScore < neighbour.GCost Or Not openSet.Contains(neighbour) Then
                     neighbour.GCost = tentativeGScore
-                    neighbour.HCost = H(neighbour, target, 5) 'GetDistance(target, Neighbour)
+                    neighbour.HCost = H(neighbour, target, heuristic) 'GetDistance(target, Neighbour)
                     neighbour.Parent = current
                     openSet.Add(neighbour)
                 End If
@@ -44,7 +42,7 @@
         End While
         Console.ReadKey()
     End Sub
-    Sub AStarWiki(availablepath As List(Of Node), showPath As Boolean, showSolveTime As Boolean, delay As Integer, solvingColour As ConsoleColor)
+    Sub AStarWiki(availablepath As List(Of Node), showPath As Boolean, showSolveTime As Boolean, delay As Integer, heuristic As Double, solvingColour As ConsoleColor)
         Dim closedSet, visitedSet As New List(Of Node)
         Dim openSet As New PriorityQueue(Of Node)
         Dim start As Node = GetStart(availablepath)
@@ -55,7 +53,6 @@
         For Each node In availablepath
             gScore(node) = infinity
         Next
-        Dim heuristic As Double = 5
         gScore(start) = 0
         'fScore(start) = H(start, goal, heuristic)
         openSet.Enqueue(start, H(start, goal, heuristic))
@@ -64,13 +61,12 @@
         SetBoth(solvingColour)
         While Not openSet.IsEmpty()
             Dim current As Node = openSet.ExtractMin()
-            'If current.Equals(goal) Then Exit While
+            If current.Equals(goal) Then Exit While
             visitedSet.Add(current)
-            closedSet.Add(current)
             If showPath Then : current.Print("██") : Threading.Thread.Sleep(delay) : End If
             For Each neighbour As Node In GetNeighbours(current, availablepath)
-                If closedSet.Contains(neighbour) Then Continue For
-                Dim tentativeGScore = gScore(current) + H(current, neighbour, heuristic)
+                If visitedSet.Contains(neighbour) Then Continue For
+                Dim tentativeGScore = gScore(current) + 1
                 If tentativeGScore <= gScore(neighbour) Then
                     cameFrom(neighbour) = current
                     gScore(neighbour) = tentativeGScore

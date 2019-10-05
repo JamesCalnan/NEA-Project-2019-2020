@@ -448,8 +448,8 @@ Module Module1
             Console.Write("File Name (don't include file type): ")
             filename = Console.ReadLine
             For Each character In filename
-                For Each invalidcharacter In invalidCharacters
-                    If character = invalidcharacter Then validname = False
+                For Each invalidcharacter In From invalidcharacter1 In invalidCharacters Where character = invalidcharacter1
+                    validname = False
                 Next
             Next
             If System.IO.File.Exists(filename) Then
@@ -611,37 +611,27 @@ Module Module1
     End Sub
     Function ExtractMin(list As List(Of Node), dist As Dictionary(Of Node, Double))
         Dim returnnode As Node = list(0)
-        For Each node In list
-            If dist(node) < dist(returnnode) Then returnnode = node
+        For Each node In From node1 In list Where dist(node1) < dist(returnnode)
+            returnnode = node
         Next
         Return returnnode
     End Function
     Function GetJunctionCount(availablePath As List(Of Node))
         Dim junctionCount = 0
         For Each node In availablePath
-            If node.IsJunction(availablePath) Then
-                junctionCount += 1
-            End If
+            If node.IsJunction(availablePath) Then junctionCount += 1
         Next
         Return junctionCount
     End Function
     Function GetDeadEndCount(availablePath As List(Of Node))
         Dim start As New Node(availablePath(availablePath.Count - 2).X, availablePath(availablePath.Count - 2).Y)
         Dim target As New Node(availablePath(availablePath.Count - 1).X, availablePath(availablePath.Count - 1).Y)
-        Dim deadEndCount = 0
-        For Each node In availablePath
-            If node.Equals(start) Or node.Equals(target) Then Continue For
-            Dim neighbours As List(Of Node) = GetNeighbours(node, availablePath)
-            If neighbours.Count = 1 Then
-                deadEndCount += 1
-            End If
-        Next
-        Return deadEndCount
+        Return (From node In availablePath Where Not node.Equals(start) And Not node.Equals(target) Select GetNeighbours(node, availablePath)).Count(Function(neighbours) DirectCast(neighbours, List(Of Node)).Count = 1)
     End Function
     Function H(node As Node, goal As Node, d As Double)
         Dim dx As Integer = Math.Abs(node.X - goal.X)
         Dim dy As Integer = Math.Abs(node.Y - goal.Y)
-        Return d * (dx + dy) ^ 2
+        Return d * Math.Sqrt(dx * dx + dy * dy) '(dx + dy) ^ 2
     End Function
     Sub ReconstructPathForfile(camefrom As Dictionary(Of Node, Node), current As Node, goal As Node, ByRef bmp As Bitmap, ByRef g As Graphics, multiplier As Integer)
         Dim totalPath As New List(Of Node) From {
@@ -946,9 +936,7 @@ Module Module1
     Function GetCornerCount(maze As List(Of Node))
         Dim cCount = 0
         For Each node In maze
-            If IsCorner(node, maze) Then
-                cCount += 1
-            End If
+            If IsCorner(node, maze) Then cCount += 1
         Next
         Return cCount
     End Function
@@ -1037,12 +1025,6 @@ Module Module1
             g.FillRectangle(myBrush, (path(path.Count - 2).X) * multiplier, (path(path.Count - 2).Y * 2) * multiplier, 2 * multiplier, 2 * multiplier)
         End If
         'g.FillRectangle(Brushes.Lime, (Path(Path.Count - 1).X) * Multiplier, (Path(Path.Count - 1).Y * 2) * Multiplier, 2 * Multiplier, 2 * Multiplier)
-        Dim f As New Font("Roboto", width / 60)
-        Dim point As New PointF(((width) / 2) - (algorithm.Length / 2) * multiplier, 1)
-        'Dim mnum As Byte = Multiplier
-        'Dim mulNum() As Byte = mnum
-        'g.AddMetafileComment(mulNum)
-        'g.DrawString(Algorithm, f, Brushes.White, point)
         g.Dispose()
         bmp.Save($"{fileName}.png", System.Drawing.Imaging.ImageFormat.Png)
         bmp.Dispose()

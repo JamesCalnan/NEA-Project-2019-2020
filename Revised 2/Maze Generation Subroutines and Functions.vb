@@ -59,14 +59,14 @@
     Function AdjacentCheck(cell As Cell, visitedcells As Dictionary(Of Cell, Boolean))
         Dim adjancent() As Integer = {0, 0, 0, 0}
         Dim neighbours As New List(Of Cell)
-        Dim tempcell As New Cell(cell.X, cell.Y - 2)
-        If If(visitedcells.ContainsKey(tempcell), visitedcells(tempcell), False) And Not visitedcells(cell) Then adjancent(0) = 1
-        tempcell.Update(cell.X + 4, cell.Y)
-        If If(visitedcells.ContainsKey(tempcell), visitedcells(tempcell), False) And Not visitedcells(cell) Then adjancent(1) = 1
-        tempcell.Update(cell.X, cell.Y + 2)
-        If If(visitedcells.ContainsKey(tempcell), visitedcells(tempcell), False) And Not visitedcells(cell) Then adjancent(2) = 1
-        tempcell.Update(cell.X - 4, cell.Y)
-        If If(visitedcells.ContainsKey(tempcell), visitedcells(tempcell), False) And Not visitedcells(cell) Then adjancent(3) = 1
+        Dim tempCell As New Cell(cell.X, cell.Y - 2)
+        If visitedcells.ContainsKey(tempCell) AndAlso visitedcells(tempCell) And Not visitedcells(cell) Then adjancent(0) = 1
+        tempCell.Update(cell.X + 4, cell.Y)
+        If visitedcells.ContainsKey(tempCell) AndAlso visitedcells(tempCell) And Not visitedcells(cell) Then adjancent(1) = 1
+        tempCell.Update(cell.X, cell.Y + 2)
+        If visitedcells.ContainsKey(tempCell) AndAlso visitedcells(tempCell) And Not visitedcells(cell) Then adjancent(2) = 1
+        tempCell.Update(cell.X - 4, cell.Y)
+        If visitedcells.ContainsKey(tempCell) AndAlso visitedcells(tempCell) And Not visitedcells(cell) Then adjancent(3) = 1
         Return adjancent
     End Function
     Function PickAdjancentCell(cell As Cell, adjancencylist() As Integer)

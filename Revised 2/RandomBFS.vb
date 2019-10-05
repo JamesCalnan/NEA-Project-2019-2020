@@ -12,10 +12,11 @@
         }
         cameFrom(frontierSet(0)) = frontierSet(0)
         visited(frontierSet(0)) = True
-        SetBoth(ConsoleColor.White)
+        If backGroundColour <> ConsoleColor.Black Then DrawBackground(backGroundColour, limits)
+        SetBoth(pathColour)
         While frontierSet.Count > 0
             If ExitCase() Then Return Nothing
-            Dim v = ExtractRandom(frontierSet, r)
+            Dim v = dequeueRandom(frontierSet, r)
             If IsNothing(v) Then Return Nothing
             Dim wall = MidPoint(v, cameFrom(v))
             fullMaze.Add(wall.tonode)
@@ -37,7 +38,7 @@
         Return fullMaze
     End Function
 
-    Function ExtractRandom(frontierSet As List(Of Cell), r As Random)
+    Function dequeueRandom(frontierSet As List(Of Cell), r As Random)
         If frontierSet.Count = 0 Then Return Nothing
         Dim temp = frontierSet(r.Next(frontierSet.Count))
         frontierSet.Remove(temp)
