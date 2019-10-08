@@ -15,7 +15,7 @@
         Dim stopwatch As Stopwatch = Stopwatch.StartNew()
         While True
             If ExitCase() Then Return Nothing
-            For Each cell As Cell In Neighbour(currentCell, visitedCells, limits, True)
+            For Each cell As Cell In Neighbour(currentCell, visitedCells, limits)
                 If Not frontierSet.Contains(cell) Then frontierSet.Add(cell)
             Next
             If frontierSet.Count = 0 Then Exit While
@@ -52,9 +52,11 @@
         Dim visitedCells As Dictionary(Of Cell, Boolean) = InitialiseVisited(limits)
         Dim stopwatch As Stopwatch = Stopwatch.StartNew()
         Dim weights As New Dictionary(Of Cell, Integer)
+        Dim weightsprioqueue As New PriorityQueue(Of Node) 'Dictionary(Of Cell, Integer)
         For y = limits(1) To limits(3) Step 2
             For x = limits(0) + 3 To limits(2) - 1 Step 4
                 Dim tempNode As New Cell(x, y)
+                'weightsprioqueue.Enqueue(New Node(x, y), r.Next(0, 99))
                 weights(tempNode) = r.Next(0, 99) 'Assigning random weights to each cell in the grid
             Next
         Next
@@ -65,15 +67,16 @@
         returnablePath.Add(New Node(currentCell.X, currentCell.Y))
         While True
             If ExitCase() Then Return Nothing
-            For Each cell As Cell In Neighbour(currentCell, visitedCells, limits, True)
-                If Not frontierSet.Contains(cell) Then frontierSet.Add(cell)
+            For Each cell In From cell1 In Neighbour(currentCell, visitedCells, limits) Where Not frontierSet.Contains(cell1)
+                frontierSet.Add(cell)
+                weightsprioqueue.Enqueue(cell.ToNode(), weights(cell))
             Next
             If frontierSet.Count = 0 Then Exit While
-            Dim highestWeightCell As Cell = frontierSet(0)
-            For Each cell In frontierSet
-                If weights(highestWeightCell) < weights(cell) Then highestWeightCell = cell
-            Next
-            currentCell = highestWeightCell
+            'Dim highestWeightCell As Cell = weightsprioqueue.ExtractMin().ToCell() 'frontierSet(0)
+            'For Each cell In frontierSet
+            '    If weights(highestWeightCell) < weights(cell) Then highestWeightCell = cell
+            'Next
+            currentCell = weightsprioqueue.ExtractMin().ToCell()
             Dim adjancencyList() As Integer = AdjacentCheck(currentCell, visitedCells)
             Dim previousCell As Cell = PickAdjancentCell(currentCell, adjancencyList)
             wallCell = MidPoint(currentCell, previousCell)

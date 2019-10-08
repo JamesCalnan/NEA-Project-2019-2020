@@ -8,7 +8,7 @@
         Dim prevCell As Cell = PickRandomStartingCell(limits)
         Dim visitedCells As Dictionary(Of Cell, Boolean) = InitialiseVisited(limits)
         Dim wallCell As Cell
-        Dim returnablePath As New List(Of Node)
+        Dim fullMaze As New List(Of Node)
         For y = limits(1) To limits(3) Step 2
             For x = limits(0) + 3 To limits(2) - 1 Step 4
                 totalCellCount += 1
@@ -17,7 +17,7 @@
         Dim stopwatch As Stopwatch = Stopwatch.StartNew()
         SetBoth(pathcolour)
         visitedCells(currentCell) = True
-        returnablePath.Add(New Node(currentCell.X, currentCell.Y))
+        fullMaze.Add(New Node(currentCell.X, currentCell.Y))
         If showMazeGeneration Then currentCell.Print("██")
         Dim usedCellCount = 1
         While usedCellCount <> totalCellCount
@@ -31,8 +31,8 @@
                 usedCellCount += 1
                 wallCell = MidPoint(currentCell, temporaryCell)
                 currentCell = temporaryCell
-                returnablePath.Add(New Node(wallCell.X, wallCell.Y))
-                returnablePath.Add(New Node(temporaryCell.X, temporaryCell.Y))
+                fullMaze.Add(New Node(wallCell.X, wallCell.Y))
+                fullMaze.Add(New Node(temporaryCell.X, temporaryCell.Y))
                 If showMazeGeneration Then
                     SetBoth(pathcolour)
                     prevCell.Print("██")
@@ -56,14 +56,14 @@
         PrintMessageMiddle($"Time taken to generate the maze: {stopwatch.Elapsed.TotalSeconds}", 1, ConsoleColor.Yellow)
         If Not showMazeGeneration Then
             SetBoth(pathcolour)
-            PrintMazeHorizontally(returnablePath, limits(2), limits(3))
+            PrintMazeHorizontally(fullMaze, limits(2), limits(3))
         Else
             SetBoth(pathcolour)
             prevCell.Print("██")
         End If
         Dim ypos As Integer = Console.CursorTop
-        AddStartAndEnd(returnablePath, limits, pathcolour)
+        AddStartAndEnd(fullMaze, limits, pathcolour)
         Console.SetCursorPosition(0, ypos)
-        Return returnablePath
+        Return fullMaze
     End Function
 End Module

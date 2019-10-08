@@ -131,8 +131,26 @@ Module Menus
                             Else
                                 availablePath = BinaryTreeRandom(limits, delayMs, showMazeGeneration, bias, pathColour, backGroundColour)
                             End If
-                        ElseIf arr(y) = "   Wilson's Algorithm" Then
-                            availablePath = WilsonsRefectored(limits, delayMs, showMazeGeneration, pathColour, backGroundColour)
+                        ElseIf arr(y) = "   Wilson's Algorithm (random)" Then
+                            availablePath = WilsonsRefectored(limits, delayMs, showMazeGeneration, "random", pathColour, backGroundColour)
+                        ElseIf arr(y) = "   Wilson's Algorithm (top to bottom)" Then
+                            availablePath = WilsonsRefectored(limits, delayMs, showMazeGeneration, "top to bottom", pathColour, backGroundColour)
+                        ElseIf arr(y) = "   Wilson's Algorithm (bottom to top)" Then
+                            availablePath = WilsonsRefectored(limits, delayMs, showMazeGeneration, "bottom to top", pathColour, backGroundColour)
+                        ElseIf arr(y) = "   Wilson's Algorithm (left to right)" Then
+                            availablePath = WilsonsRefectored(limits, delayMs, showMazeGeneration, "left to right", pathColour, backGroundColour)
+                        ElseIf arr(y) = "   Wilson's Algorithm (right to left)" Then
+                            availablePath = WilsonsRefectored(limits, delayMs, showMazeGeneration, "right to left", pathColour, backGroundColour)
+                        ElseIf arr(y) = "   Wilson's Algorithm (expanding circle)" Then
+                            availablePath = WilsonsRefectored(limits, delayMs, showMazeGeneration, "expanding circle", pathColour, backGroundColour)
+                        ElseIf arr(y) = "   Wilson's Algorithm (collapsing rectangle)" Then
+                            availablePath = WilsonsRefectored(limits, delayMs, showMazeGeneration, "collapsing rectangle", pathColour, backGroundColour)
+                        ElseIf arr(y) = "   Wilson's Algorithm (expanding rectangle)" Then
+                            availablePath = WilsonsRefectored(limits, delayMs, showMazeGeneration, "expanding rectangle", pathColour, backGroundColour)
+                        ElseIf arr(y) = "   Wilson's Algorithm (collapsing diamond)" Then
+                            availablePath = WilsonsRefectored(limits, delayMs, showMazeGeneration, "collapsing diamond", pathColour, backGroundColour)
+                        ElseIf arr(y) = "   Wilson's Algorithm (expanding diamond)" Then
+                            availablePath = WilsonsRefectored(limits, delayMs, showMazeGeneration, "expanding diamond", pathColour, backGroundColour)
                         ElseIf arr(y) = "   Eller's Algorithm" Then
                             availablePath = Ellers(limits, delayMs, showMazeGeneration, pathColour, backGroundColour)
                         ElseIf arr(y) = "   Kruskal's Algorithm (simplified)" Then
@@ -310,19 +328,19 @@ Module Menus
             End If
         End While
     End Sub
-    Sub Solving(availablePath As List(Of Node), Limits() As Integer, ByRef previousMaze As List(Of Node), ByRef Input As String, yPosAfterMaze As Integer, showPath As Boolean, solvingDelay As Integer, ByRef algorithm As String, ByRef setPreivousAlgorithm As String, tempArr() As String, pathColour As ConsoleColor, backGroundColour As consolecolor, solvingColour As ConsoleColor)
+    Sub Solving(availablePath As List(Of Node), Limits() As Integer, ByRef previousMaze As List(Of Node), ByRef Input As String, yPosAfterMaze As Integer, showPath As Boolean, solvingDelay As Integer, ByRef algorithm As String, ByRef setPreivousAlgorithm As String, tempArr() As String, pathColour As ConsoleColor, backGroundColour As ConsoleColor, solvingColour As ConsoleColor)
         setPreivousAlgorithm = algorithm
         previousMaze.Clear()
         previousMaze.AddRange(availablePath)
         PreSolving(Limits, availablePath, previousMaze, Input, yPosAfterMaze, tempArr)
         SolvingInput(Input, showPath, yPosAfterMaze, solvingDelay, availablePath, algorithm, pathColour, backGroundColour, solvingColour)
     End Sub
-    Sub PreSolving(limits() As Integer, availablePath As List(Of Node), ByRef previousMaze As List(Of Node), ByRef input As String, ByRef yPosAfterMaze As Integer,tempArr() as String)
+    Sub PreSolving(limits() As Integer, availablePath As List(Of Node), ByRef previousMaze As List(Of Node), ByRef input As String, ByRef yPosAfterMaze As Integer, tempArr() As String)
         Console.BackgroundColor = (ConsoleColor.Black)
-        yposaftermaze = limits(3) + 1
-        DisplayAvailablePositions(availablepath.Count)
-        Console.SetCursorPosition(0, yposaftermaze + 3)
-        input = SolvingMenu(temparr, "What would you like to do with the maze", limits(2) + 4, 3)
+        yPosAfterMaze = limits(3) + 1
+        DisplayAvailablePositions(availablePath.Count)
+        Console.SetCursorPosition(0, yPosAfterMaze + 3)
+        input = SolvingMenu(tempArr, "What would you like to do with the maze", limits(2) + 4, 3)
     End Sub
     Sub ClearHorizontal(y As Integer, ClearMessage As Boolean, setafter As Boolean)
         Console.ForegroundColor = ConsoleColor.White
@@ -477,7 +495,7 @@ Module Menus
         Console.ForegroundColor = (ConsoleColor.White)
         Return current
     End Function
-    Sub SolvingInput(input As String, showpath As Boolean, YposAfterMaze As Integer, solvingdelay As Integer, Maze As List(Of Node), Algorithm As String,pathColour as ConsoleColor,backGroundColour as ConsoleColor,solvingColour as ConsoleColor)
+    Sub SolvingInput(input As String, showpath As Boolean, YposAfterMaze As Integer, solvingdelay As Integer, Maze As List(Of Node), Algorithm As String, pathColour As ConsoleColor, backGroundColour As ConsoleColor, solvingColour As ConsoleColor)
         If input = "Solve using the A* algorithm" Then
             Console.SetCursorPosition(0, YposAfterMaze + 2)
             Dim heuristic = GetIntInputArrowKeys("Heuristic: ", 60, 1, True)
@@ -724,8 +742,8 @@ Module Menus
             End If
         End If
         If NeedExtraInfo Then Console.Clear()
-        Width = GetIntInputArrowKeys($"Width of the Maze: ", (Console.WindowWidth - 56) / 2, 20, False) * 2 + 4
-        Height = GetIntInputArrowKeys($"Height of the Maze: ", Console.WindowHeight - 7, 20, False)
+        Width = GetIntInputArrowKeys($"Width of the Maze: ", (Console.WindowWidth - 58) / 2, 20, False) * 2
+        Height = GetIntInputArrowKeys($"Height of the Maze: ", Console.WindowHeight - 6, 20, False)
         If Width Mod 2 = 0 Then
             Width += 1
         End If

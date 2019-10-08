@@ -26,7 +26,7 @@
                 v.print("XX")
                 Threading.Thread.Sleep(delay)
             End If
-            For Each w In Neighbour(v, visited, limits, True)
+            For Each w In Neighbour(v, visited, limits)
                 If Not visited(w) Then
                     visited(w) = True
                     frontierSet.Add(w)
@@ -34,6 +34,10 @@
                 End If
             Next
         End While
+        If Not showMazeGeneration Then
+            SetBoth(pathColour)
+            PrintMazeHorizontally(fullMaze, limits(2), limits(3))
+        End If
         AddStartAndEnd(fullMaze, limits, pathColour)
         Return fullMaze
     End Function

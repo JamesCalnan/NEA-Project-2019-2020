@@ -1,8 +1,5 @@
 ﻿Module BoruvkasAlgorithm
-
     'video: https://www.youtube.com/watch?v=czcf73b0Ga0
-
-
     Function BoruvkasAlgorithm(limits() As Integer, delay As Integer, showMazeGeneration As Boolean, pathColour As ConsoleColor, backGroundColour As ConsoleColor, rule As String)
         If backGroundColour <> ConsoleColor.Black Then DrawBackground(backGroundColour, limits)
         Dim T As New Dictionary(Of Cell, Integer)
@@ -68,6 +65,10 @@
             iteration += 1
             Console.Write($"iteration: {iteration}")
         End While
+        If Not showMazeGeneration Then
+            SetBoth(pathColour)
+            PrintMazeHorizontally(returnPath, limits(2), limits(3))
+        End If
         AddStartAndEnd(returnPath, limits, pathColour)
         Return returnPath
     End Function

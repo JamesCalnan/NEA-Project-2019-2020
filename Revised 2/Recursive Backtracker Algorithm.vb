@@ -18,7 +18,7 @@
                 prevCell.Print("██")
                 SetBoth(pathColour)
             End If
-            Dim recentCells As List(Of Cell) = Neighbour(currentCell, visitedCells, limits, True)
+            Dim recentCells As List(Of Cell) = Neighbour(currentCell, visitedCells, limits)
             If recentCells.Count > 0 Then
                 Dim temporaryCell As Cell = recentCells(r.Next(0, recentCells.Count))
                 visitedCells(temporaryCell) = True
@@ -61,7 +61,7 @@
         Return returnablePath
     End Function
     Function RecursiveBacktrackerRecursively(cell As Cell, limits() As Integer, path As List(Of Node), ByRef visited As Dictionary(Of Cell, Boolean), ByRef cameFrom As Cell, r As Random, showMazeGeneration As Boolean, delay As Integer, pathColour as consolecolor)
-        Dim recentCells As List(Of Cell) = Neighbour(cell, visited, limits, True)
+        Dim recentCells As List(Of Cell) = Neighbour(cell, visited, limits)
         If recentCells.Count > 0 Then
             Dim temporaryCell As Cell = recentCells(r.Next(0, recentCells.Count))
             Dim wall As Cell = MidPoint(cameFrom, temporaryCell)

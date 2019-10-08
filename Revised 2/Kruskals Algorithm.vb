@@ -6,7 +6,8 @@
         Dim availableCells As New List(Of Cell)
         Dim setNumber = 1
         Dim returnpath As New List(Of Node)
-        Dim edgeWeights As New Dictionary(Of Cell, Integer)
+        Dim edges As New List(Of Cell)
+        Dim edgeWeights As New PriorityQueue(Of Node) 'Dictionary(Of Cell, Integer)
         Dim r As New Random
         For y = limits(1) To limits(3) Step 2
             For x = limits(0) + 3 To limits(2) Step 4
@@ -16,26 +17,31 @@
                 availableCells.Add(New Cell(x, y))
                 'Assigning edge weights
                 If x < limits(2) - 2 And x + 2 <> limits(2) - 1 Then
-                    edgeWeights(New Cell(x + 2, y)) = r.Next(0, 99)
+                    'edgeWeights(New Cell(x + 2, y)) = r.Next(0, 99)
+                    edges.Add(New Cell(x + 2, y))
+                    edgeWeights.Enqueue(New Node(x + 2, y), r.Next(0, 99))
                 End If
                 If y < limits(3) - 1 Then
-                    edgeWeights(New Cell(x, y + 1)) = r.Next(0, 99)
+                    'edgeWeights(New Cell(x, y + 1)) = r.Next(0, 99)
+                    edges.Add(New Cell(x, y + 1))
+                    edgeWeights.Enqueue(New Node(x, y + 1), r.Next(0, 99))
                 End If
             Next
         Next
         SetBoth(pathColour)
         Dim stopwatch As Stopwatch = Stopwatch.StartNew()
-        While edgeWeights.Count > 0
+        While Not edgeWeights.IsEmpty() Or edges.Count > 0 'edgeWeights.Count > 0
             If ExitCase() Then Return Nothing
             'find the edge with the lowest weight
              Dim highestWeightEdge As Cell
-            if rule = "simplified"
-                highestWeightEdge = edgeWeights.Keys(r.Next(0, edgeWeights.Count))
-            Else    
-                dim tempCell as cell = edgeWeights.Keys(0)
-                For Each cell In From cell1 In edgeWeights Where edgeWeights(tempCell) < edgeWeights(cell1.Key)
-                    tempCell = cell.Key
-                Next
+            If rule = "simplified" Then
+                If edges.Count = 0 Then Exit While
+                highestWeightEdge = edges(r.Next(edges.Count)) 'edgeWeights.Keys(r.Next(0, edgeWeights.Count))
+            Else
+                Dim tempCell As Cell = edgeWeights.ExtractMin().ToCell() 'edgeWeights.Keys(0)
+                'For Each cell In From cell1 In edgeWeights Where edgeWeights(tempCell) < edgeWeights(cell1.Key)
+                '    tempCell = cell.Key
+                'Next
                 highestWeightEdge = tempCell
             End If
             'TempLowest is now the key with the lowest value in the EdgeWeights dictionary
@@ -58,7 +64,8 @@
                     If Not returnpath.Contains(New Node(cell.X, cell.Y)) Then returnpath.Add(New Node(cell.X, cell.Y))
                 Next
             End If
-            edgeWeights.Remove(wallCell)
+            If rule = "simplified" Then edges.Remove(wallCell)
+            'edgeWeights.Remove(wallCell)
             Threading.Thread.Sleep(delay)
         End While
         PrintMessageMiddle($"Time taken to generate the maze: {stopwatch.Elapsed.TotalSeconds}", 1, ConsoleColor.Yellow)

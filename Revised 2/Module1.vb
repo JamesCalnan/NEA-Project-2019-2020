@@ -42,6 +42,7 @@ Module Module1
         '    Console.Write("Please make the window full screen")
         'Loop Until Console.WindowWidth > Console.LargestWindowWidth - 10 And Console.WindowHeight > Console.LargestWindowHeight - 5
         'Dim bool = HorizontalYesNo(0, "Do you want to have the exit option available on the menu:   ", True, True, False)
+        Console.ReadKey()
         Dim menuOptions() As String = {
             "Generate a maze using one of the following algorithms",
             "   Recursive Backtracker Algorithm (using iteration)",
@@ -58,7 +59,15 @@ Module Module1
             "   Borůvka's Algorithm (random)",
             "   Binary Tree Algorithm (top down)",
             "   Binary Tree Algorithm (random)",
-            "   Wilson's Algorithm",
+            "   Wilson's Algorithm (random)",
+            "   Wilson's Algorithm (top to bottom)",
+            "   Wilson's Algorithm (bottom to top)",
+            "   Wilson's Algorithm (left to right)",
+            "   Wilson's Algorithm (right to left)",
+            "   Wilson's Algorithm (collapsing rectangle)",
+            "   Wilson's Algorithm (expanding rectangle)",
+            "   Wilson's Algorithm (collapsing diamond)",
+            "   Wilson's Algorithm (expanding diamond)",
             "   Eller's Algorithm",
             "   Kruskal's Algorithm (simplified)",
             "   Kruskal's Algorithm (true)",
@@ -1065,7 +1074,7 @@ Module Module1
     End Function
 End Module
 Class Cell
-    Public X, Y, CellSet As Integer
+    Public X, Y As Integer
     Public Sub New(xpoint As Integer, ypoint As Integer)
         X = xpoint
         Y = ypoint

@@ -22,7 +22,8 @@
                 prevCell.Print("██")
                 SetBoth(pathColour)
             End If
-            If Neighbour(currentCell, visitedCells, limits, False) Then 'done
+            Dim neighbours = Neighbour(currentCell, visitedCells, limits)
+            If neighbours.count > 0 Then 'done
                 Dim tempCell As New Cell(-1, -1)
                 Dim validNextCell = False
                 Do
@@ -102,7 +103,7 @@
             PrintMazeHorizontally(returnablePath, limits(2), limits(3))
         End If
         Dim ypos As Integer = Console.CursorTop
-        AddStartAndEnd(returnablePath, limits, 0)
+        AddStartAndEnd(returnablePath, limits, pathColour)
         Console.SetCursorPosition(0, ypos)
         Return returnablePath
     End Function

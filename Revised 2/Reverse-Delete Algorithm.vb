@@ -1,7 +1,4 @@
 ﻿Module Reverse_Delete_Algorithm
-
-
-
     Function reverseDeleteAlgorithm(limits() As Integer, delay As Integer, showMazeGeneration As Boolean, pathColour As ConsoleColor, backGroundColour As ConsoleColor, searchingAlgorithm As String)
         If backGroundColour <> ConsoleColor.Black Then DrawBackground(backGroundColour, limits)
         Dim T As New Dictionary(Of Cell, Integer)
@@ -70,7 +67,6 @@
             End If
         End While
         If Not showMazeGeneration Then
-            DrawBackground(backGroundColour, limits)
             SetBoth(pathColour)
             PrintMazeHorizontally(returnPath, limits(2), limits(3))
         End If

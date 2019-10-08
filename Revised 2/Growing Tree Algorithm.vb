@@ -18,7 +18,7 @@
         Dim stopwatch As Stopwatch = Stopwatch.StartNew()
         While True
             If ExitCase() Then Return Nothing
-            For Each cell As Cell In Neighbour(currentCell, visitedCells, limits, True)
+            For Each cell As Cell In Neighbour(currentCell, visitedCells, limits)
                 If Not frontierSet.Contains(cell) Then frontierSet.Add(cell)
                 recentFrontierSet.Add(cell)
             Next

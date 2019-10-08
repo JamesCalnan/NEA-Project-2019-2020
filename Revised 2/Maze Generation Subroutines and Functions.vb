@@ -1,22 +1,4 @@
 ﻿Module MazeGenerationSubroutinesAndFunctions
-    Function PickNextDir(currentCell As Cell, direction As Dictionary(Of Cell, String), showmazegeneation As Boolean, delay As Integer, ByRef returnablepath As List(Of Node))
-        Threading.Thread.Sleep(delay)
-        If showmazegeneation Then currentCell.Print("██")
-        Dim tempNode As New Node(currentCell.X, currentCell.Y)
-        If Not returnablepath.Contains(tempNode) Then returnablepath.Add(New Node(currentCell.X, currentCell.Y))
-        Dim go As String = direction(currentCell)
-        If go = "VV" Then 'down
-            Return New Cell(currentCell.X, currentCell.Y + 2)
-        ElseIf go = "<<" Then 'left
-            Return New Cell(currentCell.X - 4, currentCell.Y)
-        ElseIf go = "^^" Then 'up
-            Return New Cell(currentCell.X, currentCell.Y - 2)
-        ElseIf go = ">>" Then 'right
-            Return New Cell(currentCell.X + 4, currentCell.Y)
-        End If
-        Return Nothing
-    End Function
-
     Sub AddToPath(ByRef list As List(Of Node), cell1 As Cell, cell2 As Cell)
         Dim tempNode As New Node(cell1.X, cell1.Y)
         If Not list.Contains(tempNode) Then list.Add(New Node(cell1.X, cell1.Y))
@@ -102,7 +84,7 @@
         If newPoint.WithinLimits(limits) Then neighbours.Add(New Cell(newPoint.X, newPoint.Y))
         Return neighbours
     End Function
-    Function Neighbour(current As Cell, visited As Dictionary(Of Cell, Boolean), limits() As Integer, bool As Boolean)
+    Function Neighbour(current As Cell, visited As Dictionary(Of Cell, Boolean), limits() As Integer) As List(Of Cell)
         Dim neighbours As New List(Of Cell)
         Dim newPoint As New Cell(current.X - 4, current.Y)
         If visited.ContainsKey(newPoint) Then If newPoint.WithinLimits(limits) Then If Not visited(newPoint) Then neighbours.Add(New Cell(newPoint.X, newPoint.Y))
@@ -112,12 +94,7 @@
         If visited.ContainsKey(newPoint) Then If newPoint.WithinLimits(limits) Then If Not visited(newPoint) Then neighbours.Add(New Cell(newPoint.X, newPoint.Y))
         newPoint.Update(current.X + 4, current.Y)
         If visited.ContainsKey(newPoint) Then If newPoint.WithinLimits(limits) Then If Not visited(newPoint) Then neighbours.Add(New Cell(newPoint.X, newPoint.Y))
-        If bool Then
-            Return neighbours
-        Else
-            If neighbours.Count > 0 Then Return True
-        End If
-        Return False
+        Return neighbours
     End Function
     Sub PrintMazeHorizontally(maze As List(Of Node), greatestX As Integer, greatestY As Integer)
         For __x = 4 To greatestX + 1 Step 2

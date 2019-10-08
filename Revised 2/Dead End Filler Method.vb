@@ -4,9 +4,7 @@
         Dim start As New Node(list(list.Count - 2).X, list(list.Count - 2).Y)
         Dim goal As New Node(list(list.Count - 1).X, list(list.Count - 1).Y)
         Dim visited As New Dictionary(Of Node, Boolean)
-        Dim fillColour = ConsoleColor.DarkCyan
         Dim maze As New List(Of Node)
-        Dim editedMaze As New List(Of Node)
         Dim notPath As New List(Of Node)
         Dim greatestX, greatestY As Integer
         greatestX = 0
@@ -33,8 +31,7 @@
             Console.BackgroundColor = ConsoleColor.Black
             Console.SetCursorPosition(1, 1)
             Console.Write("Current Process: Filling dead ends      ")
-            Console.ForegroundColor = fillColour
-            Console.BackgroundColor = fillColour
+            SetBoth(solvingcolour)
             For Each deadEnd In deadEnds
                 Dim startingCell As Node = deadEnd
                 visited(startingCell) = True
@@ -82,8 +79,8 @@
                 Next
             Else
                 setboth(ConsoleColor.Green)
-                For Each Node In maze
-                    If Not notPath.Contains(Node) Then Node.Print("██")
+                For Each Node In From Node1 In maze Where Not notPath.Contains(Node1)
+                    Node.Print("██")
                 Next
             End If
         Else

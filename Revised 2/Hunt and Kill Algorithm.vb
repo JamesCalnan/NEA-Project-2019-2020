@@ -14,7 +14,7 @@
         Dim stopwatch As Stopwatch = Stopwatch.StartNew()
         While usedCellPositions <> totalcellcount
             If ExitCase() Then Return Nothing
-            Dim recentCells As List(Of Cell) = Neighbour(currentCell, visitedCells, limits, True)
+            Dim recentCells As List(Of Cell) = Neighbour(currentCell, visitedCells, limits)
             If recentCells.Count > 0 Then
                 Dim temporaryCell As Cell = recentCells(r.Next(0, recentCells.Count))
                 Dim wallCell As Cell = MidPoint(currentCell, temporaryCell)
@@ -95,7 +95,7 @@
         Dim stopwatch As Stopwatch = Stopwatch.StartNew()
         While usedCellPositions <> totalCellCount
             If ExitCase() Then Return Nothing
-            Dim recentCells As List(Of Cell) = Neighbour(currentCell, visitedCells, limits, True)
+            Dim recentCells As List(Of Cell) = Neighbour(currentCell, visitedCells, limits)
             If recentCells.Count > 0 Then
                 Dim temporaryCell As Cell = recentCells(r.Next(0, recentCells.Count))
                 Dim wallCell As Cell = MidPoint(currentCell, temporaryCell)
