@@ -12,8 +12,9 @@ Module WilsonsAlgorithm
         Next
         Dim cellList As New List(Of Cell)
         Dim circleCentre As New Cell((limits(2) + 2) \ 2, (limits(3) + 1) \ 2)
+        If circleCentre.Y Mod 2 = 0 Then circleCentre.Y += 1
         While Not availableCells.Contains(circleCentre)
-            circleCentre.Update(circleCentre.X + 1, circleCentre.Y + 1)
+            circleCentre.Update(circleCentre.X + 1, circleCentre.Y)
         End While
         Dim discovered As New Dictionary(Of Cell, Boolean)
         For Each cell In availableCells
@@ -25,11 +26,11 @@ Module WilsonsAlgorithm
         discovered(circleCentre) = True
         While q.Count > 0
             Dim v = q.Dequeue()
+            If Not cellList.Contains(New Cell(v.X, v.Y)) Then cellList.Add(New Cell(v.X, v.Y))
             For Each w As Cell In adjacentVertices(v, availableCells)
                 If Not discovered(w) Then
                     discovered(w) = True
                     q.Enqueue(w)
-                    cellList.Add(New Cell(w.X, w.Y))
                 End If
             Next
         End While
@@ -46,71 +47,6 @@ Module WilsonsAlgorithm
         newNode.Update(current.X - 4, current.Y)
         If availablepath.Contains(newNode) Then neighbours.Add(New Cell(newNode.X, newNode.Y))
         Return neighbours
-    End Function
-    Function collapsingDiamond(limits() As Integer)
-        Dim totalCount As Integer = 0
-        Dim gridCells As New List(Of Cell)
-        For y = limits(1) To limits(3) Step 2
-            For x = limits(0) + 3 To limits(2) Step 4
-                totalCount += 1
-                gridCells.Add(New Cell(x, y))
-            Next
-        Next
-        Dim topLeft As New Cell(limits(0) + 3, limits(1))
-        Dim topRight As New Cell(limits(2) - 1, limits(1))
-        If Not gridCells.Contains(topRight) Then topRight.Update(topRight.X - 2, topRight.Y)
-        Dim bottomLeft As New Cell(limits(0) + 3, limits(3))
-        Dim bottomRight As New Cell(limits(2) - 1, limits(3))
-        If Not gridCells.Contains(bottomRight) Then bottomRight.Update(bottomRight.X - 2, bottomRight.Y)
-        Dim availableCells As New List(Of Cell) From {
-                topLeft,
-                topRight,
-                bottomLeft,
-                bottomRight
-            }
-        Do
-            Dim tempCorner As New Cell(topLeft.X, topLeft.Y)
-            tempCorner.Update(tempCorner.X + 4, tempCorner.Y)
-            If tempCorner.WithinLimits(limits) Then
-                If Not availableCells.Contains(New Cell(tempCorner.X, tempCorner.Y)) Then availableCells.Add(New Cell(tempCorner.X, tempCorner.Y))
-                Do
-                    If Not availableCells.Contains(New Cell(tempCorner.X, tempCorner.Y)) Then availableCells.Add(New Cell(tempCorner.X, tempCorner.Y))
-                    tempCorner.Update(tempCorner.X - 4, tempCorner.Y + 2)
-                Loop Until Not tempCorner.WithinLimits(limits)
-                topLeft.Update(topLeft.X + 4, topLeft.Y)
-            End If
-            tempCorner.Update(topRight.X - 4, topRight.Y)
-            If tempCorner.WithinLimits(limits) Then
-                If Not availableCells.Contains(New Cell(tempCorner.X, tempCorner.Y)) Then availableCells.Add(New Cell(tempCorner.X, tempCorner.Y))
-                Do
-                    If Not availableCells.Contains(New Cell(tempCorner.X, tempCorner.Y)) Then availableCells.Add(New Cell(tempCorner.X, tempCorner.Y))
-                    tempCorner.Update(tempCorner.X + 4, tempCorner.Y + 2)
-                Loop Until Not tempCorner.WithinLimits(limits)
-                topRight.Update(topRight.X - 4, topRight.Y)
-            End If
-            tempCorner.Update(bottomLeft.X + 4, bottomLeft.Y)
-            If tempCorner.WithinLimits(limits) Then
-                If Not availableCells.Contains(New Cell(tempCorner.X, tempCorner.Y)) Then availableCells.Add(New Cell(tempCorner.X, tempCorner.Y))
-                Do
-                    If Not availableCells.Contains(New Cell(tempCorner.X, tempCorner.Y)) Then availableCells.Add(New Cell(tempCorner.X, tempCorner.Y))
-                    tempCorner.Update(tempCorner.X - 4, tempCorner.Y - 2)
-                Loop Until Not tempCorner.WithinLimits(limits)
-                bottomLeft.Update(bottomLeft.X + 4, bottomLeft.Y)
-            End If
-            tempCorner.Update(bottomRight.X - 4, bottomRight.Y)
-            If tempCorner.WithinLimits(limits) Then
-                If Not availableCells.Contains(New Cell(tempCorner.X, tempCorner.Y)) Then availableCells.Add(New Cell(tempCorner.X, tempCorner.Y))
-                Do
-                    If Not availableCells.Contains(New Cell(tempCorner.X, tempCorner.Y)) Then availableCells.Add(New Cell(tempCorner.X, tempCorner.Y))
-                    tempCorner.Update(tempCorner.X + 4, tempCorner.Y - 2)
-                Loop Until Not tempCorner.WithinLimits(limits)
-                bottomRight.Update(bottomRight.X - 4, bottomRight.Y)
-            End If
-        Loop Until availableCells.Count > totalCount
-        For Each cell In From cell1 In gridCells Where Not availableCells.Contains(cell1)
-            availableCells.Add(cell)
-        Next
-        Return availableCells
     End Function
     Function collapsingRectangle(limits() As Integer)
         Dim totalCount As Integer = 0
@@ -191,10 +127,11 @@ Module WilsonsAlgorithm
             cellList = collapsingRectangle(limits)
             cellList.Reverse()
         ElseIf cellPickingMethod = "collapsing diamond" Then
-            cellList = collapsingDiamond(limits)
-        ElseIf cellPickingMethod = "expanding diamond" Then
-            cellList = collapsingDiamond(limits)
+            cellList = expandingCircle(limits)
             cellList.Reverse()
+        ElseIf cellPickingMethod = "expanding diamond" Then
+            cellList = expandingCircle(limits)
+            'cellList.Reverse()
         End If
         If backGroundColour <> ConsoleColor.Black Then DrawBackground(backGroundColour, limits)
         Dim r As New Random
@@ -217,14 +154,24 @@ Module WilsonsAlgorithm
         Dim currentCell As Cell = cellList(0) 'PickRandomCell(availablePositions, UST, limits, cellPickingMethod, cellList)
         randomWalkCells.Add(currentCell)
         Dim previousCell = currentCell
+        Dim stopwatch As Stopwatch = Stopwatch.StartNew()
         While availablePositions.Count > 0
             If ExitCase() Then Return Nothing
             Dim immediateNeighbours = RanNeighbour(currentCell, limits)
             currentCell = immediateNeighbours(r.Next(immediateNeighbours.count))
-            SetBoth(pathColour)
-            If showMazeGeneration Then currentCell.Print("XX")
+            If showMazeGeneration Then
+                SetBoth(ConsoleColor.Blue)
+                currentCell.Print("XX")
+                SetBoth(pathColour)
+                previousCell.Print("XX")
+                Threading.Thread.Sleep(delay \ 2)
+            End If
             cameFrom(previousCell) = currentCell
             If UST.Contains(currentCell) Then 'if the cell is in the uniform spanning tree
+                If showMazeGeneration Then
+                    SetBoth(pathColour)
+                    currentCell.Print("XX")
+                End If
                 Dim backtrackingCell = randomWalkCells(0)
                 If showMazeGeneration Then backtrackingCell.Print("XX")
                 Dim pathToUst As New List(Of Cell) From {
@@ -246,7 +193,7 @@ Module WilsonsAlgorithm
                     If showMazeGeneration Then
                         wall.Print("XX")
                         pathToUst(i + 1).Print("XX")
-                        Threading.Thread.Sleep(delay)
+                        Threading.Thread.Sleep(delay \ 2)
                     End If
                     fullMaze.Add(wall.ToNode())
                     fullMaze.Add(pathToUst(i + 1).ToNode())
@@ -262,7 +209,7 @@ Module WilsonsAlgorithm
                 Next
                 randomWalkCells.Clear()
                 SetBoth(pathColour)
-                If availablePositions.Count = 0 Then Exit While 'there are no available cells, therefore the maze is done
+                If availablePositions.Count = 0 Or cellList.Count = 0 Then Exit While 'there are no available cells, therefore the maze is done
                 currentCell = cellList(0) 'PickRandomCell(availablePositions, UST, limits, cellPickingMethod, cellList)
                 radius += 1
                 previousCell = currentCell
@@ -274,64 +221,12 @@ Module WilsonsAlgorithm
                 previousCell = currentCell
             End If
         End While
+        PrintMessageMiddle($"Time taken to generate the maze: {stopwatch.Elapsed.TotalSeconds}", 1, ConsoleColor.Yellow)
         If Not showMazeGeneration Then
             SetBoth(pathColour)
             PrintMazeHorizontally(fullMaze, limits(2), limits(3))
         End If
         AddStartAndEnd(fullMaze, limits, pathColour)
         Return fullMaze
-    End Function
-    Function PickRandomCell(availablePositions As List(Of Cell), ust As List(Of Cell), limits() As Integer, version As String, CellPick As List(Of Cell))
-        Dim ran As New Random
-        Dim startingCell As New Cell(ran.Next(limits(1), limits(3)), ran.Next(limits(0) + 3, limits(2) - 1))
-
-        If version = "expanding circle" Then
-            Dim radius = 5
-            Dim availableCells As New List(Of Cell)
-            Dim c As New Cell((limits(2) + 2) \ 2, (limits(3) + 1) \ 2) 'circle centre
-            For i = 1 To 360
-                If New Cell(((c.X + radius * Math.Cos(i)) * 2) - c.X, c.Y + radius * Math.Sin(i)).WithinLimits(limits) And Not availableCells.Contains(New Cell(((c.X + radius * Math.Cos(i)) * 2) - c.X, c.Y + radius * Math.Sin(i))) And availablePositions.Contains(New Cell(((c.X + radius * Math.Cos(i)) * 2) - c.X, c.Y + radius * Math.Sin(i))) Then availableCells.Add(New Cell(((c.X + radius * Math.Cos(i)) * 2) - c.X, c.Y + radius * Math.Sin(i)))
-            Next
-            If availableCells.Count > 0 Then Return availableCells(ran.Next(availableCells.Count))
-            For Each cell In From cell1 In availableCells Where Not ust.Contains(cell1)
-                Return cell
-            Next
-        End If
-        If version = "top to bottom" Then
-            Return CellPick(0)
-            For Each cell In From cell1 In CellPick Where Not ust.Contains(cell1)
-                Return cell
-            Next
-        ElseIf version = "bottom to top" Then
-            Return CellPick(0)
-            For Each cell In From cell1 In CellPick Where Not ust.Contains(cell1)
-                Return cell
-            Next
-        End If
-        If version = "left to right" Then
-            Return CellPick(0)
-            For Each cell In From cell1 In CellPick Where Not ust.Contains(cell1)
-                Return cell
-            Next
-        ElseIf version = "right to left" Then
-            Return CellPick(0)
-            'For Each cell In From cell1 In CellPick Where Not ust.Contains(cell1)
-            '    Return cell
-            'Next
-        End If
-        If version = "random" Then
-            Return CellPick(0)
-            For Each cell In From cell1 In CellPick Where Not ust.Contains(cell1)
-                Return cell
-            Next
-        End If
-        Do
-            Dim idx As Integer = ran.Next(0, availablePositions.Count)
-            startingCell.Update(availablePositions(idx).X, availablePositions(idx).Y)
-            If Not ust.Contains(startingCell) Then
-                Exit Do
-            End If
-        Loop
-        Return startingCell
     End Function
 End Module

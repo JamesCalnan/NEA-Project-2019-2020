@@ -26,9 +26,7 @@
         Next
         Dim iteration As Integer = 0
         If rule = "shuffle" Then ShuffleCells(availableCells)
-        Console.BackgroundColor = ConsoleColor.Black
-        Console.SetCursorPosition(0, 0)
-        Console.Write($"iteration: {iteration}")
+        Dim stopwatch As Stopwatch = Stopwatch.StartNew()
         While UniqueComponentNumber(T)
             If ExitCase() Then Return Nothing
             Dim cellEdge As New Dictionary(Of Cell, Cell)
@@ -60,11 +58,8 @@
             For Each edge In edgesUsed
                 edgeWeights.Remove(edge)
             Next
-            Console.BackgroundColor = ConsoleColor.Black
-            Console.SetCursorPosition(0, 0)
-            iteration += 1
-            Console.Write($"iteration: {iteration}")
         End While
+        PrintMessageMiddle($"Time taken to generate the maze: {Stopwatch.Elapsed.TotalSeconds}", 1, ConsoleColor.Yellow)
         If Not showMazeGeneration Then
             SetBoth(pathColour)
             PrintMazeHorizontally(returnPath, limits(2), limits(3))

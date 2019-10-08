@@ -59,15 +59,7 @@ Module Module1
             "   Borůvka's Algorithm (random)",
             "   Binary Tree Algorithm (top down)",
             "   Binary Tree Algorithm (random)",
-            "   Wilson's Algorithm (random)",
-            "   Wilson's Algorithm (top to bottom)",
-            "   Wilson's Algorithm (bottom to top)",
-            "   Wilson's Algorithm (left to right)",
-            "   Wilson's Algorithm (right to left)",
-            "   Wilson's Algorithm (collapsing rectangle)",
-            "   Wilson's Algorithm (expanding rectangle)",
-            "   Wilson's Algorithm (collapsing diamond)",
-            "   Wilson's Algorithm (expanding diamond)",
+            "   Wilson's Algorithm (9 options)",
             "   Eller's Algorithm",
             "   Kruskal's Algorithm (simplified)",
             "   Kruskal's Algorithm (true)",
@@ -598,24 +590,27 @@ Module Module1
         End If
         Return False
     End Function
-    Sub Backtrack(prev As Dictionary(Of Node, Node), target As Node, source As Node, watch As Stopwatch)
+    Sub Backtrack(prev As Dictionary(Of Node, Node), target As Node, source As Node, watch As Stopwatch, Optional ByRef returnPathLength As Integer = 0)
         Dim u As Node = target
         Dim pathlength = 1
         Dim prevNode As Node = u
         SetBoth(ConsoleColor.Green)
         Dim timetaken As String = $"{watch.Elapsed.TotalSeconds}"
-        u.Print("██")
+        If returnPathLength = 0 Then u.Print("██")
         While prev(u) IsNot Nothing
             u = prev(u)
-            DrawBetween(prevNode, u)
+            If returnPathLength = 0 Then DrawBetween(prevNode, u)
             prevNode = u
-            u.Print("██")
+            If returnPathLength = 0 Then u.Print("██")
             pathlength += 1
         End While
-        Console.BackgroundColor = ConsoleColor.Black
-        Console.ForegroundColor = ConsoleColor.White
-        Console.SetCursorPosition(0, Console.WindowHeight - 1)
-        Console.Write($"Solving                            Time taken: {timetaken}")
+        returnPathLength = pathlength
+        If returnPathLength = 0 Then
+            Console.BackgroundColor = ConsoleColor.Black
+            Console.ForegroundColor = ConsoleColor.White
+            Console.SetCursorPosition(0, Console.WindowHeight - 1)
+            Console.Write($"Solving                            Time taken: {timetaken}")
+        End If
         'PrintMessageMiddle($"Path length: {Pathlength}   {timetaken}", Console.WindowHeight - 1, Color.Green)
     End Sub
     Function ExtractMin(list As List(Of Node), dist As Dictionary(Of Node, Double))

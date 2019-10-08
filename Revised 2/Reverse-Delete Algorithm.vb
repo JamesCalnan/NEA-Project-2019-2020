@@ -38,6 +38,7 @@
             Next
         Next
         SetBoth(backGroundColour)
+        Dim stopwatch As Stopwatch = Stopwatch.StartNew()
         While availableEdges.Count > 0
             If ExitCase() Then Return Nothing
             Dim highestWeightEdge = FindHighestEdgeWeight(edgeWeights, availableEdges)
@@ -66,6 +67,7 @@
                 End If
             End If
         End While
+        PrintMessageMiddle($"Time taken to generate the maze: {stopwatch.Elapsed.TotalSeconds}", 1, ConsoleColor.Yellow)
         If Not showMazeGeneration Then
             SetBoth(pathColour)
             PrintMazeHorizontally(returnPath, limits(2), limits(3))

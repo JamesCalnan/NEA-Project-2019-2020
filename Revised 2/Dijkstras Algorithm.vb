@@ -30,7 +30,8 @@
         Backtrack(prev, target, source, stopwatch)
         If Not evaluation Then Console.ReadKey()
     End Sub
-    Sub Dijkstras(maze As List(Of Node), showSolving As Boolean, solvingDelay As Integer, solvingColour as ConsoleColor)
+    Sub Dijkstras(maze As List(Of Node), showSolving As Boolean, solvingDelay As Integer, solvingColour As ConsoleColor, Optional ByRef pathLength As Integer = 0)
+        Dim initialValue = pathLength
         Dim source As New Node(maze(maze.Count - 2).X, maze(maze.Count - 2).Y)
         Dim target As New Node(maze(maze.Count - 1).X, maze(maze.Count - 1).Y)
         Dim dist As New Dictionary(Of Node, Double)
@@ -43,12 +44,12 @@
             Q.Enqueue(v, dist(v))
         Next
         Dim stopwatch As Stopwatch = Stopwatch.StartNew()
-        SetBoth(solvingcolour)
+        SetBoth(solvingColour)
         While Not Q.IsEmpty
             If ExitCase() Then Exit While
             Dim u As Node = Q.ExtractMin
             If u.Equals(target) Then Exit While
-            If showSolving Then : u.Print("██") : Threading.Thread.Sleep(solvingDelay) : End If
+            If showSolving And pathLength = 0 Then : u.Print("██") : Threading.Thread.Sleep(solvingDelay) : End If
             For Each v As Node In GetNeighbours(u, maze)
                 Dim alt As Integer = dist(u) + H(u, v, 1)
                 If alt < dist(v) Then
@@ -58,7 +59,7 @@
                 End If
             Next
         End While
-        Backtrack(prev, target, source, stopwatch)
-        Console.ReadKey()
+        Backtrack(prev, target, source, stopwatch, pathLength)
+        If initialValue = 0 Then Console.ReadKey()
     End Sub
 End Module

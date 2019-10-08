@@ -20,6 +20,8 @@ Module Menus
                                    "Get the amount of corners in the maze",
                                    "Get the amount of junctions in the maze",
                                    "Get the amount of Dead-ends in the maze",
+                                   "Get the elitism of the maze (path length)",
+                                   "Get the solution percentage",
                                    "",
                                    "Save the maze as points",
                                    "Save the maze as a png image",
@@ -131,32 +133,17 @@ Module Menus
                             Else
                                 availablePath = BinaryTreeRandom(limits, delayMs, showMazeGeneration, bias, pathColour, backGroundColour)
                             End If
-                        ElseIf arr(y) = "   Wilson's Algorithm (random)" Then
-                            availablePath = WilsonsRefectored(limits, delayMs, showMazeGeneration, "random", pathColour, backGroundColour)
-                        ElseIf arr(y) = "   Wilson's Algorithm (top to bottom)" Then
-                            availablePath = WilsonsRefectored(limits, delayMs, showMazeGeneration, "top to bottom", pathColour, backGroundColour)
-                        ElseIf arr(y) = "   Wilson's Algorithm (bottom to top)" Then
-                            availablePath = WilsonsRefectored(limits, delayMs, showMazeGeneration, "bottom to top", pathColour, backGroundColour)
-                        ElseIf arr(y) = "   Wilson's Algorithm (left to right)" Then
-                            availablePath = WilsonsRefectored(limits, delayMs, showMazeGeneration, "left to right", pathColour, backGroundColour)
-                        ElseIf arr(y) = "   Wilson's Algorithm (right to left)" Then
-                            availablePath = WilsonsRefectored(limits, delayMs, showMazeGeneration, "right to left", pathColour, backGroundColour)
-                        ElseIf arr(y) = "   Wilson's Algorithm (expanding circle)" Then
-                            availablePath = WilsonsRefectored(limits, delayMs, showMazeGeneration, "expanding circle", pathColour, backGroundColour)
-                        ElseIf arr(y) = "   Wilson's Algorithm (collapsing rectangle)" Then
-                            availablePath = WilsonsRefectored(limits, delayMs, showMazeGeneration, "collapsing rectangle", pathColour, backGroundColour)
-                        ElseIf arr(y) = "   Wilson's Algorithm (expanding rectangle)" Then
-                            availablePath = WilsonsRefectored(limits, delayMs, showMazeGeneration, "expanding rectangle", pathColour, backGroundColour)
-                        ElseIf arr(y) = "   Wilson's Algorithm (collapsing diamond)" Then
-                            availablePath = WilsonsRefectored(limits, delayMs, showMazeGeneration, "collapsing diamond", pathColour, backGroundColour)
-                        ElseIf arr(y) = "   Wilson's Algorithm (expanding diamond)" Then
-                            availablePath = WilsonsRefectored(limits, delayMs, showMazeGeneration, "expanding diamond", pathColour, backGroundColour)
+                        ElseIf arr(y) = "   Wilson's Algorithm (9 options)" Then
+                            Console.ResetColor()
+                            Console.Clear()
+                            Dim wilsonsOption As String = SolvingMenu({"random", "top to bottom", "bottom to top", "left to right", "right to left", "collapsing rectangle", "expanding rectangle", "collapsing diamond", "expanding diamond"}, "Cell selection method: ", 0, 0)
+                            availablePath = WilsonsRefectored(limits, delayMs, showMazeGeneration, wilsonsOption, pathColour, backGroundColour)
                         ElseIf arr(y) = "   Eller's Algorithm" Then
                             availablePath = Ellers(limits, delayMs, showMazeGeneration, pathColour, backGroundColour)
                         ElseIf arr(y) = "   Kruskal's Algorithm (simplified)" Then
-                            availablePath = Kruskals(limits, delayMs, showMazeGeneration, pathColour, backGroundColour, "simplified")
+                            availablePath = KruskalsSimplified(limits, delayMs, showMazeGeneration, pathColour, backGroundColour)
                         ElseIf arr(y) = "   Kruskal's Algorithm (true)" Then
-                            availablePath = Kruskals(limits, delayMs, showMazeGeneration, pathColour, backGroundColour, "true")
+                            availablePath = KruskalsTrue(limits, delayMs, showMazeGeneration, pathColour, backGroundColour)
                         ElseIf arr(y) = "   Houston's Algorithm" Then
                             availablePath = Houstons(limits, delayMs, showMazeGeneration, pathColour, backGroundColour)
                         ElseIf arr(y) = "   Spiral Backtracker Algorithm" Then
@@ -622,8 +609,11 @@ Module Menus
                                 "Play the maze",
                                 "",
                                 "Get the average corridor length",
-                                "Get the amount of corners in the maze", "Get the amount of junctions in the maze",
-                               "Get the amount of Dead-ends in the maze",
+            "Get the amount of corners in the maze",
+            "Get the amount of junctions in the maze",
+            "Get the amount of Dead-ends in the maze",
+            "Get the elitism of the maze (path length)",
+            "Get the solution percentage",
                                "",
                                "Save the maze as points",
                                "Save the maze as a png image",
@@ -655,8 +645,11 @@ Module Menus
                 "Play the maze", "Make the maze unicursal",
                 "",
                 "Get the average corridor length",
-                "Get the amount of corners in the maze", "Get the amount of junctions in the maze",
-               "Get the amount of Dead-ends in the maze",
+            "Get the amount of corners in the maze",
+            "Get the amount of junctions in the maze",
+            "Get the amount of Dead-ends in the maze",
+            "Get the elitism of the maze (path length)",
+            "Get the solution percentage",
                "",
                "Save the maze as points",
                "Save the maze as a png image",
@@ -681,12 +674,14 @@ Module Menus
             "Solve using the right-hand rule",
             "",
             "Play the maze",
-            "Braid (remove dead ends)", "Partial braid (remove some dead ends)", "Make the maze sparse (remove some passages)",
+            "Make the maze sparse (remove some passages)",
             "",
             "Get the average corridor length",
             "Get the amount of corners in the maze",
             "Get the amount of junctions in the maze",
             "Get the amount of Dead-ends in the maze",
+            "Get the elitism of the maze (path length)",
+            "Get the solution percentage",
             "",
             "Save the maze as points",
             "Save the maze as a png image",
@@ -721,6 +716,22 @@ Module Menus
             SetBoth(ConsoleColor.Black)
             Console.ForegroundColor = ConsoleColor.White
             Console.Write($"Average corridor length: {Math.Ceiling(StraightWays(Maze))}")
+            Console.ReadKey()
+        ElseIf input = "Get the elitism of the maze (path length)" Then
+            Dim pathLength As Integer = -1
+            Dijkstras(Maze, False, 0, 0, pathLength)
+            Console.SetCursorPosition(0, Console.WindowHeight - 1)
+            SetBoth(ConsoleColor.Black)
+            Console.ForegroundColor = ConsoleColor.White
+            Console.Write($"Path length: {pathLength}")
+            Console.ReadKey()
+        ElseIf input = "Get the solution percentage" Then
+            Dim pathLength As Integer = -1
+            Dijkstras(Maze, False, 0, 0, pathLength)
+            Console.SetCursorPosition(0, Console.WindowHeight - 1)
+            SetBoth(ConsoleColor.Black)
+            Console.ForegroundColor = ConsoleColor.White
+            Console.Write($"Solution percentage: {Math.Ceiling(pathLength / Maze.Count * 100)}%")
             Console.ReadKey()
         ElseIf input = "Save the maze as an ascii text file" Then
             SaveMazeAscii(Maze)
