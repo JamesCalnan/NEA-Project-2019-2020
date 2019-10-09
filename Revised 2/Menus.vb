@@ -109,6 +109,8 @@ Module Menus
                             If Not showMazeGeneration Then PrintMazeHorizontally(path, limits(2), limits(3))
                             AddStartAndEnd(path, limits, pathColour)
                             availablePath = path
+                        ElseIf arr(y) = "   Recursive Backtracker Algorithm (using iteration, not using a stack)" Then
+                            availablePath = RecursiveBacktracker.RecursiveBacktrackerNotUsingStack(limits, delayMs, showMazeGeneration, pathColour, backGroundColour)
                         ElseIf arr(y) = "   Hunt and Kill Algorithm (first cell)" Then
                             availablePath = HuntAndKillRefactored(limits, delayMs, showMazeGeneration, pathColour, backGroundColour)
                         ElseIf arr(y) = "   Hunt and Kill Algorithm (random cell)" Then
@@ -250,8 +252,12 @@ Module Menus
                             RecrusiveBacktrackerInfo()
                         ElseIf arr(y) = "   Recursive Backtracker Algorithm (using recursion)" Then
                             RecrusiveBacktrackerRecursionInfo()
-                        ElseIf arr(y) = "   Hunt and Kill Algorithm" Then
-                            HuntAndKillInfo()
+                        ElseIf arr(y) = "   Recursive Backtracker Algorithm (using iteration, not using a stack)" Then
+                            RecrusiveBacktrackerNotStackInfo()
+                        ElseIf arr(y) = "   Hunt and Kill Algorithm (first cell)" Then
+                            HuntAndKillInfoFirstCell()
+                        ElseIf arr(y) = "   Hunt and Kill Algorithm (random cell)" Then
+                            HuntAndKillInfoRandomCell()
                         ElseIf arr(y) = "   Prim's Algorithm (simplified)" Then
                             Prims_SimplifiedINFO()
                         ElseIf arr(y) = "   Prim's Algorithm (true)" Then
@@ -269,15 +275,17 @@ Module Menus
                         ElseIf arr(y) = "   Eller's Algorithm" Then
                             EllersInfo()
                         ElseIf arr(y) = "   Kruskal's Algorithm (simplified)" Then
-                            KruskalsInfo()
+                            KruskalsInfoSimplified()
                         ElseIf arr(y) = "   Kruskal's Algorithm (true)" Then
-
+                            KruskalsInfoTrue()
                         ElseIf arr(y) = "   Houston's Algorithm" Then
                             HoustonsInfo()
                         ElseIf arr(y) = "   Spiral Backtracker Algorithm" Then
                             SpiralBacktrackerInfo()
                         ElseIf arr(y) = "   Custom Algorithm" Then
                             CustomAlgorithmInfo()
+                        ElseIf arr(y) = "   Randomised Breadth-First Search" Then
+                            RandomisedBreadthFirstSearch()
                         Else
                             OptionNotReady()
                         End If

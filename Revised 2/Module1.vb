@@ -47,6 +47,7 @@ Module Module1
             "Generate a maze using one of the following algorithms",
             "   Recursive Backtracker Algorithm (using iteration)",
             "   Recursive Backtracker Algorithm (using recursion)",
+            "   Recursive Backtracker Algorithm (using iteration, not using a stack)",
             "   Randomised Breadth-First Search",
             "   Hunt and Kill Algorithm (first cell)",
             "   Hunt and Kill Algorithm (random cell)",
