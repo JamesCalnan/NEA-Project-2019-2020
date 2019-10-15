@@ -217,6 +217,9 @@
   <ItemGroup>
     <Compile Include="A Star Algorithm.vb" />
     <Compile Include="Aldous-Broder Algorithm.vb" />
+    <Compile Include="cocktailShakerSort.vb" />
+    <Compile Include="Gnome Sort.vb" />
+    <Compile Include="ShellSort.vb" />
     <Compile Include="Best-First Search.vb" />
     <Compile Include="Binary Tree Algorithm.vb" />
     <Compile Include="Binary Tree.vb" />
@@ -269,6 +272,7 @@
     <Compile Include="Selection Sort Algorithm.vb" />
     <Compile Include="ShortestPathFasterAlgorithm.vb" />
     <Compile Include="Sidewinder Algorithm.vb" />
+    <Compile Include="SlowSort.vb" />
     <Compile Include="Sparse Maze.vb" />
     <Compile Include="Spiral Backtracker Algorithm.vb" />
     <Compile Include="Unicursal Maze.vb" />
