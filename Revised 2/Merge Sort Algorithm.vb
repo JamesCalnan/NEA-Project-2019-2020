@@ -1,10 +1,12 @@
 ﻿Module MergeSort
-    Function Mergesort(m As List(Of Double))
+    Function Mergesort(m As List(Of Double), Optional delay As Integer = 0)
         If m.Count <= 1 Then Return m
         Dim left As List(Of Double) = m.GetRange(0, m.Count \ 2)
         Dim right As List(Of Double) = m.GetRange(m.Count \ 2, m.Count - m.Count \ 2)
+        AnimateSort(m)
         left = Mergesort(left)
         right = Mergesort(right)
+        AnimateSort(m)
         Return Merge(left, right)
     End Function
     Function Merge(left As List(Of Double), right As List(Of Double))
@@ -27,5 +29,6 @@
             right.Remove(right.First)
         End While
         Return result
+        AnimateSort(result)
     End Function
 End Module

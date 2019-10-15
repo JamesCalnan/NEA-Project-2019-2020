@@ -217,9 +217,6 @@
   <ItemGroup>
     <Compile Include="A Star Algorithm.vb" />
     <Compile Include="Aldous-Broder Algorithm.vb" />
-    <Compile Include="cocktailShakerSort.vb" />
-    <Compile Include="Gnome Sort.vb" />
-    <Compile Include="ShellSort.vb" />
     <Compile Include="Best-First Search.vb" />
     <Compile Include="Binary Tree Algorithm.vb" />
     <Compile Include="Binary Tree.vb" />
@@ -230,11 +227,13 @@
     <Compile Include="Breadth-First Search.vb" />
     <Compile Include="Bubble Sort Algorithm.vb" />
     <Compile Include="Cavern.vb" />
+    <Compile Include="cocktailShakerSort.vb" />
     <Compile Include="Custom Algorithm.vb" />
     <Compile Include="Dead End Filler Method.vb" />
     <Compile Include="Depth-First Search.vb" />
     <Compile Include="Dijkstras Algorithm.vb" />
     <Compile Include="Ellers Algorithm.vb" />
+    <Compile Include="Gnome Sort.vb" />
     <Compile Include="Growing Tree Algorithm.vb" />
     <Compile Include="Houstons Algorithm.vb" />
     <Compile Include="Hunt and Kill Algorithm.vb" />
@@ -270,6 +269,7 @@
     <Compile Include="Recursive Solving Method.vb" />
     <Compile Include="Reverse-Delete Algorithm.vb" />
     <Compile Include="Selection Sort Algorithm.vb" />
+    <Compile Include="ShellSort.vb" />
     <Compile Include="ShortestPathFasterAlgorithm.vb" />
     <Compile Include="Sidewinder Algorithm.vb" />
     <Compile Include="SlowSort.vb" />

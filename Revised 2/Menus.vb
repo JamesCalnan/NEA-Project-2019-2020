@@ -171,6 +171,47 @@ Module Menus
                     Else
                         If arr(y) = "Load the previously generated maze" Then
                             PrintPreviousMaze(previousMaze, previousAlgorithm, showPath, yPosAfterMaze, solvingDelay, temparr, pathColour, backGroundColour, solvingColour)
+                        ElseIf arr(y) = "Sorting Algorithm visualisations" Then
+                            Console.ResetColor()
+                            Console.Clear()
+                            Dim sortingAlgorithm As String = SolvingMenu({"Bogo Sort", "Bozo Sort", "Bubble Sort", "Insertion Sort (using iteration)", "Insertion Sort (using recursion)", "Merge Sort", "Quick Sort", "Selection Sort", "Shell Sort", "Gnome Sort", "Slow Sort", "Cocktail shaker sort"}, "What Sorting Algorithm do you want to use", 0, 0)
+                            Dim a As New List(Of Double)
+                            Console.ResetColor()
+                            Console.Clear()
+                            Console.ForegroundColor = ConsoleColor.White
+                            Dim delay = GetIntInputArrowKeys("Delay when sorting:  ", 20, 0, False)
+                            For i = 1 To GetIntInputArrowKeys("How many numbers do you want to be in the list: ", Console.WindowHeight - 3, 4, True)
+                                a.Add(i + 1)
+                            Next
+                            Shuffle(a)
+                            Select Case sortingAlgorithm
+                                Case "Bogo Sort"
+                                    BogosortAlgorithm.BogoSort(a, delay)
+                                Case "Bozo Sort"
+                                    BozoSort.BozoSort(a)
+                                Case "Bubble Sort"
+                                    BubbleSortAlgorithm.BubbleSortOptimisedAlternate(a)
+                                Case "Insertion Sort (using iteration)"
+                                    InsertionSortAlgorithm.InsertionsortI(a, delay)
+                                Case "Insertion Sort (using recursion)"
+                                    InsertionSortAlgorithm.InsertionsortR(a, a.Count() - 1)
+                                Case "Merge Sort"
+                                    MergeSort.Mergesort(a, delay)
+                                    AnimateSort(a)
+                                Case "Quick Sort"
+                                    QuickSortAlgorithm.Quicksort(a, 0, a.Count - 1, delay)
+                                Case "Selection Sort"
+                                    SelectionSortAlgorithm.SelectionSort(a, delay)
+                                Case "Shell Sort"
+                                    ShellSort.ShellSort(a, delayMs)
+                                Case "Gnome Sort"
+                                    Gnome_Sort.gnomeSort(a, delay)
+                                Case "Slow Sort"
+                                    SlowSort.slowsort(a, 0, a.Count - 1, delay)
+                                Case "Cocktail shaker sort"
+                                    cocktailShakerSort.cocktailShakerSort(a, delay)
+                            End Select
+                            Console.ReadKey()
                         ElseIf arr(y) = "Save the previously generated maze as a list of points" Then
                             If previousMaze.Count > 1 Then
                                 SaveMazeTextFile(previousMaze, previousAlgorithm)

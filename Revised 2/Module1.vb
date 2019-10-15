@@ -86,6 +86,8 @@ Module Module1
             "Save the previous maze as a png image",
             "Save the previous maze to ascii text file",
             "",
+            "Sorting Algorithm visualisations",
+            "",
             "Exit"
         }
         Menu(menuOptions, "Menu")
@@ -98,7 +100,7 @@ Module Module1
         ''bmp.Save("name", System.Drawing.Imaging.ImageFormat.Png)
         ''bmp.Dispose()
     End Sub
-    sub PrintPreviousMaze(previousMaze as list(of Node),previousAlgorithm as String,showPath as Boolean, byref yPosAfterMaze as Integer, solvingDelay as Integer,tempArr() as String, pathColour as ConsoleColor, backGroundColour as ConsoleColor,solvingColour as ConsoleColor)
+    Sub PrintPreviousMaze(previousMaze As List(Of Node), previousAlgorithm As String, showPath As Boolean, ByRef yPosAfterMaze As Integer, solvingDelay As Integer, tempArr() As String, pathColour As ConsoleColor, backGroundColour As ConsoleColor, solvingColour As ConsoleColor)
         If Not IsNothing(previousMaze) And previousMaze.Count > 0 Then
             Console.Clear()
             Console.SetCursorPosition(0, 0)
@@ -129,7 +131,7 @@ Module Module1
             Console.ReadKey()
         End If
     End Sub
-    Sub LoadMazeTextFile(ByRef loadedMaze As list(Of node), yPosAfterMaze As Integer, ByRef previousMaze As List(Of Node), tempArr() As String, showPath As Boolean, solvingDelay As Integer, pathColour As ConsoleColor, backGroundColour As ConsoleColor, solvingColour As ConsoleColor)
+    Sub LoadMazeTextFile(ByRef loadedMaze As List(Of Node), yPosAfterMaze As Integer, ByRef previousMaze As List(Of Node), tempArr() As String, showPath As Boolean, solvingDelay As Integer, pathColour As ConsoleColor, backGroundColour As ConsoleColor, solvingColour As ConsoleColor)
         Dim validMaze, xMax, yMax As Integer
         Dim greatestY = 0
         Dim greatestX = 0
@@ -188,18 +190,18 @@ Module Module1
                 SetBoth(ConsoleColor.White)
                 Dim gx, gy As Integer
                 For Each node In loadedMaze
-                    If node.x > gx Then gx = node.X
-                    If node.y > gy Then gy = node.y
+                    If node.X > gx Then gx = node.X
+                    If node.Y > gy Then gy = node.Y
                 Next
-                DrawBackground(backGroundColour, {5, 3, greatestx + 1, gy - 1})
-                SetBoth(pathcolour)
-                PrintMazeHorizontally(loadedMaze, greatestx, greatesty)
+                DrawBackground(backGroundColour, {5, 3, greatestX + 1, gy - 1})
+                SetBoth(pathColour)
+                PrintMazeHorizontally(loadedMaze, greatestX, greatestY)
                 PrintStartandEnd(loadedMaze)
                 yPosAfterMaze = greatestY
                 DisplayAvailablePositions(previousMaze.Count)
                 Console.SetCursorPosition(0, yPosAfterMaze + 3)
                 previousMaze = loadedMaze
-                Dim input = SolvingMenu(temparr, "What would you like to do with the maze", greatestX + 6, 3)
+                Dim input = SolvingMenu(tempArr, "What would you like to do with the maze", greatestX + 6, 3)
                 SolvingInput(input, showPath, yPosAfterMaze, solvingDelay, previousMaze, usedAlgorithm, pathColour, backGroundColour, solvingColour)
             ElseIf validMaze = 0 Then
                 Console.Clear()
@@ -219,13 +221,13 @@ Module Module1
 
 
 
-    Function GetAllConsoleColours as string()
-        dim colourArr(15) as string
-        for i = 0 to 15
-            dim curColour as ConsoleColor = i
+    Function GetAllConsoleColours() As String()
+        Dim colourArr(15) As String
+        For i = 0 To 15
+            Dim curColour As ConsoleColor = i
             colourArr(i) = curColour.ToString()
         Next
-        return colourArr'{ConsoleColor.Black,ConsoleColor.Blue,ConsoleColor.Cyan,ConsoleColor.Gray,ConsoleColor.Gray,ConsoleColor.Green,ConsoleColor.Magenta,ConsoleColor.Red,ConsoleColor.White,ConsoleColor.Yellow,ConsoleColor.DarkBlue,ConsoleColor.DarkCyan,ConsoleColor.DarkGreen,ConsoleColor.DarkMagenta,ConsoleColor.DarkGray}
+        Return colourArr '{ConsoleColor.Black,ConsoleColor.Blue,ConsoleColor.Cyan,ConsoleColor.Gray,ConsoleColor.Gray,ConsoleColor.Green,ConsoleColor.Magenta,ConsoleColor.Red,ConsoleColor.White,ConsoleColor.Yellow,ConsoleColor.DarkBlue,ConsoleColor.DarkCyan,ConsoleColor.DarkGreen,ConsoleColor.DarkMagenta,ConsoleColor.DarkGray}
     End Function
     Function ColourChange(ByVal colourArr() As String) As ConsoleColor
         Console.Clear()
@@ -239,24 +241,24 @@ Module Module1
         Return 0
     End Function
     Function StraightWays(maze As List(Of Node))
-        dim mX = 0
-        Dim gx = (From node In maze Select node.X).Concat(new Integer() {0}).Max()
-        Dim gy = (From node In maze Select node.y).Concat(new Integer() {0}).Max()
-        for x = 0 to Console.WindowWidth-40
-            if maze.Contains(New Node(x,3)) then
+        Dim mX = 0
+        Dim gx = (From node In maze Select node.X).Concat(New Integer() {0}).Max()
+        Dim gy = (From node In maze Select node.Y).Concat(New Integer() {0}).Max()
+        For x = 0 To Console.WindowWidth - 40
+            If maze.Contains(New Node(x, 3)) Then
                 mX = x
                 Exit For
             End If
         Next
         Dim corridorCount As New List(Of Integer)
-        For x = mx To gx + 1 step 2
+        For x = mX To gx + 1 Step 2
             Dim straightCount = 0
             For y = 3 To gy
                 Dim tempNode As New Node(x, y)
                 If maze.Contains(tempNode) Then
                     straightCount += 1
                 Else
-                    If straightCount > 1 Then 
+                    If straightCount > 1 Then
                         corridorCount.Add(straightCount)
                     End If
                     straightCount = 0
@@ -265,12 +267,12 @@ Module Module1
         Next
         For y = 3 To gy
             Dim straightCount = 0
-            For x = mx To gx + 1  step 2
+            For x = mX To gx + 1 Step 2
                 Dim tempNode As New Node(x, y)
                 If maze.Contains(tempNode) Then
                     straightCount += 1
                 Else
-                    If straightCount > 1 Then 
+                    If straightCount > 1 Then
                         corridorCount.Add(straightCount)
                     End If
                     straightCount = 0
@@ -289,20 +291,18 @@ Module Module1
         Next
         lista = listb
     End Sub
-    Sub AnimateSort(a As List(Of Double), n As Integer)
+    Sub AnimateSort(a As List(Of Double), Optional delay As Integer = 0)
         Console.SetCursorPosition(0, 0)
-        Dim c = 0
         For Each number In a
             SetBoth(ConsoleColor.White)
-            If c = n Then SetBoth(ConsoleColor.Green)
             Console.Write("".PadLeft(number, "X"c))
             SetBoth(ConsoleColor.Black)
             Console.Write("".PadLeft((Console.WindowWidth - number) - 5, "X"c))
             Console.WriteLine()
-            c += 1
         Next
+        If delay <> 0 Then Threading.Thread.Sleep(delay)
     End Sub
-    Function LoadMazeAscii(tempArr() as String, pathColour as ConsoleColor, backGroundColour as ConsoleColor,solvingColour as ConsoleColor) As List(Of Node)
+    Function LoadMazeAscii(tempArr() As String, pathColour As ConsoleColor, backGroundColour As ConsoleColor, solvingColour As ConsoleColor) As List(Of Node)
         Console.Clear()
         Dim y As Integer
         Console.Write("File Name of the maze to load (don't include .txt): ")
@@ -336,14 +336,14 @@ Module Module1
                 If node.Y > gY Then gY = node.Y
             Next
             If gX > Console.WindowWidth - 57 Or gY > Console.WindowHeight - 6 Then Return Nothing
-            DrawBackground(backGroundColour,{5,3,gX+1,gY-1})
+            DrawBackground(backGroundColour, {5, 3, gX + 1, gY - 1})
             SetBoth(pathColour)
             PrintMazeHorizontally(maze, gX, gY)
             PrintStartandEnd(maze)
             Console.BackgroundColor = ConsoleColor.Black
             Console.ForegroundColor = ConsoleColor.White
-            Dim input As String = SolvingMenu(temparr, "What would you like to do with the maze", gX + 7, 3)
-            SolvingInput(input, True, gY + 2, 0, maze, "",pathColour,backGroundColour,SolvingColour)
+            Dim input As String = SolvingMenu(tempArr, "What would you like to do with the maze", gX + 7, 3)
+            SolvingInput(input, True, gY + 2, 0, maze, "", pathColour, backGroundColour, solvingColour)
             Return maze
         Else
             Console.Clear()
@@ -390,7 +390,7 @@ Module Module1
     Sub DisplayAvailablePositions(count As Integer)
         PrintMessageMiddle($"There are {count} available positions in the maze", 0, ConsoleColor.Magenta)
     End Sub
-    sub DrawBackground(backgroundColour as ConsoleColor, limits() as Integer)
+    Sub DrawBackground(backgroundColour As ConsoleColor, limits() As Integer)
         SetBoth(backgroundColour)
         For y = limits(1) - 1 To limits(3) + 1
             Console.SetCursorPosition(limits(0) + 1, y)
@@ -400,7 +400,7 @@ Module Module1
             '    Console.Write("XX")
             'Next
         Next
-    End sub
+    End Sub
     Function PreGenMenu(arr() As String, message As String)
         Console.Clear()
         Dim temparr() As Integer = {0, 0, 0, 0, 0, 0, 0, 0, 0}
@@ -484,7 +484,7 @@ Module Module1
         Console.ReadKey()
         Console.Clear()
     End Sub
-    Function LoadMazePng(tempArr() as String, pathColour as ConsoleColor, backGroundColour as ConsoleColor,SolvingColour as ConsoleColor)
+    Function LoadMazePng(tempArr() As String, pathColour As ConsoleColor, backGroundColour As ConsoleColor, SolvingColour As ConsoleColor)
         'loading a big maze twice exceeds memory limit
         Console.Clear()
         Console.Write("File Name of the maze to load (don't include .png): ")
@@ -556,8 +556,8 @@ Module Module1
                     Console.BackgroundColor = ConsoleColor.Black
                     Console.ForegroundColor = ConsoleColor.White
 
-                    Dim input As String = SolvingMenu(temparr, "What would you like to do with the maze", greatestX + 3, 3)
-                    SolvingInput(input, True, greatestY, 0, maze, "",pathColour,backGroundColour,SolvingColour)
+                    Dim input As String = SolvingMenu(tempArr, "What would you like to do with the maze", greatestX + 3, 3)
+                    SolvingInput(input, True, greatestY, 0, maze, "", pathColour, backGroundColour, SolvingColour)
                 End If
             Else
                 start = maze(0)
@@ -572,8 +572,8 @@ Module Module1
                 'Solving of the maze goes here
                 Console.BackgroundColor = ConsoleColor.Black
                 Console.ForegroundColor = ConsoleColor.White
-                Dim input As String = SolvingMenu(temparr, "What would you like to do with the maze", greatestX + 3, 3)
-                SolvingInput(input, True, greatestY, 0, maze, "",pathColour,backGroundColour,SolvingColour)
+                Dim input As String = SolvingMenu(tempArr, "What would you like to do with the maze", greatestX + 3, 3)
+                SolvingInput(input, True, greatestY, 0, maze, "", pathColour, backGroundColour, SolvingColour)
             End If
             Return maze
         Else
@@ -965,45 +965,45 @@ Module Module1
         Next
         Return dict
     End Function
-    Function consoleColourToBrush(colour as ConsoleColor)
-        Select colour
-            case ConsoleColor.Black
-                return Brushes.Black
+    Function consoleColourToBrush(colour As ConsoleColor)
+        Select Case colour
+            Case ConsoleColor.Black
+                Return Brushes.Black
             Case ConsoleColor.Blue
-                return Brushes.Blue
-            case consolecolor.Cyan
-                return Brushes.Cyan
-            case ConsoleColor.Gray
-                return Brushes.SlateGray
+                Return Brushes.Blue
+            Case ConsoleColor.Cyan
+                Return Brushes.Cyan
+            Case ConsoleColor.Gray
+                Return Brushes.SlateGray
             Case ConsoleColor.Green
-                return Brushes.LimeGreen
+                Return Brushes.LimeGreen
             Case ConsoleColor.Magenta
-                return Brushes.Magenta
+                Return Brushes.Magenta
             Case ConsoleColor.Red
-                return Brushes.Red
-            case ConsoleColor.White
-                return brushes.White
+                Return Brushes.Red
+            Case ConsoleColor.White
+                Return Brushes.White
             Case ConsoleColor.Yellow
-                return Brushes.Yellow
+                Return Brushes.Yellow
             Case ConsoleColor.DarkBlue
-                return Brushes.DarkBlue
-            Case    ConsoleColor.DarkCyan
-                return Brushes.DarkCyan
+                Return Brushes.DarkBlue
+            Case ConsoleColor.DarkCyan
+                Return Brushes.DarkCyan
             Case ConsoleColor.DarkGray
-                return Brushes.DarkSlateGray
-            Case    ConsoleColor.DarkGreen
+                Return Brushes.DarkSlateGray
+            Case ConsoleColor.DarkGreen
                 Return Brushes.DarkGreen
-            Case    ConsoleColor.DarkMagenta
-                return Brushes.DarkMagenta
-            Case    ConsoleColor.DarkRed
-                return Brushes.DarkRed
-            Case    consolecolor.DarkYellow
-                return Brushes.OrangeRed
-            Case    Else
-                return nothing
+            Case ConsoleColor.DarkMagenta
+                Return Brushes.DarkMagenta
+            Case ConsoleColor.DarkRed
+                Return Brushes.DarkRed
+            Case ConsoleColor.DarkYellow
+                Return Brushes.OrangeRed
+            Case Else
+                Return Nothing
         End Select
-    End function
-    Sub SaveMazePng(path As List(Of Node), algorithm As String, fileName As String, pathColour as consolecolor, backGroundColour as consolecolor)
+    End Function
+    Sub SaveMazePng(path As List(Of Node), algorithm As String, fileName As String, pathColour As ConsoleColor, backGroundColour As ConsoleColor)
         Console.Clear()
         Dim solving As Boolean = HorizontalYesNo(0, "Do you want the outputted maze to have the solution on it  ", False, False, False)
         Console.Clear()
@@ -1020,7 +1020,7 @@ Module Module1
         Dim g As Graphics
         g = Graphics.FromImage(bmp)
         g.FillRectangle(consoleColourToBrush(backGroundColour), 0, 0, width, height)
-        dim gPathColour as Brush = consoleColourToBrush(pathColour)
+        Dim gPathColour As Brush = consoleColourToBrush(pathColour)
         For Each thing In path
             g.FillRectangle(gPathColour, (thing.X) * multiplier, (thing.Y * 2) * multiplier, 2 * multiplier, 2 * multiplier)
         Next
@@ -1047,13 +1047,13 @@ Module Module1
     Function GetNeighbours(ByRef current As Node, ByRef availablepath As List(Of Node))
         Dim neighbours As New List(Of Node)
         Dim newNode As New Node(current.X, current.Y - 1)
-        If availablepath.Contains(newnode) Then neighbours.Add(New Node(newnode.X, newnode.Y))
-        newnode.Update(current.X + 2, current.Y)
-        If availablepath.Contains(newnode) Then neighbours.Add(New Node(newnode.X, newnode.Y))
-        newnode.Update(current.X, current.Y + 1)
-        If availablepath.Contains(newnode) Then neighbours.Add(New Node(newnode.X, newnode.Y))
-        newnode.Update(current.X - 2, current.Y)
-        If availablepath.Contains(newnode) Then neighbours.Add(New Node(newnode.X, newnode.Y))
+        If availablepath.Contains(newNode) Then neighbours.Add(New Node(newNode.X, newNode.Y))
+        newNode.Update(current.X + 2, current.Y)
+        If availablepath.Contains(newNode) Then neighbours.Add(New Node(newNode.X, newNode.Y))
+        newNode.Update(current.X, current.Y + 1)
+        If availablepath.Contains(newNode) Then neighbours.Add(New Node(newNode.X, newNode.Y))
+        newNode.Update(current.X - 2, current.Y)
+        If availablepath.Contains(newNode) Then neighbours.Add(New Node(newNode.X, newNode.Y))
         Return neighbours
     End Function
     Function GetNeighboursCell(ByRef current As Cell, ByRef availablepath As List(Of Cell))
@@ -1075,8 +1075,8 @@ Class Cell
         X = xpoint
         Y = ypoint
     End Sub
-    Public  Function ToNode() As node    
-        return New Node(Me.X,Me.Y)
+    Public Function ToNode() As Node
+        Return New Node(Me.X, Me.Y)
     End Function
     Sub Update(x As Integer, y As Integer)
         Me.X = x
@@ -1118,16 +1118,16 @@ Public Class Node
         Return False
     End Function
     Public Sub New(xPoint As Integer, yPoint As Integer)
-        X = xpoint
-        Y = ypoint
+        X = xPoint
+        Y = yPoint
     End Sub
     Function WithinLimits(limits() As Integer)
         If Me.X >= limits(0) And Me.X <= limits(2) And Me.Y >= limits(1) And Me.Y <= limits(3) Then Return True
         Return False
     End Function
     Public Sub Update(xPoint As Integer, yPoint As Integer)
-        X = xpoint
-        Y = ypoint
+        X = xPoint
+        Y = yPoint
     End Sub
     Function IsDeadEnd(availablePath As List(Of Node))
         Dim curNode As New Node(Me.X, Me.Y)
