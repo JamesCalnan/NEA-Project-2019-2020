@@ -228,7 +228,9 @@
     <Compile Include="Bubble Sort Algorithm.vb" />
     <Compile Include="Cavern.vb" />
     <Compile Include="cocktailShakerSort.vb" />
+    <Compile Include="Comb Sort.vb" />
     <Compile Include="Custom Algorithm.vb" />
+    <Compile Include="Cycle Sort.vb" />
     <Compile Include="Dead End Filler Method.vb" />
     <Compile Include="Depth-First Search.vb" />
     <Compile Include="Dijkstras Algorithm.vb" />
@@ -261,6 +263,8 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Compile Include="Pancake Sort.vb" />
+    <Compile Include="PigeonHole Sort.vb" />
     <Compile Include="Play Maze.vb" />
     <Compile Include="Prims Algorithm.vb" />
     <Compile Include="Quicksort Algorithm.vb" />
@@ -275,6 +279,7 @@
     <Compile Include="SlowSort.vb" />
     <Compile Include="Sparse Maze.vb" />
     <Compile Include="Spiral Backtracker Algorithm.vb" />
+    <Compile Include="Stooge Sort.vb" />
     <Compile Include="Unicursal Maze.vb" />
     <Compile Include="User Create Map.vb" />
     <Compile Include="UserCreateMaze.vb" />

@@ -174,7 +174,7 @@ Module Menus
                         ElseIf arr(y) = "Sorting Algorithm visualisations" Then
                             Console.ResetColor()
                             Console.Clear()
-                            Dim sortingAlgorithm As String = SolvingMenu({"Bogo Sort", "Bozo Sort", "Bubble Sort", "Insertion Sort (using iteration)", "Insertion Sort (using recursion)", "Merge Sort", "Quick Sort", "Selection Sort", "Shell Sort", "Gnome Sort", "Slow Sort", "Cocktail shaker sort"}, "What Sorting Algorithm do you want to use", 0, 0)
+                            Dim sortingAlgorithm As String = SolvingMenu({"Bogo Sort", "Bozo Sort", "Bubble Sort (using recursion)", "Bubble Sort (using iteration)", "Insertion Sort (using iteration)", "Insertion Sort (using recursion)", "Merge Sort", "Quick Sort", "Selection Sort", "Shell Sort", "Gnome Sort", "Slow Sort", "Cocktail shaker sort", "Pancake Sort", "Comb Sort", "Cycle Sort", "Stooge Sort"}, "What Sorting Algorithm do you want to use", 0, 0)
                             Dim a As New List(Of Double)
                             Console.ResetColor()
                             Console.Clear()
@@ -187,16 +187,27 @@ Module Menus
                             Select Case sortingAlgorithm
                                 Case "Bogo Sort"
                                     BogosortAlgorithm.BogoSort(a, delay)
+                                Case "Stooge Sort"
+                                    Stooge_Sort.stoogeSort(a, 0, a.Count - 1, delay)
+                                Case "Cycle Sort"
+                                    Cycle_Sort.cycleSort(a, delay)
+                                Case "Comb Sort"
+                                    Comb_Sort.CombSort(a, delay)
+                                Case "Pancake Sort"
+                                    Pancake_Sort.pancakeSort(a, delay)
                                 Case "Bozo Sort"
                                     BozoSort.BozoSort(a)
-                                Case "Bubble Sort"
-                                    BubbleSortAlgorithm.BubbleSortOptimisedAlternate(a)
+                                Case "Bubble Sort (using recursion)"
+                                    BubbleSortAlgorithm.bubbleSortRecursive(a, delay)
+                                Case "Bubble Sort (using iteration)"
+                                    BubbleSortAlgorithm.BubbleSortOptimisedAlternate(a, delay)
                                 Case "Insertion Sort (using iteration)"
                                     InsertionSortAlgorithm.InsertionsortI(a, delay)
                                 Case "Insertion Sort (using recursion)"
                                     InsertionSortAlgorithm.InsertionsortR(a, a.Count() - 1)
                                 Case "Merge Sort"
-                                    MergeSort.Mergesort(a, delay)
+                                    AnimateSort(a)
+                                    MergeSort.Mergesort(a)
                                     AnimateSort(a)
                                 Case "Quick Sort"
                                     QuickSortAlgorithm.Quicksort(a, 0, a.Count - 1, delay)
