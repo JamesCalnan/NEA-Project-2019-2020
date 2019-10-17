@@ -225,10 +225,12 @@
     <Compile Include="Bozo Sort Algorithm.vb" />
     <Compile Include="Braid.vb" />
     <Compile Include="Breadth-First Search.vb" />
+    <Compile Include="Brick Sort.vb" />
     <Compile Include="Bubble Sort Algorithm.vb" />
     <Compile Include="Cavern.vb" />
     <Compile Include="cocktailShakerSort.vb" />
     <Compile Include="Comb Sort.vb" />
+    <Compile Include="Counting Sort.vb" />
     <Compile Include="Custom Algorithm.vb" />
     <Compile Include="Cycle Sort.vb" />
     <Compile Include="Dead End Filler Method.vb" />
@@ -237,6 +239,7 @@
     <Compile Include="Ellers Algorithm.vb" />
     <Compile Include="Gnome Sort.vb" />
     <Compile Include="Growing Tree Algorithm.vb" />
+    <Compile Include="HeapSort.vb" />
     <Compile Include="Houstons Algorithm.vb" />
     <Compile Include="Hunt and Kill Algorithm.vb" />
     <Compile Include="Insertion Sort Algorithm.vb" />

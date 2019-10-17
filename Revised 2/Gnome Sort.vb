@@ -6,10 +6,11 @@
             If pos = 0 OrElse a(pos) >= a(pos - 1) Then
                 pos += 1
             Else
+                AnimateSort(a, delay)
                 Swap(a, pos, pos - 1)
                 pos -= 1
             End If
-            AnimateSort(a, delay)
         End While
+        AnimateSort(a)
     End Sub
 End Module

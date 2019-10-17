@@ -21,6 +21,7 @@
         Dim n = arr.Count
         Dim curr_size = n
         While curr_size > 1
+            If ExitCase() Then Exit Sub
             Dim mi = findMax(arr, curr_size)
             If Not mi = curr_size - 1 Then
                 Flip(arr, mi)

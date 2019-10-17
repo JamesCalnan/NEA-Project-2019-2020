@@ -17,6 +17,7 @@
     Function BubbleSortOptimisedAlternate(a As List(Of Double), delay As Integer)
         Dim n As Integer = a.Count
         Do
+            If ExitCase() Then Exit Function
             Dim newn = 0
             For i = 1 To n - 1
                 If a(i - 1) > a(i) Then
@@ -46,13 +47,14 @@
     End Function
 
     Sub bubbleSortRecursive(arr As List(Of Double), delay As Integer)
+        If ExitCase() Then Exit Sub
         If arr.Count = 1 Then Return
         For i = 1 To arr.Count - 1
             If arr(i - 1) > arr(i) Then
                 Swap(arr, i - 1, i)
+                AnimateSort(arr, delay)
             End If
         Next
-        AnimateSort(arr, 10)
         bubbleSortRecursive(arr.GetRange(0, arr.Count - 1), delay)
     End Sub
 

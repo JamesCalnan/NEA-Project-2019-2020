@@ -291,8 +291,25 @@ Module Module1
         Next
         lista = listb
     End Sub
-    Sub AnimateSort(a As List(Of Double), Optional delay As Integer = 0)
+    Sub AnimateSort(a As List(Of Double), Optional delay As Integer = 0, Optional sublist As Integer = -1, Optional totalLength As Integer = 0)
         Console.SetCursorPosition(0, 0)
+        If sublist <> -1 Then
+            If sublist = 0 Then
+                Console.SetCursorPosition(0, 0)
+                For i = 0 To totalLength \ 2
+                    SetBoth(ConsoleColor.Black)
+                    Console.WriteLine("".PadLeft(Console.WindowWidth - 6, "X"c))
+                Next
+                Console.SetCursorPosition(0, 0)
+            ElseIf sublist = 1 Then
+                Console.SetCursorPosition(0, totalLength - totalLength \ 2)
+                For i = totalLength - totalLength \ 2 To totalLength
+                    SetBoth(ConsoleColor.Black)
+                    Console.WriteLine("".PadLeft(Console.WindowWidth - 6, "X"c))
+                Next
+                Console.SetCursorPosition(0, totalLength - totalLength \ 2)
+            End If
+        End If
         For Each number In a
             SetBoth(ConsoleColor.White)
             Console.Write("".PadLeft(number, "X"c))

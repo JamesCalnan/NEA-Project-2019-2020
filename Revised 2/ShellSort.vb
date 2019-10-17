@@ -1,19 +1,22 @@
 ﻿Module ShellSort
-    Sub ShellSort(gaps As List(Of Double), Optional delay As Integer = 0)
-        Dim a = gaps
-        For k = 0 To gaps.Count - 1
-            If IsSorted(a) Then Exit For
-            For i = gaps(k) To gaps.Count - 1
-                If ExitCase() Then Exit Sub
-                Dim temp = a(i)
+    Sub ShellSort(arr As List(Of Double), delay As Integer)
+        Dim n = arr.Count - 1
+        Dim gap = n \ 2
+        While gap > 0
+            If ExitCase() Then Exit Sub
+            For i = gap To n
+                Dim temp = arr(i)
                 Dim j = i
-                While j > 0 AndAlso a(j - 1) > a(j)
-                    Swap(a, j, j - 1)
-                    j -= 1
+                While j >= gap AndAlso arr(j - gap) > temp
+                    AnimateSort(arr, delay)
+                    arr(j) = arr(j - gap)
+                    j -= gap
                 End While
-                a(j) = temp
-                AnimateSort(a, delay)
+                arr(j) = temp
             Next
-        Next
+            gap \= 2
+            AnimateSort(arr, delay)
+        End While
+        AnimateSort(arr, delay)
     End Sub
 End Module

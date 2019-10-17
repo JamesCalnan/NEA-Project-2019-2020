@@ -1,5 +1,6 @@
 ﻿Module InsertionSortAlgorithm
     Function InsertionsortR(ByRef a As List(Of Double), n As Integer, Optional delay As Integer = 0)
+        If ExitCase() Then Exit Function
         'initial call would be insertionSortR(A, length(A)-1) 
         If n > 0 Then
             InsertionsortR(a, n - 1)
@@ -8,9 +9,10 @@
             While j >= 0 AndAlso a(j) > x
                 a(j + 1) = a(j)
                 j -= 1
+
             End While
-            a(j + 1) = x
             AnimateSort(a, delay)
+            a(j + 1) = x
         End If
     End Function
     Function InsertionsortI(a As List(Of Double), Optional delay As Integer = 0)
@@ -25,6 +27,6 @@
             AnimateSort(a, delay)
             i += 1
         End While
-        Return a
+        AnimateSort(a, delay)
     End Function
 End Module
