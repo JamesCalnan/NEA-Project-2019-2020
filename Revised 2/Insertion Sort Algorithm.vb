@@ -15,7 +15,7 @@
             a(j + 1) = x
         End If
     End Function
-    Function InsertionsortI(a As List(Of Double), Optional delay As Integer = 0)
+    Function InsertionsortI(ByRef a As List(Of Double), showSort As Boolean, Optional delay As Integer = 0)
         Dim i = 1
         While i < a.Count
             If ExitCase() Then Exit Function
@@ -24,9 +24,10 @@
                 Swap(a, j, j - 1)
                 j -= 1
             End While
-            AnimateSort(a, delay)
+            If showSort Then AnimateSort(a, delay)
             i += 1
         End While
-        AnimateSort(a, delay)
+        If showSort Then AnimateSort(a, delay)
+        Return a
     End Function
 End Module

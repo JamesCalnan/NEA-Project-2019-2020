@@ -227,7 +227,7 @@
     <Compile Include="Breadth-First Search.vb" />
     <Compile Include="Brick Sort.vb" />
     <Compile Include="Bubble Sort Algorithm.vb" />
-    <Compile Include="Cavern.vb" />
+    <Compile Include="Bucket Sort.vb" />
     <Compile Include="cocktailShakerSort.vb" />
     <Compile Include="Comb Sort.vb" />
     <Compile Include="Counting Sort.vb" />
@@ -277,7 +277,6 @@
     <Compile Include="Reverse-Delete Algorithm.vb" />
     <Compile Include="Selection Sort Algorithm.vb" />
     <Compile Include="ShellSort.vb" />
-    <Compile Include="ShortestPathFasterAlgorithm.vb" />
     <Compile Include="Sidewinder Algorithm.vb" />
     <Compile Include="SlowSort.vb" />
     <Compile Include="Sparse Maze.vb" />

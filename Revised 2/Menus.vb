@@ -174,7 +174,7 @@ Module Menus
                         ElseIf arr(y) = "Sorting Algorithm visualisations" Then
                             Console.ResetColor()
                             Console.Clear()
-                            Dim sortingAlgorithm As String = SolvingMenu({"Bogo Sort", "Bozo Sort", "Bubble Sort (using recursion)", "Bubble Sort (using iteration)", "Insertion Sort (using iteration)", "Insertion Sort (using recursion)", "Merge Sort", "Quick Sort", "Selection Sort", "Shell Sort", "Gnome Sort", "Slow Sort", "Cocktail shaker sort", "Pancake Sort", "Comb Sort", "Cycle Sort", "Stooge Sort", "Heap Sort", "Odd-Even Sort / Brick Sort", "Counting Sort", "", "Return to the menu"}, "What Sorting Algorithm do you want to use", 0, 0, True)
+                            Dim sortingAlgorithm As String = SolvingMenu({"Bogo Sort", "Bozo Sort", "Bubble Sort (using recursion)", "Bubble Sort (using iteration)", "Insertion Sort (using iteration)", "Insertion Sort (using recursion)", "Merge Sort", "Quick Sort", "Selection Sort", "Shell Sort", "Gnome Sort", "Slow Sort", "Cocktail shaker sort", "Pancake Sort", "Comb Sort", "Cycle Sort", "Stooge Sort", "Heap Sort", "Odd-Even Sort / Brick Sort", "Counting Sort", "Bucket Sort", "Pigeonhole Sort", "", "Return to the menu"}, "What Sorting Algorithm do you want to use", 0, 0, True)
                             If Not sortingAlgorithm = Nothing Then
                                 Dim a As New List(Of Double)
                                 Console.ResetColor()
@@ -190,6 +190,10 @@ Module Menus
                                 Select Case sortingAlgorithm
                                     Case "Bogo Sort"
                                         BogosortAlgorithm.BogoSort(a, delay)
+                                    Case "Pigeonhole Sort"
+                                        pigeonholeSort(a, delay)
+                                    Case "Bucket Sort"
+                                        BucketSort(a, delay)
                                     Case "Counting Sort"
                                         countingSort(a, delay)
                                     Case "Odd-Even Sort / Brick Sort"
@@ -211,7 +215,7 @@ Module Menus
                                     Case "Bubble Sort (using iteration)"
                                         BubbleSortAlgorithm.BubbleSortOptimisedAlternate(a, delay)
                                     Case "Insertion Sort (using iteration)"
-                                        InsertionSortAlgorithm.InsertionsortI(a, delay)
+                                        InsertionSortAlgorithm.InsertionsortI(a, True, delay)
                                     Case "Insertion Sort (using recursion)"
                                         InsertionSortAlgorithm.InsertionsortR(a, a.Count() - 1)
                                         AnimateSort(a)
