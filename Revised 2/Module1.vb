@@ -2,12 +2,10 @@
 Imports System.IO
 Imports NEA_2019
 Module Module1
-    'implement this: https://en.wikipedia.org/wiki/Talk:Selection_sort#Implementations, http://users.eecs.northwestern.edu/~haizhou/357/lec6.pdf
-    'https://en.wikipedia.org/wiki/Bellman%E2%80%93Ford_algorithm, https://en.wikipedia.org/wiki/Floyd%E2%80%93Warshall_algorithm#Algorithm
-    'get rid of dead-end filling method when the maze has been braided
-    'give option for partial braid
-    'TODO: give user the option to print a path or carve through walls, put in solving menu when the user has loaded an ascii maze from a text file, give the user the option to chose back and fore colour, solving menu colours still need to be done
-    'solving menu needs to have thepathcolour and backgroundcolour implemented
+
+    'TODO implement https://en.wikipedia.org/wiki/Fisher–Yates_shuffle
+
+
     Sub Main()
         ''Console.ReadKey()
         ''Dim ind As Integer = 0

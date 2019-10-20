@@ -220,6 +220,7 @@
     <Compile Include="Best-First Search.vb" />
     <Compile Include="Binary Tree Algorithm.vb" />
     <Compile Include="Binary Tree.vb" />
+    <Compile Include="Bogobogo Sort.vb" />
     <Compile Include="Bogosort Algorithm.vb" />
     <Compile Include="BoruvkasAlgorithm.vb" />
     <Compile Include="Bozo Sort Algorithm.vb" />
@@ -297,6 +298,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <None Include=".editorconfig" />
     <None Include="My Project\app.manifest" />
     <None Include="My Project\Application.myapp">
       <Generator>MyApplicationCodeGenerator</Generator>
