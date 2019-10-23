@@ -174,74 +174,87 @@ Module Menus
                         ElseIf arr(y) = "Sorting Algorithm visualisations" Then
                             Console.ResetColor()
                             Console.Clear()
-                            Dim sortingAlgorithm As String = SolvingMenu({"Bogo Sort", "Bogobogo Sort", "Bozo Sort", "Bubble Sort (using recursion)", "Bubble Sort (using iteration)", "Insertion Sort (using iteration)", "Insertion Sort (using recursion)", "Merge Sort", "Quick Sort", "Selection Sort", "Shell Sort", "Gnome Sort", "Slow Sort", "Cocktail shaker sort", "Pancake Sort", "Comb Sort", "Cycle Sort", "Stooge Sort", "Heap Sort", "Odd-Even Sort / Brick Sort", "Counting Sort", "Bucket Sort", "Pigeonhole Sort", "", "Return to the menu"}, "What Sorting Algorithm do you want to use", 0, 0, True)
-                            If Not sortingAlgorithm = Nothing Then
-                                Dim a As New List(Of Double)
-                                Console.ResetColor()
-                                Console.Clear()
-                                Console.ForegroundColor = ConsoleColor.White
-                                Dim delay = GetIntInputArrowKeys("Delay when sorting:  ", 100, 0, False)
-                                For i = 1 To GetIntInputArrowKeys("How many numbers do you want to be in the list: ", Console.WindowHeight - 3, 4, True)
-                                    a.Add(i)
-                                Next
-                                Shuffle(a)
-                                Console.ResetColor()
-                                Console.Clear()
-                                Select Case sortingAlgorithm
-                                    Case "Bogo Sort"
-                                        BogosortAlgorithm.BogoSort(a, delay)
-                                    Case "Bogobogo Sort"
-                                        BogobogoSort(a, delay)
-                                    Case "Pigeonhole Sort"
-                                        pigeonholeSort(a, delay)
-                                    Case "Bucket Sort"
-                                        BucketSort(a, delay)
-                                    Case "Counting Sort"
-                                        countingSort(a, delay)
-                                    Case "Odd-Even Sort / Brick Sort"
-                                        oddEverSort(a, delay)
-                                    Case "Heap Sort"
-                                        HeapSort.heapSort(a, delay)
-                                    Case "Stooge Sort"
-                                        Stooge_Sort.stoogeSort(a, 0, a.Count - 1, delay)
-                                    Case "Cycle Sort"
-                                        Cycle_Sort.cycleSort(a, delay)
-                                    Case "Comb Sort"
-                                        Comb_Sort.CombSort(a, delay)
-                                    Case "Pancake Sort"
-                                        Pancake_Sort.pancakeSort(a, delay)
-                                    Case "Bozo Sort"
-                                        BozoSort.BozoSort(a, delay)
-                                    Case "Bubble Sort (using recursion)"
-                                        BubbleSortAlgorithm.bubbleSortRecursive(a, delay)
-                                    Case "Bubble Sort (using iteration)"
-                                        BubbleSortAlgorithm.BubbleSortOptimisedAlternate(a, delay)
-                                    Case "Insertion Sort (using iteration)"
-                                        InsertionSortAlgorithm.InsertionsortI(a, True, delay)
-                                    Case "Insertion Sort (using recursion)"
-                                        InsertionSortAlgorithm.InsertionsortR(a, a.Count() - 1)
-                                        AnimateSort(a)
-                                    Case "Merge Sort"
-                                        AnimateSort(a)
-                                        a = MergeSort.Mergesort(a, a.Count, delay)
-                                        AnimateSort(a)
-                                    Case "Quick Sort"
-                                        QuickSortAlgorithm.Quicksort(a, 0, a.Count - 1, delay)
-                                    Case "Selection Sort"
-                                        SelectionSortAlgorithm.SelectionSort(a, delay)
-                                    Case "Shell Sort"
-                                        ShellSort.ShellSort(a, delayMs)
-                                    Case "Gnome Sort"
-                                        Gnome_Sort.gnomeSort(a, delay)
-                                    Case "Slow Sort"
-                                        SlowSort.slowsort(a, 0, a.Count - 1, delay)
-                                    Case "Cocktail shaker sort"
-                                        cocktailShakerSort.cocktailShakerSort(a, delay)
-                                End Select
-                                PrintMessageMiddle("Done", 0, ConsoleColor.Green)
-                                Console.ReadKey()
+                            Dim shuffleAlgorithm As String = SolvingMenu({"Simple shuffle", "Fisher–Yates shuffle", "Fisher–Yates shuffle (inside out)", "Sattolo's algorithm", "", "Return to the menu"}, "What algorithm would you like to use to suffle the array", 0, 0, True)
+                            Console.ResetColor()
+                            Console.Clear()
+                            If Not shuffleAlgorithm = Nothing Then
+                                Dim sortingAlgorithm As String = SolvingMenu({"Bogo Sort", "Bogobogo Sort", "Bozo Sort", "Bubble Sort (using recursion)", "Bubble Sort (using iteration)", "Insertion Sort (using iteration)", "Insertion Sort (using recursion)", "Merge Sort", "Quick Sort", "Selection Sort", "Shell Sort", "Gnome Sort", "Slow Sort", "Cocktail shaker sort", "Pancake Sort", "Comb Sort", "Cycle Sort", "Stooge Sort", "Heap Sort", "Odd-Even Sort / Brick Sort", "Counting Sort", "Bucket Sort", "Pigeonhole Sort", "", "Return to the menu"}, "What Sorting Algorithm do you want to use", 0, 0, True)
+                                If Not sortingAlgorithm = Nothing Then
+                                    Dim a As New List(Of Double)
+                                    Console.ResetColor()
+                                    Console.Clear()
+                                    Console.ForegroundColor = ConsoleColor.White
+                                    Dim delay = GetIntInputArrowKeys("Delay when sorting:  ", 100, 0, False)
+                                    For i = 1 To GetIntInputArrowKeys("How many numbers do you want to be in the list: ", Console.WindowHeight - 3, 4, True)
+                                        a.Add(i)
+                                    Next
+                                    Console.ResetColor()
+                                    Console.Clear()
+                                    Select Case shuffleAlgorithm
+                                        Case "Simple shuffle"
+                                            Shuffle(a)
+                                        Case "Fisher–Yates shuffle"
+                                            FisherYatesShuffle(a)
+                                        Case "Fisher–Yates shuffle (inside out)"
+                                            FisherYatesShuffleInsideOut(a)
+                                        Case "Sattolo's algorithm"
+                                            SattolosAlgorithm(a)
+                                    End Select
+                                    Select Case sortingAlgorithm
+                                        Case "Bogo Sort"
+                                            BogosortAlgorithm.BogoSort(a, delay)
+                                        Case "Bogobogo Sort"
+                                            BogobogoSort(a, delay)
+                                        Case "Pigeonhole Sort"
+                                            pigeonholeSort(a, delay)
+                                        Case "Bucket Sort"
+                                            BucketSort(a, delay)
+                                        Case "Counting Sort"
+                                            countingSort(a, delay)
+                                        Case "Odd-Even Sort / Brick Sort"
+                                            oddEverSort(a, delay)
+                                        Case "Heap Sort"
+                                            HeapSort.heapSort(a, delay)
+                                        Case "Stooge Sort"
+                                            Stooge_Sort.stoogeSort(a, 0, a.Count - 1, delay)
+                                        Case "Cycle Sort"
+                                            Cycle_Sort.cycleSort(a, delay)
+                                        Case "Comb Sort"
+                                            Comb_Sort.CombSort(a, delay)
+                                        Case "Pancake Sort"
+                                            Pancake_Sort.pancakeSort(a, delay)
+                                        Case "Bozo Sort"
+                                            BozoSort.BozoSort(a, delay)
+                                        Case "Bubble Sort (using recursion)"
+                                            BubbleSortAlgorithm.bubbleSortRecursive(a, delay)
+                                        Case "Bubble Sort (using iteration)"
+                                            BubbleSortAlgorithm.BubbleSortOptimisedAlternate(a, delay)
+                                        Case "Insertion Sort (using iteration)"
+                                            InsertionSortAlgorithm.InsertionsortI(a, True, delay)
+                                        Case "Insertion Sort (using recursion)"
+                                            InsertionSortAlgorithm.InsertionsortR(a, a.Count() - 1)
+                                            AnimateSort(a)
+                                        Case "Merge Sort"
+                                            AnimateSort(a)
+                                            a = MergeSort.Mergesort(a, a.Count, delay)
+                                            AnimateSort(a)
+                                        Case "Quick Sort"
+                                            QuickSortAlgorithm.Quicksort(a, 0, a.Count - 1, delay)
+                                        Case "Selection Sort"
+                                            SelectionSortAlgorithm.SelectionSort(a, delay)
+                                        Case "Shell Sort"
+                                            ShellSort.ShellSort(a, delayMs)
+                                        Case "Gnome Sort"
+                                            Gnome_Sort.gnomeSort(a, delay)
+                                        Case "Slow Sort"
+                                            SlowSort.slowsort(a, 0, a.Count - 1, delay)
+                                        Case "Cocktail shaker sort"
+                                            cocktailShakerSort.cocktailShakerSort(a, delay)
+                                    End Select
+                                    PrintMessageMiddle("Done", 0, ConsoleColor.Green)
+                                    Console.ReadKey()
+                                End If
                             End If
-
                         ElseIf arr(y) = "Save the previously generated maze as a list of points" Then
                             If previousMaze.Count > 1 Then
                                 SaveMazeTextFile(previousMaze, previousAlgorithm)
@@ -680,6 +693,7 @@ Module Menus
                 Dim temparr() As String = {"Solve using the A* algorithm",
                                 "Solve using Dijkstra's algorithm",
                                 "Solve using Breadth-first search",
+                                "Solve using Best-first search",
                                 "Solve using Depth-first search (using iteration)",
                                 "Solve using Depth-first search (using recursion)",
                                 "Solve using a recursive algorithm",
@@ -716,6 +730,7 @@ Module Menus
             Dim temparr() As String = {"Solve using the A* algorithm",
                 "Solve using Dijkstra's algorithm",
                 "Solve using Breadth-first search",
+                "Solve using Best-first search",
                 "Solve using Depth-first search (using iteration)",
                 "Solve using Depth-first search (using recursion)",
                 "Solve using a recursive algorithm",
@@ -747,6 +762,7 @@ Module Menus
             Dim temparr() As String = {"Solve using the A* algorithm",
             "Solve using Dijkstra's algorithm",
             "Solve using Breadth-first search",
+            "Solve using Best-first search",
             "Solve using Depth-first search (using iteration)",
             "Solve using Depth-first search (using recursion)",
             "Solve using a recursive algorithm",

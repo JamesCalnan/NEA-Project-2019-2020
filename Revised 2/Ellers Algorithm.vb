@@ -61,7 +61,9 @@
                             Dim setNumToBeChanged As Integer = rowSet(nextCell)
                             Dim cellsToBeChanged As List(Of Cell) = (From thing In rowSet Where row.Contains(thing.Key) Where thing.Value = setNumToBeChanged Select thing.Key).ToList()
                             For Each thing In cellsToBeChanged
-                                rowSet(thing) = rowSet(curCell)
+                                If row.Contains(thing) Then
+                                    rowSet(thing) = rowSet(curCell)
+                                End If
                             Next
                         ElseIf currentCellSet <> adjacentCellSet And adjacentCellSet <> -1 And y >= limits(3) - 3 Then
                             'final row, need to join sets together
@@ -71,7 +73,9 @@
                             Dim setNumToBeChanged As Integer = rowSet(nextCell)
                             Dim cellsToBeChanged As List(Of Cell) = (From thing In rowSet Where row.Contains(thing.Key) Where thing.Value = setNumToBeChanged Select thing.Key).ToList()
                             For Each thing In cellsToBeChanged
-                                rowSet(thing) = rowSet(curCell)
+                                If row.Contains(thing) Then
+                                    rowSet(thing) = rowSet(curCell)
+                                End If
                             Next
                         End If
                         If x = limits(2) And y <> limits(3) - 2 And y < limits(3) - 3 Then
@@ -103,7 +107,6 @@
                                             Dim idx As Integer = r.Next(0, currentSet.Count)
                                             If Not indexes.Contains(idx) Then indexes.Add(idx)
                                         Next
-                                        Dim positions As New List(Of Cell)
                                         For k = 0 To indexes.Count - 1
                                             'If Indexes(k) = 1 Then Continue For
                                             Dim southWallCell As New Cell(currentSet(indexes(k)).X, currentSet(indexes(k)).Y + 1)
@@ -114,10 +117,6 @@
                                             If showMazeGeneration Then southWallCell.Print($"██")
                                             If Not returnPath.Contains(New Node(southCell.X, southCell.Y)) Then returnPath.Add(New Node(southCell.X, southCell.Y))
                                             If Not returnPath.Contains(New Node(southWallCell.X, southWallCell.Y)) Then returnPath.Add(New Node(southWallCell.X, southWallCell.Y))
-                                        Next
-                                        For Each position In positions
-                                            rowSet(position) = rowSet(row(j))
-                                            availableCells(position) = False
                                         Next
                                         currentSet.Clear()
                                     End If

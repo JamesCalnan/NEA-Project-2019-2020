@@ -282,13 +282,55 @@ Module Module1
     Sub Shuffle(ByRef lista As List(Of Double))
         Dim r As New Random
         Dim listb As New List(Of Double)
+        AnimateSort(lista)
         For i = 0 To lista.Count - 1
             Dim temp As Integer = r.Next(0, lista.Count)
             listb.Add(lista(temp))
             lista.RemoveAt(temp)
+            AnimateSort(listb)
+
         Next
         lista = listb
     End Sub
+    Sub FisherYatesShuffle(ByRef unShuffledList As List(Of Double))
+        Dim r As New Random
+        Dim n = unShuffledList.Count
+        For i = n - 1 To 1 Step -1
+            Dim j = r.Next(i)
+            Swap(unShuffledList, i, j)
+            AnimateSort(unShuffledList)
+        Next
+    End Sub
+    Sub FisherYatesShuffleInsideOut(ByRef source As List(Of Double))
+        Dim a As New List(Of Double)
+        For Each number In source
+            a.Add(number)
+        Next
+        Dim r As New Random
+        Dim n = a.Count
+        For i = 0 To n - 1
+            Dim j = r.Next(i)
+            If j <> i Then
+                a(i) = a(j)
+            End If
+            a(j) = source(i)
+            AnimateSort(a)
+        Next
+        source = a
+    End Sub
+    Sub SattolosAlgorithm(ByRef source As List(Of Double))
+        Dim r As New Random
+        Dim i = source.Count
+        While i > 1
+            i -= 1
+            Dim j = r.Next(i)
+            Swap(source, j, i)
+            AnimateSort(source)
+        End While
+    End Sub
+
+
+
     Sub AnimateSort(a As List(Of Double), Optional delay As Integer = 0, Optional sublist As Integer = -1, Optional totalLength As Integer = 0)
         Console.SetCursorPosition(0, 0)
         If sublist <> -1 Then
