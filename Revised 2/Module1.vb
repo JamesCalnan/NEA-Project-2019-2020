@@ -34,13 +34,13 @@ Module Module1
         'Console.WriteLine("hello there")
         'Console.ReadKey()
         '        dim b as ConsoleColor = consolecolor.Black
-        'Console.CursorVisible = False
-        'Do
-        '    Console.SetCursorPosition(0, 0)
-        '    Console.Write("Please make the window full screen")
-        'Loop Until Console.WindowWidth > Console.LargestWindowWidth - 10 And Console.WindowHeight > Console.LargestWindowHeight - 5
+        Console.CursorVisible = False
+        Do
+            Console.SetCursorPosition(0, 0)
+            Console.Write("Please make the window full screen")
+        Loop Until Console.WindowWidth > Console.LargestWindowWidth - 10 And Console.WindowHeight > Console.LargestWindowHeight - 5
         'Dim bool = HorizontalYesNo(0, "Do you want to have the exit option available on the menu:   ", True, True, False)
-        Console.ReadKey()
+        'Console.ReadKey()
         Dim menuOptions() As String = {
             "Generate a maze using one of the following algorithms",
             "   Recursive Backtracker Algorithm (using iteration)",
@@ -541,6 +541,36 @@ Module Module1
         Console.ReadKey()
         Console.Clear()
     End Sub
+    Function getImageBackgroundColour(image As Bitmap) As String
+        Return image.GetPixel(1, 1).Name
+    End Function
+
+    Function getImagePathColour(image As Bitmap, multiplier As Integer, imageBackGroundColour As String) As String
+        Dim colourDictionary As New Dictionary(Of String, Integer)
+        For y = 1 To image.Height Step multiplier * 2
+            For x = 1 To image.Width Step multiplier * 2
+                If image.GetPixel(x, y).Name <> imageBackGroundColour Then
+                    Dim currentPixelName = image.GetPixel(x, y).Name
+                    If colourDictionary.ContainsKey(currentPixelName) Then
+                        colourDictionary(currentPixelName) += 1
+                    Else
+                        colourDictionary.Add(currentPixelName, 1)
+                    End If
+                End If
+            Next
+        Next
+        Dim maxKey As String
+        Dim previousValue As Integer = colourDictionary.Values(0)
+        maxKey = colourDictionary.Keys(0)
+        For Each thing In colourDictionary
+            If thing.Value > previousValue Then
+                previousValue = thing.Value
+                maxKey = thing.Key
+            End If
+        Next
+        Return maxKey
+    End Function
+
     Function LoadMazePng(tempArr() As String, pathColour As ConsoleColor, backGroundColour As ConsoleColor, SolvingColour As ConsoleColor)
         'loading a big maze twice exceeds memory limit
         Console.Clear()
@@ -553,6 +583,8 @@ Module Module1
             Dim multiplier = 8
             Dim pathOnMaze = False
             Dim image As New Bitmap($"{filename}.png")
+            Dim imageBackgroundColour = getImageBackgroundColour(image)
+            Dim imagePathColour = getImagePathColour(image, multiplier, imageBackgroundColour)
             Dim greatestX = 0
             Dim greatestY = 0
             Dim greatestAllowedX As Integer = Console.WindowWidth - 56
@@ -560,8 +592,7 @@ Module Module1
             For y = 1 To image.Height Step multiplier * 2
                 For x = 1 To image.Width Step multiplier * 2
                     Dim pixel As Color = image.GetPixel(x, y)
-                    If pixel.GetBrightness = 1 Then
-                        Dim b As Integer = pixel.GetBrightness
+                    If pixel.Name = imagePathColour Then
                         maze.Add(New Node(x / multiplier, y / (multiplier * 2)))
                         If x / multiplier > greatestX Then greatestX = x / multiplier
                         If y / (multiplier * 2) > greatestY Then greatestY = y / (multiplier * 2)
@@ -569,7 +600,7 @@ Module Module1
                             Return Nothing
                         End If
                     End If
-                    If pixel.GetBrightness <> 0 And pixel.GetBrightness <> 1 Then
+                    If pixel.Name <> imagePathColour And pixel.Name <> imageBackgroundColour Then
                         pathOnMaze = True
                         path.Add(New Node(x / multiplier, y / (multiplier * 2)))
                     End If
@@ -612,7 +643,6 @@ Module Module1
                     'Solving of the maze goes here
                     Console.BackgroundColor = ConsoleColor.Black
                     Console.ForegroundColor = ConsoleColor.White
-
                     Dim input As String = SolvingMenu(tempArr, "What would you like to do with the maze", greatestX + 3, 3)
                     SolvingInput(input, True, greatestY, 0, maze, "", pathColour, backGroundColour, SolvingColour)
                 End If
