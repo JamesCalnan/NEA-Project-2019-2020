@@ -12,33 +12,6 @@
         target.Print("██")
         Console.CursorVisible = False
         While Not currentPos.Equals(target)
-            Dim t As New Node(Console.CursorLeft, Console.CursorTop)
-            Dim s As New Node(Console.CursorLeft - 1, Console.CursorTop)
-            If availablePath.Contains(t) Or availablePath.Contains(s) Then
-                If showPath And availablePath.Contains(s) Or availablePath.Contains(t) Then
-                    If playerPath.Contains(t) Or playerPath.Contains(s) Then
-                        If availablePath.Contains(t) Or availablePath.Contains(s) Then
-                            If showPath Then
-                                SetBoth(ConsoleColor.Blue)
-                            Else
-                                SetBoth(pathColour)
-                            End If
-                        Else
-                            SetBoth(pathColour)
-                        End If
-                    Else
-                        SetBoth(pathColour)
-                    End If
-                Else
-                    If availablePath.Contains(t) Or availablePath.Contains(s) Then
-                        SetBoth(pathColour)
-                    Else
-                        SetBoth(ConsoleColor.Blue)
-                    End If
-                End If
-            Else
-                setboth(backGroundColour)
-            End If
             Dim key = Console.ReadKey
             Select Case key.Key.ToString
                 Case "RightArrow"
@@ -57,6 +30,8 @@
                     Exit While
                 Case Else
             End Select
+            Console.SetCursorPosition(0, 1)
+            SetBoth(ConsoleColor.Black)
         End While
         Console.ForegroundColor = (ConsoleColor.Yellow)
         If currentPos.Equals(target) Then

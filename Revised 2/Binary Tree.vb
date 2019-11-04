@@ -35,10 +35,6 @@ Public Class PriorityQueue(Of T)
         Dim item As QueueItem(Of T) = Items.FindExact(tempItem).Clone()
         Items.Delete(item,true)
     End Sub
-    Public Function Contains(value As T) As Boolean
-
-        'Return Not IsNothing(Items.Contains(value))
-    End Function
 
     Public Function IsEmpty()
         Return Items.IsEmpty

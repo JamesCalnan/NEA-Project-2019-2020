@@ -31,7 +31,7 @@ Module Menus
         Dim allColours() As String = GetAllConsoleColours()
         Dim pathColour = ConsoleColor.White
         Dim backGroundColour = ConsoleColor.Black
-        Dim solvingColour = ConsoleColor.Red
+        Dim solvingColour = ConsoleColor.DarkGray
         Dim input = ""
         Dim previousAlgorithm = ""
         Dim previousMaze, loadedMaze As New List(Of Node)
@@ -90,7 +90,8 @@ Module Menus
                     If y <= lastMazeGenItem Then
                         GetMazeInfo(width, height, delayMs, limits, showMazeGeneration, True, 0, If(arr(y) = "   Make your own maze", True, False))
                         If arr(y) = "   Recursive Backtracker Algorithm (using iteration)" Then
-                            availablePath = RecursiveBacktracker.RecursiveBacktracker(limits, delayMs, showMazeGeneration, pathColour, backGroundColour)
+                            simulateLife(limits)
+                            'availablePath = RecursiveBacktracker.RecursiveBacktracker(limits, delayMs, showMazeGeneration, pathColour, backGroundColour)
                         ElseIf arr(y) = "   Recursive Backtracker Algorithm (using recursion)" Then
                             Dim r As New Random
                             If backGroundColour <> ConsoleColor.Black Then DrawBackground(backGroundColour, limits)
@@ -110,7 +111,7 @@ Module Menus
                             AddStartAndEnd(path, limits, pathColour)
                             availablePath = path
                         ElseIf arr(y) = "   Recursive Backtracker Algorithm (using iteration, not using a stack)" Then
-                            availablePath = RecursiveBacktracker.RecursiveBacktrackerNotUsingStack(limits, delayMs, showMazeGeneration, pathColour, backGroundColour)
+                            availablePath = RecursiveBacktrackerNotUsingStack(limits, delayMs, showMazeGeneration, pathColour, backGroundColour)
                         ElseIf arr(y) = "   Hunt and Kill Algorithm (first cell)" Then
                             availablePath = HuntAndKillRefactored(limits, delayMs, showMazeGeneration, pathColour, backGroundColour)
                         ElseIf arr(y) = "   Hunt and Kill Algorithm (random cell)" Then
@@ -166,6 +167,8 @@ Module Menus
                             availablePath = reverseDeleteAlgorithm(limits, delayMs, showMazeGeneration, pathColour, backGroundColour, "dfs")
                         ElseIf arr(y) = "   Randomised Breadth-First Search" Then
                             availablePath = RandomisedBFS(limits, delayMs, showMazeGeneration, pathColour, backGroundColour)
+                        ElseIf arr(y) = "   Dungeon Creation Algorithm" Then
+                            availablePath = createPassages(limits, showMazeGeneration, pathColour, backGroundColour, delayMs)
                         End If
                         If Not IsNothing(availablePath) Then Solving(availablePath, limits, previousMaze, input, yPosAfterMaze, showPath, solvingDelay, arr(y), previousAlgorithm, temparr, pathColour, backGroundColour, solvingColour)
                     Else
@@ -283,7 +286,7 @@ Module Menus
                         ElseIf arr(y) = "Load a maze from a text file (list of points)" Then
                             LoadMazeTextFile(loadedMaze, yPosAfterMaze, previousMaze, temparr, showPath, solvingDelay, pathColour, backGroundColour, solvingColour)
                         ElseIf arr(y) = "Load a maze from an image file" Then
-                            Dim tempMaze As List(Of Node) = LoadMazePng(temparr, pathColour, backGroundColour, solvingColour)
+                            Dim tempMaze As List(Of Node) = LoadMazePng(temparr, previousAlgorithm, pathColour, backGroundColour, solvingColour)
                             If IsNothing(tempMaze) Then
                                 Console.Clear()
                                 Console.ForegroundColor = ConsoleColor.Red
@@ -632,9 +635,9 @@ Module Menus
         ElseIf input = "Solve using Depth-first search (using iteration)" Then
             showpath = HorizontalYesNo(YposAfterMaze + 2, "Do you want to show the steps in solving the maze: ", True, False, False)
             If showpath Then solvingdelay = GetIntInputArrowKeys("Delay when solving the maze: ", 100, 0, True)
-            Dim neededNodes As List(Of Node) = GetNeededNodes(Maze)
-            Dim adjacencyList As Dictionary(Of Node, List(Of Node)) = ConstructAdjacencyList(neededNodes, Maze)
-            DFS_Iterative(adjacencyList, showpath, True, solvingdelay, solvingColour)
+            'Dim neededNodes As List(Of Node) = GetNeededNodes(Maze)
+            'Dim adjacencyList As Dictionary(Of Node, List(Of Node)) = ConstructAdjacencyList(neededNodes, Maze)
+            DFS_Iterative(Maze, showpath, True, solvingdelay, solvingColour)
         ElseIf input = "Solve using Depth-first search (using recursion)" Then
             showpath = HorizontalYesNo(YposAfterMaze + 2, "Do you want to show the steps in solving the maze: ", True, False, False)
             If showpath Then solvingdelay = GetIntInputArrowKeys("Delay when solving the maze: ", 100, 0, True)
@@ -667,7 +670,7 @@ Module Menus
         ElseIf input = "Solve using the dead end filling method" Then
             showpath = HorizontalYesNo(YposAfterMaze + 2, "Do you want to show the steps in solving the maze: ", True, False, False)
             If showpath Then solvingdelay = GetIntInputArrowKeys("Delay when solving the maze: ", 100, 0, True)
-            DeadEndFiller(Maze, showpath, True, solvingdelay, pathColour, solvingColour)
+            DeadEndFiller(Maze, showpath, solvingdelay, pathColour, solvingColour)
         ElseIf input = "Solve using the left-hand rule" Then
             Console.SetCursorPosition(0, YposAfterMaze + 2)
             solvingdelay = GetIntInputArrowKeys("Delay when solving the maze: ", 100, 0, True)

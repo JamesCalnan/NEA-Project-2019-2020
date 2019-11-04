@@ -80,10 +80,10 @@
         ReconstructPath(cameFrom, goal, start, If(showSolveTime, $"{stopwatch.Elapsed.TotalSeconds}", ""))
         Console.ReadKey()
     End Sub
-    Function GetStart(maze As List(Of Node)) As Node
+    Function getStart(maze As List(Of Node)) As Node
         Return maze(maze.Count - 2)
     End Function
-    Function GetGoal(maze As List(Of Node)) As Node
+    Function getGoal(maze As List(Of Node)) As Node
         Return maze(maze.Count - 1)
     End Function
 End Module

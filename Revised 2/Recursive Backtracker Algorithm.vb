@@ -9,7 +9,19 @@
         Dim stack As New Stack(Of Cell)
         Dim returnablePath As New List(Of Node)
         Dim stopwatch As Stopwatch = Stopwatch.StartNew()
+
+        Dim cellstobeVoided As New List(Of Cell)
+        'For Each cell In visitedCells.Keys
+        '    If r.Next(11) <= 2 Then cellstobeVoided.Add(cell)
+        'Next
+        'SetBoth(ConsoleColor.Red)
+        'For Each cell In cellstobeVoided
+        '    cell.Print("XX")
+        '    visitedCells(cell) = True
+        'Next
+
         visitedCells(currentCell) = True
+        stack.Push(currentCell)
         returnablePath.Add(New Node(currentCell.X, currentCell.Y))
         If showMazeGeneration Then currentCell.Print("██")
         While True
@@ -20,9 +32,9 @@
             End If
             Dim recentCells As List(Of Cell) = Neighbour(currentCell, visitedCells, limits)
             If recentCells.Count > 0 Then
-                Dim temporaryCell As Cell = recentCells(r.Next(0, recentCells.Count))
+                Dim temporaryCell As Cell = recentCells(r.Next(recentCells.Count))
                 visitedCells(temporaryCell) = True
-                stack.Push(New Cell(temporaryCell.X, temporaryCell.Y))
+                stack.Push(temporaryCell)
                 Dim wallCell As Cell = MidPoint(currentCell, temporaryCell)
                 currentCell = temporaryCell
                 AddToPath(returnablePath, temporaryCell, wallCell)
@@ -55,8 +67,19 @@
             PrintMazeHorizontally(returnablePath, limits(2), limits(3))
         End If
         Dim ypos As Integer = Console.CursorTop
-        AddStartAndEnd(returnablePath, limits, pathcolour)
+        'AddStartAndEnd(returnablePath, limits, pathcolour)
         'Unicursal(returnablePath)
+        Console.ReadKey()
+        SetBoth(ConsoleColor.Black)
+        For Each cell In cellstobeVoided
+            cell.Print("XX")
+        Next
+        Dim start = returnablePath(0)
+        Dim endp = returnablePath(returnablePath.Count - 1)
+        returnablePath.RemoveAt(0)
+        returnablePath.RemoveAt(returnablePath.Count - 1)
+        returnablePath.Add(start)
+        returnablePath.Add(endp)
         Console.SetCursorPosition(0, ypos)
         Return returnablePath
     End Function
@@ -86,9 +109,9 @@
             End If
             Dim recentCells As List(Of Cell) = Neighbour(currentCell, visitedCells, limits)
             If recentCells.Count > 0 Then
-                Dim temporaryCell As Cell = recentCells(r.Next(0, recentCells.Count))
+                Dim temporaryCell As Cell = recentCells(r.Next(recentCells.Count))
                 visitedCells(temporaryCell) = True
-                cameFrom(temporaryCell) = currentCell 'stack.Push(New Cell(temporaryCell.X, temporaryCell.Y))
+                cameFrom(temporaryCell) = currentCell
                 Dim wallCell As Cell = MidPoint(currentCell, temporaryCell)
                 currentCell = temporaryCell
                 AddToPath(returnablePath, temporaryCell, wallCell)
@@ -100,7 +123,7 @@
                     temporaryCell.Print("██")
                     prevCell = currentCell
                 End If
-            ElseIf gricComplete(visitedCells) Then
+            ElseIf gridComplete(visitedCells) Then
                 currentCell = cameFrom(currentCell)
                 'cameFrom(currentCell) = Nothing
                 If showMazeGeneration Then
@@ -124,16 +147,11 @@
             SetBoth(pathColour)
             prevCell.Print("XX")
         End If
-        Dim ypos As Integer = Console.CursorTop
         AddStartAndEnd(returnablePath, limits, pathColour)
-        Console.SetCursorPosition(0, ypos)
         Return returnablePath
     End Function
-    Function gricComplete(dict As Dictionary(Of Cell, Boolean))
-        For Each thing In dict
-            If Not thing.Value Then Return True
-        Next
-        Return False
+    Function gridComplete(dict As Dictionary(Of Cell, Boolean))
+        Return dict.Any(Function(thing) Not thing.Value)
     End Function
 
     Function RecursiveBacktrackerRecursively(cell As Cell, limits() As Integer, path As List(Of Node), ByRef visited As Dictionary(Of Cell, Boolean), ByRef cameFrom As Cell, r As Random, showMazeGeneration As Boolean, delay As Integer, pathColour as consolecolor)

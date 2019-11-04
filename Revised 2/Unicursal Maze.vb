@@ -53,9 +53,15 @@
         Next
         Dim limits() As Integer = {5, 3, gx, gy}
         if backGroundColour <> ConsoleColor.Black then DrawBackground(backGroundColour,{6, 3, gx+1, gy})
-          AddStartAndEnd(newMaze, limits, pathcolour, True)
-        SetBoth(pathcolour)
-        for each node in newMaze
+        Dim availableStartPositions As New List(Of Node)
+        For x = limits(0) + 3 To limits(2)
+            If newMaze.Contains(New Node(x, limits(1))) Then availableStartPositions.Add(New Node(x, limits(1)))
+        Next
+        newMaze.Remove(availableStartPositions(1))
+        newMaze.Add(New Node(availableStartPositions(0).X, availableStartPositions(0).Y - 1))
+        newMaze.Add(New Node(availableStartPositions(2).X, availableStartPositions(2).Y - 1))
+        SetBoth(pathColour)
+        For Each node In newMaze
             node.Print("XX")
         Next
         Return newMaze
