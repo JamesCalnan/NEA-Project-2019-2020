@@ -393,6 +393,18 @@
         Console.WriteLine("             1. Remove the edge from the list")
     End Sub
 
-
+    sub DungeonGeneationAlgorithmInfo()
+        Console.WriteLine("The process of generating a dungeon combines 2 different methods that are used in maze generation algorithms")
+        Console.WriteLine("These three methods being:")
+        Console.WriteLine("    1. Using the recursive backtracking algorithm to generate a path")
+        Console.WriteLine("    2. Assigning sets so that a room only has a single entrance/exit")
+        Console.WriteLine($"{Environment.NewLine}Steps in generating a Dungeon")
+        Console.WriteLine("    1. Create rooms (rectangles) or random size that are not adjacent to each other and don't overlap")
+        Console.WriteLine("    2. Pick a random starting location")
+        Console.WriteLine("    3. Use the recursive backtracking algorithm in order to fill up the spaces on the grid that isn't a room")
+        Console.WriteLine("    4. Find the points on the grid where the path is adjacent to the rooms")
+        Console.WriteLine("    5. Join path to the room")
+        Console.WriteLine("    6. Remove dead ends")
+    End sub
 
 End Module

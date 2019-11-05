@@ -88,11 +88,12 @@ Module Menus
                     Console.ForegroundColor = ConsoleColor.White
                     Dim availablePath As New List(Of Node)
                     If y <= lastMazeGenItem Then
-                        GetMazeInfo(width, height, delayMs, limits, showMazeGeneration, True, 0, If(arr(y) = "   Make your own maze" Or arr(y) = "   Conway's game of life (Maze generation)", True, False), If(arr(y) = "   Conway's game of life (Maze generation)", False, True))
+                        GetMazeInfo(width, height, delayMs, limits, showMazeGeneration, True, 0, arr(y) = "   Make your own maze" Or arr(y) = "   Conway's game of life (Maze generation)", arr(y) <> "   Conway's game of life (Maze generation)")
                         If arr(y) = "   Recursive Backtracker Algorithm (using iteration)" Then
                             availablePath = RecursiveBacktracker.RecursiveBacktracker(limits, delayMs, showMazeGeneration, pathColour, backGroundColour)
                         ElseIf arr(y) = "   Conway's game of life (Maze generation)" Then
-                            simulateLife(limits, True)
+                            delayMs = GetIntInputArrowKeys("Delay when making the Maze (MS): ", 100, 0, True)
+                            simulateLife(limits, True, delayMs)
                         ElseIf arr(y) = "   Recursive Backtracker Algorithm (using recursion)" Then
                             Dim r As New Random
                             If backGroundColour <> ConsoleColor.Black Then DrawBackground(backGroundColour, limits)
@@ -327,8 +328,9 @@ Module Menus
                                 Console.ReadKey()
                             End If
                         ElseIf arr(y) = "Conway's game of life" Then
-                            GetMazeInfo(width, height, delayMs, limits, showMazeGeneration, True, 0, If(arr(y) = "Conway's game of life", True, False), If(arr(y) = "Conway's game of life", False, True))
-                            simulateLife(limits, False)
+                            GetMazeInfo(width, height, delayMs, limits, showMazeGeneration, True, 0, arr(y) = "Conway's game of life", arr(y) <> "Conway's game of life")
+                            delayMs = GetIntInputArrowKeys("Delay when making the Maze (MS): ", 100, 0, True)
+                            simulateLife(limits, False, delayMs)
                         Else
                             OptionNotReady()
                         End If
@@ -381,6 +383,8 @@ Module Menus
                             RandomisedBreadthFirstSearch()
                         ElseIf arr(y) = "   Borůvka's Algorithm (top down)" Or arr(y) = "   Borůvka's Algorithm (random)" Then
                             BoruvkasAlgorithmInfo()
+                            elseif arr(y) = "   Dungeon Creation Algorithm"
+                                DungeonGeneationAlgorithmInfo
                         Else
                             OptionNotReady()
                         End If
