@@ -88,10 +88,11 @@ Module Menus
                     Console.ForegroundColor = ConsoleColor.White
                     Dim availablePath As New List(Of Node)
                     If y <= lastMazeGenItem Then
-                        GetMazeInfo(width, height, delayMs, limits, showMazeGeneration, True, 0, If(arr(y) = "   Make your own maze", True, False))
+                        GetMazeInfo(width, height, delayMs, limits, showMazeGeneration, True, 0, If(arr(y) = "   Make your own maze" Or arr(y) = "   Conway's game of life (Maze generation)", True, False), If(arr(y) = "   Conway's game of life (Maze generation)", False, True))
                         If arr(y) = "   Recursive Backtracker Algorithm (using iteration)" Then
-                            simulateLife(limits)
-                            'availablePath = RecursiveBacktracker.RecursiveBacktracker(limits, delayMs, showMazeGeneration, pathColour, backGroundColour)
+                            availablePath = RecursiveBacktracker.RecursiveBacktracker(limits, delayMs, showMazeGeneration, pathColour, backGroundColour)
+                        ElseIf arr(y) = "   Conway's game of life (Maze generation)" Then
+                            simulateLife(limits, True)
                         ElseIf arr(y) = "   Recursive Backtracker Algorithm (using recursion)" Then
                             Dim r As New Random
                             If backGroundColour <> ConsoleColor.Black Then DrawBackground(backGroundColour, limits)
@@ -170,7 +171,7 @@ Module Menus
                         ElseIf arr(y) = "   Dungeon Creation Algorithm" Then
                             availablePath = createPassages(limits, showMazeGeneration, pathColour, backGroundColour, delayMs)
                         End If
-                        If Not IsNothing(availablePath) Then Solving(availablePath, limits, previousMaze, input, yPosAfterMaze, showPath, solvingDelay, arr(y), previousAlgorithm, temparr, pathColour, backGroundColour, solvingColour)
+                        If Not IsNothing(availablePath) And arr(y) <> "   Conway's game of life (Maze generation)" Then Solving(availablePath, limits, previousMaze, input, yPosAfterMaze, showPath, solvingDelay, arr(y), previousAlgorithm, temparr, pathColour, backGroundColour, solvingColour)
                     Else
                         If arr(y) = "Load the previously generated maze" Then
                             PrintPreviousMaze(previousMaze, previousAlgorithm, showPath, yPosAfterMaze, solvingDelay, temparr, pathColour, backGroundColour, solvingColour)
@@ -325,6 +326,9 @@ Module Menus
                                 MsgColour("Unavailable", ConsoleColor.Red)
                                 Console.ReadKey()
                             End If
+                        ElseIf arr(y) = "Conway's game of life" Then
+                            GetMazeInfo(width, height, delayMs, limits, showMazeGeneration, True, 0, If(arr(y) = "Conway's game of life", True, False), If(arr(y) = "Conway's game of life", False, True))
+                            simulateLife(limits, False)
                         Else
                             OptionNotReady()
                         End If
@@ -337,6 +341,8 @@ Module Menus
                         InitialiseScreen()
                         If arr(y) = "   Recursive Backtracker Algorithm (using iteration)" Then
                             RecrusiveBacktrackerInfo()
+                        ElseIf arr(y) = "   Reverse-Delete Algorithm (best-first search)" Or arr(y) = "   Reverse-Delete Algorithm (breadth-first search)" Or arr(y) = "   Reverse-Delete Algorithm (depth-first search)" Then
+                            ReverseDeleteAlgorithmInfo()
                         ElseIf arr(y) = "   Recursive Backtracker Algorithm (using recursion)" Then
                             RecrusiveBacktrackerRecursionInfo()
                         ElseIf arr(y) = "   Recursive Backtracker Algorithm (using iteration, not using a stack)" Then
@@ -355,9 +361,9 @@ Module Menus
                             GrowingTreeInfo()
                         ElseIf arr(y) = "   Sidewinder Algorithm" Then
                             SidewinderInfo()
-                        ElseIf arr(y) = "   Binary Tree Algorithm" Then
+                        ElseIf arr(y) = "   Binary Tree Algorithm (top down)" Or arr(y) = "   Binary Tree Algorithm (random)" Then
                             BinaryTreeInfo()
-                        ElseIf arr(y) = "   Wilson's Algorithm" Then
+                        ElseIf arr(y) = "   Wilson's Algorithm (9 options)" Then
                             WilsonsInfo()
                         ElseIf arr(y) = "   Eller's Algorithm" Then
                             EllersInfo()
@@ -373,6 +379,8 @@ Module Menus
                             CustomAlgorithmInfo()
                         ElseIf arr(y) = "   Randomised Breadth-First Search" Then
                             RandomisedBreadthFirstSearch()
+                        ElseIf arr(y) = "   Borůvka's Algorithm (top down)" Or arr(y) = "   Borůvka's Algorithm (random)" Then
+                            BoruvkasAlgorithmInfo()
                         Else
                             OptionNotReady()
                         End If
@@ -842,7 +850,7 @@ Module Menus
             End
         End If
     End Sub
-    Sub GetMazeInfo(ByRef Width As Integer, ByRef Height As Integer, ByRef DelayMS As Integer, ByRef Limits() As Integer, ByRef ShowGeneration As Boolean, Clear As Boolean, y As Integer, Optional NeedExtraInfo As Boolean = True)
+    Sub GetMazeInfo(ByRef Width As Integer, ByRef Height As Integer, ByRef DelayMS As Integer, ByRef Limits() As Integer, ByRef ShowGeneration As Boolean, Clear As Boolean, y As Integer, Optional NeedExtraInfo As Boolean = True, Optional fullScreen As Boolean = False)
         Console.SetCursorPosition(0, y)
         If Not NeedExtraInfo Then
             ShowGeneration = HorizontalYesNo(Console.CursorTop, "Do you want to see the maze being generated: ", False, If(Clear, True, False), False)
@@ -854,7 +862,7 @@ Module Menus
             End If
         End If
         If NeedExtraInfo Then Console.Clear()
-        Width = GetIntInputArrowKeys($"Width of the Maze: ", (Console.WindowWidth - 58) / 2, 20, False) * 2
+        Width = GetIntInputArrowKeys($"Width of the Maze: ", (Console.WindowWidth - If(fullScreen, 58, 12)) / 2, 20, False) * 2
         Height = GetIntInputArrowKeys($"Height of the Maze: ", Console.WindowHeight - 6, 20, False)
         If Width Mod 2 = 0 Then
             Width += 1

@@ -2,24 +2,26 @@
 
 Module Conways_Game_of_Life
 
-    Sub simulateLife(limits() As Integer)
+    Sub simulateLife(limits() As Integer, forMazeGeneration As Boolean)
         Dim r As New Random
         Dim grid(limits(3) - 2, limits(2) \ 2) As Boolean
-        Dim minX As Integer = Math.Floor(grid.GetLength(0) * 2 / 5)
-        Dim maxX As Integer = Math.Floor(grid.GetLength(0) * 3 / 5) + 1
-        Dim minY As Integer = Math.Floor(grid.GetLength(1) * 2 / 5)
-        Dim maxY As Integer = Math.Floor(grid.GetLength(1) * 3 / 5) + 1
+        Dim minX As Integer = Math.Floor(((limits(2) \ 2) * 2) / 5)
+        Dim maxX As Integer = Math.Floor(((limits(2) \ 2) * 3) / 5) + 1
+        Dim minY As Integer = Math.Floor(((limits(3) - 2) * 2) / 5)
+        Dim maxY As Integer = Math.Floor(((limits(3) - 2) * 3) / 5) + 1
+
         For i = 0 To grid.GetUpperBound(0)
             For j = 0 To grid.GetUpperBound(1)
-                If i > minY And i < maxY And j > minX And j < maxX Then grid(i, j) = j Mod 2
+                If forMazeGeneration Then
+                    If i > minY And i < maxY And j > minX And j < maxX Then grid(i, j) = r.Next(11) < 2 'j Mod 3
+                Else
+                    grid(i, j) = r.Next(11) < 3
+                End If
             Next
         Next
-        Console.BackgroundColor = ConsoleColor.White
-        Console.Clear()
-        Console.ForegroundColor = ConsoleColor.Black
+        Console.ForegroundColor = ConsoleColor.White
+        PrintMessageMiddle("Press escape to exit", Console.WindowHeight - 2, ConsoleColor.White)
         While 1
-
-            If Console.KeyAvailable Then Exit While
             If ExitCase() Then Exit While
             Console.SetCursorPosition(0, 0)
             animateGrid(grid)
@@ -30,10 +32,10 @@ Module Conways_Game_of_Life
                     Dim state As Boolean = duplicateGrid(i, j)
                     If Not state And neighbours = 3 Then
                         duplicateGrid(i, j) = True
-                    ElseIf state And (neighbours >= 1 And neighbours <= 5) Then ' state And (neighbours < 2 Or neighbours > 3)
-                        duplicateGrid(i, j) = True
+                    ElseIf If(forMazeGeneration, state And (neighbours >= 1 And neighbours <= 5), state And (neighbours < 2 Or neighbours > 3)) Then 'state And (neighbours < 2 Or neighbours > 3)
+                        duplicateGrid(i, j) = If(forMazeGeneration, True, False)
                     Else
-                        duplicateGrid(i, j) = False
+                        duplicateGrid(i, j) = If(forMazeGeneration, False, state)
                     End If
                 Next
             Next
@@ -42,16 +44,16 @@ Module Conways_Game_of_Life
     End Sub
     Sub animateGrid(grid(,) As Boolean)
         Dim nl = Environment.NewLine
-        Dim outString As String = ""
-        outString += Environment.NewLine + Environment.NewLine + Environment.NewLine
+        Dim outputString As String = ""
+        outputString += Environment.NewLine + Environment.NewLine + Environment.NewLine
         For i = 0 To grid.GetUpperBound(0)
-            outString += "        "
+            outputString += "      "
             For j = 0 To grid.GetUpperBound(1)
-                outString += If(grid(i, j), "██", "  ")
+                outputString += If(grid(i, j), "██", "  ")
             Next
-            outString += nl
+            outputString += nl
         Next
-        Console.Write(outString)
+        Console.Write(outputString)
     End Sub
 
     Function countNeighbours(row As Integer, column As Integer, grid As Boolean(,)) As Integer

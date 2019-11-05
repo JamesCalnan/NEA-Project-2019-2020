@@ -10,10 +10,12 @@
         Dim greatestX, greatestY As Integer
         greatestX = 0
         greatestY = 0
-        Console.ForegroundColor = ConsoleColor.White
-        Console.BackgroundColor = ConsoleColor.Black
-        Console.SetCursorPosition(1, 1)
-        Console.Write("Current Process: Finding dead ends")
+        If Not fillPath Then
+            Console.ForegroundColor = ConsoleColor.White
+            Console.BackgroundColor = ConsoleColor.Black
+            Console.SetCursorPosition(1, 1)
+            Console.Write("Current Process: Finding dead ends")
+        End If
         SetBoth(solvingcolour)
         Dim stopwatch As Stopwatch = Stopwatch.StartNew()
         For Each node In list
@@ -29,10 +31,12 @@
             visited(node) = False
         Next
         If deadEnds.Count > 0 Then
-            Console.ForegroundColor = ConsoleColor.White
-            Console.BackgroundColor = ConsoleColor.Black
-            Console.SetCursorPosition(1, 1)
-            Console.Write("Current Process: Filling dead ends      ")
+            If Not fillPath Then
+                Console.ForegroundColor = ConsoleColor.White
+                Console.BackgroundColor = ConsoleColor.Black
+                Console.SetCursorPosition(1, 1)
+                Console.Write("Current Process: Filling dead ends      ")
+            End If
             SetBoth(solvingcolour)
             For Each deadEnd In deadEnds
                 Dim startingCell As Node = deadEnd
