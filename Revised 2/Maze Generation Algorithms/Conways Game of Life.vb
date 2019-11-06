@@ -2,7 +2,7 @@
 
 Module Conways_Game_of_Life
 
-    Sub simulateLife(limits() As Integer, forMazeGeneration As Boolean, delay as Integer)
+    Sub simulateLife(limits() As Integer, forMazeGeneration As Boolean, delay As Integer, Optional ruleString As String = "B3/S12345")
         Dim r As New Random
         Dim grid(limits(3) - 2, limits(2) \ 2) As Boolean
         Dim minX As Integer = Math.Floor(((limits(2) \ 2) * 2) / 5)
@@ -21,10 +21,10 @@ Module Conways_Game_of_Life
         Next
         Console.ForegroundColor = ConsoleColor.White
         PrintMessageMiddle("Press escape to exit", Console.WindowHeight - 2, ConsoleColor.White)
-        
-        do
-            If ExitCase() Then Exit do
-            Dim outputString  = ""
+
+        Do
+            If ExitCase() Then Exit Do
+            Dim outputString = ""
             'animateGrid(grid)
             Dim duplicateGrid As Boolean(,) = grid.Clone()
             outputString += Environment.NewLine + Environment.NewLine + Environment.NewLine
@@ -35,20 +35,20 @@ Module Conways_Game_of_Life
                     Dim state As Boolean = duplicateGrid(i, j)
                     If Not state And neighbours = 3 Then
                         duplicateGrid(i, j) = True
-                    ElseIf If(forMazeGeneration, state And (neighbours >= 1 And neighbours <= 5), state And (neighbours < 2 Or neighbours > 3)) Then 'state And (neighbours < 2 Or neighbours > 3)
+                    ElseIf If(forMazeGeneration, state And (neighbours >= 1 And neighbours <= If(ruleString = "B3/S12345 (Mazecetric)", 5, 4)), state And (neighbours < 2 Or neighbours > 3)) Then 'state And (neighbours < 2 Or neighbours > 3)
                         duplicateGrid(i, j) = forMazeGeneration
                     Else
                         duplicateGrid(i, j) = Not forMazeGeneration AndAlso state
                     End If
                     outputString += If(duplicateGrid(i, j), "██", "  ")
                 Next
-                outputString +=  Environment.NewLine
+                outputString += Environment.NewLine
             Next
             Console.SetCursorPosition(0, 0)
             Console.Write(outputString)
             grid = duplicateGrid.Clone()
             Threading.Thread.Sleep(delay)
-        loop
+        Loop
     End Sub
     Function countNeighbours(row As Integer, column As Integer, grid As Boolean(,)) As Integer
         Dim sum As Integer

@@ -93,7 +93,8 @@ Module Menus
                             availablePath = RecursiveBacktracker.RecursiveBacktracker(limits, delayMs, showMazeGeneration, pathColour, backGroundColour)
                         ElseIf arr(y) = "   Conway's game of life (Maze generation)" Then
                             delayMs = GetIntInputArrowKeys("Delay when making the Maze (MS): ", 100, 0, True)
-                            simulateLife(limits, True, delayMs)
+                            Dim rulestring As String = SolvingMenu({"B3/S12345 (Mazecetric)", "B3/S1234 (Maze)"}, "Rule string: ", 0, 0)
+                            simulateLife(limits, True, delayMs, rulestring)
                         ElseIf arr(y) = "   Recursive Backtracker Algorithm (using recursion)" Then
                             Dim r As New Random
                             If backGroundColour <> ConsoleColor.Black Then DrawBackground(backGroundColour, limits)
@@ -339,7 +340,7 @@ Module Menus
                     Console.Clear()
                     MsgColour($"{topitem}: ", ConsoleColor.Yellow)
                 Case "I"
-                    If y < lastMazeGenItem Then
+                    If y < lastMazeGenItem And arr(y) <> "   Make your own maze" Then
                         InitialiseScreen()
                         If arr(y) = "   Recursive Backtracker Algorithm (using iteration)" Then
                             RecrusiveBacktrackerInfo()
@@ -383,8 +384,10 @@ Module Menus
                             RandomisedBreadthFirstSearch()
                         ElseIf arr(y) = "   Borůvka's Algorithm (top down)" Or arr(y) = "   Borůvka's Algorithm (random)" Then
                             BoruvkasAlgorithmInfo()
-                            elseif arr(y) = "   Dungeon Creation Algorithm"
-                                DungeonGeneationAlgorithmInfo
+                        ElseIf arr(y) = "   Dungeon Creation Algorithm" Then
+                            DungeonGeneationAlgorithmInfo()
+                        ElseIf arr(y) = "   Conway's game of life (Maze generation)" Then
+                            ConwaysGameOfLifeMaze()
                         Else
                             OptionNotReady()
                         End If

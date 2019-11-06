@@ -337,8 +337,20 @@
         Console.WriteLine("     3. This cell now becomes the current cell")
         Console.WriteLine("     4. If there are no unvisited adjacent cells then go back on the path until an unvisited adjacent cell is found")
     End Sub
+    Sub ConwaysGameOfLifeMaze()
+        Console.WriteLine("Conway's Game of life is a cellular automaton")
+        Console.WriteLine("It is a zero player game")
+        Console.WriteLine("It simulate simple life based on some simple rules:")
+        Console.WriteLine("     Any live cell with fewer than two live neighbours dies, as if by underpopulation.
+     Any live cell with two or three live neighbours lives on to the next generation.
+     Any live cell with more than three live neighbours dies, as if by overpopulation.
+     Any dead cell with exactly three live neighbours becomes a live cell, as if by reproduction.")
+        Console.WriteLine("Conways game of life for maze generatio uses slightly different rules so that the cells don't die as often")
+        Console.WriteLine("     A cell is born if it has exactly 3 neighbours")
+        Console.WriteLine("     A cell survives if it has at least 1 and at most 5 neighbours")
+    End Sub
     Sub CustomAlgorithmInfo()
-        Console.WriteLine("This was an algorithm that i came up with when attempting to code the Growing Tree Algorithm")
+        Console.WriteLine("This was an algorithm that I came up with when attempting to code the Growing Tree Algorithm")
         Console.WriteLine()
         Console.WriteLine("Steps in generating a maze using the Spiral Backtracker Algorithm:")
         Console.WriteLine("     1. Initialise a starting cell, mark it as visited")
@@ -393,7 +405,7 @@
         Console.WriteLine("             1. Remove the edge from the list")
     End Sub
 
-    sub DungeonGeneationAlgorithmInfo()
+    Sub DungeonGeneationAlgorithmInfo()
         Console.WriteLine("The process of generating a dungeon combines 2 different methods that are used in maze generation algorithms")
         Console.WriteLine("These three methods being:")
         Console.WriteLine("    1. Using the recursive backtracking algorithm to generate a path")
@@ -405,6 +417,6 @@
         Console.WriteLine("    4. Find the points on the grid where the path is adjacent to the rooms")
         Console.WriteLine("    5. Join path to the room")
         Console.WriteLine("    6. Remove dead ends")
-    End sub
+    End Sub
 
 End Module
