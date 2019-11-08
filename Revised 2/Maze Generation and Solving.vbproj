@@ -291,6 +291,7 @@
     <Compile Include="Other maze generation things\UserCreateMaze.vb" />
     <Compile Include="Solving Algorithms\Wall Follower.vb" />
     <Compile Include="Maze Generation Algorithms\Wilsons Algorithm.vb" />
+    <Compile Include="Symetrical Maze.vb" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="My Project\Resources.resx">

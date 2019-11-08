@@ -9,17 +9,6 @@
         Dim stack As New Stack(Of Cell)
         Dim returnablePath As New List(Of Node)
         Dim stopwatch As Stopwatch = Stopwatch.StartNew()
-
-        Dim cellstobeVoided As New List(Of Cell)
-        'For Each cell In visitedCells.Keys
-        '    If r.Next(11) <= 2 Then cellstobeVoided.Add(cell)
-        'Next
-        'SetBoth(ConsoleColor.Red)
-        'For Each cell In cellstobeVoided
-        '    cell.Print("XX")
-        '    visitedCells(cell) = True
-        'Next
-
         visitedCells(currentCell) = True
         stack.Push(currentCell)
         returnablePath.Add(New Node(currentCell.X, currentCell.Y))
@@ -67,19 +56,7 @@
             PrintMazeHorizontally(returnablePath, limits(2), limits(3))
         End If
         Dim ypos As Integer = Console.CursorTop
-        'AddStartAndEnd(returnablePath, limits, pathcolour)
-        'Unicursal(returnablePath)
-        Console.ReadKey()
-        SetBoth(ConsoleColor.Black)
-        For Each cell In cellstobeVoided
-            cell.Print("XX")
-        Next
-        Dim start = returnablePath(0)
-        Dim endp = returnablePath(returnablePath.Count - 1)
-        returnablePath.RemoveAt(0)
-        returnablePath.RemoveAt(returnablePath.Count - 1)
-        returnablePath.Add(start)
-        returnablePath.Add(endp)
+        AddStartAndEnd(returnablePath, limits, pathColour)
         Console.SetCursorPosition(0, ypos)
         Return returnablePath
     End Function

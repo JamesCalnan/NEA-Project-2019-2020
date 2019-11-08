@@ -14,7 +14,7 @@ Module Menus
                                    "Solve using the left-hand rule",
                                    "Solve using the right-hand rule",
                                    "",
-                                   "Play the maze", "Braid (remove dead ends)", "Partial braid (remove some dead ends)", "Make the maze sparse (remove some passages)", "Make the maze unicursal",
+                                   "Play the maze", "Braid (remove dead ends)", "Partial braid (remove some dead ends)", "Make the maze sparse (remove some passages)", "Make the maze unicursal", "Make the maze symmetrical",
                                    "",
                                    "Get the average corridor length",
                                    "Get the amount of corners in the maze",
@@ -647,6 +647,39 @@ Module Menus
             Console.SetCursorPosition(35, Console.WindowHeight - 1)
             Console.Write($"Time taken: {stopwatch.Elapsed.TotalSeconds}")
             Console.ReadKey()
+        ElseIf input = "Make the maze symmetrical" Then
+            Dim newMaze = MakeMazeSymetrical(Maze)
+            Maze = newMaze
+            Dim greatestX As Integer = (From node In Maze Select node.X).Concat(New Integer() {greatestX}).Max()
+            Dim greatestY As Integer = (From node In Maze Select node.Y).Concat(New Integer() {greatestY}).Max()
+            Dim temparr() As String = {"Solve using the A* algorithm",
+                                   "Solve using Dijkstra's algorithm",
+                                   "Solve using Best-first search",
+                                   "Solve using Breadth-first search",
+                                   "Solve using Depth-first search (using iteration)",
+                                   "Solve using Depth-first search (using recursion)",
+                                   "Solve using a recursive algorithm",
+                                   "Solve using the Lee Algorithm (Wave Propagation)",
+                                   "Solve using the dead end filling method",
+                                   "Solve using the left-hand rule",
+                                   "Solve using the right-hand rule",
+                                   "",
+                                   "Play the maze", "Braid (remove dead ends)", "Partial braid (remove some dead ends)", "Make the maze sparse (remove some passages)", "Make the maze unicursal",
+                                   "",
+                                   "Get the average corridor length",
+                                   "Get the amount of corners in the maze",
+                                   "Get the amount of junctions in the maze",
+                                   "Get the amount of Dead-ends in the maze",
+                                   "Get the elitism of the maze (path length)",
+                                   "Get the solution percentage",
+                                   "",
+                                   "Save the maze as points",
+                                   "Save the maze as a png image",
+                                   "Save the maze as an ascii text file",
+                                   "",
+                                   "Clear the maze and return to the menu"}
+            input = SolvingMenu(temparr, "What would you like to do with the maze", greatestX + 5, 3)
+            SolvingInput(input, True, greatestY, solvingdelay, Maze, "", pathColour, backGroundColour, solvingColour)
         ElseIf input = "Solve using Depth-first search (using iteration)" Then
             showpath = HorizontalYesNo(YposAfterMaze + 2, "Do you want to show the steps in solving the maze: ", True, False, False)
             If showpath Then solvingdelay = GetIntInputArrowKeys("Delay when solving the maze: ", 100, 0, True)
