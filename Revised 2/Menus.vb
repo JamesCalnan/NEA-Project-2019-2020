@@ -3,6 +3,7 @@ Imports System.Drawing
 Module Menus
     Sub Menu(arr() As String, topitem As String, Optional Exitavailable As Boolean = True)
         Dim temparr() As String = {"Solve using the A* algorithm",
+                                   "Solve using Iterative deepening A* (very slow)",
                                    "Solve using Dijkstra's algorithm",
                                    "Solve using Best-first search",
                                    "Solve using Breadth-first search",
@@ -596,6 +597,8 @@ Module Menus
         Return current
     End Function
     Sub SolvingInput(input As String, showpath As Boolean, YposAfterMaze As Integer, solvingdelay As Integer, Maze As List(Of Node), Algorithm As String, pathColour As ConsoleColor, backGroundColour As ConsoleColor, solvingColour As ConsoleColor)
+        'todo have the make maze symmetrical actually chnage prev maze
+
         If input = "Solve using the A* algorithm" Then
             Console.SetCursorPosition(0, YposAfterMaze + 2)
             Dim heuristic = GetIntInputArrowKeys("Heuristic: ", 60, 1, True)
@@ -608,6 +611,10 @@ Module Menus
                 'Dim adjacencyList As Dictionary(Of Node, List(Of Node)) = ConstructAdjacencyList(neededNodes, Maze)
                 AStarWiki(Maze, showpath, True, solvingdelay, heuristic, solvingColour)
             End If
+        ElseIf input = "Solve using Iterative deepening A* (very slow)" Then
+            showpath = HorizontalYesNo(YposAfterMaze + 2, "Do you want to show the steps in solving the maze: ", True, False, False)
+            If showpath Then solvingdelay = GetIntInputArrowKeys("Delay when solving the maze: ", 100, 0, True)
+            ida_star(Maze, showpath, solvingdelay, solvingColour)
         ElseIf input = "Solve using Dijkstra's algorithm" Then
             showpath = HorizontalYesNo(YposAfterMaze + 2, "Do you want to show the steps in solving the maze: ", True, False, False)
             If showpath Then solvingdelay = GetIntInputArrowKeys("Delay when solving the maze: ", 100, 0, True)
@@ -648,11 +655,11 @@ Module Menus
             Console.Write($"Time taken: {stopwatch.Elapsed.TotalSeconds}")
             Console.ReadKey()
         ElseIf input = "Make the maze symmetrical" Then
-            Dim newMaze = MakeMazeSymetrical(Maze)
-            Maze = newMaze
+            Dim mazeCopy = MakeMazeSymetrical(Maze, pathColour, backGroundColour)
             Dim greatestX As Integer = (From node In Maze Select node.X).Concat(New Integer() {greatestX}).Max()
             Dim greatestY As Integer = (From node In Maze Select node.Y).Concat(New Integer() {greatestY}).Max()
             Dim temparr() As String = {"Solve using the A* algorithm",
+                                       "Solve using Iterative deepening A* (very slow)",
                                    "Solve using Dijkstra's algorithm",
                                    "Solve using Best-first search",
                                    "Solve using Breadth-first search",
@@ -679,7 +686,7 @@ Module Menus
                                    "",
                                    "Clear the maze and return to the menu"}
             input = SolvingMenu(temparr, "What would you like to do with the maze", greatestX + 5, 3)
-            SolvingInput(input, True, greatestY, solvingdelay, Maze, "", pathColour, backGroundColour, solvingColour)
+            SolvingInput(input, True, greatestY, solvingdelay, mazeCopy, "", pathColour, backGroundColour, solvingColour)
         ElseIf input = "Solve using Depth-first search (using iteration)" Then
             showpath = HorizontalYesNo(YposAfterMaze + 2, "Do you want to show the steps in solving the maze: ", True, False, False)
             If showpath Then solvingdelay = GetIntInputArrowKeys("Delay when solving the maze: ", 100, 0, True)
@@ -742,6 +749,7 @@ Module Menus
                 Dim greatestX As Integer = (From node In uniMaze Select node.X).Concat(New Integer() {greatestX}).Max()
                 Dim greatestY As Integer = (From node In uniMaze Select node.Y).Concat(New Integer() {greatestY}).Max()
                 Dim temparr() As String = {"Solve using the A* algorithm",
+                                           "Solve using Iterative deepening A* (very slow)",
                                 "Solve using Dijkstra's algorithm",
                                 "Solve using Breadth-first search",
                                 "Solve using Best-first search",
@@ -779,6 +787,7 @@ Module Menus
             End If
             Dim greatestX As Integer = (From node In Maze Select node.X).Concat(New Integer() {greatestX}).Max()
             Dim temparr() As String = {"Solve using the A* algorithm",
+                                       "Solve using Iterative deepening A* (very slow)",
                 "Solve using Dijkstra's algorithm",
                 "Solve using Breadth-first search",
                 "Solve using Best-first search",
@@ -811,6 +820,7 @@ Module Menus
             Dim greatestX As Integer
             greatestX = (From node In Maze Select node.X).Concat(New Integer() {greatestX}).Max()
             Dim temparr() As String = {"Solve using the A* algorithm",
+                                       "Solve using Iterative deepening A* (very slow)",
             "Solve using Dijkstra's algorithm",
             "Solve using Breadth-first search",
             "Solve using Best-first search",

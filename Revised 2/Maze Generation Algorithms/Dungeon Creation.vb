@@ -119,7 +119,9 @@
                         New Cell(x, y - 1)
                 }
                 For Each cell In surroundingCells
+#Disable Warning BC42327 ' Using the iteration variable in a query expression may have unexpected results
                     availableConnections.AddRange(From cell1 In surroundingCells Where path.Contains(cell) AndAlso rooms.Contains(cell1) Select New Cell(x, y))
+#Enable Warning BC42327 ' Using the iteration variable in a query expression may have unexpected results
                 Next
             Next
         Next

@@ -55,6 +55,7 @@ Module DepthFirstSearch
         ReconstructPath(cameFrom, goal, startV, If(showSolveTime, $"{stopwatch.Elapsed.TotalSeconds}", ""))
         Console.ReadKey()
     End Sub
+
     Function DFS_Recursive(g As List(Of Node), v As Node, visited As Dictionary(Of Node, Boolean), ByRef cameFrom As Dictionary(Of Node, Node), goal As Node, showsolving As Boolean, solvingdelay As Integer, ByRef exitcase As Boolean)
         visited(v) = True
         If v.Equals(goal) Then : exitcase = True : Return Nothing : End If

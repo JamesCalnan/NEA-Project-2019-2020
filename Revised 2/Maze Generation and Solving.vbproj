@@ -193,6 +193,9 @@
     <Reference Include="System.Deployment" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Drawing.Design" />
+    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net461\System.ValueTuple.dll</HintPath>
+    </Reference>
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Windows.Forms.DataVisualization" />
     <Reference Include="System.Windows.Forms.DataVisualization.Design" />
@@ -215,11 +218,23 @@
     <Import Include="System.Threading.Tasks" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Other maze generation things\Adjacency List Construction.vb" />
+    <Compile Include="Maze Statistics\Corners.vb" />
+    <Compile Include="Maze Statistics\Dead Ends.vb" />
+    <Compile Include="Maze Statistics\Junctions.vb" />
+    <Compile Include="Maze Statistics\Straight Ways.vb" />
+    <Compile Include="Other maze generation things\Neighbours.vb" />
+    <Compile Include="Other maze generation things\Cell.vb" />
+    <Compile Include="Shuffle Algorithms\Fisher-Yates Shuffle.vb" />
+    <Compile Include="Shuffle Algorithms\Satallos Shuffle Algorithm.vb" />
+    <Compile Include="Shuffle Algorithms\Simple Shuffle.vb" />
+    <Compile Include="Solving Algorithms\Node.vb" />
+    <Compile Include="Solving Algorithms\IDAstar.vb" />
     <Compile Include="Solving Algorithms\A Star Algorithm.vb" />
     <Compile Include="Maze Generation Algorithms\Aldous-Broder Algorithm.vb" />
     <Compile Include="Solving Algorithms\Best-First Search.vb" />
     <Compile Include="Maze Generation Algorithms\Binary Tree Algorithm.vb" />
-    <Compile Include="Binary Tree.vb" />
+    <Compile Include="Other maze generation things\Priority Queue.vb" />
     <Compile Include="Sorting Algorithms\Bogobogo Sort.vb" />
     <Compile Include="Sorting Algorithms\Bogosort Algorithm.vb" />
     <Compile Include="Maze Generation Algorithms\BoruvkasAlgorithm.vb" />
@@ -249,7 +264,6 @@
     <Compile Include="Sorting Algorithms\Insertion Sort Algorithm.vb" />
     <Compile Include="Maze Generation Algorithms\Kruskals Algorithm.vb" />
     <Compile Include="Solving Algorithms\Lee Algorithm.vb" />
-    <Compile Include="Life Long Planning A Star.vb" />
     <Compile Include="Other maze generation things\Maze Generation Subroutines and Functions.vb" />
     <Compile Include="Other maze generation things\Maze Info.vb" />
     <Compile Include="Menus.vb" />
@@ -291,7 +305,8 @@
     <Compile Include="Other maze generation things\UserCreateMaze.vb" />
     <Compile Include="Solving Algorithms\Wall Follower.vb" />
     <Compile Include="Maze Generation Algorithms\Wilsons Algorithm.vb" />
-    <Compile Include="Symetrical Maze.vb" />
+    <Compile Include="Other maze generation things\Symetrical Maze.vb" />
+    <Compile Include="Other maze generation things\Text File.vb" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="My Project\Resources.resx">
@@ -314,6 +329,7 @@
       <LastGenOutput>Settings.Designer.vb</LastGenOutput>
     </None>
     <None Include="App.config" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="3a.ico" />
@@ -331,5 +347,6 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
 </Project>

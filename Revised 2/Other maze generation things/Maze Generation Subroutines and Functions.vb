@@ -72,30 +72,7 @@
         End If
         Return returnCell
     End Function
-    Function RanNeighbour(current As Cell, limits() As Integer)
-        Dim neighbours As New List(Of Cell)
-        Dim newPoint As New Cell(current.X - 4, current.Y)
-        If newPoint.WithinLimits(limits) Then neighbours.Add(New Cell(newPoint.X, newPoint.Y))
-        newPoint.Update(current.X, current.Y - 2)
-        If newPoint.WithinLimits(limits) Then neighbours.Add(New Cell(newPoint.X, newPoint.Y))
-        newPoint.Update(current.X, current.Y + 2)
-        If newPoint.WithinLimits(limits) Then neighbours.Add(New Cell(newPoint.X, newPoint.Y))
-        newPoint.Update(current.X + 4, current.Y)
-        If newPoint.WithinLimits(limits) Then neighbours.Add(New Cell(newPoint.X, newPoint.Y))
-        Return neighbours
-    End Function
-    Function Neighbour(current As Cell, visited As Dictionary(Of Cell, Boolean), limits() As Integer) As List(Of Cell)
-        Dim neighbours As New List(Of Cell)
-        Dim newPoint As New Cell(current.X - 4, current.Y)
-        If visited.ContainsKey(newPoint) Then If newPoint.WithinLimits(limits) Then If Not visited(newPoint) Then neighbours.Add(New Cell(newPoint.X, newPoint.Y))
-        newPoint.Update(current.X, current.Y - 2)
-        If visited.ContainsKey(newPoint) Then If newPoint.WithinLimits(limits) Then If Not visited(newPoint) Then neighbours.Add(New Cell(newPoint.X, newPoint.Y))
-        newPoint.Update(current.X, current.Y + 2)
-        If visited.ContainsKey(newPoint) Then If newPoint.WithinLimits(limits) Then If Not visited(newPoint) Then neighbours.Add(New Cell(newPoint.X, newPoint.Y))
-        newPoint.Update(current.X + 4, current.Y)
-        If visited.ContainsKey(newPoint) Then If newPoint.WithinLimits(limits) Then If Not visited(newPoint) Then neighbours.Add(New Cell(newPoint.X, newPoint.Y))
-        Return neighbours
-    End Function
+
     Sub PrintMazeHorizontally(maze As List(Of Node), greatestX As Integer, greatestY As Integer)
         For __x = 4 To greatestX + 1 Step 2
             For __y = 1 To greatestY + 1
@@ -106,4 +83,32 @@
             Next
         Next
     End Sub
+
+    Function InitialiseVisited(limits() As Integer) As Dictionary(Of Cell, Boolean)
+        Dim dict As New Dictionary(Of Cell, Boolean)
+        For y = limits(1) To limits(3) Step 2
+            For x = limits(0) + 3 To limits(2) - 1 Step 4
+                dict(New Cell(x, y)) = False
+            Next
+        Next
+        Return dict
+    End Function
+    Function MidPoint(cell1 As Object, cell2 As Object)
+        If cell1.GetType.ToString = "NEA_2019.Cell" Then
+            Return New Cell((cell1.X + cell2.X) / 2, (cell1.Y + cell2.Y) / 2)
+        Else
+            Return New Node((cell1.X + cell2.X) / 2, (cell1.Y + cell2.Y) / 2)
+        End If
+    End Function
+    Function PickRandomStartingCell(limits() As Integer) As Cell
+        Dim li As New List(Of Cell)
+        For y = limits(1) To limits(3) Step 2
+            For x = limits(0) + 3 To limits(2) - 1 Step 4
+                li.Add(New Cell(x, y))
+            Next
+        Next
+        Dim r As New Random
+        Return li(r.Next(0, li.Count - 1))
+    End Function
+
 End Module

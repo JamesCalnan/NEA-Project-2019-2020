@@ -30,12 +30,6 @@ Public Class PriorityQueue(Of T)
         Items.Delete(item, True)
         Items.Insert(New QueueItem(Of T)(value, newPriority))
     End Sub
-    Public  Sub Delete(value as T)
-        Dim tempItem As New QueueItem(Of T)(value, 0)
-        Dim item As QueueItem(Of T) = Items.FindExact(tempItem).Clone()
-        Items.Delete(item,true)
-    End Sub
-
     Public Function IsEmpty()
         Return Items.IsEmpty
     End Function
@@ -92,7 +86,7 @@ Public Class BinaryTree(Of T)
     Public Sub Insert(value As QueueItem(Of T))
         Root = InsertRecursive(Root, value)
     End Sub
-    Private Function InsertRecursive(root As TreeItem(Of T), value As QueueItem(Of T))
+    Private Shared Function InsertRecursive(root As TreeItem(Of T), value As QueueItem(Of T))
         If IsNothing(root) Then Return New TreeItem(Of T)(value)
         If value.CompareTo(root.Value) < 0 Then
             root.Left = InsertRecursive(root.Left, value)
@@ -130,7 +124,7 @@ Public Class BinaryTree(Of T)
     Public Function FindExact(value As QueueItem(Of T)) As QueueItem(Of T)
         Return FindExactRecursive(Root, value).Value
     End Function
-    Private Function FindExactRecursive(root As TreeItem(Of T), value As QueueItem(Of T)) As TreeItem(Of T)
+    Private Shared Function FindExactRecursive(root As TreeItem(Of T), value As QueueItem(Of T)) As TreeItem(Of T)
         If IsNothing(root) Then Return Nothing
         If value.Equals(root.Value) Then Return root
         Dim output As TreeItem(Of T)
@@ -160,7 +154,7 @@ Public Class BinaryTree(Of T)
     Public Function GetSize() As Integer
         Return GetSizeRecursive(Root)
     End Function
-    Private Function GetSizeRecursive(current As TreeItem(Of T))
+    Private Shared Function GetSizeRecursive(current As TreeItem(Of T))
         Return If(IsNothing(current), 0, GetSizeRecursive(current.Left) + 1 + GetSizeRecursive(current.Right))
     End Function
     Public Function IsEmpty() As Boolean
