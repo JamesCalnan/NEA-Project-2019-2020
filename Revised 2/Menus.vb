@@ -274,7 +274,7 @@ Module Menus
                             If previousMaze.Count > 1 Then
                                 Console.Clear()
                                 Console.ForegroundColor = ConsoleColor.White
-                                Dim filename As String = GetValidFileName()
+                                Dim filename As String = GetValidFileName(".png")
                                 SaveMazePng(previousMaze, $"Algorithm used to generate this maze: {previousAlgorithm}", filename, pathColour, backGroundColour)
                             Else
                                 Console.Clear()
@@ -686,7 +686,7 @@ Module Menus
                                    "",
                                    "Clear the maze and return to the menu"}
             input = SolvingMenu(temparr, "What would you like to do with the maze", greatestX + 5, 3)
-            SolvingInput(input, True, greatestY, solvingdelay, mazeCopy, "", pathColour, backGroundColour, solvingColour)
+            SolvingInput(input, True, greatestY + 1, solvingdelay, mazeCopy, "", pathColour, backGroundColour, solvingColour)
         ElseIf input = "Solve using Depth-first search (using iteration)" Then
             showpath = HorizontalYesNo(YposAfterMaze + 2, "Do you want to show the steps in solving the maze: ", True, False, False)
             If showpath Then solvingdelay = GetIntInputArrowKeys("Delay when solving the maze: ", 100, 0, True)
@@ -718,7 +718,7 @@ Module Menus
         ElseIf input = "Save the maze as a png image" Then
             Console.Clear()
             Console.ForegroundColor = ConsoleColor.White
-            Dim filename As String = GetValidFileName()
+            Dim filename As String = GetValidFileName(".png")
             SaveMazePng(Maze, Algorithm, filename, pathColour, backGroundColour)
         ElseIf input = "s" Then
             'Sd(Maze)

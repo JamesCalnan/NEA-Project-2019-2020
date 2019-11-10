@@ -2,7 +2,7 @@
 
 Module Text_File
     Sub SaveMazeTextFile(path As List(Of Node), algorithm As String)
-        Using writer = New StreamWriter($"{GetValidFileName()}.txt", True)
+        Using writer = New StreamWriter($"{GetValidFileName(".txt")}.txt", True)
             writer.WriteLine($"{algorithm}")
             For i = 0 To path.Count - 1
                 writer.WriteLine(path(i).X)
@@ -50,7 +50,6 @@ Module Text_File
                     End If
                     c += 1
                     If c = 2 Then
-                        Console.WriteLine($"({_x}, {_y})")
                         loadedMaze.Add(New Node(_x, _y))
                         c = 0
                     End If
@@ -58,8 +57,7 @@ Module Text_File
             End Using
             If loadedMaze.Count < 1 Then validMaze = 2
             If validMaze = 1 Then
-                MsgColour($"Finished loading maze positions, total maze positions {loadedMaze.Count}", ConsoleColor.Green)
-                Console.ReadKey()
+                Console.ResetColor()
                 Console.Clear()
                 Console.SetCursorPosition(0, 0)
                 Dim mess = "Algorithm used to generate this maze "
@@ -118,7 +116,7 @@ Module Text_File
             Next
             lineText.Add(currentLine)
         Next
-        Using writer = New StreamWriter($"{GetValidFileName()}.txt", True)
+        Using writer = New StreamWriter($"{GetValidFileName(".txt")}.txt", True)
             For Each Str1 In lineText
                 writer.WriteLine(Str1)
             Next

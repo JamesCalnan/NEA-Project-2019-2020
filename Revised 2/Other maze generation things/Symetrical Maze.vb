@@ -1,6 +1,7 @@
 ﻿Module Symetrical_Maze
-    Function MakeMazeSymetrical(Maze As List(Of Node), pathColour As ConsoleColor, backGroundColour As ConsoleColor) As List(Of Node)
+    Function MakeMazeSymetrical(originalMaze As List(Of Node), pathColour As ConsoleColor, backGroundColour As ConsoleColor) As List(Of Node)
         'todo implement foreground and background colours on this
+        Dim maze = originalMaze
         Dim greatestXValue = 0
         Dim greatestYValue = 0
         For Each node In Maze

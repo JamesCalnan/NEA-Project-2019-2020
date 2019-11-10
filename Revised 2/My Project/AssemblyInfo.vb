@@ -9,7 +9,7 @@ Imports System.Runtime.InteropServices
 ' Review the values of the assembly attributes
 
 <Assembly: AssemblyTitle("Maze Generation and Solving")>
-<Assembly: AssemblyDescription("")>
+<Assembly: AssemblyDescription("Program that visualises different algorithms")>
 <Assembly: AssemblyCompany("")>
 <Assembly: AssemblyProduct("Maze Generation and Solving")>
 <Assembly: AssemblyCopyright("Copyright ©  2019")>

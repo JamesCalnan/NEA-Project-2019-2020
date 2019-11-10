@@ -4,9 +4,12 @@ Imports NEA_2019
 Module Module1
     'todo play the maze white square bug
     Sub Main()
-        'Console.WriteLine("please make the font size 16, then press any button")
+        Console.ForegroundColor = ConsoleColor.White
+        Console.WriteLine("please make the font size 16 by clicking the little picture in the top left of the window
+then selecting properties and then changing the font size, then press any button")
 
-        'Console.ReadKey()
+
+        Console.ReadKey()
         Console.CursorVisible = False
         Do
             Console.SetCursorPosition(0, 0)
@@ -232,7 +235,7 @@ Module Module1
         Return Nothing
     End Function
 
-    Function GetValidFileName()
+    Function GetValidFileName(fileType As String)
         Dim invalidCharacters = "\/:*?""<>|"
         Console.Clear()
         Dim filename As String
@@ -246,12 +249,13 @@ Module Module1
                     validname = False
                 Next
             Next
-            If File.Exists(filename) Then
-                MsgColour("Invalid filename", ConsoleColor.Red)
+            If File.Exists(filename + fileType) Then
+                MsgColour("A file with that name already exists", ConsoleColor.Red)
+                validname = False
             ElseIf Not validname Then
                 MsgColour("Invalid character in filename", ConsoleColor.Red)
             End If
-        Loop Until Not System.IO.File.Exists(filename) And validname
+        Loop Until Not System.IO.File.Exists(filename + fileType) And validname
         Return filename
     End Function
 
