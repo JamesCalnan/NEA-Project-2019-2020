@@ -225,6 +225,8 @@
     <Compile Include="Maze Statistics\Straight Ways.vb" />
     <Compile Include="Other maze generation things\Neighbours.vb" />
     <Compile Include="Other maze generation things\Cell.vb" />
+    <Compile Include="Pathfinding Algorithm Info.vb" />
+    <Compile Include="Pathfinding Grid.vb" />
     <Compile Include="Shuffle Algorithms\Fisher-Yates Shuffle.vb" />
     <Compile Include="Shuffle Algorithms\Satallos Shuffle Algorithm.vb" />
     <Compile Include="Shuffle Algorithms\Simple Shuffle.vb" />
@@ -235,6 +237,7 @@
     <Compile Include="Solving Algorithms\Best-First Search.vb" />
     <Compile Include="Maze Generation Algorithms\Binary Tree Algorithm.vb" />
     <Compile Include="Other maze generation things\Priority Queue.vb" />
+    <Compile Include="Solving Algorithms\shortest-path-faster-algorithm.vb" />
     <Compile Include="Sorting Algorithms\Bogobogo Sort.vb" />
     <Compile Include="Sorting Algorithms\Bogosort Algorithm.vb" />
     <Compile Include="Maze Generation Algorithms\BoruvkasAlgorithm.vb" />

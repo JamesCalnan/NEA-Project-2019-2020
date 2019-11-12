@@ -6,7 +6,7 @@
         Dim prev As New Dictionary(Of Node, Node)
         Dim q As New PriorityQueue(Of Node)
         dist(source) = 0
-        For Each v In availablepath.Keys
+        For Each v In availablePath.Keys
             If Not v.Equals(source) Then dist(v) = Int32.MaxValue / 2
             prev(v) = Nothing
             q.Enqueue(v, dist(v))

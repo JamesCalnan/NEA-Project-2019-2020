@@ -62,6 +62,16 @@ then selecting properties and then changing the font size, then press any button
             "Save the previous maze as a png image",
             "Save the previous maze to ascii text file",
             "",
+            "Path finding visualisations on a grid",
+            "   A* algorithm",
+            "   Iterative deepening A* (very slow)",
+            "   Dijkstra's algorithm",
+            "   Best-first search",
+            "   Breadth-first search",
+            "   Depth-first search",
+            "   Lee Algorithm (Wave Propagation)",
+            "   Shortest Path Faster Algorithm",
+            "",
             "Conway's game of life",
             "",
             "Sorting Algorithm visualisations",
@@ -290,7 +300,7 @@ then selecting properties and then changing the font size, then press any button
         SetBoth(ConsoleColor.Green)
         Dim timetaken As String = $"{watch.Elapsed.TotalSeconds}"
         If returnPathLength = 0 Then u.Print("██")
-        While prev(u) IsNot Nothing
+        While prev.ContainsKey(u) AndAlso prev(u) IsNot Nothing
             u = prev(u)
             If returnPathLength = 0 Then DrawBetween(prevNode, u)
             prevNode = u

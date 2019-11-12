@@ -9,8 +9,9 @@ Module Menus
                                    "Solve using Breadth-first search",
                                    "Solve using Depth-first search (using iteration)",
                                    "Solve using Depth-first search (using recursion)",
-                                   "Solve using a recursive algorithm",
+                                   "Solve using the Shortest Path Faster Algorithm",
                                    "Solve using the Lee Algorithm (Wave Propagation)",
+                                   "Solve using a recursive algorithm",
                                    "Solve using the dead end filling method",
                                    "Solve using the left-hand rule",
                                    "Solve using the right-hand rule",
@@ -29,6 +30,14 @@ Module Menus
                                    "Save the maze as an ascii text file",
                                    "",
                                    "Clear the maze and return to the menu"}
+        Dim solvingAlgorithms() As String = {"   A* algorithm",
+            "   Iterative deepening A* (very slow)",
+            "   Dijkstra's algorithm",
+            "   Best-first search",
+            "   Breadth-first search",
+            "   Depth-first search",
+            "   Lee Algorithm (Wave Propagation)",
+            "   Shortest Path Faster Algorithm"}
         Dim allColours() As String = GetAllConsoleColours()
         Dim pathColour = ConsoleColor.White
         Dim backGroundColour = ConsoleColor.Black
@@ -333,6 +342,47 @@ Module Menus
                             GetMazeInfo(width, height, delayMs, limits, showMazeGeneration, True, 0, arr(y) = "Conway's game of life", arr(y) <> "Conway's game of life")
                             delayMs = GetIntInputArrowKeys("Delay when making the Maze (MS): ", 100, 0, True)
                             simulateLife(limits, False, delayMs)
+                        ElseIf arr(y) = "   A* algorithm" Then
+                            Console.Clear()
+                            delayMs = GetIntInputArrowKeys("Delay when finding a path: ", 100, 0, True)
+                            Dim availableNodes As List(Of Node) = returnPathfindingGrid()
+                            AStarWiki(availableNodes, True, False, delayMs, 1, solvingColour)
+
+                        ElseIf arr(y) = "   Iterative deepening A* (very slow)" Then
+                            Console.Clear()
+                            delayMs = GetIntInputArrowKeys("Delay when finding a path: ", 100, 0, True)
+                            Dim availableNodes As List(Of Node) = returnPathfindingGrid()
+                            ida_star(availableNodes, True, delayMs, solvingColour)
+                        ElseIf arr(y) = "   Dijkstra's algorithm" Then
+                            Console.Clear()
+                            delayMs = GetIntInputArrowKeys("Delay when finding a path: ", 100, 0, True)
+                            Dim availableNodes As List(Of Node) = returnPathfindingGrid()
+                            Dijkstras(availableNodes, True, delayMs, solvingColour)
+                        ElseIf arr(y) = "   Best-first search" Then
+                            Console.Clear()
+                            delayMs = GetIntInputArrowKeys("Delay when finding a path: ", 100, 0, True)
+                            Dim availableNodes As List(Of Node) = returnPathfindingGrid()
+                            Bestfs(availableNodes, True, True, delayMs, solvingColour)
+                        ElseIf arr(y) = "   Breadth-first search" Then
+                            Console.Clear()
+                            delayMs = GetIntInputArrowKeys("Delay when finding a path: ", 100, 0, True)
+                            Dim availableNodes As List(Of Node) = returnPathfindingGrid()
+                            Bfs(availableNodes, True, True, delayMs, solvingColour)
+                        ElseIf arr(y) = "   Depth-first search" Then
+                            Console.Clear()
+                            delayMs = GetIntInputArrowKeys("Delay when finding a path: ", 100, 0, True)
+                            Dim availableNodes As List(Of Node) = returnPathfindingGrid()
+                            DFS_Iterative(availableNodes, True, True, delayMs, solvingColour)
+                        ElseIf arr(y) = "   Lee Algorithm (Wave Propagation)" Then
+                            Console.Clear()
+                            delayMs = GetIntInputArrowKeys("Delay when finding a path: ", 100, 0, True)
+                            Dim availableNodes As List(Of Node) = returnPathfindingGrid()
+                            Lee(availableNodes, True, delayMs, solvingColour)
+                        ElseIf arr(y) = "   Shortest Path Faster Algorithm" Then
+                            Console.Clear()
+                            delayMs = GetIntInputArrowKeys("Delay when finding a path: ", 100, 0, True)
+                            Dim availableNodes As List(Of Node) = returnPathfindingGrid()
+                            SPFA(availableNodes, True, delayMs, solvingColour)
                         Else
                             OptionNotReady()
                         End If
@@ -341,7 +391,7 @@ Module Menus
                     Console.Clear()
                     MsgColour($"{topitem}: ", ConsoleColor.Yellow)
                 Case "I"
-                    If y < lastMazeGenItem And arr(y) <> "   Make your own maze" Then
+                    If y < lastMazeGenItem And arr(y) <> "   Make your own maze" Or solvingAlgorithms.Contains(arr(y)) Then
                         InitialiseScreen()
                         If arr(y) = "   Recursive Backtracker Algorithm (using iteration)" Then
                             RecrusiveBacktrackerInfo()
@@ -389,7 +439,17 @@ Module Menus
                             DungeonGeneationAlgorithmInfo()
                         ElseIf arr(y) = "   Conway's game of life (Maze generation)" Then
                             ConwaysGameOfLifeMaze()
+                        ElseIf arr(y) = "   A* algorithm" Then
+                            astarINFO()
+                        ElseIf arr(y) = "   Dijkstra's algorithm" Then
+                            dijkstrasalgorithmINFO()
+                        ElseIf arr(y) = "   Iterative deepening A* (very slow)" Then
+                            IDAstarinfo()
+                        ElseIf arr(y) = "   Best-first search" Then
+                            bestfirstsearchINFO()
+
                         Else
+
                             OptionNotReady()
                         End If
                         Console.ReadKey()
@@ -621,6 +681,12 @@ Module Menus
             'Dim neededNodes As List(Of Node) = GetNeededNodes(Maze)
             'Dim AdjacencyList As Dictionary(Of Node, List(Of Node)) = ConstructAdjacencyList(neededNodes, Maze)
             Dijkstras(Maze, showpath, solvingdelay, solvingColour)
+        ElseIf input = "Solve using the Shortest Path Faster Algorithm" Then
+            showpath = HorizontalYesNo(YposAfterMaze + 2, "Do you want to show the steps in solving the maze: ", True, False, False)
+            If showpath Then solvingdelay = GetIntInputArrowKeys("Delay when solving the maze: ", 100, 0, True)
+            'Dim neededNodes As List(Of Node) = GetNeededNodes(Maze)
+            'Dim AdjacencyList As Dictionary(Of Node, List(Of Node)) = ConstructAdjacencyList(neededNodes, Maze)
+            SPFA(Maze, showpath, solvingdelay, solvingColour)
         ElseIf input = "Solve using Breadth-first search" Then
             showpath = HorizontalYesNo(YposAfterMaze + 2, "Do you want to show the steps in solving the maze: ", True, False, False)
             If showpath Then solvingdelay = GetIntInputArrowKeys("Delay when solving the maze: ", 100, 0, True)
@@ -665,8 +731,9 @@ Module Menus
                                    "Solve using Breadth-first search",
                                    "Solve using Depth-first search (using iteration)",
                                    "Solve using Depth-first search (using recursion)",
-                                   "Solve using a recursive algorithm",
+                                   "Solve using the Shortest Path Faster Algorithm",
                                    "Solve using the Lee Algorithm (Wave Propagation)",
+                                   "Solve using a recursive algorithm",
                                    "Solve using the dead end filling method",
                                    "Solve using the left-hand rule",
                                    "Solve using the right-hand rule",
@@ -749,17 +816,18 @@ Module Menus
                 Dim greatestX As Integer = (From node In uniMaze Select node.X).Concat(New Integer() {greatestX}).Max()
                 Dim greatestY As Integer = (From node In uniMaze Select node.Y).Concat(New Integer() {greatestY}).Max()
                 Dim temparr() As String = {"Solve using the A* algorithm",
-                                           "Solve using Iterative deepening A* (very slow)",
-                                "Solve using Dijkstra's algorithm",
-                                "Solve using Breadth-first search",
-                                "Solve using Best-first search",
-                                "Solve using Depth-first search (using iteration)",
-                                "Solve using Depth-first search (using recursion)",
-                                "Solve using a recursive algorithm",
-                                "Solve using the Lee Algorithm (Wave Propagation)",
-                                 "Solve using the dead end filling method",
-                                "Solve using the left-hand rule",
-                                "Solve using the right-hand rule",
+                                       "Solve using Iterative deepening A* (very slow)",
+                                   "Solve using Dijkstra's algorithm",
+                                   "Solve using Best-first search",
+                                   "Solve using Breadth-first search",
+                                   "Solve using Depth-first search (using iteration)",
+                                   "Solve using Depth-first search (using recursion)",
+                                   "Solve using the Shortest Path Faster Algorithm",
+                                   "Solve using the Lee Algorithm (Wave Propagation)",
+                                   "Solve using a recursive algorithm",
+                                   "Solve using the dead end filling method",
+                                   "Solve using the left-hand rule",
+                                   "Solve using the right-hand rule",
                                 "",
                                 "Play the maze",
                                 "",
@@ -788,16 +856,17 @@ Module Menus
             Dim greatestX As Integer = (From node In Maze Select node.X).Concat(New Integer() {greatestX}).Max()
             Dim temparr() As String = {"Solve using the A* algorithm",
                                        "Solve using Iterative deepening A* (very slow)",
-                "Solve using Dijkstra's algorithm",
-                "Solve using Breadth-first search",
-                "Solve using Best-first search",
-                "Solve using Depth-first search (using iteration)",
-                "Solve using Depth-first search (using recursion)",
-                "Solve using a recursive algorithm",
-                "Solve using the Lee Algorithm (Wave Propagation)",
-                 "Solve using the dead end filling method",
-                "Solve using the left-hand rule",
-                "Solve using the right-hand rule",
+                                   "Solve using Dijkstra's algorithm",
+                                   "Solve using Best-first search",
+                                   "Solve using Breadth-first search",
+                                   "Solve using Depth-first search (using iteration)",
+                                   "Solve using Depth-first search (using recursion)",
+                                   "Solve using the Shortest Path Faster Algorithm",
+                                   "Solve using the Lee Algorithm (Wave Propagation)",
+                                   "Solve using a recursive algorithm",
+                                   "Solve using the dead end filling method",
+                                   "Solve using the left-hand rule",
+                                   "Solve using the right-hand rule",
                 "",
                 "Play the maze", "Make the maze unicursal",
                 "",
@@ -821,16 +890,17 @@ Module Menus
             greatestX = (From node In Maze Select node.X).Concat(New Integer() {greatestX}).Max()
             Dim temparr() As String = {"Solve using the A* algorithm",
                                        "Solve using Iterative deepening A* (very slow)",
-            "Solve using Dijkstra's algorithm",
-            "Solve using Breadth-first search",
-            "Solve using Best-first search",
-            "Solve using Depth-first search (using iteration)",
-            "Solve using Depth-first search (using recursion)",
-            "Solve using a recursive algorithm",
-            "Solve using the Lee Algorithm (Wave Propagation)",
-            "Solve using the dead end filling method",
-            "Solve using the left-hand rule",
-            "Solve using the right-hand rule",
+                                   "Solve using Dijkstra's algorithm",
+                                   "Solve using Best-first search",
+                                   "Solve using Breadth-first search",
+                                   "Solve using Depth-first search (using iteration)",
+                                   "Solve using Depth-first search (using recursion)",
+                                   "Solve using the Shortest Path Faster Algorithm",
+                                   "Solve using the Lee Algorithm (Wave Propagation)",
+                                   "Solve using a recursive algorithm",
+                                   "Solve using the dead end filling method",
+                                   "Solve using the left-hand rule",
+                                   "Solve using the right-hand rule",
             "",
             "Play the maze",
             "Make the maze sparse (remove some passages)",

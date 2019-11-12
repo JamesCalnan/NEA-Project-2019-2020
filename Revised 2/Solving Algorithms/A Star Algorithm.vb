@@ -13,8 +13,6 @@
         Dim openSet, closedSet As New HashSet(Of Node)
         SetBoth(solvingColour)
         openSet.Add(current)
-        current.GCost = 0
-        current.HCost = H(current, target, 10)
         Dim stopwatch As Stopwatch = Stopwatch.StartNew()
         While openSet.Count > 0
             If ExitCase() Then Exit While

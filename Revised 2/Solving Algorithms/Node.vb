@@ -8,6 +8,9 @@
     Public Function ToCell()
         Return New Cell(Me.X, Me.Y)
     End Function
+    Function Clone()
+        Return New Node(Me.X, Me.Y)
+    End Function
     Public Function AdjacentToMaze(maze As List(Of Node))
         If maze.Contains(New Node(Me.X, Me.Y + 1)) Or maze.Contains(New Node(Me.X, Me.Y - 1)) Or maze.Contains(New Node(Me.X - 2, Me.Y)) Or maze.Contains(New Node(Me.X + 2, Me.Y)) Then Return True
         Return False
@@ -39,6 +42,9 @@
     Function Adjacent(checknode As Node)
         Dim curNode As New Node(Me.X, Me.Y)
         curNode.Update(Me.X, Me.Y - 1)
+        SetBoth(ConsoleColor.Yellow)
+        curNode.Print("XX")
+        Console.ReadKey()
         If curNode.Equals(checknode) Then Return True
         curNode.Update(Me.X + 2, Me.Y)
         If curNode.Equals(checknode) Then Return True
