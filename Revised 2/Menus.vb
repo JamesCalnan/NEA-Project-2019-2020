@@ -1,12 +1,14 @@
 ﻿Imports System.IO
 Imports System.Drawing
 Module Menus
+    'todo still need to do terms ' STILL NEED TO DO BIAS
     Sub Menu(arr() As String, topitem As String, Optional Exitavailable As Boolean = True)
         Dim temparr() As String = {"Solve using the A* algorithm",
                                    "Solve using Iterative deepening A* (very slow)",
                                    "Solve using Dijkstra's algorithm",
                                    "Solve using Best-first search",
-                                   "Solve using Breadth-first search",
+                                   "Solve using Breadth-first search (using iteration)",
+                                   "Solve using Breadth-first search (using recursion)",
                                    "Solve using Depth-first search (using iteration)",
                                    "Solve using Depth-first search (using recursion)",
                                    "Solve using the Shortest Path Faster Algorithm",
@@ -34,8 +36,10 @@ Module Menus
             "   Iterative deepening A* (very slow)",
             "   Dijkstra's algorithm",
             "   Best-first search",
-            "   Breadth-first search",
-            "   Depth-first search",
+            "   Breadth-first search (using iteration)",
+            "   Breadth-first search (using recursion)",
+            "   Depth-first search (using iteration)",
+            "   Depth-first search (using recursion)",
             "   Lee Algorithm (Wave Propagation)",
             "   Shortest Path Faster Algorithm"}
         Dim allColours() As String = GetAllConsoleColours()
@@ -77,12 +81,6 @@ Module Menus
         Next
         While 1
             Console.CursorVisible = False
-            Dim info() As String = {"Information for using this program:", "Use the up and down arrow keys for navigating the menus", "Use the enter key to select an option", "Press 'I' to bring up information on the algorithm", "", "When inputting integer values:", "The up and down arrow keys increment by 1", "The right and left arrow keys increment by 10", "The 'M' key will set the number to the maximum value it can be", "The 'H' key will set the number to half of the maximum value it can be"}
-            For i = 0 To info.Count - 1
-                Console.SetCursorPosition(screenWidth - info(i).Length / 2, i)
-                If i <> 0 Then Console.ForegroundColor = (ConsoleColor.Magenta)
-                Console.Write(info(i))
-            Next
             SetBoth(ConsoleColor.Black)
             Dim key = Console.ReadKey
             Select Case key.Key.ToString
@@ -99,32 +97,37 @@ Module Menus
                     Dim availablePath As New List(Of Node)
                     If y <= lastMazeGenItem Then
                         GetMazeInfo(width, height, delayMs, limits, showMazeGeneration, True, 0, arr(y) = "   Make your own maze" Or arr(y) = "   Conway's game of life (Maze generation)", arr(y) <> "   Conway's game of life (Maze generation)")
-                        If arr(y) = "   Recursive Backtracker Algorithm (using iteration)" Then
-                            availablePath = RecursiveBacktracker.RecursiveBacktracker(limits, delayMs, showMazeGeneration, pathColour, backGroundColour)
+                        If arr(y) = "   Recursive Backtracker Algorithm (3 options)" Then
+                            Console.ResetColor()
+                            Console.Clear()
+                            Dim recursivebacktrackeroptions As String = SolvingMenu({"Using iteration, Stack", "Using iteration, Dictionary", "Using recursion"}, "Cell selection method: ", 0, 0)
+                            If recursivebacktrackeroptions = "Using iteration, Stack" Then
+                                availablePath = RecursiveBacktracker.RecursiveBacktracker(limits, delayMs, showMazeGeneration, pathColour, backGroundColour)
+                            ElseIf recursivebacktrackeroptions = "Using iteration, Dictionary" Then
+                                availablePath = RecursiveBacktrackerNotUsingStack(limits, delayMs, showMazeGeneration, pathColour, backGroundColour)
+                            ElseIf recursivebacktrackeroptions = "Using recursion" Then
+                                Dim r As New Random
+                                If backGroundColour <> ConsoleColor.Black Then DrawBackground(backGroundColour, limits)
+                                Dim currentCell As Cell = PickRandomStartingCell(limits) '(Limits(0) + 3, Limits(1) + 2)
+                                Dim prev As Cell = currentCell '(Limits(0) + 3, Limits(1) + 2)
+                                Dim v As Dictionary(Of Cell, Boolean) = InitialiseVisited(limits)
+                                v(currentCell) = True
+                                Dim path As New List(Of Node)
+                                Dim stopwatch As Stopwatch = Stopwatch.StartNew()
+                                SetBoth(pathColour)
+                                path.Add(New Node(currentCell.X, currentCell.Y))
+                                If showMazeGeneration Then currentCell.Print("██")
+                                path = RecursiveBacktrackerRecursively(currentCell, limits, path, v, prev, r, showMazeGeneration, delayMs, pathColour)
+                                PrintMessageMiddle($"Time taken to generate the maze: {stopwatch.Elapsed.TotalSeconds}", 1, ConsoleColor.Yellow)
+                                SetBoth(pathColour)
+                                If Not showMazeGeneration Then PrintMazeHorizontally(path, limits(2), limits(3))
+                                AddStartAndEnd(path, limits, pathColour)
+                                availablePath = path
+                            End If
                         ElseIf arr(y) = "   Conway's game of life (Maze generation)" Then
                             delayMs = GetIntInputArrowKeys("Delay when making the Maze (MS): ", 100, 0, True)
                             Dim rulestring As String = SolvingMenu({"B3/S12345 (Mazecetric)", "B3/S1234 (Maze)"}, "Rule string: ", 0, 0)
                             simulateLife(limits, True, delayMs, rulestring)
-                        ElseIf arr(y) = "   Recursive Backtracker Algorithm (using recursion)" Then
-                            Dim r As New Random
-                            If backGroundColour <> ConsoleColor.Black Then DrawBackground(backGroundColour, limits)
-                            Dim currentCell As Cell = PickRandomStartingCell(limits) '(Limits(0) + 3, Limits(1) + 2)
-                            Dim prev As Cell = currentCell '(Limits(0) + 3, Limits(1) + 2)
-                            Dim v As Dictionary(Of Cell, Boolean) = InitialiseVisited(limits)
-                            v(currentCell) = True
-                            Dim path As New List(Of Node)
-                            Dim stopwatch As Stopwatch = Stopwatch.StartNew()
-                            SetBoth(pathColour)
-                            path.Add(New Node(currentCell.X, currentCell.Y))
-                            If showMazeGeneration Then currentCell.Print("██")
-                            path = RecursiveBacktrackerRecursively(currentCell, limits, path, v, prev, r, showMazeGeneration, delayMs, pathColour)
-                            PrintMessageMiddle($"Time taken to generate the maze: {stopwatch.Elapsed.TotalSeconds}", 1, ConsoleColor.Yellow)
-                            SetBoth(pathColour)
-                            If Not showMazeGeneration Then PrintMazeHorizontally(path, limits(2), limits(3))
-                            AddStartAndEnd(path, limits, pathColour)
-                            availablePath = path
-                        ElseIf arr(y) = "   Recursive Backtracker Algorithm (using iteration, not using a stack)" Then
-                            availablePath = RecursiveBacktrackerNotUsingStack(limits, delayMs, showMazeGeneration, pathColour, backGroundColour)
                         ElseIf arr(y) = "   Hunt and Kill Algorithm (first cell)" Then
                             availablePath = HuntAndKillRefactored(limits, delayMs, showMazeGeneration, pathColour, backGroundColour)
                         ElseIf arr(y) = "   Hunt and Kill Algorithm (random cell)" Then
@@ -363,12 +366,46 @@ Module Menus
                             delayMs = GetIntInputArrowKeys("Delay when finding a path: ", 100, 0, True)
                             Dim availableNodes As List(Of Node) = returnPathfindingGrid()
                             Bestfs(availableNodes, True, True, delayMs, solvingColour)
-                        ElseIf arr(y) = "   Breadth-first search" Then
+                        ElseIf arr(y) = "   Breadth-first search (using iteration)" Then
                             Console.Clear()
                             delayMs = GetIntInputArrowKeys("Delay when finding a path: ", 100, 0, True)
                             Dim availableNodes As List(Of Node) = returnPathfindingGrid()
                             Bfs(availableNodes, True, True, delayMs, solvingColour)
-                        ElseIf arr(y) = "   Depth-first search" Then
+                        ElseIf arr(y) = "   Breadth-first search (using recursion)" Then
+                            Console.Clear()
+                            delayMs = GetIntInputArrowKeys("Delay when solving the maze: ", 100, 0, True)
+                            Dim availableNodes As List(Of Node) = returnPathfindingGrid()
+                            SetBoth(solvingColour)
+                            Dim startV = getStart(availableNodes)
+                            Dim goal = getGoal(availableNodes)
+                            Dim cameFrom As New Dictionary(Of Node, Node)
+                            Dim discovered As New Dictionary(Of Node, Boolean)
+                            For Each node In availableNodes
+                                discovered(node) = False
+                            Next
+                            Dim q As New Queue(Of Node)
+                            q.Enqueue(startV)
+                            Dim timer As Stopwatch = Stopwatch.StartNew
+                            BfsRecursive(availableNodes, q, discovered, cameFrom, goal, delayMs, True)
+                            ReconstructPath(cameFrom, goal, startV, $"{timer.Elapsed.TotalSeconds}")
+                            Console.ReadKey()
+                        ElseIf arr(y) = "   Depth-first search (using recursion)" Then
+                            Console.Clear()
+                            delayMs = GetIntInputArrowKeys("Delay when solving the maze: ", 100, 0, True)
+                            Dim availableNodes As List(Of Node) = returnPathfindingGrid()
+                            Dim startV = getStart(availableNodes)
+                            Dim goal = getGoal(availableNodes)
+                            Dim discovered As New Dictionary(Of Node, Boolean)
+                            For Each node In availableNodes
+                                discovered(node) = False
+                            Next
+                            Dim cameFrom As New Dictionary(Of Node, Node)
+                            Dim timer As Stopwatch = Stopwatch.StartNew
+                            SetBoth(solvingColour)
+                            DFS_Recursive(availableNodes, startV, discovered, cameFrom, goal, True, solvingDelay, False)
+                            ReconstructPath(cameFrom, goal, startV, $"{timer.Elapsed.TotalSeconds}")
+                            Console.ReadKey()
+                        ElseIf arr(y) = "   Depth-first search (using iteration)" Then
                             Console.Clear()
                             delayMs = GetIntInputArrowKeys("Delay when finding a path: ", 100, 0, True)
                             Dim availableNodes As List(Of Node) = returnPathfindingGrid()
@@ -383,6 +420,8 @@ Module Menus
                             delayMs = GetIntInputArrowKeys("Delay when finding a path: ", 100, 0, True)
                             Dim availableNodes As List(Of Node) = returnPathfindingGrid()
                             SPFA(availableNodes, True, delayMs, solvingColour)
+                        ElseIf arr(y) = "Information on using this program" Then
+                            instructionsforuse()
                         Else
                             OptionNotReady()
                         End If
@@ -447,9 +486,15 @@ Module Menus
                             IDAstarinfo()
                         ElseIf arr(y) = "   Best-first search" Then
                             bestfirstsearchINFO()
-
+                        ElseIf arr(y) = "   Breadth-first search (using iteration)" Or arr(y) = "   Breadth-first search (using recursion)" Then
+                            breadthfirstsearchinfo()
+                        ElseIf arr(y) = "   Depth-first search (using iteration)" Or arr(y) = "   Depth-first search (using recursion)" Then
+                            depthfirstsearchinfo()
+                        ElseIf arr(y) = "   Lee Algorithm (Wave Propagation)" Then
+                            LeeAlgorithmINFO()
+                        ElseIf arr(y) = "   Shortest Path Faster Algorithm" Then
+                            spfainfo()
                         Else
-
                             OptionNotReady()
                         End If
                         Console.ReadKey()
@@ -594,7 +639,7 @@ Module Menus
                     If ExitCase Then
                         If temparr(y) = "Return to the menu" Then Return Nothing
                     End If
-                        For i = 0 To arr.Count
+                    For i = 0 To arr.Count
                         Console.SetCursorPosition(X, i + Y_)
                         Console.Write("                                                        ")
                     Next
@@ -687,7 +732,7 @@ Module Menus
             'Dim neededNodes As List(Of Node) = GetNeededNodes(Maze)
             'Dim AdjacencyList As Dictionary(Of Node, List(Of Node)) = ConstructAdjacencyList(neededNodes, Maze)
             SPFA(Maze, showpath, solvingdelay, solvingColour)
-        ElseIf input = "Solve using Breadth-first search" Then
+        ElseIf input = "Solve using Breadth-first search (using iteration)" Then
             showpath = HorizontalYesNo(YposAfterMaze + 2, "Do you want to show the steps in solving the maze: ", True, False, False)
             If showpath Then solvingdelay = GetIntInputArrowKeys("Delay when solving the maze: ", 100, 0, True)
             Bfs(Maze, showpath, True, solvingdelay, solvingColour)
@@ -763,8 +808,8 @@ Module Menus
         ElseIf input = "Solve using Depth-first search (using recursion)" Then
             showpath = HorizontalYesNo(YposAfterMaze + 2, "Do you want to show the steps in solving the maze: ", True, False, False)
             If showpath Then solvingdelay = GetIntInputArrowKeys("Delay when solving the maze: ", 100, 0, True)
-            Dim startV As New Node(Maze(Maze.Count - 2).X, Maze(Maze.Count - 2).Y)
-            Dim goal As New Node(Maze(Maze.Count - 1).X, Maze(Maze.Count - 1).Y)
+            Dim startV = getStart(Maze)
+            Dim goal = getGoal(Maze)
             Dim discovered As New Dictionary(Of Node, Boolean)
             For Each node In Maze
                 discovered(node) = False
@@ -773,6 +818,23 @@ Module Menus
             Dim timer As Stopwatch = Stopwatch.StartNew
             SetBoth(solvingColour)
             DFS_Recursive(Maze, startV, discovered, cameFrom, goal, showpath, solvingdelay, False)
+            ReconstructPath(cameFrom, goal, startV, $"{timer.Elapsed.TotalSeconds}")
+            Console.ReadKey()
+        ElseIf input = "Solve using Breadth-first search (using recursion)" Then
+            showpath = HorizontalYesNo(YposAfterMaze + 2, "Do you want to show the steps in solving the maze: ", True, False, False)
+            If showpath Then solvingdelay = GetIntInputArrowKeys("Delay when solving the maze: ", 100, 0, True)
+            SetBoth(solvingColour)
+            Dim startV = getStart(Maze)
+            Dim goal = getGoal(Maze)
+            Dim cameFrom As New Dictionary(Of Node, Node)
+            Dim discovered As New Dictionary(Of Node, Boolean)
+            For Each node In Maze
+                discovered(node) = False
+            Next
+            Dim q As New Queue(Of Node)
+            q.Enqueue(startV)
+            Dim timer As Stopwatch = Stopwatch.StartNew
+            BfsRecursive(Maze, q, discovered, cameFrom, goal, solvingdelay, showpath)
             ReconstructPath(cameFrom, goal, startV, $"{timer.Elapsed.TotalSeconds}")
             Console.ReadKey()
         ElseIf input = "Play the maze" Then

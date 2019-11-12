@@ -162,9 +162,93 @@ Best-First-Search(Grah g, Node start)
 End procedure")
     End Sub
 
-    Sub breadthfirstsearch()
+    Sub breadthfirstsearchinfo()
         Console.WriteLine("Breadth-First Search
-Breadth-first search is an algorithm for searching a tree")
+Breadth-first search is an algorithm for searching a tree
+It uses a queue to expand the adjacent vertices
+
+Pseudocode from wikipedia
+
+procedure BFS(G,start_v):
+    let Q be a queue
+    label start_v as discovered
+    Q.enqueue(start_v)
+    while Q is not empty
+        v = Q.dequeue()
+        if v is the goal:
+            return v
+        for all edges from v to w in G.adjacentEdges(v) do
+            if w is not labeled as discovered:
+                label w as discovered
+                w.parent = v
+                Q.enqueue(w) ")
+    End Sub
+
+    Sub depthfirstsearchinfo()
+        Console.WriteLine("Depth-first search
+Depth-first search is an algorithm for traversing a tree or graph
+It explores the node branch as far as possible before being forced to backtrack and expand other nodes
+
+Pseudocode from wikipedia
+
+procedure DFS-iterative(G,v):
+    let S be a stack
+    S.push(v)
+    while S is not empty
+        v = S.pop()
+        if v is not labeled as discovered:
+            label v as discovered
+            for all edges from v to w in G.adjacentEdges(v) do 
+                S.push(w)")
+    End Sub
+    Sub LeeAlgorithmINFO()
+        Console.WriteLine("The Lee Algorithm
+The Lee Algorithm is a possible solution based on Breadth-first search for maze routing problems
+
+Pseudocode from wikipedia
+
+1) Initialization
+
+ - Select start point, mark with 0
+ - i := 0
+2) Wave expansion
+
+ - REPEAT
+     - Mark all unlabeled neighbors of points marked with i with i+1
+     - i := i+1
+   UNTIL ((target reached) or (no points can be marked))
+3) Backtrace
+
+   - go to the target point
+   REPEAT
+     - go to next node that has a lower mark than the current node
+     - add this node to path
+   UNTIL (start point reached)")
+
+
+    End Sub
+
+    Sub spfainfo()
+        Console.WriteLine("Shortest Path Faster Algorithm
+Shortest Path Faster Algorithm is an improvement of the Bellman-Ford Algorithm
+The algorithm is a generalization of breadth-first search
+
+Pseudocode from wikipedia
+
+procedure Shortest-Path-Faster-Algorithm(G, s)
+    for each vertex v ≠ s in V(G)
+        d(v) := ∞
+    d(s) := 0
+    offer s into Q
+    while Q is not empty
+        u := poll Q
+        for each edge (u, v) in E(G)
+            if d(u) + w(u, v) < d(v) then
+                d(v) := d(u) + w(u, v)
+                if v is not in Q then
+                    offer v into Q")
+
+
     End Sub
 
 End Module

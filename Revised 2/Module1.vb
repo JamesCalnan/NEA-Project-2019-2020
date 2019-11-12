@@ -19,9 +19,7 @@ then selecting properties and then changing the font size, then press any button
         'Console.ReadKey()
         Dim menuOptions() As String = {
             "Generate a maze using one of the following algorithms",
-            "   Recursive Backtracker Algorithm (using iteration)",
-            "   Recursive Backtracker Algorithm (using recursion)",
-            "   Recursive Backtracker Algorithm (using iteration, not using a stack)",
+            "   Recursive Backtracker Algorithm (3 options)",
             "   Randomised Breadth-First Search",
             "   Hunt and Kill Algorithm (first cell)",
             "   Hunt and Kill Algorithm (random cell)",
@@ -67,14 +65,18 @@ then selecting properties and then changing the font size, then press any button
             "   Iterative deepening A* (very slow)",
             "   Dijkstra's algorithm",
             "   Best-first search",
-            "   Breadth-first search",
-            "   Depth-first search",
+            "   Breadth-first search (using iteration)",
+            "   Breadth-first search (using recursion)",
+            "   Depth-first search (using iteration)",
+            "   Depth-first search (using recursion)",
             "   Lee Algorithm (Wave Propagation)",
             "   Shortest Path Faster Algorithm",
             "",
             "Conway's game of life",
             "",
             "Sorting Algorithm visualisations",
+            "",
+            "Information on using this program",
             "",
             "Exit"
         }

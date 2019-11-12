@@ -227,6 +227,7 @@
     <Compile Include="Other maze generation things\Cell.vb" />
     <Compile Include="Pathfinding Algorithm Info.vb" />
     <Compile Include="Pathfinding Grid.vb" />
+    <Compile Include="program instructions.vb" />
     <Compile Include="Shuffle Algorithms\Fisher-Yates Shuffle.vb" />
     <Compile Include="Shuffle Algorithms\Satallos Shuffle Algorithm.vb" />
     <Compile Include="Shuffle Algorithms\Simple Shuffle.vb" />

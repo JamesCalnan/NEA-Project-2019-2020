@@ -22,7 +22,7 @@
         If backGroundColour <> ConsoleColor.Black Then DrawBackground(backGroundColour, limits)
         Dim visitedCells As Dictionary(Of Cell, Boolean) = InitialiseVisited(limits)
         Dim returnablePath As New List(Of Node)
-        Dim roomSets As Dictionary(Of Cell, Integer) = GrenerateRooms(limits, pathColour, delay)
+        Dim roomSets As Dictionary(Of Cell, Integer) = GrenerateRooms(limits, pathColour, delay, showMazeGeneration)
         For Each cell In roomSets.Keys
             visitedCells(cell) = True
         Next
@@ -96,14 +96,19 @@
                 For Each thing In cellsToBeChanged
                     roomSets(thing) = roomSets(adjacentCells(0))
                 Next
-                connection.Print("XX")
+                If showMazeGeneration Then connection.Print("XX")
                 returnablePath.Add(connection.ToNode)
             End If
             connections.RemoveAt(index)
         End While
+        returnablePath = DeadEndFiller(returnablePath, True, delay, backGroundColour, backGroundColour, False)
+        If Not showMazeGeneration Then
+            SetBoth(pathColour)
+            PrintMazeHorizontally(returnablePath, limits(2), limits(3))
+        End If
         AddStartAndEnd(returnablePath, limits, pathColour)
         'returnablePath = DeadEndFiller(returnablePath, True, delay, backGroundColour, backGroundColour, False)
-        Return DeadEndFiller(returnablePath, True, delay, backGroundColour, backGroundColour, False)
+        Return returnablePath
 
     End Function
     Function GetAvailableConnections(limits() As Integer, rooms As List(Of Cell), path As List(Of Cell)) As List(Of Cell)
@@ -138,7 +143,7 @@
         Next
         Return availableCells
     End Function
-    Function GrenerateRooms(limits() As Integer, pathColour As ConsoleColor, delay As Integer) As Dictionary(Of Cell, Integer)
+    Function GrenerateRooms(limits() As Integer, pathColour As ConsoleColor, delay As Integer, showMazeGeneration As Boolean) As Dictionary(Of Cell, Integer)
         SetBoth(pathColour)
         Dim r As New Random
         Dim availableCells = ReturnAvailableCells(limits)
@@ -165,7 +170,7 @@
             If validRoom Then
                 For Each cell In potentialRoom
                     roomSets.Add(cell, currentSet)
-                    cell.Print("XX")
+                    If showMazeGeneration Then cell.Print("XX")
                     rooms.Add(cell)
                 Next
                 Threading.Thread.Sleep(delay)

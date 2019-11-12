@@ -62,11 +62,11 @@
                     Threading.Thread.Sleep(delay)
                 End While
             Next
-            Console.ForegroundColor = ConsoleColor.White
-            Console.BackgroundColor = ConsoleColor.Black
-            Console.SetCursorPosition(1, 1)
-            Console.Write("                                             ")
             If fillPath Then
+                Console.ForegroundColor = ConsoleColor.White
+                Console.BackgroundColor = ConsoleColor.Black
+                Console.SetCursorPosition(1, 1)
+                Console.Write("                                             ")
                 SetBoth(ConsoleColor.Green)
                 If showPath Then start.Print("██")
                 PrintMessageMiddle($"Time Taken to solve: {stopwatch.Elapsed.TotalSeconds} seconds", Console.WindowHeight - 1, ConsoleColor.Green)
