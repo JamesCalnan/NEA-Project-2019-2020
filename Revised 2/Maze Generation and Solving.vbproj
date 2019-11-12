@@ -218,6 +218,7 @@
     <Import Include="System.Threading.Tasks" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Other maze generation things\Maze Terms.vb" />
     <Compile Include="Other maze generation things\Adjacency List Construction.vb" />
     <Compile Include="Maze Statistics\Corners.vb" />
     <Compile Include="Maze Statistics\Dead Ends.vb" />

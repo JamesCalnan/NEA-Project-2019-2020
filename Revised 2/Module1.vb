@@ -77,6 +77,7 @@ then selecting properties and then changing the font size, then press any button
             "Sorting Algorithm visualisations",
             "",
             "Information on using this program",
+            "Useful terms",
             "",
             "Exit"
         }

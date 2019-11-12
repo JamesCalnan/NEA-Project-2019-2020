@@ -422,6 +422,8 @@ Module Menus
                             SPFA(availableNodes, True, delayMs, solvingColour)
                         ElseIf arr(y) = "Information on using this program" Then
                             instructionsforuse()
+                        ElseIf arr(y) = "Useful terms" Then
+                            mazeterms
                         Else
                             OptionNotReady()
                         End If
@@ -432,7 +434,7 @@ Module Menus
                 Case "I"
                     If y < lastMazeGenItem And arr(y) <> "   Make your own maze" Or solvingAlgorithms.Contains(arr(y)) Then
                         InitialiseScreen()
-                        If arr(y) = "   Recursive Backtracker Algorithm (using iteration)" Then
+                        If arr(y) = "   Recursive Backtracker Algorithm (3 options)" Then
                             RecrusiveBacktrackerInfo()
                         ElseIf arr(y) = "   Reverse-Delete Algorithm (best-first search)" Or arr(y) = "   Reverse-Delete Algorithm (breadth-first search)" Or arr(y) = "   Reverse-Delete Algorithm (depth-first search)" Then
                             ReverseDeleteAlgorithmInfo()

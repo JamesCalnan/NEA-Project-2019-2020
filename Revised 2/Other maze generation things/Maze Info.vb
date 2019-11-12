@@ -5,6 +5,7 @@
         Console.ForegroundColor = ConsoleColor.White
     End Sub
     Sub RecrusiveBacktrackerInfo()
+        Console.WriteLine("Bias free: Yes")
         Console.WriteLine("Steps in generating a maze using the recursive backtracker algorithm:")
         Console.WriteLine("     1. Choose a random starting cell from the grid, this becomes the current cell")
         Console.WriteLine("     2. Randomly carve a passage to an adjacent cell, but only if it hasn't already been visited")
@@ -71,6 +72,7 @@
         Console.WriteLine("     6. Recursively call the function")
     End Sub
     Sub Prims_SimplifiedINFO()
+        Console.WriteLine("Bias free: Yes")
         Console.WriteLine("The simplified version of Prim's Algorithm for maze generation is basically the same as true Prims algorithm however")
         Console.WriteLine("It assumes the weight of each edge in the grid is the same and therefore chooses a random edge instead of the edge with the lowest weight")
         Console.WriteLine($"{Environment.NewLine}Steps in generating a maze using the Prims algorithm (simplified):")
@@ -93,6 +95,7 @@
         Console.WriteLine("         7. Add this cell to the visited set")
     End Sub
     Sub Prims_TrueINFO()
+        Console.WriteLine("Bias free: Yes")
         Console.WriteLine("The true version of Prim's Algorithm for maze generation is basically the same as the simplified Prims algorithm however")
         Console.WriteLine("Assigns each edge a random weight between 0, 99, it then chooses the cell with the lowest weight out of the frontier set")
         Console.WriteLine($"{Environment.NewLine}Steps in generating a maze using the Prims algorithm (simplified):")
@@ -117,6 +120,7 @@
         Console.WriteLine("         7. Add this cell to the visited set")
     End Sub
     Sub HuntAndKillInfoFirstCell()
+        Console.WriteLine("Bias free: Yes")
         Console.WriteLine("Steps in generating a maze using the Hunt and Kill Algorithm:")
         Console.WriteLine("     1. Choose a random starting cell")
         Console.WriteLine("     2. Randomly carve to an unvisited adjacent neighbour, until there aren't any unvisited neighbours available")
@@ -145,6 +149,7 @@
         Console.WriteLine("                 The maze is finished being generated")
     End Sub
     Sub RandomisedBreadthFirstSearch()
+        Console.WriteLine("Bias free: Yes")
         Console.WriteLine("This just uses breadth first search but instead of using a queue to store adjacent cells")
         Console.WriteLine("It uses a list and instead of dequeueing the cells added it selected a random one")
         Console.WriteLine()
@@ -157,6 +162,7 @@
         Console.WriteLine("         3. Set each neighbour to be visited if they aren't already visited")
     End Sub
     Sub HuntAndKillInfoRandomCell()
+        Console.WriteLine("Bias free: Yes")
         Console.WriteLine("The random version  of this algorithm changed step 3")
         Console.WriteLine("Instead of just selected the first cell found to be new cell and then stop scanning")
         Console.WriteLine("Continue to scan the entire grid adding all adjacent cells to a list")
@@ -191,6 +197,7 @@
         Console.WriteLine("                 The maze is finished being generated")
     End Sub
     Sub AldousBroderInfo()
+        Console.WriteLine("Bias free: Yes")
         Console.WriteLine("Steps in generating a maze using the Aldous-Broder Algorithm:")
         Console.WriteLine("     1. Choose a random starting cell")
         Console.WriteLine("     2. Randomly pick an adjacent cell")
@@ -205,6 +212,7 @@
         Console.WriteLine("         3. Make the chosen neighbour the current cell")
     End Sub
     Sub GrowingTreeInfo()
+        Console.WriteLine("Bias free: Yes")
         Console.WriteLine("Steps in generating a maze using the Growing Tree Algorithm:")
         Console.WriteLine("     1. Let C be a list of cells")
         Console.WriteLine("     2. Add a random starting cell to C")
@@ -222,6 +230,7 @@
         Console.WriteLine("         6. Remove the current cell from C")
     End Sub
     Sub SidewinderInfo()
+        Console.WriteLine("Bias free: No")
         Console.WriteLine("Steps in generating a maze using the Sidewinder Algorithm:")
         Console.WriteLine("     1. Work across the grid by rows, adding the current cell to the run set")
         Console.WriteLine("     2. Choose whether to carve east or not")
@@ -242,6 +251,7 @@
         Console.WriteLine()
     End Sub
     Sub BinaryTreeInfo()
+        Console.WriteLine("Bias free: No")
         Console.WriteLine("Steps in generating a maze using the Binary Tree Algorithm:")
         Console.WriteLine("     1. Work acrowss the grid by rows or columns")
         Console.WriteLine("     2. Randomly choose to carve a passage either north or west")
@@ -253,6 +263,7 @@
         Console.WriteLine("     3. The Algorithm is done once all of the cells on the grid have been visited")
     End Sub
     Sub WilsonsInfo()
+        Console.WriteLine("Bias free: Yes")
         Console.WriteLine("Wilson's algorithm can be generated in different ways depending on how the cell that isn't in the UST is chosen")
         Console.WriteLine()
         Console.WriteLine("Steps in generating a maze using Wilson's Algorithm:")
@@ -273,6 +284,7 @@
         Console.WriteLine("     6. The Algorithm is complete when there are no unvisited cells on the grid")
     End Sub
     Sub EllersInfo()
+        Console.WriteLine("Bias free: No")
         Console.WriteLine("Ellers algorithm requires the most overhead out of all of the algorithms")
         Console.WriteLine()
         Console.WriteLine("Steps in generating a maze using Eller's Algorithm:")
@@ -288,6 +300,7 @@
         Console.WriteLine("        As this is the last row connections downwards don't need to be carved ")
     End Sub
     Sub KruskalsInfoSimplified()
+        Console.WriteLine("Bias free: Yes")
         Console.WriteLine("Steps in generating a maze using Kruskal's Algorithm:")
         Console.WriteLine("     1. Put all edges into a list")
         Console.WriteLine("     2. Assign each cell a unique set")
@@ -298,6 +311,7 @@
         Console.WriteLine("     6. Repeat until no edges remaing")
     End Sub
     Sub KruskalsInfoTrue()
+        Console.WriteLine("Bias free: Yes")
         Console.WriteLine("The true version of Kruskal's changes the second step from the simplified version")
         Console.WriteLine("Instead of a random edge being selected the edge with the lowest weight is selected")
         Console.WriteLine()
@@ -311,6 +325,7 @@
         Console.WriteLine("     6. Repeat until no edges remaing")
     End Sub
     Sub HoustonsInfo()
+        Console.WriteLine("Bias free: Yes")
         Console.WriteLine("Houston' algorithm combines Aldous-Broder and Wilson's algorithm")
         Console.WriteLine("Aldous-Broder is used until some minimum number of cells have been visited and then Wilson's Algorithms is used")
         Console.WriteLine("This combination gives you better performance than either algorithm itself")
@@ -328,6 +343,7 @@
         Console.WriteLine("         4. When there are no unvisited cells the maze is finished being generated")
     End Sub
     Sub SpiralBacktrackerInfo()
+        Console.WriteLine("Bias free: Yes")
         Console.WriteLine("This algorithm is very similar to the recursive backtracker algorithm")
         Console.WriteLine("But instead of picking a random neighbour it goes in a certain direction for a defined number of steps")
         Console.WriteLine()
@@ -350,6 +366,7 @@
         Console.WriteLine("     A cell survives if it has at least 1 and at most 5 neighbours")
     End Sub
     Sub CustomAlgorithmInfo()
+        Console.WriteLine("Bias free: Yes")
         Console.WriteLine("This was an algorithm that I came up with when attempting to code the Growing Tree Algorithm")
         Console.WriteLine()
         Console.WriteLine("Steps in generating a maze using the Spiral Backtracker Algorithm:")
@@ -366,6 +383,7 @@
         Console.WriteLine("         2. The maze is finished")
     End Sub
     Sub BoruvkasAlgorithmInfo()
+        Console.WriteLine("Bias free: Yes")
         Console.WriteLine("Steps in generating a maze using Boruvkas Algorithm:")
         Console.WriteLine("     1. Assign each cell a set number")
         Console.WriteLine("     2. Assign each edge a number")
@@ -386,6 +404,7 @@
         Console.WriteLine("         2. Remove the edges that were used")
     End Sub
     Sub ReverseDeleteAlgorithmInfo()
+        Console.WriteLine("Bias free: Yes")
         Console.WriteLine("Steps in generating a maze using the Reverse-delete Algorithm:")
         Console.WriteLine("     1. Create a list of all the edges sorted in descending order")
         Console.WriteLine("     2. For every edge")
