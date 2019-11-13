@@ -14,6 +14,7 @@
         visited(frontierSet(0)) = True
         If backGroundColour <> ConsoleColor.Black Then DrawBackground(backGroundColour, limits)
         SetBoth(pathColour)
+        Dim stopwatch As Stopwatch = Stopwatch.StartNew()
         While frontierSet.Count > 0
             If ExitCase() Then Return Nothing
             Dim v = dequeueRandom(frontierSet, r)
@@ -34,6 +35,7 @@
                 End If
             Next
         End While
+        PrintMessageMiddle($"Time taken to generate the maze: {stopwatch.Elapsed.TotalSeconds}", 1, ConsoleColor.Yellow)
         If Not showMazeGeneration Then
             SetBoth(pathColour)
             PrintMazeHorizontally(fullMaze, limits(2), limits(3))

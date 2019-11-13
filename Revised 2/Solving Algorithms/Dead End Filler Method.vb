@@ -1,5 +1,5 @@
 ﻿Module DeadEndFillerMethod
-    Function DeadEndFiller(list As List(Of Node), showPath As Boolean, delay As Integer, pathColour As ConsoleColor, solvingcolour As ConsoleColor, Optional fillPath As Boolean = True)
+    Function DeadEndFiller(list As List(Of Node), showPath As Boolean, delay As Integer, pathColour As ConsoleColor, solvingcolour As ConsoleColor, Optional fillPath As Boolean = True, Optional printmessages As Boolean = True)
         Dim deadEnds As New List(Of Node)
         Dim start As New Node(list(list.Count - 2).X, list(list.Count - 2).Y)
         Dim goal As New Node(list(list.Count - 1).X, list(list.Count - 1).Y)
@@ -10,7 +10,7 @@
         Dim greatestX, greatestY As Integer
         greatestX = 0
         greatestY = 0
-        If Not fillPath Then
+        If printmessages Then
             Console.ForegroundColor = ConsoleColor.White
             Console.BackgroundColor = ConsoleColor.Black
             Console.SetCursorPosition(1, 1)
@@ -31,7 +31,7 @@
             visited(node) = False
         Next
         If deadEnds.Count > 0 Then
-            If Not fillPath Then
+            If printmessages Then
                 Console.ForegroundColor = ConsoleColor.White
                 Console.BackgroundColor = ConsoleColor.Black
                 Console.SetCursorPosition(1, 1)
@@ -62,7 +62,7 @@
                     Threading.Thread.Sleep(delay)
                 End While
             Next
-            If fillPath Then
+            If printmessages Then
                 Console.ForegroundColor = ConsoleColor.White
                 Console.BackgroundColor = ConsoleColor.Black
                 Console.SetCursorPosition(1, 1)

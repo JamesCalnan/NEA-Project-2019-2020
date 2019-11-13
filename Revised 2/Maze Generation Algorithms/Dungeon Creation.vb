@@ -101,7 +101,7 @@
             End If
             connections.RemoveAt(index)
         End While
-        returnablePath = DeadEndFiller(returnablePath, True, delay, backGroundColour, backGroundColour, False)
+        returnablePath = DeadEndFiller(returnablePath, True, delay, backGroundColour, backGroundColour, False, False)
         If Not showMazeGeneration Then
             SetBoth(pathColour)
             PrintMazeHorizontally(returnablePath, limits(2), limits(3))
