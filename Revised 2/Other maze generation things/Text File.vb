@@ -78,7 +78,7 @@ Module Text_File
                 DisplayAvailablePositions(previousMaze.Count)
                 Console.SetCursorPosition(0, yPosAfterMaze + 3)
                 previousMaze = loadedMaze
-                Dim input = SolvingMenu(tempArr, "What would you Like to do with the maze", greatestX + 6, 3)
+                Dim input = SolvingMenu(tempArr, "What would you Like to do with the maze", greatestX + 6, 3, {})
                 SolvingInput(input, showPath, yPosAfterMaze, solvingDelay, previousMaze, usedAlgorithm, pathColour, backGroundColour, solvingColour)
             ElseIf validMaze = 0 Then
                 Console.Clear()
@@ -162,7 +162,7 @@ Module Text_File
             PrintStartandEnd(maze)
             Console.BackgroundColor = ConsoleColor.Black
             Console.ForegroundColor = ConsoleColor.White
-            Dim input As String = SolvingMenu(tempArr, "What would you like to do with the maze", gX + 7, 3)
+            Dim input As String = SolvingMenu(tempArr, "What would you like to do with the maze", gX + 7, 3, {})
             SolvingInput(input, True, gY + 2, 0, maze, "", pathColour, backGroundColour, solvingColour)
             Return maze
         Else

@@ -97,7 +97,7 @@ Module Image
                     'Solving of the maze goes here
                     Console.BackgroundColor = ConsoleColor.Black
                     Console.ForegroundColor = ConsoleColor.White
-                    Dim input As String = SolvingMenu(tempArr, "What would you like to do with the maze", greatestX + 3, 3)
+                    Dim input As String = SolvingMenu(tempArr, "What would you like to do with the maze", greatestX + 3, 3, {})
                     SolvingInput(input, True, greatestY, 0, maze, "", pathColour, backGroundColour, SolvingColour)
                 End If
             Else
@@ -113,7 +113,7 @@ Module Image
                 'Solving of the maze goes here
                 Console.BackgroundColor = ConsoleColor.Black
                 Console.ForegroundColor = ConsoleColor.White
-                Dim input As String = SolvingMenu(tempArr, "What would you like to do with the maze", greatestX + 3, 3)
+                Dim input As String = SolvingMenu(tempArr, "What would you like to do with the maze", greatestX + 3, 3, {})
                 SolvingInput(input, True, greatestY, 0, maze, "", pathColour, backGroundColour, SolvingColour)
             End If
             Return maze

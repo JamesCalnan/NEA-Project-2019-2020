@@ -100,7 +100,7 @@ Module Menus
                         If arr(y) = "   Recursive Backtracker Algorithm (3 options)" Then
                             Console.ResetColor()
                             Console.Clear()
-                            Dim recursivebacktrackeroptions As String = SolvingMenu({"Using iteration, Stack", "Using iteration, Dictionary", "Using recursion"}, "Cell selection method: ", 0, 0)
+                            Dim recursivebacktrackeroptions As String = SolvingMenu({"Using iteration, Stack", "Using iteration, Dictionary", "Using recursion"}, "Cell selection method: ", 0, 0, {})
                             If recursivebacktrackeroptions = "Using iteration, Stack" Then
                                 availablePath = RecursiveBacktracker.RecursiveBacktracker(limits, delayMs, showMazeGeneration, pathColour, backGroundColour)
                             ElseIf recursivebacktrackeroptions = "Using iteration, Dictionary" Then
@@ -126,7 +126,7 @@ Module Menus
                             End If
                         ElseIf arr(y) = "   Conway's game of life (Maze generation)" Then
                             delayMs = GetIntInputArrowKeys("Delay when making the Maze (MS): ", 100, 0, True)
-                            Dim rulestring As String = SolvingMenu({"B3/S12345 (Mazecetric)", "B3/S1234 (Maze)"}, "Rule string: ", 0, 0)
+                            Dim rulestring As String = SolvingMenu({"B3/S12345 (Mazecetric)", "B3/S1234 (Maze)"}, "Rule string: ", 0, 0, {})
                             simulateLife(limits, True, delayMs, rulestring)
                         ElseIf arr(y) = "   Hunt and Kill Algorithm (first cell)" Then
                             availablePath = HuntAndKillRefactored(limits, delayMs, showMazeGeneration, pathColour, backGroundColour)
@@ -155,7 +155,7 @@ Module Menus
                         ElseIf arr(y) = "   Wilson's Algorithm (9 options)" Then
                             Console.ResetColor()
                             Console.Clear()
-                            Dim wilsonsOption As String = SolvingMenu({"random", "top to bottom", "bottom to top", "left to right", "right to left", "collapsing rectangle", "expanding rectangle", "collapsing diamond", "expanding diamond"}, "Cell selection method: ", 0, 0)
+                            Dim wilsonsOption As String = SolvingMenu({"random", "top to bottom", "bottom to top", "left to right", "right to left", "collapsing rectangle", "expanding rectangle", "collapsing diamond", "expanding diamond"}, "Cell selection method: ", 0, 0, {})
                             availablePath = WilsonsRefectored(limits, delayMs, showMazeGeneration, wilsonsOption, pathColour, backGroundColour)
                         ElseIf arr(y) = "   Eller's Algorithm" Then
                             availablePath = Ellers(limits, delayMs, showMazeGeneration, pathColour, backGroundColour)
@@ -193,11 +193,12 @@ Module Menus
                         ElseIf arr(y) = "Sorting Algorithm visualisations" Then
                             Console.ResetColor()
                             Console.Clear()
-                            Dim shuffleAlgorithm As String = SolvingMenu({"Simple shuffle", "Fisher–Yates shuffle", "Fisher–Yates shuffle (inside out)", "Sattolo's algorithm", "", "Return to the menu"}, "What algorithm would you like to use to suffle the array", 0, 0, True)
+                            Dim shuffleAlgorithm As String = SolvingMenu({"Simple shuffle", "Fisher–Yates shuffle", "Fisher–Yates shuffle (inside out)", "Sattolo's algorithm", "", "Return to the menu"}, "What algorithm would you like to use to suffle the array", 0, 0, {}, True)
                             Console.ResetColor()
                             Console.Clear()
                             If Not shuffleAlgorithm = Nothing Then
-                                Dim sortingAlgorithm As String = SolvingMenu({"Bogo Sort", "Bogobogo Sort", "Bozo Sort", "Bubble Sort (using recursion)", "Bubble Sort (using iteration)", "Insertion Sort (using iteration)", "Insertion Sort (using recursion)", "Merge Sort", "Quick Sort", "Selection Sort", "Shell Sort", "Gnome Sort", "Slow Sort", "Cocktail shaker sort", "Pancake Sort", "Comb Sort", "Cycle Sort", "Stooge Sort", "Heap Sort", "Odd-Even Sort / Brick Sort", "Counting Sort", "Bucket Sort", "Pigeonhole Sort", "", "Return to the menu"}, "What Sorting Algorithm do you want to use", 0, 0, True)
+                                Dim sortingInfoArr() As String = {returnBogosortInfo(), returnBogobogosortInfo(), returnBozosortInfo(), returnBubblesortInfo(), returnBubblesortInfo(), returnInsertionsortInfo(), returnInsertionsortInfo(), returnMergesortInfo(), returnQuicksortInfo(), returnSelectionsortInfo(), returnShellsortInfo(), returnGnomesortInfo(), returnSlowsortInfo(), returnCocktailshakersortInfo(), returnPancakesortInfo(), returnCombsortInfo(), returnCyclesortInfo(), returnStoogesortInfo(), returnHeapsortInfo(), returnBricksortInfo(), returnCountingsortInfo(), returnBucketsortInfo(), returnPigeonholesortInfo()}
+                                Dim sortingAlgorithm As String = SolvingMenu({"Bogo Sort", "Bogobogo Sort", "Bozo Sort", "Bubble Sort (using recursion)", "Bubble Sort (using iteration)", "Insertion Sort (using iteration)", "Insertion Sort (using recursion)", "Merge Sort", "Quick Sort", "Selection Sort", "Shell Sort", "Gnome Sort", "Slow Sort", "Cocktail shaker sort", "Pancake Sort", "Comb Sort", "Cycle Sort", "Stooge Sort", "Heap Sort", "Odd-Even Sort / Brick Sort", "Counting Sort", "Bucket Sort", "Pigeonhole Sort", "", "Return to the menu"}, "What Sorting Algorithm do you want to use", 0, 0, sortingInfoArr, True)
                                 If Not sortingAlgorithm = Nothing Then
                                     Dim a As New List(Of Double)
                                     Console.ResetColor()
@@ -545,7 +546,7 @@ Module Menus
         yPosAfterMaze = limits(3) + 1
         DisplayAvailablePositions(availablePath.Count)
         Console.SetCursorPosition(0, yPosAfterMaze + 3)
-        input = SolvingMenu(tempArr, "What would you like to do with the maze", limits(2) + 4, 3)
+        input = SolvingMenu(tempArr, "What would you like to do with the maze", limits(2) + 4, 3, {})
     End Sub
     Sub ClearHorizontal(y As Integer, ClearMessage As Boolean, setafter As Boolean)
         Console.ForegroundColor = ConsoleColor.White
@@ -607,7 +608,7 @@ Module Menus
         End While
         Return Nothing
     End Function
-    Function SolvingMenu(arr() As String, Message As String, X As Integer, Y_ As Integer, Optional ExitCase As Boolean = False)
+    Function SolvingMenu(arr() As String, Message As String, X As Integer, Y_ As Integer, informationArray() As String, Optional ExitCase As Boolean = False)
         Dim temparr() As String = arr
         Dim CurrentCol = 0 'Console.CursorTop
         Dim y = 0
@@ -621,6 +622,7 @@ Module Menus
         Next
         While 1
             Console.BackgroundColor = (ConsoleColor.Black)
+            Console.ForegroundColor = ConsoleColor.Black
             Dim key = Console.ReadKey
             Select Case key.Key.ToString
                 Case "DownArrow"
@@ -637,6 +639,7 @@ Module Menus
                         Console.Write("                                                        ")
                     Next
                     Return "s"
+
                 Case "Enter"
                     If ExitCase Then
                         If temparr(y) = "Return to the menu" Then Return Nothing
@@ -646,6 +649,15 @@ Module Menus
                         Console.Write("                                                        ")
                     Next
                     Return temparr(y)
+                Case "I"
+                    If informationArray.Count <> 0 And y < informationArray.Count + 1 Then
+                        InitialiseScreen()
+                        Console.Write(informationArray(y))
+                        Console.ReadKey()
+                        Console.Clear()
+                        Console.SetCursorPosition(X, 0 + Y_)
+                        MsgColour(Message, ConsoleColor.Yellow)
+                    End If
             End Select
             Console.ForegroundColor = (ConsoleColor.White)
             Dim count = 1
@@ -799,7 +811,7 @@ Module Menus
                                    "Save the maze as an ascii text file",
                                    "",
                                    "Clear the maze and return to the menu"}
-            input = SolvingMenu(temparr, "What would you like to do with the maze", greatestX + 5, 3)
+            input = SolvingMenu(temparr, "What would you like to do with the maze", greatestX + 5, 3, {})
             SolvingInput(input, True, greatestY + 1, solvingdelay, mazeCopy, "", pathColour, backGroundColour, solvingColour)
         ElseIf input = "Solve using Depth-first search (using iteration)" Then
             showpath = HorizontalYesNo(YposAfterMaze + 2, "Do you want to show the steps in solving the maze: ", True, False, False)
@@ -907,7 +919,7 @@ Module Menus
                                "Save the maze as an ascii text file",
                                "",
                                "Clear the maze and return to the menu"}
-                input = SolvingMenu(temparr, "What would you like to do with the maze", greatestX + 5, 3)
+                input = SolvingMenu(temparr, "What would you like to do with the maze", greatestX + 5, 3, {})
 
                 SolvingInput(input, True, greatestY + 2, solvingdelay, uniMaze, "", pathColour, backGroundColour, solvingColour)
             End If
@@ -946,7 +958,7 @@ Module Menus
                "Save the maze as an ascii text file",
                "",
                "Clear the maze and return to the menu"}
-            input = SolvingMenu(temparr, "What would you like to do with the maze", greatestX + 6, 3)
+            input = SolvingMenu(temparr, "What would you like to do with the maze", greatestX + 6, 3, {})
             SolvingInput(input, showpath, YposAfterMaze, solvingdelay, Maze, "", pathColour, backGroundColour, solvingColour)
         ElseIf input = "Make the maze sparse (remove some passages)" Then
             Sparsify(Maze, pathColour, backGroundColour)
@@ -981,7 +993,7 @@ Module Menus
             "Save the maze as an ascii text file",
             "",
             "Clear the maze and return to the menu"}
-            input = SolvingMenu(temparr, "What would you like to do with the maze", greatestX + 6, 3)
+            input = SolvingMenu(temparr, "What would you like to do with the maze", greatestX + 6, 3, {})
             SolvingInput(input, showpath, YposAfterMaze, solvingdelay, Maze, "", pathColour, backGroundColour, solvingColour)
         ElseIf input = "Get the amount of Dead-ends in the maze" Then
             Console.SetCursorPosition(0, Console.WindowHeight - 1)

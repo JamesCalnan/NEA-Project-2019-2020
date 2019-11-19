@@ -240,6 +240,7 @@
     <Compile Include="Maze Generation Algorithms\Binary Tree Algorithm.vb" />
     <Compile Include="Other maze generation things\Priority Queue.vb" />
     <Compile Include="Solving Algorithms\shortest-path-faster-algorithm.vb" />
+    <Compile Include="Sorting Algorithm Information.vb" />
     <Compile Include="Sorting Algorithms\Bogobogo Sort.vb" />
     <Compile Include="Sorting Algorithms\Bogosort Algorithm.vb" />
     <Compile Include="Maze Generation Algorithms\BoruvkasAlgorithm.vb" />

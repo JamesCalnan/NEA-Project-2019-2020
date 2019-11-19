@@ -133,7 +133,7 @@ then selecting properties and then changing the font size, then press any button
             DisplayAvailablePositions(previousMaze.Count)
             yPosAfterMaze = gY
             Console.SetCursorPosition(0, yPosAfterMaze + 3)
-            Dim input = SolvingMenu(tempArr, "What would you like to do with the maze", gX + 6, 3)
+            Dim input = SolvingMenu(tempArr, "What would you like to do with the maze", gX + 6, 3, {})
             SolvingInput(input, showPath, yPosAfterMaze, solvingDelay, previousMaze, previousAlgorithm, pathColour, backGroundColour, solvingColour)
         Else
             Console.Clear()
@@ -153,7 +153,7 @@ then selecting properties and then changing the font size, then press any button
     Function ColourChange(ByVal colourArr() As String) As ConsoleColor
         Console.Clear()
         Console.CursorVisible = False
-        Dim returnValue As String = SolvingMenu(colourArr, "What colour would you like to change to", 0, 0)
+        Dim returnValue As String = SolvingMenu(colourArr, "What colour would you like to change to", 0, 0, {})
         Console.Clear()
         For i = 0 To 15
             Dim curColour As ConsoleColor = i
