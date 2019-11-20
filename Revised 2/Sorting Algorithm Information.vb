@@ -57,7 +57,7 @@ If there is no previous pot he steps forward one pot"
     End Function
     Function returnInsertionsortInfo()
         Return "At each position  in the list it checks the value there against the largest value in the sorted list, which is the elemts that have already been looked at
-If it is lager then it leaves the element in place and moves to the next
+If it is larger then it leaves the element in place and moves to the next
 If it is smaller it finds the correct position within the sorted list and shifts all larger elements up by one"
     End Function
     Function returnMergesortInfo()
