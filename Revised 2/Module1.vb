@@ -17,7 +17,10 @@ then selecting properties and then changing the font size, then press any button
         Loop Until Console.WindowWidth > Console.LargestWindowWidth - 10 And Console.WindowHeight > Console.LargestWindowHeight - 5
         'Dim bool = HorizontalYesNo(0, "Do you want to have the exit option available on the menu:   ", True, True, False)
         'Console.ReadKey()
-        Dim menuOptions() As String = {
+        Console.Clear()
+        Dim preMenuOptions As String = SolvingMenu({"Maze Generation and Solving", "Pathfinding Visualisation", "Sorting algorithm visualisation", "Conways Game of Life", "Full Program"}, "Program options", 0, 0, {})
+        If preMenuOptions = "Full Program" Then
+            Dim menuOptions() As String = {
             "Generate a maze using one of the following algorithms",
             "   Recursive Backtracker Algorithm (3 options)",
             "   Randomised Breadth-First Search",
@@ -81,7 +84,94 @@ then selecting properties and then changing the font size, then press any button
             "",
             "Exit"
         }
-        Menu(menuOptions, "Menu")
+            Menu(menuOptions, "Menu")
+        ElseIf preMenuOptions = "Conways Game of Life" Then
+            Dim menuOptions() As String = {
+                "",
+            "Conway's game of life (Maze generation)",
+            "Conway's game of life",
+            "",
+            "Exit"
+        }
+            Menu(menuOptions, "Menu", True)
+        ElseIf preMenuOptions = "Sorting algorithm visualisation" Then
+            Dim menuOptions() As String = {
+                "",
+            "Sorting Algorithm visualisations",
+            "",
+            "Exit"
+        }
+            Menu(menuOptions, "Menu", True)
+        ElseIf preMenuOptions = "Pathfinding Visualisation" Then
+            Dim menuOptions() As String = {
+            "Path finding visualisations on a grid",
+            "   A* algorithm",
+            "   Iterative deepening A* (very slow)",
+            "   Dijkstra's algorithm",
+            "   Best-first search",
+            "   Breadth-first search (using iteration)",
+            "   Breadth-first search (using recursion)",
+            "   Depth-first search (using iteration)",
+            "   Depth-first search (using recursion)",
+            "   Lee Algorithm (Wave Propagation)",
+            "   Shortest Path Faster Algorithm",
+            "",
+            "Exit"
+        }
+            Menu(menuOptions, "Menu", True)
+        ElseIf preMenuOptions = "Maze Generation and Solving" Then
+            Dim menuOptions() As String = {
+            "Generate a maze using one of the following algorithms",
+            "   Recursive Backtracker Algorithm (3 options)",
+            "   Randomised Breadth-First Search",
+            "   Hunt and Kill Algorithm (first cell)",
+            "   Hunt and Kill Algorithm (random cell)",
+            "   Prim's Algorithm (simplified)",
+            "   Prim's Algorithm (true)",
+            "   Aldous-Broder Algorithm",
+            "   Growing Tree Algorithm",
+            "   Sidewinder Algorithm",
+            "   Borůvka's Algorithm (top down)",
+            "   Borůvka's Algorithm (random)",
+            "   Binary Tree Algorithm (top down)",
+            "   Binary Tree Algorithm (random)",
+            "   Wilson's Algorithm (9 options)",
+            "   Eller's Algorithm",
+            "   Kruskal's Algorithm (simplified)",
+            "   Kruskal's Algorithm (true)",
+            "   Houston's Algorithm",
+            "   Spiral Backtracker Algorithm",
+            "   Reverse-Delete Algorithm (best-first search)",
+            "   Reverse-Delete Algorithm (breadth-first search)",
+            "   Reverse-Delete Algorithm (depth-first search)",
+            "   Custom Algorithm",
+            "   Dungeon Creation Algorithm",
+            "   Conway's game of life (Maze generation)",
+            "   Make your own maze",
+            "",
+            "Load the previously generated maze",
+            "",
+            "Change the path colour           current colour: ",
+            "Change the background colour     current colour: ",
+            "Change the solving colour        current colour: ",
+            "",
+            "Load a maze from a text file (list of points)",
+            "Load a maze from an image file",
+            "Load a maze from an ascii text file",
+            "",
+            "Save the previously generated maze as a list of points",
+            "Save the previous maze as a png image",
+            "Save the previous maze to ascii text file",
+            "",
+            "Information on using this program",
+            "Useful terms",
+            "",
+            "Exit"
+        }
+            Menu(menuOptions, "Menu")
+        End If
+
+
 
         Dim colour As New List(Of String)
         For i = 0 To 15

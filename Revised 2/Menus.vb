@@ -2,7 +2,7 @@
 Imports System.Drawing
 Module Menus
     'todo still need to do terms ' STILL NEED TO DO BIAS
-    Sub Menu(arr() As String, topitem As String, Optional Exitavailable As Boolean = True)
+    Sub Menu(arr() As String, topitem As String, Optional notMazeGen As Boolean = False, Optional Exitavailable As Boolean = True)
         Dim temparr() As String = {"Solve using the A* algorithm",
                                    "Solve using Iterative deepening A* (very slow)",
                                    "Solve using Dijkstra's algorithm",
@@ -56,6 +56,7 @@ Module Menus
                 Exit For
             End If
         Next
+        If notMazeGen Then lastMazeGenItem = -1
         y = 1
         Dim limits(3) As Integer
         Dim screenWidth As Integer = Console.WindowWidth / 2
@@ -95,8 +96,8 @@ Module Menus
                 Case "Enter"
                     Console.ForegroundColor = ConsoleColor.White
                     Dim availablePath As New List(Of Node)
-                    If y <= lastMazeGenItem Then
-                        GetMazeInfo(width, height, delayMs, limits, showMazeGeneration, True, 0, arr(y) = "   Make your own maze" Or arr(y) = "   Conway's game of life (Maze generation)", arr(y) <> "   Conway's game of life (Maze generation)")
+                    If y <= lastMazeGenItem Or arr(y) = "Conway's game of life (Maze generation)" Then
+                        GetMazeInfo(width, height, delayMs, limits, showMazeGeneration, True, 0, arr(y) = "   Make your own maze" Or arr(y) = "   Conway's game of life (Maze generation)" Or arr(y) = "Conway's game of life (Maze generation)", arr(y) <> "   Conway's game of life (Maze generation)")
                         If arr(y) = "   Recursive Backtracker Algorithm (3 options)" Then
                             Console.ResetColor()
                             Console.Clear()
@@ -124,7 +125,7 @@ Module Menus
                                 AddStartAndEnd(path, limits, pathColour)
                                 availablePath = path
                             End If
-                        ElseIf arr(y) = "   Conway's game of life (Maze generation)" Then
+                        ElseIf arr(y) = "   Conway's game of life (Maze generation)" Or arr(y) = "Conway's game of life (Maze generation)" Then
                             delayMs = GetIntInputArrowKeys("Delay when making the Maze (MS): ", 100, 0, True)
                             Dim rulestring As String = SolvingMenu({"B3/S12345 (Mazecetric)", "B3/S1234 (Maze)"}, "Rule string: ", 0, 0, {})
                             simulateLife(limits, True, delayMs, rulestring)
@@ -186,7 +187,7 @@ Module Menus
                         ElseIf arr(y) = "   Dungeon Creation Algorithm" Then
                             availablePath = createPassages(limits, showMazeGeneration, pathColour, backGroundColour, delayMs)
                         End If
-                        If Not IsNothing(availablePath) And arr(y) <> "   Conway's game of life (Maze generation)" Then Solving(availablePath, limits, previousMaze, input, yPosAfterMaze, showPath, solvingDelay, arr(y), previousAlgorithm, temparr, pathColour, backGroundColour, solvingColour)
+                        If Not IsNothing(availablePath) Or (arr(y) <> "   Conway's game of life (Maze generation)" Or arr(y) <> "Conway's game of life (Maze generation)") Then Solving(availablePath, limits, previousMaze, input, yPosAfterMaze, showPath, solvingDelay, arr(y), previousAlgorithm, temparr, pathColour, backGroundColour, solvingColour)
                     Else
                         If arr(y) = "Load the previously generated maze" Then
                             PrintPreviousMaze(previousMaze, previousAlgorithm, showPath, yPosAfterMaze, solvingDelay, temparr, pathColour, backGroundColour, solvingColour)
@@ -344,7 +345,7 @@ Module Menus
                             End If
                         ElseIf arr(y) = "Conway's game of life" Then
                             GetMazeInfo(width, height, delayMs, limits, showMazeGeneration, True, 0, arr(y) = "Conway's game of life", arr(y) <> "Conway's game of life")
-                            delayMs = GetIntInputArrowKeys("Delay when making the Maze (MS): ", 100, 0, True)
+                            delayMs = GetIntInputArrowKeys("Delay between each iteration (MS): ", 100, 0, True)
                             simulateLife(limits, False, delayMs)
                         ElseIf arr(y) = "   A* algorithm" Then
                             Console.Clear()
@@ -424,7 +425,7 @@ Module Menus
                         ElseIf arr(y) = "Information on using this program" Then
                             instructionsforuse()
                         ElseIf arr(y) = "Useful terms" Then
-                            mazeterms
+                            mazeterms()
                         Else
                             OptionNotReady()
                         End If
@@ -1049,17 +1050,17 @@ Module Menus
     Sub GetMazeInfo(ByRef Width As Integer, ByRef Height As Integer, ByRef DelayMS As Integer, ByRef Limits() As Integer, ByRef ShowGeneration As Boolean, Clear As Boolean, y As Integer, Optional NeedExtraInfo As Boolean = True, Optional fullScreen As Boolean = False)
         Console.SetCursorPosition(0, y)
         If Not NeedExtraInfo Then
-            ShowGeneration = HorizontalYesNo(Console.CursorTop, "Do you want to see the maze being generated: ", False, If(Clear, True, False), False)
+            ShowGeneration = HorizontalYesNo(Console.CursorTop, "Do you want to see the generation process: ", False, If(Clear, True, False), False)
             Console.SetCursorPosition(0, Console.CursorTop + 1)
             If ShowGeneration Then
-                DelayMS = GetIntInputArrowKeys("Delay when making the Maze (MS): ", 100, 0, False)
+                DelayMS = GetIntInputArrowKeys("Delay (MS): ", 100, 0, False)
             Else
                 DelayMS = 0
             End If
         End If
         If NeedExtraInfo Then Console.Clear()
-        Width = GetIntInputArrowKeys($"Width of the Maze: ", (Console.WindowWidth - If(fullScreen, 58, 12)) / 2, 20, False) * 2
-        Height = GetIntInputArrowKeys($"Height of the Maze: ", Console.WindowHeight - 6, 20, False)
+        Width = GetIntInputArrowKeys($"Width: ", (Console.WindowWidth - If(fullScreen, 58, 12)) / 2, 20, False) * 2
+        Height = GetIntInputArrowKeys($"Height: ", Console.WindowHeight - 6, 20, False)
         If Width Mod 2 = 0 Then
             Width += 1
         End If
