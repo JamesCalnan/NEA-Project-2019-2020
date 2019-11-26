@@ -249,6 +249,8 @@ then selecting properties and then changing the font size, then press any button
     End Function
 
     Function GetValidFileName(fileType As String)
+        Console.ForegroundColor = ConsoleColor.White
+        Console.BackgroundColor = ConsoleColor.Black
         Dim invalidCharacters = "\/:*?""<>|"
         Console.Clear()
         Dim filename As String

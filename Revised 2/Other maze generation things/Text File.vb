@@ -60,10 +60,10 @@ Module Text_File
                 Console.ResetColor()
                 Console.Clear()
                 Console.SetCursorPosition(0, 0)
-                Dim mess = "Algorithm used to generate this maze "
-                Console.Write(mess)
-                Console.SetCursorPosition(mess.Length, 0)
-                MsgColour(usedAlgorithm, ConsoleColor.Green)
+                'Dim mess = "Algorithm used to generate this maze "
+                'Console.Write(mess)
+                'Console.SetCursorPosition(mess.Length, 0)
+                'MsgColour(usedAlgorithm, ConsoleColor.Green)
                 SetBoth(ConsoleColor.White)
                 Dim gx, gy As Integer
                 For Each node In loadedMaze
