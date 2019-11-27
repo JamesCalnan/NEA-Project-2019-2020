@@ -720,6 +720,8 @@ Module Menus
 
         If input = "Solve using the A* algorithm" Then
             Console.SetCursorPosition(0, YposAfterMaze + 2)
+            Console.ForegroundColor = ConsoleColor.White
+            Console.BackgroundColor = ConsoleColor.Black
             Dim heuristic = GetIntInputArrowKeys("Heuristic: ", 60, 1, True)
             showpath = HorizontalYesNo(YposAfterMaze + 2, "Do you want to show the steps in solving the maze: ", True, False, False)
             If showpath Then solvingdelay = GetIntInputArrowKeys("Delay when solving the maze: ", 100, 0, True)
@@ -871,9 +873,14 @@ Module Menus
             DeadEndFiller(Maze, showpath, solvingdelay, pathColour, solvingColour)
         ElseIf input = "Solve using the left-hand rule" Then
             Console.SetCursorPosition(0, YposAfterMaze + 2)
+            Console.ForegroundColor = ConsoleColor.White
+            Console.BackgroundColor = ConsoleColor.Black
             solvingdelay = GetIntInputArrowKeys("Delay when solving the maze: ", 100, 0, True)
             WallFollowerAlgorithm(Maze, solvingdelay, "LHR", solvingColour)
+
         ElseIf input = "Solve using the right-hand rule" Then
+            Console.ForegroundColor = ConsoleColor.White
+            Console.BackgroundColor = ConsoleColor.Black
             Console.SetCursorPosition(0, YposAfterMaze + 2)
             solvingdelay = GetIntInputArrowKeys("Delay when solving the maze: ", 100, 0, True)
             WallFollowerAlgorithm(Maze, solvingdelay, "", solvingColour)
