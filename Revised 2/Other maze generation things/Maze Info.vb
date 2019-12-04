@@ -216,7 +216,7 @@
         Console.WriteLine("Steps in generating a maze using the Growing Tree Algorithm:")
         Console.WriteLine("     1. Let C be a list of cells")
         Console.WriteLine("     2. Add a random starting cell to C")
-        Console.WriteLine("     3. Choose a cell from C and carve a path tp any unvisited neighbours")
+        Console.WriteLine("     3. Choose a cell from C and carve a path to any unvisited neighbours")
         Console.WriteLine("     4. Add the chosen neighbour to C, if there are no unvisited neighbours remove the cell from C")
         Console.WriteLine("     5. Repeat steps 3 and 4 until C is empty")
         Console.WriteLine($"{Environment.NewLine}Growing Tree Algorithm:")
