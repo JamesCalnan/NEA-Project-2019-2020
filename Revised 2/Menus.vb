@@ -424,7 +424,7 @@ Module Menus
                         ElseIf arr(y) = "Information on using this program" Then
                             instructionsforuse()
                         ElseIf arr(y) = "Useful terms" Then
-                            mazeterms
+                            mazeterms()
                         Else
                             OptionNotReady()
                         End If

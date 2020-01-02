@@ -2,7 +2,7 @@
     Function returnPathfindingGrid() As List(Of Node)
         Dim availableCells As New List(Of Node)
         Dim start As New Node(5, 3)
-        Dim goal As New Node(If(Console.WindowWidth - 6 Mod 2 = 0, Console.WindowWidth - 5, Console.WindowWidth - 6), Console.WindowHeight - 3)
+        Dim goal As New Node(If(Console.WindowWidth - 6 Mod 2 <> 0, Console.WindowWidth - 5, Console.WindowWidth - 6), Console.WindowHeight - 3)
         Dim invalidNodes As List(Of Node) = returnInvalidNodes(start, goal)
         SetBoth(ConsoleColor.White)
         Dim r As New Random
