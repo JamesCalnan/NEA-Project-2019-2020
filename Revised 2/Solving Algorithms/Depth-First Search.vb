@@ -26,11 +26,10 @@ Module DepthFirstSearch
         ReconstructPathForfile(cameFrom, goal, startV, bmp, g, multiplier)
     End Sub
     Sub DFS_Iterative(g As List(Of Node), showPath As Boolean, showSolveTime As Boolean, delay As Integer, solvingColour As ConsoleColor)
-        Dim startV As New Node(g(g.Count - 2).X, g(g.Count - 2).Y)
-        Dim goal As New Node(g(g.Count - 1).X, g(g.Count - 1).Y)
+        Dim startV = getStart(g)
+        Dim goal = getGoal(g)
         Dim visited As New Dictionary(Of Node, Boolean)
         Dim stopwatch As Stopwatch = Stopwatch.StartNew()
-        Dim li As New List(Of Node)
         Dim cameFrom As New Dictionary(Of Node, Node)
         Dim s As New Stack(Of Node)
         For Each u In g

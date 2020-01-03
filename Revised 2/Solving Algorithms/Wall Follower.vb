@@ -1,7 +1,7 @@
 ﻿Module WallFollower
-    Sub WallFollowerAlgorithm(maze As List(Of Node), delay As Integer, rule As String, solvingColour as ConsoleColor)
-        Dim startV As New Node(maze(maze.Count - 2).X, maze(maze.Count - 2).Y)
-        Dim goal As New Node(maze(maze.Count - 1).X, maze(maze.Count - 1).Y)
+    Sub WallFollowerAlgorithm(g As List(Of Node), delay As Integer, rule As String, solvingColour As ConsoleColor)
+        Dim startV = getStart(g)
+        Dim goal = getGoal(g)
         Dim u As Node = startV
         Dim prev As Node = u
         SetBoth(ConsoleColor.Green)
@@ -9,9 +9,9 @@
         Dim currentDirection = "down"
         Dim timer As Stopwatch = Stopwatch.StartNew
         Do
-            SetBoth(solvingcolour)
+            SetBoth(solvingColour)
             prev.Print("XX")
-            currentDirection = GetNextDirection(maze, u, currentDirection, rule)
+            currentDirection = GetNextDirection(g, u, currentDirection, rule)
             If currentDirection = "left" Then
                 u.Update(u.X - 2, u.Y)
             ElseIf currentDirection = "right" Then
@@ -26,7 +26,7 @@
             Console.ForegroundColor = ConsoleColor.White
             Console.SetCursorPosition(0, 1)
             Console.Write($"Current direction: {currentDirection.Substring(0, 1).ToUpper}{currentDirection.Substring(1, currentDirection.Count - 1)}      ")
-            SetBoth(ConsoleColor.cyan)
+            SetBoth(ConsoleColor.Cyan)
             u.Print("XX")
             prev = u
             Threading.Thread.Sleep(delay)

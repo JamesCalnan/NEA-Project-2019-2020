@@ -78,8 +78,7 @@
     Function connectedVerticesBestfs(edgeList As List(Of Cell), vertexList As List(Of Cell), v1 As Cell, v2 As Cell)
         Dim discovered As New Dictionary(Of Cell, Boolean)
         Dim q As New PriorityQueue(Of Node)
-        Dim g As New List(Of Cell)
-        g.AddRange(edgeList)
+        Dim g As List(Of Cell) = edgeList.ToList()
         g.AddRange(vertexList)
         For Each node In g
             discovered(node) = False

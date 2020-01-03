@@ -1,5 +1,5 @@
 ﻿Module Best_First_Search
-    Sub Bestfs(availablepath As List(Of Node), showPath As Boolean, showSolveTime As Boolean, delay As Integer, solvingColour As ConsoleColor)
+    Sub bfs(availablepath As List(Of Node), showPath As Boolean, showSolveTime As Boolean, delay As Integer, solvingColour As ConsoleColor)
         Dim startV As New Node(availablepath(availablepath.Count - 2).X, availablepath(availablepath.Count - 2).Y)
         Dim goal As New Node(availablepath(availablepath.Count - 1).X, availablepath(availablepath.Count - 1).Y)
         Dim discovered As New Dictionary(Of Node, Boolean)

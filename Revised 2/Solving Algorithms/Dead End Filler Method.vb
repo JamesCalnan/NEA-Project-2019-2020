@@ -1,8 +1,8 @@
 ﻿Module DeadEndFillerMethod
-    Function DeadEndFiller(list As List(Of Node), showPath As Boolean, delay As Integer, pathColour As ConsoleColor, solvingcolour As ConsoleColor, Optional fillPath As Boolean = True, Optional printmessages As Boolean = True)
+    Function DeadEndFiller(g As List(Of Node), showPath As Boolean, delay As Integer, pathColour As ConsoleColor, solvingcolour As ConsoleColor, Optional fillPath As Boolean = True, Optional printmessages As Boolean = True)
         Dim deadEnds As New List(Of Node)
-        Dim start As New Node(list(list.Count - 2).X, list(list.Count - 2).Y)
-        Dim goal As New Node(list(list.Count - 1).X, list(list.Count - 1).Y)
+        Dim start = getStart(g)
+        Dim goal = getGoal(g)
         Dim visited As New Dictionary(Of Node, Boolean)
         Dim maze As New List(Of Node)
         Dim copyMaze As New List(Of Node)
@@ -18,12 +18,12 @@
         End If
         SetBoth(solvingcolour)
         Dim stopwatch As Stopwatch = Stopwatch.StartNew()
-        For Each node In list
+        For Each node In g
             maze.Add(node)
             copyMaze.Add(node)
             If node.X > greatestX Then greatestX = node.X
             If node.Y > greatestY Then greatestY = node.Y
-            If node.IsDeadEnd(list) Then
+            If node.IsDeadEnd(g) Then
                 If node.Equals(start) Or node.Equals(goal) Then Continue For
                 If showPath Then node.Print("██")
                 deadEnds.Add(node)
@@ -75,7 +75,7 @@
                 If showPath Then
                     For __x = 1 To greatestX + 1
                         For __y = 3 To greatestY + 1
-                            If list.Contains(New Node(__x, __y)) Then
+                            If g.Contains(New Node(__x, __y)) Then
                                 If Not notPath.Contains(New Node(__x, __y)) Then
                                     SetBoth(ConsoleColor.Green)
                                     Console.SetCursorPosition(__x, __y)

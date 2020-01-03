@@ -1,8 +1,8 @@
 ﻿Module PlayMaze
     Sub PlaymazeSubroutine(availablePath As List(Of Node), showPath As Boolean, pathColour as ConsoleColor, backGroundColour as ConsoleColor)
         Dim playerPath As New List(Of Node)
-        Dim currentPos As New Node(availablePath(availablePath.Count - 2).X, availablePath(availablePath.Count - 2).Y)
-        Dim start As New Node(availablePath(availablePath.Count - 2).X, availablePath(availablePath.Count - 2).Y)
+        Dim currentPos = getStart(availablePath)
+        Dim start = getStart(availablePath)
         If Not playerPath.Contains(currentPos) Then playerPath.Add(currentPos)
         Console.ForegroundColor = (ConsoleColor.Magenta)
         currentPos.Print("██")

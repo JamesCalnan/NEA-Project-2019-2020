@@ -366,12 +366,12 @@ Module Menus
                             Console.Clear()
                             delayMs = GetIntInputArrowKeys("Delay when finding a path: ", 100, 0, True)
                             Dim availableNodes As List(Of Node) = returnPathfindingGrid()
-                            Bestfs(availableNodes, True, True, delayMs, solvingColour)
+                            Best_First_Search.bfs(availableNodes, True, True, delayMs, solvingColour)
                         ElseIf arr(y) = "   Breadth-first search (using iteration)" Then
                             Console.Clear()
                             delayMs = GetIntInputArrowKeys("Delay when finding a path: ", 100, 0, True)
                             Dim availableNodes As List(Of Node) = returnPathfindingGrid()
-                            Bfs(availableNodes, True, True, delayMs, solvingColour)
+                            BreadthFirstSearch.Bfs(availableNodes, True, True, delayMs, solvingColour)
                         ElseIf arr(y) = "   Breadth-first search (using recursion)" Then
                             Console.Clear()
                             delayMs = GetIntInputArrowKeys("Delay when solving the maze: ", 100, 0, True)
@@ -751,11 +751,11 @@ Module Menus
         ElseIf input = "Solve using Breadth-first search (using iteration)" Then
             showpath = HorizontalYesNo(YposAfterMaze + 2, "Do you want to show the steps in solving the maze: ", True, False, False)
             If showpath Then solvingdelay = GetIntInputArrowKeys("Delay when solving the maze: ", 100, 0, True)
-            Bfs(Maze, showpath, True, solvingdelay, solvingColour)
+            BreadthFirstSearch.Bfs(Maze, showpath, True, solvingdelay, solvingColour)
         ElseIf input = "Solve using Best-first search" Then
             showpath = HorizontalYesNo(YposAfterMaze + 2, "Do you want to show the steps in solving the maze: ", True, False, False)
             If showpath Then solvingdelay = GetIntInputArrowKeys("Delay when solving the maze: ", 100, 0, True)
-            Bestfs(Maze, showpath, True, solvingdelay, solvingColour)
+            Best_First_Search.bfs(Maze, showpath, True, solvingdelay, solvingColour)
         ElseIf input = "Solve using a recursive algorithm" Then
             showpath = HorizontalYesNo(YposAfterMaze + 2, "Do you want to show the steps in solving the maze: ", True, False, False)
             If showpath Then solvingdelay = GetIntInputArrowKeys("Delay when solving the maze: ", 100, 0, True)

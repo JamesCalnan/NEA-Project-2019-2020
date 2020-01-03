@@ -128,7 +128,7 @@ Module Text_File
         Console.Write("File Name of the maze to load (don't include .txt): ")
         Dim filename As String = Console.ReadLine
         filename += ".txt"
-        If System.IO.File.Exists(filename) Then
+        If File.Exists(filename) Then
             Dim maze As New List(Of Node)
             Using reader = New StreamReader(filename)
                 Do Until reader.EndOfStream

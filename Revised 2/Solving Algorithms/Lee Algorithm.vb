@@ -1,11 +1,11 @@
 ﻿Module LeeAlgorithm
-    Sub Lee(maze As List(Of Node), showSolving As Boolean, delay As Integer, solvingColour as ConsoleColor)
-        Dim start As New Node(maze(maze.Count - 2).X, maze(maze.Count - 2).Y)
-        Dim goal As New Node(maze(maze.Count - 1).X, maze(maze.Count - 1).Y)
+    Sub Lee(g As List(Of Node), showSolving As Boolean, delay As Integer, solvingColour As ConsoleColor)
+        Dim start = getStart(g)
+        Dim goal = getGoal(g)
         Dim visitedNode As New Dictionary(Of Node, Boolean)
         Dim nodeValues As New Dictionary(Of Node, Integer)
         Dim i = 0
-        For Each node In maze
+        For Each node In g
             visitedNode(node) = False
             nodeValues(node) = Int32.MaxValue
         Next
@@ -19,7 +19,7 @@
         Dim timer As Stopwatch = Stopwatch.StartNew
         While unfinishedNodes.Count > 0
             Dim currentNode As Node = unfinishedNodes.Dequeue
-            For Each adjacentNode As Node In GetNeighbours(currentNode, maze)
+            For Each adjacentNode As Node In GetNeighbours(currentNode, g)
                 If visitedNode(adjacentNode) Then Continue For
                 If adjacentNode.Equals(goal) Then Exit While
                 nodeValues(adjacentNode) = i
@@ -30,7 +30,7 @@
             If showSolving Then Threading.Thread.Sleep(delay)
             i += 1
         End While
-        BacktrackUsingWavePropagation(nodeValues, start, goal, maze)
+        BacktrackUsingWavePropagation(nodeValues, start, goal, g)
         Console.SetCursorPosition(0, Console.WindowHeight - 1)
         Console.ForegroundColor = ConsoleColor.White
         Console.BackgroundColor = ConsoleColor.Black
