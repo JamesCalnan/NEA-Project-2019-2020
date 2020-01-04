@@ -3,14 +3,14 @@
         Dim start = getStart(g)
         Dim goal = getGoal(g)
         Dim visitedNode As New Dictionary(Of Node, Boolean)
-        Dim nodeValues As New Dictionary(Of Node, Integer)
+        Dim expansionValue As New Dictionary(Of Node, Integer)
         Dim i = 0
         For Each node In g
             visitedNode(node) = False
-            nodeValues(node) = Int32.MaxValue
+            expansionValue(node) = Int32.MaxValue
         Next
         Dim unfinishedNodes As New Queue(Of Node)
-        nodeValues(start) = i
+        expansionValue(start) = i
         visitedNode(start) = True
         unfinishedNodes.Enqueue(start)
         Console.ForegroundColor = ConsoleColor.White
@@ -22,7 +22,7 @@
             For Each adjacentNode As Node In GetNeighbours(currentNode, g)
                 If visitedNode(adjacentNode) Then Continue For
                 If adjacentNode.Equals(goal) Then Exit While
-                nodeValues(adjacentNode) = i
+                expansionValue(adjacentNode) = i
                 If showSolving Then adjacentNode.Print($"XX")
                 unfinishedNodes.Enqueue(adjacentNode)
                 visitedNode(adjacentNode) = True
@@ -30,7 +30,7 @@
             If showSolving Then Threading.Thread.Sleep(delay)
             i += 1
         End While
-        BacktrackUsingWavePropagation(nodeValues, start, goal, g)
+        BacktrackUsingWavePropagation(expansionValue, start, goal, g)
         Console.SetCursorPosition(0, Console.WindowHeight - 1)
         Console.ForegroundColor = ConsoleColor.White
         Console.BackgroundColor = ConsoleColor.Black
@@ -38,7 +38,7 @@
         SetBoth(ConsoleColor.Black)
         Console.ReadKey()
     End Sub
-    Sub BacktrackUsingWavePropagation(nodeValues As Dictionary(Of Node, Integer), start As Node, goal As Node, maze As List(Of Node))
+    Sub BacktrackUsingWavePropagation(expansionValue As Dictionary(Of Node, Integer), start As Node, goal As Node, maze As List(Of Node))
         Dim path As New List(Of Node)
         Dim finalNode As New Node(start.X, start.Y)
         start.Update(start.X, start.Y)
@@ -48,7 +48,7 @@
             Dim lowestValueNode As Node = currentNode
             lowestValueNode.Print("XX")
             For Each neighbour As Node In GetNeighbours(currentNode, maze)
-                If nodeValues(neighbour) < nodeValues(lowestValueNode) Then lowestValueNode = neighbour
+                If expansionValue(neighbour) < expansionValue(lowestValueNode) Then lowestValueNode = neighbour
             Next
             currentNode = lowestValueNode
             currentNode.Print("XX")

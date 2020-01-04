@@ -1,10 +1,10 @@
 ﻿Module shortest_path_faster_algorithm
-    Sub SPFA(maze As List(Of Node), showSolving As Boolean, solvingDelay As Integer, solvingColour As ConsoleColor)
+    Sub SPFA(maze As List(Of Node), showSolving As Boolean, solvingDelay As Integer, solvingColour As ConsoleColor, Optional type As String = "normal")
         Dim s = getStart(maze)
         Dim target = getGoal(maze)
         Dim d As New Dictionary(Of Node, Double)
         Dim prev As New Dictionary(Of Node, Node)
-        Dim Q As New Queue(Of Node)
+        Dim Q As New ShortestPathFasterAlgorithmQueue(Of Node)
         d(s) = 0
         For Each v In maze
             If v.Equals(s) Then Continue For
@@ -12,10 +12,10 @@
             prev(v) = Nothing
         Next
         SetBoth(solvingColour)
-        Q.Enqueue(s)
+        Q.offer(s)
         Dim stopwatch As Stopwatch = Stopwatch.StartNew()
-        While Q.Count > 0
-            Dim u = Q.Dequeue
+        While Not Q.isEmpty
+            Dim u = Q.poll
             If u.Equals(target) Then Exit While
             If showSolving Then : u.Print("██") : Threading.Thread.Sleep(solvingDelay) : End If
             For Each v As Node In GetNeighbours(u, maze)
@@ -23,8 +23,13 @@
                     d(v) = d(u) + 1
                     prev(v) = u
                     If Not Q.Contains(v) Then
-                        Q.Enqueue(v)
-                        Small_Label_First(d, Q)
+                        If type = "normal" Then
+                            Q.offer(v)
+                        ElseIf type = "slf" Then
+                            Q.offerSmallLabelFirst(v, d)
+                        ElseIf type = "llf" Then
+                            Q.offerLargeLabelFirst(v, d)
+                        End If
                     End If
                 End If
             Next
@@ -33,21 +38,41 @@
         ReconstructPath(prev, target, s, stopwatch.Elapsed.TotalSeconds)
         Console.ReadKey()
     End Sub
-    Sub Small_Label_First(d As Dictionary(Of Node, Double), q As Queue(Of Node))
-        If d(q.Last) < d(q.First) Then
-            Dim u = q.Dequeue
-            q.Reverse
-            q.Enqueue(u)
-            q.Reverse
-        End If
+End Module
+Class ShortestPathFasterAlgorithmQueue(Of T)
+    Public Property items As Queue(Of T)
+    Public Sub New()
+        items = New Queue(Of T)
     End Sub
-    Sub Large_Label_Last(d As Dictionary(Of Node, Double), q As Queue(Of Node))
+    Public Sub offer(item As T)
+        items.Enqueue(item)
+    End Sub
+    Public Function Contains(item As T)
+        Return items.Contains(item)
+    End Function
+    Public Sub offerLargeLabelFirst(item As T, d As Dictionary(Of T, Double))
+        items.Enqueue(item)
         Dim x = d.Values.Average
-        While d(q.First) > x
-            Dim u = q.Dequeue
-            q.Reverse
-            q.Enqueue(u)
-            q.Reverse
+        While d(items.First) > x
+            Dim u = items.Dequeue
+            items.Reverse
+            items.Enqueue(u)
+            items.Reverse
         End While
     End Sub
-End Module
+    Public Sub offerSmallLabelFirst(item As T, d As Dictionary(Of T, Double))
+        items.Enqueue(item)
+        If d(items.Last) < d(items.First) Then
+            Dim u = items.Dequeue
+            items.Reverse
+            items.Enqueue(u)
+            items.Reverse
+        End If
+    End Sub
+    Public Function poll() As T
+        Return items.Dequeue
+    End Function
+    Public Function isEmpty()
+        Return items.Count = 0
+    End Function
+End Class

@@ -11,7 +11,9 @@ Module Menus
                                    "Solve using Breadth-first search (using recursion)",
                                    "Solve using Depth-first search (using iteration)",
                                    "Solve using Depth-first search (using recursion)",
-                                   "Solve using the Shortest Path Faster Algorithm",
+                                   "Solve using the Shortest Path Faster Algorithm (normal)",
+                                   "Solve using the Shortest Path Faster Algorithm (Large Label First)",
+                                   "Solve using the Shortest Path Faster Algorithm (Small Label First)",
                                    "Solve using the Lee Algorithm (Wave Propagation)",
                                    "Solve using a recursive algorithm",
                                    "Solve using the dead end filling method",
@@ -41,7 +43,9 @@ Module Menus
             "   Depth-first search (using iteration)",
             "   Depth-first search (using recursion)",
             "   Lee Algorithm (Wave Propagation)",
-            "   Shortest Path Faster Algorithm"}
+            "   Shortest Path Faster Algorithm (normal)",
+            "   Shortest Path Faster Algorithm (Large Label First)",
+            "   Shortest Path Faster Algorithm (Small Label First)"}
         Dim allColours() As String = GetAllConsoleColours()
         Dim pathColour = ConsoleColor.White
         Dim backGroundColour = ConsoleColor.Black
@@ -87,11 +91,11 @@ Module Menus
                 Case "DownArrow"
                     y += 1
                     If y = arr.Count Then y = 1
-                    If arr(y) = "" Or arr(y) = "Generate a maze using one of the following algorithms" Then y += 1
+                    If arr(y) = "" Or arr(y) = "Generate a maze using one of the following algorithms" Or arr(y) = "Path finding visualisations on a grid" Then y += 1
                 Case "UpArrow"
                     y -= 1
                     If y = 0 Then y = arr.Count - 1
-                    If arr(y) = "" Or arr(y) = "Generate a maze using one of the following algorithms" Then y -= 1
+                    If arr(y) = "" Or arr(y) = "Generate a maze using one of the following algorithms" Or arr(y) = "Path finding visualisations on a grid" Then y -= 1
                 Case "Enter"
                     Console.ForegroundColor = ConsoleColor.White
                     Dim availablePath As New List(Of Node)
@@ -416,11 +420,21 @@ Module Menus
                             delayMs = GetIntInputArrowKeys("Delay when finding a path: ", 100, 0, True)
                             Dim availableNodes As List(Of Node) = returnPathfindingGrid()
                             Lee(availableNodes, True, delayMs, solvingColour)
-                        ElseIf arr(y) = "   Shortest Path Faster Algorithm" Then
+                        ElseIf arr(y) = "   Shortest Path Faster Algorithm (normal)" Then
                             Console.Clear()
                             delayMs = GetIntInputArrowKeys("Delay when finding a path: ", 100, 0, True)
                             Dim availableNodes As List(Of Node) = returnPathfindingGrid()
                             SPFA(availableNodes, True, delayMs, solvingColour)
+                        ElseIf arr(y) = "   Shortest Path Faster Algorithm (Large Label First)" Then
+                            Console.Clear()
+                            delayMs = GetIntInputArrowKeys("Delay when finding a path: ", 100, 0, True)
+                            Dim availableNodes As List(Of Node) = returnPathfindingGrid()
+                            SPFA(availableNodes, True, delayMs, solvingColour, "llf")
+                        ElseIf arr(y) = "   Shortest Path Faster Algorithm (Small Label First)" Then
+                            Console.Clear()
+                            delayMs = GetIntInputArrowKeys("Delay when finding a path: ", 100, 0, True)
+                            Dim availableNodes As List(Of Node) = returnPathfindingGrid()
+                            SPFA(availableNodes, True, delayMs, solvingColour, "slf")
                         ElseIf arr(y) = "Information on using this program" Then
                             instructionsforuse()
                         ElseIf arr(y) = "Useful terms" Then
@@ -633,20 +647,17 @@ Module Menus
                     y -= 1
                     If y = -1 Then y = arr.Count - 1
                     If arr(y) = "" Then y -= 1
-                Case "S"
-                    For i = 0 To arr.Count
-                        Console.SetCursorPosition(X, i + Y_)
-                        Console.Write("                                                        ")
-                    Next
-                    Return "s"
-
                 Case "Enter"
-                    If ExitCase Then
-                        If temparr(y) = "Return to the menu" Then Return Nothing
-                    End If
+                    If ExitCase Then If temparr(y) = "Return to the menu" Then Return Nothing
+                    Dim indexOfmaxOption = 0
+                    For i = 0 To arr.Count - 1
+                        If arr(indexOfmaxOption).Count < arr(i).Count Then indexOfmaxOption = i
+                    Next
+                    Dim maxOption = arr(indexOfmaxOption)
+                    Dim optionCount = maxOption.Length + 2
                     For i = 0 To arr.Count
                         Console.SetCursorPosition(X, i + Y_)
-                        Console.Write("                                                        ")
+                        Console.Write("".PadLeft(optionCount, " "c))
                     Next
                     Return temparr(y)
                 Case "I"
@@ -742,12 +753,21 @@ Module Menus
             'Dim neededNodes As List(Of Node) = GetNeededNodes(Maze)
             'Dim AdjacencyList As Dictionary(Of Node, List(Of Node)) = ConstructAdjacencyList(neededNodes, Maze)
             Dijkstras(Maze, showpath, solvingdelay, solvingColour)
-        ElseIf input = "Solve using the Shortest Path Faster Algorithm" Then
+        ElseIf input = "Solve using the Shortest Path Faster Algorithm (normal)" Then
             showpath = HorizontalYesNo(YposAfterMaze + 2, "Do you want to show the steps in solving the maze: ", True, False, False)
             If showpath Then solvingdelay = GetIntInputArrowKeys("Delay when solving the maze: ", 100, 0, True)
             'Dim neededNodes As List(Of Node) = GetNeededNodes(Maze)
             'Dim AdjacencyList As Dictionary(Of Node, List(Of Node)) = ConstructAdjacencyList(neededNodes, Maze)
             SPFA(Maze, showpath, solvingdelay, solvingColour)
+
+        ElseIf input = "Solve using the Shortest Path Faster Algorithm (Large Label First)" Then
+            showpath = HorizontalYesNo(YposAfterMaze + 2, "Do you want to show the steps in solving the maze: ", True, False, False)
+            If showpath Then solvingdelay = GetIntInputArrowKeys("Delay when solving the maze: ", 100, 0, True)
+            SPFA(Maze, showpath, solvingdelay, solvingColour, "llf")
+        ElseIf input = "Solve using the Shortest Path Faster Algorithm (Small Label First)" Then
+            showpath = HorizontalYesNo(YposAfterMaze + 2, "Do you want to show the steps in solving the maze: ", True, False, False)
+            If showpath Then solvingdelay = GetIntInputArrowKeys("Delay when solving the maze: ", 100, 0, True)
+            SPFA(Maze, showpath, solvingdelay, solvingColour, "slf")
         ElseIf input = "Solve using Breadth-first search (using iteration)" Then
             showpath = HorizontalYesNo(YposAfterMaze + 2, "Do you want to show the steps in solving the maze: ", True, False, False)
             If showpath Then solvingdelay = GetIntInputArrowKeys("Delay when solving the maze: ", 100, 0, True)
@@ -792,7 +812,9 @@ Module Menus
                                    "Solve using Breadth-first search",
                                    "Solve using Depth-first search (using iteration)",
                                    "Solve using Depth-first search (using recursion)",
-                                   "Solve using the Shortest Path Faster Algorithm",
+                                   "Shortest Path Faster Algorithm (normal)",
+                                   "Shortest Path Faster Algorithm (Large Label First)",
+                                   "Shortest Path Faster Algorithm (Small Label First)",
                                    "Solve using the Lee Algorithm (Wave Propagation)",
                                    "Solve using a recursive algorithm",
                                    "Solve using the dead end filling method",
@@ -905,7 +927,9 @@ Module Menus
                                    "Solve using Breadth-first search",
                                    "Solve using Depth-first search (using iteration)",
                                    "Solve using Depth-first search (using recursion)",
-                                   "Solve using the Shortest Path Faster Algorithm",
+                                   "Shortest Path Faster Algorithm (normal)",
+                                   "Shortest Path Faster Algorithm (Large Label First)",
+                                   "Shortest Path Faster Algorithm (Small Label First)",
                                    "Solve using the Lee Algorithm (Wave Propagation)",
                                    "Solve using a recursive algorithm",
                                    "Solve using the dead end filling method",
@@ -944,7 +968,9 @@ Module Menus
                                    "Solve using Breadth-first search",
                                    "Solve using Depth-first search (using iteration)",
                                    "Solve using Depth-first search (using recursion)",
-                                   "Solve using the Shortest Path Faster Algorithm",
+                                   "Shortest Path Faster Algorithm (normal)",
+                                   "Shortest Path Faster Algorithm (Large Label First)",
+                                   "Shortest Path Faster Algorithm (Small Label First)",
                                    "Solve using the Lee Algorithm (Wave Propagation)",
                                    "Solve using a recursive algorithm",
                                    "Solve using the dead end filling method",
@@ -978,7 +1004,9 @@ Module Menus
                                    "Solve using Breadth-first search",
                                    "Solve using Depth-first search (using iteration)",
                                    "Solve using Depth-first search (using recursion)",
-                                   "Solve using the Shortest Path Faster Algorithm",
+                                   "Shortest Path Faster Algorithm (normal)",
+                                   "Shortest Path Faster Algorithm (Large Label First)",
+                                   "Shortest Path Faster Algorithm (Small Label First)",
                                    "Solve using the Lee Algorithm (Wave Propagation)",
                                    "Solve using a recursive algorithm",
                                    "Solve using the dead end filling method",
@@ -1065,7 +1093,7 @@ Module Menus
             End If
         End If
         If NeedExtraInfo Then Console.Clear()
-        Width = GetIntInputArrowKeys($"Width of the Maze: ", (Console.WindowWidth - If(fullScreen, 58, 12)) / 2, 20, False) * 2
+        Width = GetIntInputArrowKeys($"Width of the Maze: ", (Console.WindowWidth - If(fullScreen, 75, 12)) / 2, 20, False) * 2
         Height = GetIntInputArrowKeys($"Height of the Maze: ", Console.WindowHeight - 6, 20, False)
         If Width Mod 2 = 0 Then
             Width += 1
