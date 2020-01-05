@@ -10,11 +10,7 @@
         End While
     End Sub
     Function findMax(arr As List(Of Double), n As Double)
-        Dim mi = 0
-        For i = 0 To n - 1
-            If arr(i) > arr(mi) Then mi = i
-        Next
-        Return mi
+        Return arr.GetRange(0, n).IndexOf(arr.GetRange(0, n).Max())
     End Function
 
     Sub pancakeSort(arr As List(Of Double), delay As Integer)

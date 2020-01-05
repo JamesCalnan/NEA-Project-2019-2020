@@ -241,6 +241,7 @@ Module Menus
                                             HeapSort.heapSort(a, delay)
                                         Case "Stooge Sort"
                                             Stooge_Sort.stoogeSort(a, 0, a.Count - 1, delay)
+                                            AnimateSort(a, delay)
                                         Case "Cycle Sort"
                                             Cycle_Sort.cycleSort(a, delay)
                                         Case "Comb Sort"

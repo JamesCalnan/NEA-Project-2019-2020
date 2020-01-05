@@ -8,7 +8,6 @@
             listb.Add(lista(temp))
             lista.RemoveAt(temp)
             AnimateSort(listb)
-
         Next
         lista = listb
     End Sub

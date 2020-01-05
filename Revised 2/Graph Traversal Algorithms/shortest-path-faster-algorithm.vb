@@ -5,12 +5,11 @@
         Dim d As New Dictionary(Of Node, Double)
         Dim prev As New Dictionary(Of Node, Node)
         Dim Q As New ShortestPathFasterAlgorithmQueue(Of Node)
-        d(s) = 0
         For Each v In maze
-            If v.Equals(s) Then Continue For
             d(v) = Int32.MaxValue / 2
             prev(v) = Nothing
         Next
+        d(s) = 0
         SetBoth(solvingColour)
         Q.offer(s)
         Dim stopwatch As Stopwatch = Stopwatch.StartNew()

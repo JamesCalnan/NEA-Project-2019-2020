@@ -188,6 +188,8 @@ then selecting properties and then changing the font size, then press any button
         For Each number In a
             SetBoth(ConsoleColor.White)
             Console.Write("".PadLeft(number, "X"c))
+            Console.BackgroundColor = ConsoleColor.Black
+            Console.Write($" {number}")
             SetBoth(ConsoleColor.Black)
             Console.Write("".PadLeft((Console.WindowWidth - number) - 5, "X"c))
             Console.WriteLine()

@@ -65,7 +65,7 @@
     <OptionInfer>On</OptionInfer>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>icon2.ico</ApplicationIcon>
+    <ApplicationIcon>Icons\icon2.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationManifest>My Project\app.manifest</ApplicationManifest>
@@ -226,27 +226,27 @@
     <Compile Include="Maze Statistics\Straight Ways.vb" />
     <Compile Include="Other maze generation things\Neighbours.vb" />
     <Compile Include="Other maze generation things\Cell.vb" />
-    <Compile Include="Pathfinding Algorithm Info.vb" />
-    <Compile Include="Pathfinding Grid.vb" />
+    <Compile Include="Graph Traversal Algorithms\Pathfinding Algorithm Info.vb" />
+    <Compile Include="Graph Traversal Algorithms\Pathfinding Grid.vb" />
     <Compile Include="program instructions.vb" />
     <Compile Include="Shuffle Algorithms\Fisher-Yates Shuffle.vb" />
     <Compile Include="Shuffle Algorithms\Satallos Shuffle Algorithm.vb" />
     <Compile Include="Shuffle Algorithms\Simple Shuffle.vb" />
-    <Compile Include="Solving Algorithms\Node.vb" />
-    <Compile Include="Solving Algorithms\IDAstar.vb" />
-    <Compile Include="Solving Algorithms\A Star Algorithm.vb" />
+    <Compile Include="Graph Traversal Algorithms\Node.vb" />
+    <Compile Include="Graph Traversal Algorithms\IDAstar.vb" />
+    <Compile Include="Graph Traversal Algorithms\A Star Algorithm.vb" />
     <Compile Include="Maze Generation Algorithms\Aldous-Broder Algorithm.vb" />
-    <Compile Include="Solving Algorithms\Best-First Search.vb" />
+    <Compile Include="Graph Traversal Algorithms\Best-First Search.vb" />
     <Compile Include="Maze Generation Algorithms\Binary Tree Algorithm.vb" />
     <Compile Include="Other maze generation things\Priority Queue.vb" />
-    <Compile Include="Solving Algorithms\shortest-path-faster-algorithm.vb" />
-    <Compile Include="Sorting Algorithm Information.vb" />
+    <Compile Include="Graph Traversal Algorithms\shortest-path-faster-algorithm.vb" />
+    <Compile Include="Sorting Algorithms\Sorting Algorithm Information.vb" />
     <Compile Include="Sorting Algorithms\Bogobogo Sort.vb" />
     <Compile Include="Sorting Algorithms\Bogosort Algorithm.vb" />
     <Compile Include="Maze Generation Algorithms\BoruvkasAlgorithm.vb" />
     <Compile Include="Sorting Algorithms\Bozo Sort Algorithm.vb" />
     <Compile Include="Other maze generation things\Braid.vb" />
-    <Compile Include="Solving Algorithms\Breadth-First Search.vb" />
+    <Compile Include="Graph Traversal Algorithms\Breadth-First Search.vb" />
     <Compile Include="Sorting Algorithms\Brick Sort.vb" />
     <Compile Include="Sorting Algorithms\Bubble Sort Algorithm.vb" />
     <Compile Include="Sorting Algorithms\Bucket Sort.vb" />
@@ -256,9 +256,9 @@
     <Compile Include="Sorting Algorithms\Counting Sort.vb" />
     <Compile Include="Maze Generation Algorithms\Custom Algorithm.vb" />
     <Compile Include="Sorting Algorithms\Cycle Sort.vb" />
-    <Compile Include="Solving Algorithms\Dead End Filler Method.vb" />
-    <Compile Include="Solving Algorithms\Depth-First Search.vb" />
-    <Compile Include="Solving Algorithms\Dijkstras Algorithm.vb" />
+    <Compile Include="Graph Traversal Algorithms\Dead End Filler Method.vb" />
+    <Compile Include="Graph Traversal Algorithms\Depth-First Search.vb" />
+    <Compile Include="Graph Traversal Algorithms\Dijkstras Algorithm.vb" />
     <Compile Include="Maze Generation Algorithms\Dungeon Creation.vb" />
     <Compile Include="Maze Generation Algorithms\Ellers Algorithm.vb" />
     <Compile Include="Sorting Algorithms\Gnome Sort.vb" />
@@ -269,7 +269,7 @@
     <Compile Include="Other maze generation things\Image.vb" />
     <Compile Include="Sorting Algorithms\Insertion Sort Algorithm.vb" />
     <Compile Include="Maze Generation Algorithms\Kruskals Algorithm.vb" />
-    <Compile Include="Solving Algorithms\Lee Algorithm.vb" />
+    <Compile Include="Graph Traversal Algorithms\Lee Algorithm.vb" />
     <Compile Include="Other maze generation things\Maze Generation Subroutines and Functions.vb" />
     <Compile Include="Other maze generation things\Maze Info.vb" />
     <Compile Include="Menus.vb" />
@@ -292,12 +292,12 @@
     </Compile>
     <Compile Include="Sorting Algorithms\Pancake Sort.vb" />
     <Compile Include="Sorting Algorithms\PigeonHole Sort.vb" />
-    <Compile Include="Solving Algorithms\Play Maze.vb" />
+    <Compile Include="Graph Traversal Algorithms\Play Maze.vb" />
     <Compile Include="Maze Generation Algorithms\Prims Algorithm.vb" />
     <Compile Include="Sorting Algorithms\Quicksort Algorithm.vb" />
     <Compile Include="Maze Generation Algorithms\RandomBFS.vb" />
     <Compile Include="Maze Generation Algorithms\Recursive Backtracker Algorithm.vb" />
-    <Compile Include="Solving Algorithms\Recursive Solving Method.vb" />
+    <Compile Include="Graph Traversal Algorithms\Recursive Solving Method.vb" />
     <Compile Include="Maze Generation Algorithms\Reverse-Delete Algorithm.vb" />
     <Compile Include="Sorting Algorithms\Selection Sort Algorithm.vb" />
     <Compile Include="Sorting Algorithms\ShellSort.vb" />
@@ -309,7 +309,7 @@
     <Compile Include="Other maze generation things\Unicursal Maze.vb" />
     <Compile Include="Other maze generation things\User Create Map.vb" />
     <Compile Include="Other maze generation things\UserCreateMaze.vb" />
-    <Compile Include="Solving Algorithms\Wall Follower.vb" />
+    <Compile Include="Graph Traversal Algorithms\Wall Follower.vb" />
     <Compile Include="Maze Generation Algorithms\Wilsons Algorithm.vb" />
     <Compile Include="Other maze generation things\Symetrical Maze.vb" />
     <Compile Include="Other maze generation things\Text File.vb" />
@@ -338,8 +338,8 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="3a.ico" />
-    <Content Include="icon2.ico" />
+    <Content Include="Icons\3a.ico" />
+    <Content Include="Icons\icon2.ico" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.6.1">

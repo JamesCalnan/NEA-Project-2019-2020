@@ -28,30 +28,13 @@
         Y = yPoint
     End Sub
     Function IsDeadEnd(availablePath As List(Of Node))
-        Dim curNode As New Node(Me.X, Me.Y)
-        Dim neighbours As List(Of Node) = GetNeighbours(curNode, availablePath)
+        Dim neighbours As List(Of Node) = GetNeighbours(New Node(Me.X, Me.Y), availablePath)
         If neighbours.Count = 1 Then Return True
         Return False
     End Function
     Function IsJunction(availablePath As List(Of Node))
-        Dim curNode As New Node(Me.X, Me.Y)
-        Dim neighbours As List(Of Node) = GetNeighbours(curNode, availablePath)
+        Dim neighbours As List(Of Node) = GetNeighbours(New Node(Me.X, Me.Y), availablePath)
         If neighbours.Count >= 3 Then Return True
-        Return False
-    End Function
-    Function Adjacent(checknode As Node)
-        Dim curNode As New Node(Me.X, Me.Y)
-        curNode.Update(Me.X, Me.Y - 1)
-        SetBoth(ConsoleColor.Yellow)
-        curNode.Print("XX")
-        Console.ReadKey()
-        If curNode.Equals(checknode) Then Return True
-        curNode.Update(Me.X + 2, Me.Y)
-        If curNode.Equals(checknode) Then Return True
-        curNode.Update(Me.X, Me.Y + 1)
-        If curNode.Equals(checknode) Then Return True
-        curNode.Update(Me.X - 2, Me.Y)
-        If curNode.Equals(checknode) Then Return True
         Return False
     End Function
     Public Function FCost()

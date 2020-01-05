@@ -1,36 +1,36 @@
 ﻿Module Cycle_Sort
-    Sub cycleSort(arr As List(Of Double), delay As Integer)
-        Dim n = arr.Count - 1
-        For cycle_start = 0 To n - 2 Step 1
+    Sub cycleSort(a As List(Of Double), delay As Integer)
+        Dim n = a.Count - 1
+        For cycle = 0 To n - 2 Step 1
             If ExitCase() Then Exit Sub
-            Dim item = arr(cycle_start)
-            Dim pos = cycle_start
-            For i = cycle_start + 1 To n
-                If arr(i) < item Then pos += 1
+            Dim item = a(cycle)
+            Dim pos = cycle
+            For i = cycle + 1 To n
+                If a(i) < item Then pos += 1
             Next
-            If pos = cycle_start Then Continue For
-            While item = arr(pos)
+            If pos = cycle Then Continue For
+            While item = a(pos)
                 pos += 1
             End While
-            If pos <> cycle_start Then
+            If pos <> cycle Then
                 Dim temp = item
-                item = arr(pos)
-                arr(pos) = temp
-                AnimateSort(arr, delay)
+                item = a(pos)
+                a(pos) = temp
+                AnimateSort(a, delay)
             End If
-            While pos <> cycle_start
-                pos = cycle_start
-                For i = cycle_start + 1 To n
-                    If arr(i) < item Then pos += 1
+            While pos <> cycle
+                pos = cycle
+                For i = cycle + 1 To n
+                    If a(i) < item Then pos += 1
                 Next
-                If item <> arr(pos) Then
+                If item <> a(pos) Then
                     Dim temp = item
-                    item = arr(pos)
-                    arr(pos) = temp
-                    AnimateSort(arr, delay)
+                    item = a(pos)
+                    a(pos) = temp
+                    AnimateSort(a, delay)
                 End If
             End While
-            AnimateSort(arr, delay)
+            AnimateSort(a, delay)
         Next
     End Sub
 End Module

@@ -19,9 +19,7 @@
                 i += 1
             End If
         Next
-        Dim tempitem As Double = a(i)
-        a(i) = a(hi)
-        a(hi) = tempitem
+        Swap(a, i, hi)
         Return i
     End Function
 

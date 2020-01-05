@@ -14,9 +14,7 @@
         Dim n = a.Count
         For i = 0 To n - 1
             Dim j = r.Next(i)
-            If j <> i Then
-                a(i) = a(j)
-            End If
+            If j <> i Then a(i) = a(j)
             a(j) = source(i)
             AnimateSort(a)
         Next
