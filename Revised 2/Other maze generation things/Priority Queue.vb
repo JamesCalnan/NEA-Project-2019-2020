@@ -95,25 +95,10 @@ Public Class BinaryTree(Of T)
         End If
         Return root
     End Function
-    'Public Sub traverseInOrder(ByVal node As TreeItem)
-    '    If Not IsNothing(node) Then
-    '        traverseInOrder(node.left)
-    '        Console.WriteLine(node.value)
-    '        traverseInOrder(node.right)
-    '    End If
-    'End Sub
-    'Private Function containsValueRecursive(ByVal current As TreeItem, ByVal value As Integer) As Boolean
-    '    If IsNothing(current) Then Return False
-    '    If value = current.value Then Return True
-    '    Return If(value < current.value, containsValueRecursive(current.left, value), containsValueRecursive(current.right, value))
-    'End Function
-    'Public Function containsValue(ByVal value As Integer)
-    '    Return containsValueRecursive(root, value)
-    'End Function
     Public Function FindFirst(value As QueueItem(Of T)) As QueueItem(Of T)
         Return FindFirstRecursive(Root, value).Value
     End Function
-    Private Function FindFirstRecursive(root As TreeItem(Of T), value As QueueItem(Of T)) As TreeItem(Of T)
+    Private Shared Function FindFirstRecursive(root As TreeItem(Of T), value As QueueItem(Of T)) As TreeItem(Of T)
         If value.CompareTo(root.Value) < 0 Then Return FindFirstRecursive(root.Left, value)
         If value.CompareTo(root.Value) > 0 Then Return FindFirstRecursive(root.Right, value)
         Return root
@@ -145,12 +130,6 @@ Public Class BinaryTree(Of T)
     Public Function MinValue() As QueueItem(Of T)
         Return MinValue(Root)
     End Function
-    'Private Function findSmallestValue(ByVal root As TreeItem)
-    '    Return If(IsNothing(root.left), root.value, findSmallestValue(root.left))
-    'End Function
-    'Public Function ExtractMin()
-    '    Return findSmallestValue(root)
-    'End Function
     Public Function GetSize() As Integer
         Return GetSizeRecursive(Root)
     End Function

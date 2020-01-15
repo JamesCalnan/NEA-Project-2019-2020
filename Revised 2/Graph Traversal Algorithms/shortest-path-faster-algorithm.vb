@@ -4,7 +4,7 @@
         Dim target = getGoal(maze)
         Dim d As New Dictionary(Of Node, Double)
         Dim prev As New Dictionary(Of Node, Node)
-        Dim Q As New ShortestPathFasterAlgorithmQueue(Of Node)
+        Dim Q As New SPFAQueue(Of Node)
         For Each v In maze
             d(v) = Int32.MaxValue / 2
             prev(v) = Nothing
@@ -38,7 +38,7 @@
         Console.ReadKey()
     End Sub
 End Module
-Class ShortestPathFasterAlgorithmQueue(Of T)
+Class SPFAQueue(Of T)
     Public Property items As Queue(Of T)
     Public Sub New()
         items = New Queue(Of T)
