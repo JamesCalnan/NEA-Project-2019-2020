@@ -91,11 +91,11 @@ Module Menus
                 Case "DownArrow"
                     y += 1
                     If y = arr.Count Then y = 1
-                    If arr(y) = "" Or arr(y) = "Generate a maze using one of the following algorithms" Or arr(y) = "Path finding visualisations on a grid" Then y += 1
+                    If arr(y) = "" Orelse arr(y) = "Generate a maze using one of the following algorithms" Orelse arr(y) = "Path finding visualisations on a grid" Then y += 1
                 Case "UpArrow"
                     y -= 1
                     If y = 0 Then y = arr.Count - 1
-                    If arr(y) = "" Or arr(y) = "Generate a maze using one of the following algorithms" Or arr(y) = "Path finding visualisations on a grid" Then y -= 1
+                    If arr(y) = "" Orelse arr(y) = "Generate a maze using one of the following algorithms" Orelse arr(y) = "Path finding visualisations on a grid" Then y -= 1
                 Case "Enter"
                     Console.ForegroundColor = ConsoleColor.White
                     Dim availablePath As New List(Of Node)
