@@ -1,11 +1,11 @@
 ﻿Module Best_First_Search
-    Sub bfs(availablepath As List(Of Node), showPath As Boolean, showSolveTime As Boolean, delay As Integer, solvingColour As ConsoleColor)
-        Dim startV As New Node(availablepath(availablepath.Count - 2).X, availablepath(availablepath.Count - 2).Y)
-        Dim goal As New Node(availablepath(availablepath.Count - 1).X, availablepath(availablepath.Count - 1).Y)
+    Sub bfs(g As List(Of Node), showPath As Boolean, showSolveTime As Boolean, delay As Integer, solvingColour As ConsoleColor)
+        Dim startV = getStart(g)
+        Dim goal = getGoal(g)
         Dim discovered As New Dictionary(Of Node, Boolean)
         Dim q As New PriorityQueue(Of Node)
         Dim cameFrom As New Dictionary(Of Node, Node)
-        For Each node In availablepath
+        For Each node In g
             discovered(node) = False
         Next
         discovered(startV) = True
@@ -16,7 +16,7 @@
             Dim v As Node = q.ExtractMin()
             If showPath Then : v.Print("██") : Threading.Thread.Sleep(delay) : End If
             If v.Equals(goal) Then Exit While
-            For Each w As Node In GetNeighbours(v, availablepath)
+            For Each w As Node In GetNeighbours(v, g)
                 If Not discovered(w) Then
                     discovered(w) = True
                     q.Enqueue(w, H(w, goal, 1))

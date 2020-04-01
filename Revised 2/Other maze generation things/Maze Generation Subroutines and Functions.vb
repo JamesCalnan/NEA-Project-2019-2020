@@ -24,20 +24,91 @@
             If maze.Contains(New Node(x, limits(1))) Then availableStartPositions.Add(New Node(x, limits(1)))
         Next
         Dim r As New Random
-        Dim index As Integer = If(chooseFirstAndLast, 0, r.Next(0, availableStartPositions.Count))
-        maze.Add(New Node(availableStartPositions(index).X, availableStartPositions(index).Y - 1))
-        SetBoth(pathcolour)
-        maze(maze.Count - 1).Print("██")
-        availableStartPositions.Clear()
-        For x = limits(0) + 3 To limits(2)
-            If maze.Contains(New Node(x, limits(3))) Then availableStartPositions.Add(New Node(x, limits(3)))
-        Next
-        index = If(chooseFirstAndLast, availableStartPositions.Count - 1, r.Next(0, availableStartPositions.Count))
-        maze.Add(New Node(availableStartPositions(index).X, availableStartPositions(index).Y + 1))
-        SetBoth(pathcolour)
-        maze(maze.Count - 1).Print("██")
-        Console.BackgroundColor = (ConsoleColor.Black)
+        dim needBackup = False
+        If availableStartPositions.Count > 0
+            Dim index1 As Integer = If(chooseFirstAndLast, 0, r.Next(0, availableStartPositions.Count))
+            maze.Add(New Node(availableStartPositions(index1).X, availableStartPositions(index1).Y - 1))
+            
+            availableStartPositions.Clear()
+            For x = limits(0) + 3 To limits(2)
+                If maze.Contains(New Node(x, limits(3))) Then availableStartPositions.Add(New Node(x, limits(3)))
+            Next
+            if availableStartPositions.count > 0
+index1 = If(chooseFirstAndLast, availableStartPositions.Count - 1, r.Next(0, availableStartPositions.Count))
+            maze.Add(New Node(availableStartPositions(index1).X, availableStartPositions(index1).Y + 1))
+            SetBoth(pathcolour)
+            maze(maze.Count - 1).Print("██")
+            maze(maze.Count - 2).Print("██")
+            Console.BackgroundColor = (ConsoleColor.Black)
+                Else 
+
+                needbackup = True
+            End If
+            
+        End If
+        if needBackup
+Console.SetCursorPosition(0, 0)
+            Console.ResetColor()
+            Console.Write("getting random node pairs...")
+            dim pairs = getpairs(maze)
+            Console.SetCursorPosition(0, 0)
+            Console.Write("finding min pair...              ")
+            dim index = getIndexOfMax(pairs)
+            Console.SetCursorPosition(0, 0)
+            Console.Write("                        ")
+            maze.Add(New Node(pairs.Keys(index).Value.X, pairs.Keys(index).Value.Y))
+            SetBoth(ConsoleColor.Red)
+            maze(maze.Count - 1).Print("██")
+
+            maze.Add(New Node(pairs.Keys(index).Key.X, pairs.Keys(index).Key.Y))
+            maze(maze.Count - 1).Print("██")
+        End If
+            
+
     End Sub
+    Function getpairs(maze As List(Of Node)) As Dictionary(Of KeyValuePair(Of node,Node), Integer)
+
+        dim values as New Dictionary(Of KeyValuePair(Of node,Node), Integer)
+
+        dim indexes as New List(Of Integer)
+        dim r as New Random
+        for i = 0 to maze.Count-1
+            indexes.Add(r.Next(maze.Count-1))
+        Next
+        dim reverseIndex As New List(Of Integer)
+        for i = 0 to maze.Count-1
+            reverseIndex.Add(r.Next(maze.Count-1))
+        Next
+
+        reverseIndex.Reverse()
+
+        for i = 0 to maze.Count-1
+            dim node1 = maze(indexes(i))
+            dim node2 = maze(reverseIndex(i))
+            if values.ContainsKey(New KeyValuePair(Of Node,Node)(node1,node2)) then continue for
+            values.Add(New KeyValuePair(Of Node,Node)(node1,node2), GetDistance(node1,node2))
+        Next
+
+        Return values
+    End Function
+
+    function getIndexOfMax(values as Dictionary(Of KeyValuePair(Of node,Node), Integer)) As Integer
+
+        dim curDist = values.Values.First()
+        dim returnIndex = 0
+
+        for i = 0 To values.Values.Count-1
+
+            If values.Values(i) > curdist
+                curDist = values.Values(i)
+                returnIndex = i
+            End If
+
+        Next
+
+        Return returnIndex
+    End function
+
     Function AdjacentCheck(cell As Cell, visitedcells As Dictionary(Of Cell, Boolean))
         Dim adjancent() As Integer = {0, 0, 0, 0}
         Dim neighbours As New List(Of Cell)

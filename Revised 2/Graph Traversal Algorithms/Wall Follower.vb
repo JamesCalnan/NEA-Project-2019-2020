@@ -21,7 +21,6 @@
             ElseIf currentDirection = "down" Then
                 u.Update(u.X, u.Y + 1)
             End If
-            'If u.Adjacent(goal) Then Exit Do
             Console.BackgroundColor = ConsoleColor.Black
             Console.ForegroundColor = ConsoleColor.White
             Console.SetCursorPosition(0, 1)

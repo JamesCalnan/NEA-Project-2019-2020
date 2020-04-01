@@ -11,6 +11,7 @@ then selecting properties and then changing the font size, then press any button
 
         Console.ReadKey()
         Console.CursorVisible = False
+        Console.Clear()
         Do
             Console.SetCursorPosition(0, 0)
             Console.Write("Please make the window full screen")

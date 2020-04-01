@@ -6,9 +6,9 @@
     ''' <summary>
     ''' A star algorithm according the the video series produced by sebastian lague
     ''' </summary>
-    Sub AStar(availablepath As List(Of Node), showPath As Boolean, showSolveTime As Boolean, delay As Integer, heuristic As Double, solvingColour As ConsoleColor)
-        Dim start = GetStart(availablepath)
-        Dim target = GetGoal(availablepath)
+    Sub AStar(g As List(Of Node), showPath As Boolean, showSolveTime As Boolean, delay As Integer, heuristic As Double, solvingColour As ConsoleColor)
+        Dim start = getStart(g)
+        Dim target = getGoal(g)
         Dim current As Node = start
         Dim openSet, closedSet As New HashSet(Of Node)
         SetBoth(solvingColour)
@@ -27,7 +27,7 @@
                 RetracePath(start, current, If(showSolveTime, $"Time Taken to solve: {stopwatch.Elapsed.TotalSeconds} seconds", ""))
                 Exit While
             End If
-            For Each neighbour As Node In GetNeighbours(current, availablepath)
+            For Each neighbour As Node In GetNeighbours(current, g)
                 If closedSet.Contains(neighbour) Then Continue For
                 Dim tentativeGScore = current.GCost + 1
                 If tentativeGScore < neighbour.GCost Or Not openSet.Contains(neighbour) Then
@@ -40,15 +40,15 @@
         End While
         Console.ReadKey()
     End Sub
-    Sub AStarWiki(availablepath As List(Of Node), showPath As Boolean, showSolveTime As Boolean, delay As Integer, heuristic As Double, solvingColour As ConsoleColor)
+    Sub AStarWiki(g As List(Of Node), showPath As Boolean, showSolveTime As Boolean, delay As Integer, heuristic As Double, solvingColour As ConsoleColor)
         Dim closedSet, visitedSet As New List(Of Node)
         Dim openSet As New PriorityQueue(Of Node)
-        Dim start As Node = GetStart(availablepath)
-        Dim goal As Node = GetGoal(availablepath)
+        Dim start As Node = getStart(g)
+        Dim goal As Node = getGoal(g)
         Dim gScore As New Dictionary(Of Node, Double)
         Dim cameFrom As New Dictionary(Of Node, Node)
         Dim infinity As Integer = Int32.MaxValue
-        For Each node In availablepath
+        For Each node In g
             gScore(node) = infinity
         Next
         gScore(start) = 0
@@ -62,7 +62,7 @@
             If current.Equals(goal) Then Exit While
             visitedSet.Add(current)
             If showPath Then : current.Print("██") : Threading.Thread.Sleep(delay) : End If
-            For Each neighbour As Node In GetNeighbours(current, availablepath)
+            For Each neighbour As Node In GetNeighbours(current, g)
                 If visitedSet.Contains(neighbour) Then Continue For
                 Dim tentativeGScore = gScore(current) + 1
                 If tentativeGScore <= gScore(neighbour) Then
