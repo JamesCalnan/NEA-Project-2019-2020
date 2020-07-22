@@ -32,7 +32,7 @@ Module DijkstrasAlgorithm
         Backtrack(prev, target, source, stopwatch)
         If Not evaluation Then Console.ReadKey()
     End Sub
-    Sub Dijkstras(g As List(Of Node), showSolving As Boolean, solvingDelay As Integer, solvingColour As ConsoleColor, Optional ByRef pathLength As Integer = 0)
+    Sub Dijkstras(g As List(Of Node), showSolving As Boolean, solvingDelay As Integer, solvingColour As ConsoleColor, Optional ByRef pathLength As Integer = 0, Optional useDiagonals As Boolean = False)
         Dim initialValue = pathLength
         Dim source = getStart(g)
         Dim target = getGoal(g)
@@ -59,7 +59,7 @@ Module DijkstrasAlgorithm
             End If
             Q.Remove(u)
             If showSolving And pathLength = 0 Then : u.Print("██") : Threading.Thread.Sleep(solvingDelay) : End If
-            For Each v As Node In GetNeighbours(u, g)
+            For Each v As Node In GetNeighbours(u, g, useDiagonals)
                 Dim alt As Integer = dist(u) + 1'H(u, v, 1)
                 If alt < dist(v) Then
                     dist(v) = alt

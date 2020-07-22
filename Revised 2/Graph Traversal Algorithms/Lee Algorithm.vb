@@ -1,5 +1,5 @@
 ﻿Module LeeAlgorithm
-    Sub Lee(g As List(Of Node), showSolving As Boolean, delay As Integer, solvingColour As ConsoleColor)
+    Sub Lee(g As List(Of Node), showSolving As Boolean, delay As Integer, solvingColour As ConsoleColor, Optional useDiagonals As Boolean = False)
         Dim start = getStart(g)
         Dim goal = getGoal(g)
         Dim visitedNode As New Dictionary(Of Node, Boolean)

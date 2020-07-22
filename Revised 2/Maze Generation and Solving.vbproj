@@ -65,7 +65,7 @@
     <OptionInfer>On</OptionInfer>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>Icons\icon2.ico</ApplicationIcon>
+    <ApplicationIcon>maze-program-icon2.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationManifest>My Project\app.manifest</ApplicationManifest>
@@ -338,8 +338,12 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="i2.ico" />
+    <Content Include="icon1.ico" />
     <Content Include="Icons\3a.ico" />
     <Content Include="Icons\icon2.ico" />
+    <Content Include="maze-program-icon.ico" />
+    <Content Include="maze-program-icon2.ico" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.6.1">

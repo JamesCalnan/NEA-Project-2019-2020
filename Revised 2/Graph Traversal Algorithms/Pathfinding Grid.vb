@@ -1,5 +1,8 @@
 ﻿Module Pathfinding_Grid
-    Function returnPathfindingGrid() As List(Of Node)
+    Function returnPathfindingGrid(wallColour As consolecolor) As List(Of Node)
+        dim chanceOfObstical = GetIntInputArrowKeys("Chance of an obstical at each position (%): ", 100, 0, False)
+        Console.Clear()
+
         Dim availableCells As New List(Of Node)
         Dim start As New Node(5, 3)
         dim xEndValue = 0
@@ -14,13 +17,15 @@
         Dim r As New Random
         For x = 5 To Console.WindowWidth - 5 Step 2
             For y = 3 To Console.WindowHeight - 3
-                If r.Next(10) < 3 And Not invalidNodes.Contains(New Node(x, y)) Then
+                If r.Next(100) < chanceOfObstical And Not invalidNodes.Contains(New Node(x, y)) Then
                     If x = 5 And y = 3 Or x = If(Console.WindowWidth - 6 Mod 2 = 0, Console.WindowWidth - 5, Console.WindowWidth - 6) And y = Console.WindowHeight - 3 Then Continue For
                     Console.SetCursorPosition(x, y)
                     Console.Write("XX")
                     Continue For
+                Else 
+                    availableCells.Add(New Node(x, y))
                 End If
-                availableCells.Add(New Node(x, y))
+                
             Next
         Next
         availableCells.Add(start)

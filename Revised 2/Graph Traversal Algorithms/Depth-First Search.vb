@@ -25,7 +25,7 @@ Module DepthFirstSearch
         End While
         ReconstructPathForfile(cameFrom, goal, startV, bmp, g, multiplier)
     End Sub
-    Sub DFS_Iterative(g As List(Of Node), showPath As Boolean, showSolveTime As Boolean, delay As Integer, solvingColour As ConsoleColor)
+    Sub DFS_Iterative(g As List(Of Node), showPath As Boolean, showSolveTime As Boolean, delay As Integer, solvingColour As ConsoleColor, Optional useDiagonals As Boolean = False)
         Dim startV = getStart(g)
         Dim goal = getGoal(g)
         Dim visited As New Dictionary(Of Node, Boolean)
@@ -47,7 +47,7 @@ Module DepthFirstSearch
             If showPath Then : u.Print("██") : Threading.Thread.Sleep(delay) : End If
             If Not visited(u) Then
                 visited(u) = True
-                For Each w As Node In GetNeighbours(u, g)
+                For Each w As Node In GetNeighbours(u, g, useDiagonals)
                     If Not visited(w) Then
                         s.Push(w)
                         cameFrom(w) = u

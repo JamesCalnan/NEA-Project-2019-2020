@@ -41,7 +41,7 @@
         End While
         displayPathNotFoundMessage
     End Sub
-    Sub AStarWiki(g As List(Of Node), showPath As Boolean, showSolveTime As Boolean, delay As Integer, heuristic As Double, solvingColour As ConsoleColor)
+    Sub AStarWiki(g As List(Of Node), showPath As Boolean, showSolveTime As Boolean, delay As Integer, heuristic As Double, solvingColour As ConsoleColor, Optional useDiagonals As Boolean = False)
         Dim closedSet, visitedSet As New List(Of Node)
         Dim openSet As New PriorityQueue(Of Node)
         Dim start As Node = getStart(g)
@@ -49,6 +49,7 @@
         Dim gScore As New Dictionary(Of Node, Double)
         Dim cameFrom As New Dictionary(Of Node, Node)
         Dim infinity As Integer = Int32.MaxValue
+        SetBoth(ConsoleColor.Red)
         For Each node In g
             gScore(node) = infinity
         Next
@@ -66,10 +67,13 @@
                 Exit sub
             End If
             visitedSet.Add(current)
+
             If showPath Then : current.Print("██") : Threading.Thread.Sleep(delay) : End If
-            For Each neighbour As Node In GetNeighbours(current, g)
+
+            For Each neighbour As Node In GetNeighbours(current, g, useDiagonals)
                 If visitedSet.Contains(neighbour) Then Continue For
                 Dim tentativeGScore = gScore(current) + 1
+
                 If tentativeGScore <= gScore(neighbour) Then
                     cameFrom(neighbour) = current
                     gScore(neighbour) = tentativeGScore

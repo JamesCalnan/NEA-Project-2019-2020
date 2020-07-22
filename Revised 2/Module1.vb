@@ -17,6 +17,8 @@ Module Module1
     End sub
 
     Sub Main()
+        Console.CursorVisible = False
+
 
         printWithColouredText("please make the font size */14* by clicking the little picture in the top left of the window
 then selecting properties and then changing the font size, then press any */button*", consolecolor.green)
@@ -66,6 +68,7 @@ then selecting properties and then changing the font size, then press any */butt
             "Load a maze from a text file (list of points)",
             "Load a maze from an image file",
             "Load a maze from an ascii text file",
+            "",
             "Save the previously generated maze as a list of points",
             "Save the previous maze as a png image",
             "Save the previous maze to ascii text file",

@@ -1,5 +1,5 @@
 ﻿Module Best_First_Search
-    Sub bfs(g As List(Of Node), showPath As Boolean, showSolveTime As Boolean, delay As Integer, solvingColour As ConsoleColor)
+    Sub bfs(g As List(Of Node), showPath As Boolean, showSolveTime As Boolean, delay As Integer, solvingColour As ConsoleColor, Optional useDiagonals As Boolean = False)
         Dim startV = getStart(g)
         Dim goal = getGoal(g)
         Dim discovered As New Dictionary(Of Node, Boolean)
@@ -20,7 +20,7 @@
                 Console.ReadKey()
                 Exit Sub
             End If
-            For Each w As Node In GetNeighbours(v, g)
+            For Each w As Node In GetNeighbours(v, g, useDiagonals)
                 If Not discovered(w) Then
                     discovered(w) = True
                     q.Enqueue(w, H(w, goal, 1))

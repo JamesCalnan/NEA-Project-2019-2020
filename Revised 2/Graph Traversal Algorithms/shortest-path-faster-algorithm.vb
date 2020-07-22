@@ -1,5 +1,5 @@
 ﻿Module shortest_path_faster_algorithm
-    Sub SPFA(maze As List(Of Node), showSolving As Boolean, solvingDelay As Integer, solvingColour As ConsoleColor, Optional type As String = "normal")
+    Sub SPFA(maze As List(Of Node), showSolving As Boolean, solvingDelay As Integer, solvingColour As ConsoleColor, Optional type As String = "normal", Optional useDiagonals As Boolean = False)
         Dim s = getStart(maze)
         Dim target = getGoal(maze)
         Dim d As New Dictionary(Of Node, Double)
@@ -22,7 +22,7 @@
                 Exit sub
             End If
             If showSolving Then : u.Print("██") : Threading.Thread.Sleep(solvingDelay) : End If
-            For Each v As Node In GetNeighbours(u, maze)
+            For Each v As Node In GetNeighbours(u, maze, useDiagonals)
                 If d(u) + 1 < d(v) Then
                     d(v) = d(u) + 1
                     prev(v) = u

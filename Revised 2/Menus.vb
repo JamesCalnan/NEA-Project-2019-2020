@@ -1,7 +1,6 @@
 ﻿Imports System.IO
 Imports System.Drawing
 Module Menus
-    'todo still need to do terms ' STILL NEED TO DO BIAS
     Sub Menu(arr() As String, topitem As String, Optional Exitavailable As Boolean = True)
         Dim temparr() As String = {"Solve using the A* algorithm",
                                    "Solve using Iterative deepening A* (very slow)",
@@ -46,6 +45,7 @@ Module Menus
             "   Shortest Path Faster Algorithm (normal)",
             "   Shortest Path Faster Algorithm (Large Label First)",
             "   Shortest Path Faster Algorithm (Small Label First)"}
+        Dim useDiagonal as Boolean
         Dim allColours() As String = GetAllConsoleColours()
         Dim pathColour = ConsoleColor.White
         Dim backGroundColour = ConsoleColor.Black
@@ -357,34 +357,40 @@ Module Menus
                             simulateLife(limits, False, delayMs)
                         ElseIf arr(y) = "   A* algorithm" Then
                             Console.Clear()
-                            delayMs = GetIntInputArrowKeys("Delay when finding a path: ", 100, 0, True)
-                            Dim availableNodes As List(Of Node) = returnPathfindingGrid()
-                            AStarWiki(availableNodes, True, False, delayMs, 1, solvingColour)
+                            delayMs = GetIntInputArrowKeys("Delay when finding a path (MS): ", 100, 0, False)
+                            useDiagonal = useDiagonalsOption()
+                            dim heuristic = GetFloatInputArrowKeys("Heuristic: ", 2, 0,false,0.01)
+                            Dim availableNodes As List(Of Node) = returnPathfindingGrid(backGroundColour)
+                            AStarWiki(availableNodes, True, False, delayMs, heuristic, solvingColour, useDiagonal)
                         ElseIf arr(y) = "   Iterative deepening A* (very slow)" Then
                             Console.Clear()
-                            delayMs = GetIntInputArrowKeys("Delay when finding a path: ", 100, 0, True)
+                            delayMs = GetIntInputArrowKeys("Delay when finding a path (MS): ", 100, 0, False)
+                            useDiagonal = useDiagonalsOption()
+                            Dim availableNodes As List(Of Node) = returnPathfindingGrid(backGroundColour)
                             PrintMessageMiddle("Press escape to exit", 1, ConsoleColor.Green)
-                            Dim availableNodes As List(Of Node) = returnPathfindingGrid()
-                            ida_star(availableNodes, True, delayMs, solvingColour)
+                            ida_star(availableNodes, True, delayMs, solvingColour, useDiagonal)
                         ElseIf arr(y) = "   Dijkstra's algorithm" Then
                             Console.Clear()
-                            delayMs = GetIntInputArrowKeys("Delay when finding a path: ", 100, 0, True)
-                            Dim availableNodes As List(Of Node) = returnPathfindingGrid()
-                            Dijkstras(availableNodes, True, delayMs, solvingColour)
+                            delayMs = GetIntInputArrowKeys("Delay when finding a path (MS): ", 100, 0, False)
+                            useDiagonal = useDiagonalsOption()
+                            Dim availableNodes As List(Of Node) = returnPathfindingGrid(backGroundColour)
+                            Dijkstras(availableNodes, True, delayMs, solvingColour, 0,usediagonal)
                         ElseIf arr(y) = "   Best-first search" Then
                             Console.Clear()
-                            delayMs = GetIntInputArrowKeys("Delay when finding a path: ", 100, 0, True)
-                            Dim availableNodes As List(Of Node) = returnPathfindingGrid()
-                            Best_First_Search.bfs(availableNodes, True, True, delayMs, solvingColour)
+                            delayMs = GetIntInputArrowKeys("Delay when finding a path (MS): ", 100, 0, False)
+                            useDiagonal = useDiagonalsOption()
+                            Dim availableNodes As List(Of Node) = returnPathfindingGrid(backGroundColour)
+                            Best_First_Search.bfs(availableNodes, True, True, delayMs, solvingColour, usediagonal)
                         ElseIf arr(y) = "   Breadth-first search (using iteration)" Then
                             Console.Clear()
-                            delayMs = GetIntInputArrowKeys("Delay when finding a path: ", 100, 0, True)
-                            Dim availableNodes As List(Of Node) = returnPathfindingGrid()
-                            BreadthFirstSearch.Bfs(availableNodes, True, True, delayMs, solvingColour)
+                            delayMs = GetIntInputArrowKeys("Delay when finding a path (MS): ", 100, 0, False)
+                            useDiagonal = useDiagonalsOption()
+                            Dim availableNodes As List(Of Node) = returnPathfindingGrid(backGroundColour)
+                            BreadthFirstSearch.Bfs(availableNodes, True, True, delayMs, solvingColour, usediagonal)
                         ElseIf arr(y) = "   Breadth-first search (using recursion)" Then
                             Console.Clear()
-                            delayMs = GetIntInputArrowKeys("Delay when solving the maze: ", 100, 0, True)
-                            Dim availableNodes As List(Of Node) = returnPathfindingGrid()
+                            delayMs = GetIntInputArrowKeys("Delay when solving the maze: ", 100, 0, False)
+                            Dim availableNodes As List(Of Node) = returnPathfindingGrid(backGroundColour)
                             SetBoth(solvingColour)
                             Dim startV = getStart(availableNodes)
                             Dim goal = getGoal(availableNodes)
@@ -402,7 +408,7 @@ Module Menus
                         ElseIf arr(y) = "   Depth-first search (using recursion)" Then
                             Console.Clear()
                             delayMs = GetIntInputArrowKeys("Delay when solving the maze: ", 100, 0, True)
-                            Dim availableNodes As List(Of Node) = returnPathfindingGrid()
+                            Dim availableNodes As List(Of Node) = returnPathfindingGrid(backGroundColour)
                             Dim startV = getStart(availableNodes)
                             Dim goal = getGoal(availableNodes)
                             Dim discovered As New Dictionary(Of Node, Boolean)
@@ -417,29 +423,34 @@ Module Menus
                             Console.ReadKey()
                         ElseIf arr(y) = "   Depth-first search (using iteration)" Then
                             Console.Clear()
-                            delayMs = GetIntInputArrowKeys("Delay when finding a path: ", 100, 0, True)
-                            Dim availableNodes As List(Of Node) = returnPathfindingGrid()
-                            DFS_Iterative(availableNodes, True, True, delayMs, solvingColour)
+                            delayMs = GetIntInputArrowKeys("Delay when finding a path (MS): ", 100, 0, False)
+                            useDiagonal = useDiagonalsOption()
+                            Dim availableNodes As List(Of Node) = returnPathfindingGrid(backGroundColour)
+                            DFS_Iterative(availableNodes, True, True, delayMs, solvingColour, usediagonal)
                         ElseIf arr(y) = "   Lee Algorithm (Wave Propagation)" Then
                             Console.Clear()
-                            delayMs = GetIntInputArrowKeys("Delay when finding a path: ", 100, 0, True)
-                            Dim availableNodes As List(Of Node) = returnPathfindingGrid()
+                            delayMs = GetIntInputArrowKeys("Delay when finding a path (MS): ", 100, 0, False)
+
+                            Dim availableNodes As List(Of Node) = returnPathfindingGrid(backGroundColour)
                             Lee(availableNodes, True, delayMs, solvingColour)
                         ElseIf arr(y) = "   Shortest Path Faster Algorithm (normal)" Then
                             Console.Clear()
-                            delayMs = GetIntInputArrowKeys("Delay when finding a path: ", 100, 0, True)
-                            Dim availableNodes As List(Of Node) = returnPathfindingGrid()
-                            SPFA(availableNodes, True, delayMs, solvingColour)
+                            delayMs = GetIntInputArrowKeys("Delay when finding a path (MS): ", 100, 0, False)
+                            useDiagonal = useDiagonalsOption()
+                            Dim availableNodes As List(Of Node) = returnPathfindingGrid(backGroundColour)
+                            SPFA(availableNodes, True, delayMs, solvingColour, "normal", usediagonal)
                         ElseIf arr(y) = "   Shortest Path Faster Algorithm (Large Label First)" Then
                             Console.Clear()
-                            delayMs = GetIntInputArrowKeys("Delay when finding a path: ", 100, 0, True)
-                            Dim availableNodes As List(Of Node) = returnPathfindingGrid()
-                            SPFA(availableNodes, True, delayMs, solvingColour, "llf")
+                            delayMs = GetIntInputArrowKeys("Delay when finding a path (MS): ", 100, 0, False)
+                            useDiagonal = useDiagonalsOption()
+                            Dim availableNodes As List(Of Node) = returnPathfindingGrid(backGroundColour)
+                            SPFA(availableNodes, True, delayMs, solvingColour, "llf", usediagonal)
                         ElseIf arr(y) = "   Shortest Path Faster Algorithm (Small Label First)" Then
                             Console.Clear()
-                            delayMs = GetIntInputArrowKeys("Delay when finding a path: ", 100, 0, True)
-                            Dim availableNodes As List(Of Node) = returnPathfindingGrid()
-                            SPFA(availableNodes, True, delayMs, solvingColour, "slf")
+                            delayMs = GetIntInputArrowKeys("Delay when finding a path (MS): ", 100, 0, False)
+                            useDiagonal = useDiagonalsOption()
+                            Dim availableNodes As List(Of Node) = returnPathfindingGrid(backGroundColour)
+                            SPFA(availableNodes, True, delayMs, solvingColour, "slf", usediagonal)
                         ElseIf arr(y) = "Information on using this program" Then
                             instructionsforuse()
                         ElseIf arr(y) = "Useful terms" Then
@@ -514,7 +525,7 @@ Module Menus
                             depthfirstsearchinfo()
                         ElseIf arr(y) = "   Lee Algorithm (Wave Propagation)" Then
                             LeeAlgorithmINFO()
-                        ElseIf arr(y) = "   Shortest Path Faster Algorithm" Then
+                        ElseIf arr(y) = "   Shortest Path Faster Algorithm (normal)" Or arr(y) = "   Shortest Path Faster Algorithm (Large Label First)" or arr(y) = "   Shortest Path Faster Algorithm (Small Label First)"Then
                             spfainfo()
                         Else
                             OptionNotReady()
@@ -553,6 +564,12 @@ Module Menus
             End If
         End While
     End Sub
+
+    Function useDiagonalsOption as Boolean
+        dim result = HorizontalYesNo(console.CursorTop, "Do you want the pathfinding algorithm to be able to use adjacent diagonal positions: ", false, false, False)
+        Console.WriteLine()
+        return result
+    End Function
     Sub Solving(availablePath As List(Of Node), Limits() As Integer, ByRef previousMaze As List(Of Node), ByRef Input As String, yPosAfterMaze As Integer, showPath As Boolean, solvingDelay As Integer, ByRef algorithm As String, ByRef setPreivousAlgorithm As String, tempArr() As String, pathColour As ConsoleColor, backGroundColour As ConsoleColor, solvingColour As ConsoleColor)
         setPreivousAlgorithm = algorithm
         previousMaze.Clear()
@@ -687,7 +704,7 @@ Module Menus
         End While
         Return Nothing
     End Function
-    Function GetIntInputArrowKeys(message As String, NumMax As Integer, NumMin As Integer, ClearMessage As Boolean)
+    Function GetIntInputArrowKeys(message As String, NumMax As Integer, NumMin As Integer, ClearMessage As Boolean) As Integer
         Console.Write(message)
         Console.ForegroundColor = (ConsoleColor.Magenta)
         Dim cursorleft, cursortop As Integer
@@ -731,6 +748,50 @@ Module Menus
         Console.ForegroundColor = (ConsoleColor.White)
         Return current
     End Function
+    Function GetFloatInputArrowKeys(message As String, NumMax As Integer, NumMin As Integer, ClearMessage As Boolean, increment As Double) As Double
+        Console.Write(message)
+        Console.ForegroundColor = (ConsoleColor.Magenta)
+        Dim cursorleft, cursortop As Integer
+        cursorleft = Console.CursorLeft
+        cursortop = Console.CursorTop
+        Console.SetCursorPosition(cursorleft, cursortop)
+        Dim current As Double = NumMin
+        Console.Write(current)
+        While 1
+            Dim key = Console.ReadKey
+            Select Case key.Key.ToString
+                Case "RightArrow"
+                    current += increment*10
+                    If current > NumMax Then current = NumMax
+                Case "LeftArrow"
+                    current -= increment*10
+                    If current < NumMin Then current = NumMin
+                Case "UpArrow"
+                    current += increment
+                    If current > NumMax Then current = NumMax
+                Case "DownArrow"
+                    current -= increment
+                    If current < NumMin Then current = NumMin
+                Case "M"
+                    current = NumMax
+                Case "H"
+                    current = NumMax / 2
+                Case "Enter"
+                    Exit While
+            End Select
+            Console.SetCursorPosition(cursorleft, cursortop)
+            Console.Write("    ")
+            Console.SetCursorPosition(cursorleft, cursortop)
+            Console.Write(Math.Round(current,3))
+        End While
+        If ClearMessage Then
+            Console.SetCursorPosition(0, cursortop)
+            Console.Write("".PadLeft(message.Length + 5, " "c))
+        End If
+        Console.SetCursorPosition(0, cursortop + 1)
+        Console.ForegroundColor = (ConsoleColor.White)
+        Return current
+    End Function
     Sub SolvingInput(input As String, showpath As Boolean, YposAfterMaze As Integer, solvingdelay As Integer, Maze As List(Of Node), Algorithm As String, pathColour As ConsoleColor, backGroundColour As ConsoleColor, solvingColour As ConsoleColor)
         'todo have the make maze symmetrical actually chnage prev maze
 
@@ -738,7 +799,7 @@ Module Menus
             Console.SetCursorPosition(0, YposAfterMaze + 2)
             Console.ForegroundColor = ConsoleColor.White
             Console.BackgroundColor = ConsoleColor.Black
-            Dim heuristic = GetIntInputArrowKeys("Heuristic: ", 60, 1, True)
+            Dim heuristic = GetfloatInputArrowKeys("Heuristic: ", 2, 0, True, 0.01)
             showpath = HorizontalYesNo(YposAfterMaze + 2, "Do you want to show the steps in solving the maze: ", True, False, False)
             If showpath Then solvingdelay = GetIntInputArrowKeys("Delay when solving the maze: ", 100, 0, True)
             If HorizontalYesNo(YposAfterMaze + 2, "Do you want to use the optimised version of A*: ", True, False, False) Then

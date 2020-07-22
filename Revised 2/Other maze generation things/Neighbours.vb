@@ -2,17 +2,42 @@
     Function GetNeighboursAd(ByRef current As Node, ByRef adjacencyList As Dictionary(Of Node, List(Of Node)))
         Return adjacencyList(current)
     End Function
-    Function GetNeighbours(ByRef current As Node, ByRef availablepath As List(Of Node))
+    Function GetNeighbours(ByRef current As Node, ByRef availablepath As List(Of Node), Optional useDiagonal As Boolean = False)
         Dim neighbours As New List(Of Node)
+
         Dim newNode As New Node(current.X, current.Y - 1)
         If availablepath.Contains(newNode) Then neighbours.Add(New Node(newNode.X, newNode.Y))
+
         newNode.Update(current.X + 2, current.Y)
         If availablepath.Contains(newNode) Then neighbours.Add(New Node(newNode.X, newNode.Y))
+
         newNode.Update(current.X, current.Y + 1)
         If availablepath.Contains(newNode) Then neighbours.Add(New Node(newNode.X, newNode.Y))
+
         newNode.Update(current.X - 2, current.Y)
         If availablepath.Contains(newNode) Then neighbours.Add(New Node(newNode.X, newNode.Y))
+
+        if not useDiagonal then Return neighbours
+
+        newNode.Update(current.X + 2, current.Y + 1)
+        If availablepath.Contains(newNode) Then
+            neighbours.Add(new Node(newNode.X, newNode.Y))
+        End If
+
+        newNode.Update(current.X + 2, current.Y - 1)
+        If availablepath.Contains(newNode) Then
+            neighbours.Add(New Node(newNode.X, newNode.Y))
+        End If
+        newNode.Update(current.X - 2, current.Y + 1)
+        If availablepath.Contains(newNode) Then
+            neighbours.Add(New Node(newNode.X, newNode.Y))
+        End If
+        newNode.Update(current.X - 2, current.Y - 1)
+        If availablepath.Contains(newNode) Then
+            neighbours.Add(New Node(newNode.X, newNode.Y))
+        End If
         Return neighbours
+
     End Function
     Function GetNeighboursCell(ByRef current As Cell, ByRef availablepath As List(Of Cell))
         Dim neighbours As New List(Of Cell)

@@ -1,5 +1,5 @@
 ﻿Module IDAstar
-    Sub ida_star(maze As List(Of Node), showPath As Boolean, delay As Integer, solvingColour As ConsoleColor)
+    Sub ida_star(maze As List(Of Node), showPath As Boolean, delay As Integer, solvingColour As ConsoleColor, Optional useDiagonals As Boolean = False)
         Dim root = getStart(maze)
         Dim goal = getGoal(maze)
         Dim bound = manhattenDistance(root, goal)
@@ -8,7 +8,7 @@
         path.Push(root)
         Dim timetaken As Stopwatch = Stopwatch.StartNew()
         Do
-            Dim t = search(path, 0, bound, goal, maze, cameFrom, showPath, delay, solvingColour)
+            Dim t = search(path, 0, bound, goal, maze, cameFrom, showPath, delay, solvingColour, useDiagonals)
             If t = -1 Then
                 ReconstructPath(cameFrom, goal, root, timetaken.Elapsed.TotalSeconds)
                 Console.ReadKey()
@@ -19,7 +19,7 @@
             bound = t
         Loop
     End Sub
-    Function search(path As Stack(Of Node), g As Integer, bound As Integer, goal As Node, maze As List(Of Node), ByRef camefrom As Dictionary(Of Node, Node), showPath As Boolean, delay As Integer, solvingColour As ConsoleColor)
+    Function search(path As Stack(Of Node), g As Integer, bound As Integer, goal As Node, maze As List(Of Node), ByRef camefrom As Dictionary(Of Node, Node), showPath As Boolean, delay As Integer, solvingColour As ConsoleColor, useDiagonals As Boolean)
         Dim node = path.Peek()
         If showPath Then
             SetBoth(solvingColour)
@@ -31,7 +31,7 @@
         If node.Equals(goal) Then Return -1
         Dim min = Int32.MaxValue
         SetBoth(ConsoleColor.Red)
-        For Each neighbour As Node In GetNeighbours(node, maze)
+        For Each neighbour As Node In GetNeighbours(node, maze, useDiagonals)
             If Not path.Contains(neighbour) Then
                 If showPath Then
                     neighbour.Print("XX")
@@ -39,7 +39,7 @@
                 End If
                 path.Push(neighbour)
                 camefrom(neighbour) = node
-                Dim t = search(path, g + manhattenDistance(node, neighbour), bound, goal, maze, camefrom, showPath, delay, solvingColour)
+                Dim t = search(path, g + manhattenDistance(node, neighbour), bound, goal, maze, camefrom, showPath, delay, solvingColour, useDiagonals)
                 If t = -1 Then Return -1
                 if t = -2 Then Return -2
                 If t < min Then min = t
