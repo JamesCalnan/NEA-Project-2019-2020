@@ -9,11 +9,15 @@
         Dim timetaken As Stopwatch = Stopwatch.StartNew()
         Do
             Dim t = search(path, 0, bound, goal, maze, cameFrom, showPath, delay, solvingColour)
-            If t = -1 Then Exit Do
+            If t = -1 Then
+                ReconstructPath(cameFrom, goal, root, timetaken.Elapsed.TotalSeconds)
+                Console.ReadKey()
+                Exit Sub
+            ElseIf t = -2
+                Exit Sub
+            End If
             bound = t
         Loop
-        ReconstructPath(cameFrom, goal, root, timetaken.Elapsed.TotalSeconds)
-        Console.ReadKey()
     End Sub
     Function search(path As Stack(Of Node), g As Integer, bound As Integer, goal As Node, maze As List(Of Node), ByRef camefrom As Dictionary(Of Node, Node), showPath As Boolean, delay As Integer, solvingColour As ConsoleColor)
         Dim node = path.Peek()
@@ -22,6 +26,7 @@
             node.Print("XX")
         End If
         Dim f = g + manhattenDistance(node, goal)
+        if ExitCase() Then Return -2
         If f > bound Then Return f
         If node.Equals(goal) Then Return -1
         Dim min = Int32.MaxValue
@@ -36,6 +41,7 @@
                 camefrom(neighbour) = node
                 Dim t = search(path, g + manhattenDistance(node, neighbour), bound, goal, maze, camefrom, showPath, delay, solvingColour)
                 If t = -1 Then Return -1
+                if t = -2 Then Return -2
                 If t < min Then min = t
                 path.Pop()
             End If

@@ -3,11 +3,23 @@ Imports System.IO
 Imports NEA_2019
 Module Module1
     'todo play the maze white square bug
-    Sub Main()
-        Console.ForegroundColor = ConsoleColor.White
-        Console.WriteLine("please make the font size 16 by clicking the little picture in the top left of the window
-then selecting properties and then changing the font size, then press any button")
+    sub printWithColouredText(inputText As String, textColour As ConsoleColor)
+        dim textArray = inputText.Split("*").ToList()
+        for each item in Textarray
+            if item.Contains("/") Then 
+                Console.ForegroundColor = textColour
+                Console.Write(item.Substring(1))
+            Else 
+                Console.ForegroundColor = ConsoleColor.White
+                Console.Write(item)
+            End If
+        Next
+    End sub
 
+    Sub Main()
+
+        printWithColouredText("please make the font size */14* by clicking the little picture in the top left of the window
+then selecting properties and then changing the font size, then press any */button*", consolecolor.green)
 
         Console.ReadKey()
         Console.CursorVisible = False
@@ -16,8 +28,6 @@ then selecting properties and then changing the font size, then press any button
             Console.SetCursorPosition(0, 0)
             Console.Write("Please make the window full screen")
         Loop Until Console.WindowWidth > Console.LargestWindowWidth - 10 And Console.WindowHeight > Console.LargestWindowHeight - 5
-        'Dim bool = HorizontalYesNo(0, "Do you want to have the exit option available on the menu:   ", True, True, False)
-        'Console.ReadKey()
         Dim menuOptions() As String = {
             "Generate a maze using one of the following algorithms",
             "   Recursive Backtracker Algorithm (3 options)",
@@ -66,9 +76,7 @@ then selecting properties and then changing the font size, then press any button
             "   Dijkstra's algorithm",
             "   Best-first search",
             "   Breadth-first search (using iteration)",
-            "   Breadth-first search (using recursion)",
             "   Depth-first search (using iteration)",
-            "   Depth-first search (using recursion)",
             "   Lee Algorithm (Wave Propagation)",
             "   Shortest Path Faster Algorithm (normal)",
             "   Shortest Path Faster Algorithm (Large Label First)",
@@ -119,7 +127,6 @@ then selecting properties and then changing the font size, then press any button
                 Console.SetCursorPosition(mess.Length, 0)
                 MsgColour(previousAlgorithm, ConsoleColor.Green)
             End If
-
             Dim gX, gY As Integer
             gX = 0
             gY = 0

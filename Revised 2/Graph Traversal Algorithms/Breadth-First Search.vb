@@ -15,7 +15,11 @@
         While q.Count > 0
             Dim v As Node = q.Dequeue
             If showPath Then : v.Print("██") : Threading.Thread.Sleep(delay) : End If
-            If v.Equals(goal) Then Exit While
+            If v.Equals(goal) Then
+                ReconstructPath(cameFrom, goal, startV, If(showSolveTime, $"{stopwatch.Elapsed.TotalSeconds}", ""))
+                Console.ReadKey()
+                Exit sub
+            End If
             For Each w As Node In GetNeighbours(v, g)
                 If Not discovered(w) Then
                     discovered(w) = True
@@ -24,8 +28,7 @@
                 End If
             Next
         End While
-        ReconstructPath(cameFrom, goal, startV, If(showSolveTime, $"{stopwatch.Elapsed.TotalSeconds}", ""))
-        Console.ReadKey()
+        displayPathNotFoundMessage()
     End Sub
     Sub BfsRecursive(g As List(Of Node), q As Queue(Of Node), discovered As Dictionary(Of Node, Boolean), camefrom As Dictionary(Of Node, Node), goal As Node, solvingdelay As Integer, showsolving As Boolean)
         If q.Count = 0 Then Return
@@ -34,7 +37,10 @@
             v.Print("XX")
             Threading.Thread.Sleep(solvingdelay)
         End If
-        If v.Equals(goal) Then Return
+        If v.Equals(goal) Then
+
+            Return
+        End If
         For Each u As Node In GetNeighbours(v, g)
             If Not discovered(u) Then
                 discovered(u) = True

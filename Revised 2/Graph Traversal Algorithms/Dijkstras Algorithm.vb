@@ -52,7 +52,11 @@ Module DijkstrasAlgorithm
             If ExitCase() Then Exit While
             Dim u As Node = extractMin(Q,dist)
 
-            If u.Equals(target) Then Exit While
+            If u.Equals(target) Then
+                Backtrack(prev, target, source, stopwatch, pathLength)
+                If initialValue = 0 Then Console.ReadKey()
+                Exit Sub
+            End If
             Q.Remove(u)
             If showSolving And pathLength = 0 Then : u.Print("██") : Threading.Thread.Sleep(solvingDelay) : End If
             For Each v As Node In GetNeighbours(u, g)
@@ -65,8 +69,8 @@ Module DijkstrasAlgorithm
                 End If
             Next
         End While
-        Backtrack(prev, target, source, stopwatch, pathLength)
-        If initialValue = 0 Then Console.ReadKey()
+        
+        displayPathNotFoundMessage()
     End Sub
 
     Function extractMin(q As hashset(Of Node), dist As dictionary(of node, Double)) As node

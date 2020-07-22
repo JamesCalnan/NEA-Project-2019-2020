@@ -39,7 +39,11 @@ Module DepthFirstSearch
         SetBoth(solvingColour)
         While s.Count > 0
             Dim u As Node = s.Pop
-            If u.Equals(goal) Then Exit While
+            If u.Equals(goal) Then
+                ReconstructPath(cameFrom, goal, startV, If(showSolveTime, $"{stopwatch.Elapsed.TotalSeconds}", ""))
+                Console.ReadKey()
+                Exit Sub
+            End If
             If showPath Then : u.Print("██") : Threading.Thread.Sleep(delay) : End If
             If Not visited(u) Then
                 visited(u) = True
@@ -51,8 +55,7 @@ Module DepthFirstSearch
                 Next
             End If
         End While
-        ReconstructPath(cameFrom, goal, startV, If(showSolveTime, $"{stopwatch.Elapsed.TotalSeconds}", ""))
-        Console.ReadKey()
+        displayPathNotFoundMessage()
     End Sub
 
     Function DFS_Recursive(g As List(Of Node), v As Node, visited As Dictionary(Of Node, Boolean), ByRef cameFrom As Dictionary(Of Node, Node), goal As Node, showsolving As Boolean, solvingdelay As Integer, ByRef exitcase As Boolean)

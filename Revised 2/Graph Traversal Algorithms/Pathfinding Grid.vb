@@ -2,13 +2,19 @@
     Function returnPathfindingGrid() As List(Of Node)
         Dim availableCells As New List(Of Node)
         Dim start As New Node(5, 3)
-        Dim goal As New Node(If(Console.WindowWidth - 6 Mod 2 <> 0, Console.WindowWidth - 5, Console.WindowWidth - 6), Console.WindowHeight - 3)
+        dim xEndValue = 0
+        if (Console.WindowWidth - 6) Mod 2 = 0
+            xEndValue = console.WindowWidth - 7
+        Else 
+            xEndValue = console.WindowWidth - 6
+        End If
+        Dim goal As New Node(xEndValue, Console.WindowHeight - 3)
         Dim invalidNodes As List(Of Node) = returnInvalidNodes(start, goal)
         SetBoth(ConsoleColor.White)
         Dim r As New Random
         For x = 5 To Console.WindowWidth - 5 Step 2
             For y = 3 To Console.WindowHeight - 3
-                If r.Next(10) < 2 And Not invalidNodes.Contains(New Node(x, y)) Then
+                If r.Next(10) < 3 And Not invalidNodes.Contains(New Node(x, y)) Then
                     If x = 5 And y = 3 Or x = If(Console.WindowWidth - 6 Mod 2 = 0, Console.WindowWidth - 5, Console.WindowWidth - 6) And y = Console.WindowHeight - 3 Then Continue For
                     Console.SetCursorPosition(x, y)
                     Console.Write("XX")

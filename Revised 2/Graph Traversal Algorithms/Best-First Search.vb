@@ -15,7 +15,11 @@
         While Not q.IsEmpty()
             Dim v As Node = q.ExtractMin()
             If showPath Then : v.Print("██") : Threading.Thread.Sleep(delay) : End If
-            If v.Equals(goal) Then Exit While
+            If v.Equals(goal) Then
+                ReconstructPath(cameFrom, goal, startV, If(showSolveTime, $"{stopwatch.Elapsed.TotalSeconds}", ""))
+                Console.ReadKey()
+                Exit Sub
+            End If
             For Each w As Node In GetNeighbours(v, g)
                 If Not discovered(w) Then
                     discovered(w) = True
@@ -24,7 +28,6 @@
                 End If
             Next
         End While
-        ReconstructPath(cameFrom, goal, startV, If(showSolveTime, $"{stopwatch.Elapsed.TotalSeconds}", ""))
-        Console.ReadKey()
+        displayPathNotFoundMessage
     End Sub
 End Module

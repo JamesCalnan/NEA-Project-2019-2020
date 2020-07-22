@@ -21,7 +21,16 @@
             Dim currentNode As Node = unfinishedNodes.Dequeue
             For Each adjacentNode As Node In GetNeighbours(currentNode, g)
                 If visitedNode(adjacentNode) Then Continue For
-                If adjacentNode.Equals(goal) Then Exit While
+                If adjacentNode.Equals(goal) Then
+                    BacktrackUsingWavePropagation(expansionValue, start, goal, g)
+                    Console.SetCursorPosition(0, Console.WindowHeight - 1)
+                    Console.ForegroundColor = ConsoleColor.White
+                    Console.BackgroundColor = ConsoleColor.Black
+                    Console.Write($"Time Taken to Solve   {timer.Elapsed.TotalSeconds}")
+                    SetBoth(ConsoleColor.Black)
+                    Console.ReadKey()
+                    Exit Sub
+                End If
                 expansionValue(adjacentNode) = i
                 If showSolving Then adjacentNode.Print($"XX")
                 unfinishedNodes.Enqueue(adjacentNode)
@@ -30,13 +39,7 @@
             If showSolving Then Threading.Thread.Sleep(delay)
             i += 1
         End While
-        BacktrackUsingWavePropagation(expansionValue, start, goal, g)
-        Console.SetCursorPosition(0, Console.WindowHeight - 1)
-        Console.ForegroundColor = ConsoleColor.White
-        Console.BackgroundColor = ConsoleColor.Black
-        Console.Write($"Time Taken to Solve   {timer.Elapsed.TotalSeconds}")
-        SetBoth(ConsoleColor.Black)
-        Console.ReadKey()
+        displayPathNotFoundMessage
     End Sub
     Sub BacktrackUsingWavePropagation(expansionValue As Dictionary(Of Node, Integer), start As Node, goal As Node, maze As List(Of Node))
         Dim path As New List(Of Node)

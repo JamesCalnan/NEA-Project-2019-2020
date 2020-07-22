@@ -25,7 +25,8 @@
             If showPath Then : current.Print("██") : Threading.Thread.Sleep(delay) : End If
             If current.Equals(target) Then
                 RetracePath(start, current, If(showSolveTime, $"Time Taken to solve: {stopwatch.Elapsed.TotalSeconds} seconds", ""))
-                Exit While
+                Console.ReadKey()
+                Exit Sub
             End If
             For Each neighbour As Node In GetNeighbours(current, g)
                 If closedSet.Contains(neighbour) Then Continue For
@@ -38,7 +39,7 @@
                 End If
             Next
         End While
-        Console.ReadKey()
+        displayPathNotFoundMessage
     End Sub
     Sub AStarWiki(g As List(Of Node), showPath As Boolean, showSolveTime As Boolean, delay As Integer, heuristic As Double, solvingColour As ConsoleColor)
         Dim closedSet, visitedSet As New List(Of Node)
@@ -59,7 +60,11 @@
         SetBoth(solvingColour)
         While Not openSet.IsEmpty()
             Dim current As Node = openSet.ExtractMin()
-            If current.Equals(goal) Then Exit While
+            If current.Equals(goal) Then
+                ReconstructPath(cameFrom, goal, start, If(showSolveTime, $"{stopwatch.Elapsed.TotalSeconds}", ""))
+                Console.ReadKey()
+                Exit sub
+            End If
             visitedSet.Add(current)
             If showPath Then : current.Print("██") : Threading.Thread.Sleep(delay) : End If
             For Each neighbour As Node In GetNeighbours(current, g)
@@ -75,9 +80,15 @@
                 End If
             Next
         End While
-        ReconstructPath(cameFrom, goal, start, If(showSolveTime, $"{stopwatch.Elapsed.TotalSeconds}", ""))
-        Console.ReadKey()
+        displayPathNotFoundMessage
     End Sub
+    sub displayPathNotFoundMessage
+        Console.ForegroundColor = ConsoleColor.Red
+        Console.BackgroundColor = ConsoleColor.Black
+        Console.SetCursorPosition(Console.WindowWidth\2 - "Path not found!".Length\2,0)
+        Console.Write("Path not found!")
+        Console.ReadKey()
+    End sub
     Function getStart(maze As List(Of Node)) As Node
         Return maze(maze.Count - 2)
     End Function

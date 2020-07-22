@@ -15,7 +15,12 @@
         Dim stopwatch As Stopwatch = Stopwatch.StartNew()
         While Not Q.isEmpty
             Dim u = Q.poll
-            If u.Equals(target) Then Exit While
+            If u.Equals(target) Then
+                SetBoth(solvingColour)
+                ReconstructPath(prev, target, s, stopwatch.Elapsed.TotalSeconds)
+                Console.ReadKey()
+                Exit sub
+            End If
             If showSolving Then : u.Print("██") : Threading.Thread.Sleep(solvingDelay) : End If
             For Each v As Node In GetNeighbours(u, maze)
                 If d(u) + 1 < d(v) Then
@@ -33,9 +38,7 @@
                 End If
             Next
         End While
-        SetBoth(solvingColour)
-        ReconstructPath(prev, target, s, stopwatch.Elapsed.TotalSeconds)
-        Console.ReadKey()
+        displayPathNotFoundMessage
     End Sub
 End Module
 Class SPFAQueue(Of T)

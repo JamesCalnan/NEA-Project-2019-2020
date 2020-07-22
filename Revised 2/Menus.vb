@@ -90,12 +90,16 @@ Module Menus
             Select Case key.Key.ToString
                 Case "DownArrow"
                     y += 1
-                    If y = arr.Count Then y = 1
-                    If arr(y) = "" Orelse arr(y) = "Generate a maze using one of the following algorithms" Orelse arr(y) = "Path finding visualisations on a grid" Then y += 1
+                    If y = arr.Count Then y = 1' return to the bottom of the menu
+                    If arr(y) = "" Orelse arr(y) = "Generate a maze using one of the following algorithms" Orelse arr(y) = "Path finding visualisations on a grid" Then
+                        y += If(arr(y+1) = "Path finding visualisations on a grid",2, 1)
+                    End If
                 Case "UpArrow"
                     y -= 1
-                    If y = 0 Then y = arr.Count - 1
-                    If arr(y) = "" Orelse arr(y) = "Generate a maze using one of the following algorithms" Orelse arr(y) = "Path finding visualisations on a grid" Then y -= 1
+                    If y = 0 Then y = arr.Count - 1 'return to the top of the menu
+                    If arr(y) = "" Orelse arr(y) = "Generate a maze using one of the following algorithms" Orelse arr(y) = "Path finding visualisations on a grid" Then
+                        y -= If(arr(y) = "Path finding visualisations on a grid", 2, 1)
+                    End If
                 Case "Enter"
                     Console.ForegroundColor = ConsoleColor.White
                     Dim availablePath As New List(Of Node)
@@ -348,18 +352,18 @@ Module Menus
                                 Console.ReadKey()
                             End If
                         ElseIf arr(y) = "Conway's game of life" Then
-                            GetMazeInfo(width, height, delayMs, limits, showMazeGeneration, True, 0, arr(y) = "Conway's game of life", arr(y) <> "Conway's game of life")
-                            delayMs = GetIntInputArrowKeys("Delay when making the Maze (MS): ", 100, 0, True)
+                            GetMazeInfo(width, height, delayMs, limits, showMazeGeneration, True, 0, arr(y) = "Conway's game of life", arr(y) <> "Conway's game of life", True)
+                            delayMs = GetIntInputArrowKeys("Delay between each iteration of life (MS): ", 100, 0, True)
                             simulateLife(limits, False, delayMs)
                         ElseIf arr(y) = "   A* algorithm" Then
                             Console.Clear()
                             delayMs = GetIntInputArrowKeys("Delay when finding a path: ", 100, 0, True)
                             Dim availableNodes As List(Of Node) = returnPathfindingGrid()
                             AStarWiki(availableNodes, True, False, delayMs, 1, solvingColour)
-
                         ElseIf arr(y) = "   Iterative deepening A* (very slow)" Then
                             Console.Clear()
                             delayMs = GetIntInputArrowKeys("Delay when finding a path: ", 100, 0, True)
+                            PrintMessageMiddle("Press escape to exit", 1, ConsoleColor.Green)
                             Dim availableNodes As List(Of Node) = returnPathfindingGrid()
                             ida_star(availableNodes, True, delayMs, solvingColour)
                         ElseIf arr(y) = "   Dijkstra's algorithm" Then
@@ -1082,20 +1086,20 @@ Module Menus
             End
         End If
     End Sub
-    Sub GetMazeInfo(ByRef Width As Integer, ByRef Height As Integer, ByRef DelayMS As Integer, ByRef Limits() As Integer, ByRef ShowGeneration As Boolean, Clear As Boolean, y As Integer, Optional NeedExtraInfo As Boolean = True, Optional fullScreen As Boolean = False)
+    Sub GetMazeInfo(ByRef Width As Integer, ByRef Height As Integer, ByRef DelayMS As Integer, ByRef Limits() As Integer, ByRef ShowGeneration As Boolean, Clear As Boolean, y As Integer, Optional NeedExtraInfo As Boolean = True, Optional fullScreen As Boolean = False, Optional notMaze As Boolean = False)
         Console.SetCursorPosition(0, y)
         If Not NeedExtraInfo Then
             ShowGeneration = HorizontalYesNo(Console.CursorTop, "Do you want to see the maze being generated: ", False, If(Clear, True, False), False)
             Console.SetCursorPosition(0, Console.CursorTop + 1)
             If ShowGeneration Then
-                DelayMS = GetIntInputArrowKeys("Delay when making the Maze (MS): ", 100, 0, False)
+                DelayMS = GetIntInputArrowKeys($"Delay when making the maze (MS): ", 100, 0, False)
             Else
                 DelayMS = 0
             End If
         End If
         If NeedExtraInfo Then Console.Clear()
-        Width = GetIntInputArrowKeys($"Width of the Maze: ", (Console.WindowWidth - If(fullScreen, 75, 12)) / 2, 20, False) * 2
-        Height = GetIntInputArrowKeys($"Height of the Maze: ", Console.WindowHeight - 6, 20, False)
+        Width = GetIntInputArrowKeys($"Width of the {If(notMaze,"grid","maze")}: ", (Console.WindowWidth - If(fullScreen, 75, 12)) / 2, 20, False) * 2
+        Height = GetIntInputArrowKeys($"Height of the {If(notMaze,"grid","maze")}: ", Console.WindowHeight - 6, 20, False)
         If Width Mod 2 = 0 Then
             Width += 1
         End If
